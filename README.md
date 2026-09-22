@@ -1,0 +1,116 @@
+# AIEN Architecture
+
+Canonical architecture, flows, boundaries, decisions, research notes, and implementation roadmap for the AIEN ecosystem.
+
+This repository is intentionally **documentation-first**. It does not replace the implementation repositories. It defines how the pieces are intended to compose and gives implementation agents one place to answer:
+
+- What owns this responsibility?
+- What talks to what?
+- What is already implemented?
+- What is partial?
+- What is missing?
+- Which boundary is security-critical?
+- Which repository contains the current implementation?
+- Which planned subsystem should be built next?
+
+> **Naming rule:** physical hosts are always called **Machine 1**, **Machine 2**, **Machine 3**, and so on. Hardware/vendor details are capabilities, never architectural identities.
+
+## Start here
+
+1. [Complete system architecture](AIEN_COMPLETE_SYSTEM_ARCHITECTURE.md)
+2. [System map](docs/00-system-map.md)
+3. [GitHub repository map](docs/01-github-repository-map.md)
+4. [Implementation status](docs/02-implementation-status.md)
+5. [Flows](docs/03-flows.md)
+6. [Capabilities, skills, tools, and MCP](docs/04-capabilities-skills-tools-mcp.md)
+7. [Fabric and portable compute](docs/05-fabric-and-compute.md)
+8. [J-Space](docs/06-jspace.md)
+9. [Security, AEGIS, vault, and effects](docs/07-security-effects-secrets.md)
+10. [World, Cortex, and provenance](docs/08-world-cortex-provenance.md)
+11. [RSI and evaluation](docs/09-rsi-evaluation.md)
+12. [PEARL-inspired relational path engine](docs/10-relational-path-engine.md)
+13. [Gap analysis](docs/11-gap-analysis.md)
+14. [Roadmap](docs/12-roadmap.md)
+15. [Golden path](docs/13-golden-path.md)
+16. [Architecture decision records](docs/adr/README.md)
+
+## One-line architecture
+
+```text
+User/API
+  → Runtime
+  → J-Space
+  → Skill Router
+  → Capability Graph
+  → Fabric placement
+  → Model/Tool execution
+  → AEGIS
+  → Effect Broker
+  → World Commit
+  → Signed Provenance
+  → Cortex
+  → RSI feedback
+```
+
+## Master diagram
+
+```mermaid
+flowchart TD
+    U[User / Operator / API] --> CP[Control Plane]
+    CP --> RT[AIEN Runtime]
+
+    RT --> JS[J-Space]
+    JS --> SR[Skill Router]
+    SR --> CG[Capability Graph]
+
+    CG --> NT[Native Tools]
+    CG --> MCP[MCP Broker]
+    CG --> FT[Fabric Tools]
+
+    RT --> INF[Inference Runtime]
+    INF --> MR[Model Router]
+    MR --> FAB[AIEN Fabric]
+
+    FAB --> M1[Machine 1]
+    FAB --> M2[Machine 2]
+    FAB --> M3[Machine 3]
+    FAB --> MN[Machine N]
+
+    JS --> W[World Store]
+    RT --> CX[Cortex]
+    CX --> RT
+
+    NT --> A[AEGIS]
+    MCP --> A
+    FT --> A
+
+    A --> EB[Effect Broker]
+    EB --> EXT[External World]
+    EB --> W
+
+    W --> P[Signed Provenance]
+    P --> CX
+
+    RT --> RSI[RSI Optimizer]
+    RSI --> EV[Harness / Inquisitor / Benchmarks]
+    EV --> RT
+```
+
+## Source-of-truth policy
+
+This repository describes **intended architecture** and records resolved architecture decisions.
+
+Implementation truth remains the current code in the linked repositories. When this repository and running code disagree:
+
+1. Do not silently pretend the target is implemented.
+2. Mark the discrepancy in [implementation status](docs/02-implementation-status.md).
+3. Open an architecture-gap issue.
+4. Update the relevant ADR when the intended design changes.
+
+## Repository role
+
+This repo should become the architectural index linked from the top-level READMEs of major AIEN repositories. Code repositories should avoid re-explaining the entire system; they should link here for cross-system architecture and keep their own README focused on their component.
+
+## License
+
+The AIEN ecosystem currently uses more than one license across repositories. Before publishing this architecture repository, copy or explicitly select the intended canonical documentation license rather than assuming one. See [LICENSE-NOTICE.md](LICENSE-NOTICE.md).
