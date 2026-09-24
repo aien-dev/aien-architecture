@@ -34,6 +34,7 @@ This repository is intentionally **documentation-first**. It does not replace th
 15. [Roadmap](docs/12-roadmap.md)
 16. [Golden path](docs/13-golden-path.md)
 17. [Architecture decision records](docs/adr/README.md)
+18. [Master architectural plan](docs/14-master-architectural-plan.md)
 
 ## One-line architecture
 
