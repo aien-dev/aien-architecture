@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M13
 Milestone:       Milestone 13 (OMEGA_MACHINE_GRAPH)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Formal Machine Hardware Graph ($G_M$) Describing Execution Pipelines and Memory Hierarchies
-Status:          SPECIFIED / IN PROGRESS (aien-dev/aien-architecture#24, aien-dev/omega#18)
+Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#24, aien-dev/omega#18)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4-M13) -> AIEN
 ```
 
