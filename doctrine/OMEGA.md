@@ -204,7 +204,7 @@ Omega does not rely on third-party host environments or legacy operating systems
 
 ```
 +-------------------------------------------------------------------------+
-| STEP 0: Alpha Seed                                                      |
+| STEP 0: Atlas Seed                                                      |
 | Minimal hand-crafted AArch64 machine-byte generator (~4KB binary).      |
 +-------------------------------------------------------------------------+
                                     |

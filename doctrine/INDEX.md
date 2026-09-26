@@ -46,7 +46,7 @@ The seven doctrine files map directly to the functional and ontological layers o
 │                          PHYSICS (DOCTRINE-002)                        │
 │            Trusted Physical Authority, SMMUv3 DMA Isolation, AEGIS     │
 ├────────────────────────────────────────────────────────────────────────┤
-│                           ALPHA (DOCTRINE-001)                         │
+│                           ATLAS (DOCTRINE-001)                         │
 │            Irreducible Bootstrap Seed, Bare-Metal Initialization       │
 ├────────────────────────────────────────────────────────────────────────┤
 │                       ARCHITECTURE (DOCTRINE-000)                      │
@@ -65,7 +65,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 │ # │ Document Path     │ Document ID      │ Canonical Title & Scope                                   │
 ├───┼───────────────────┼──────────────────┼───────────────────────────────────────────────────────────┤
 │ 1 │ ARCHITECTURE.md   │ DOCTRINE-000     │ Sovereign Computational Architecture                      │
-│ 2 │ ALPHA.md          │ DOCTRINE-001     │ Alpha — The Irreducible Bootstrap Seed                    │
+│ 2 │ ATLAS.md          │ DOCTRINE-001     │ Atlas — The Irreducible Bootstrap Seed                    │
 │ 3 │ PHYSICS.md        │ DOCTRINE-002     │ Physics — The Trusted Machine Authority                   │
 │ 4 │ OMEGA.md          │ DOCTRINE-OMEGA   │ The Omega Foundational Specification                      │
 │ 5 │ AIEN.md           │ DOCTRINE-004     │ AIEN Foundational Doctrine: Sovereign Cognitive Engine    │
@@ -80,7 +80,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 - **Document ID:** `DOCTRINE-000`
 - **Scope:** Foundational Master System Specification; The Four Permanent Layers and The Sovereign Machine.
 - **Core Principles:**
-  - **Ontological Hierarchy:** Computation flows monotonically from Silicon $\to$ Alpha $\to$ Physics $\to$ Omega $\to$ Aien.
+  - **Ontological Hierarchy:** Computation flows monotonically from Silicon $\to$ Atlas $\to$ Physics $\to$ Omega $\to$ Aien.
   - **The Four Permanent Layers:** Substrate Layer, Authority Layer, Meaning Layer, Cognitive Layer.
   - **The Permanent Architectural Rule:** No transient implementation choice (Rust, AArch64, CUDA, Linux, PyTorch) may become the permanent definition of the machine.
   - **Single Composition Root:** Deterministic wiring across all layers with zero dynamic service locators or circular dependencies.
@@ -90,17 +90,17 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 
 ---
 
-### 3.2 [`ALPHA.md`](file:///home/drakestapleton/workspace/aien-architecture/doctrine/ALPHA.md) — DOCTRINE-001: Alpha — The Irreducible Bootstrap Seed
+### 3.2 [`ATLAS.md`](file:///home/drakestapleton/workspace/aien-architecture/doctrine/ATLAS.md) — DOCTRINE-001: Atlas — The Irreducible Bootstrap Seed
 - **Document ID:** `DOCTRINE-001`
 - **Scope:** Bare-metal reset, hardware measurement, identity mapping, and monotonic handoff to Physics.
 - **Core Principles:**
-  - **Five Tenets of Alpha:** Small, Fixed, Auditable, Deterministic, Non-Intelligent.
+  - **Five Tenets of Atlas:** Small, Fixed, Auditable, Deterministic, Non-Intelligent.
   - **The Executable Identity Invariant:**
     $$\text{tested bytes} \equiv \text{evaluated bytes} \equiv \text{authorized bytes} \equiv \text{executed bytes}$$
-  - **The Canonical Supporting Evidence Bundle:** Seven immutable artifacts (`alpha.bin`, `alpha.manifest`, `alpha.sha256`, `alpha.decode`, `alpha.memory-map`, `alpha.control-flow`, `alpha.audit`).
+  - **The Canonical Supporting Evidence Bundle:** Seven immutable artifacts (`atlas.bin`, `alpha.manifest`, `alpha.sha256`, `alpha.decode`, `alpha.memory-map`, `alpha.control-flow`, `alpha.audit`).
 - **Key Invariants:**
   - Zero cognitive mechanisms, zero neural weights, zero heap allocation, zero dynamic syscalls.
-  - Monotonic EL1 handoff: once control is transferred to Physics, Alpha is never re-entered.
+  - Monotonic EL1 handoff: once control is transferred to Physics, Atlas is never re-entered.
 
 ---
 
@@ -190,13 +190,13 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 │ Invariant                │ Doctrinal Interaction                       │
 ├──────────────────────────┼─────────────────────────────────────────────┤
 │ 1. Intelligence !=       │ AIEN.md proposes; TRUST.md verifies;        │
-│    Authority             │ PHYSICS.md authorizes; ALPHA.md boots.      │
+│    Authority             │ PHYSICS.md authorizes; ATLAS.md boots.      │
 ├──────────────────────────┼─────────────────────────────────────────────┤
 │ 2. Decoupling of Meaning │ OMEGA.md specifies invariant semantics;     │
 │    from Representation   │ TRUST.md proves equivalence;                │
 │                          │ ARCHITECTURE.md prevents premature lowering.│
 ├──────────────────────────┼─────────────────────────────────────────────┤
-│ 3. Executable Identity   │ ALPHA.md establishes tested == executed;    │
+│ 3. Executable Identity   │ ATLAS.md establishes tested == executed;    │
 │                          │ TRUST.md records Merkle digests;            │
 │                          │ SOVEREIGNTY.md seals self-hosting closure.  │
 ├──────────────────────────┼─────────────────────────────────────────────┤
@@ -213,7 +213,7 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 
 ## 5. Milestone 0 (`DOCTRINE_V1`) Gate Verification & Sign-Off
 
-The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria before Milestone 1 (`BOOTSTRAP_SEED_ALPHA`) may be entered:
+The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria before Milestone 1 (`BOOTSTRAP_SEED_ATLAS`) may be entered:
 
 ### 5.1 Gate Verification Criteria Matrix
 
@@ -223,7 +223,7 @@ The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria be
 | **G0-2: Ontological Consistency** | Zero terminological or authority contradictions across documents. Unidirectional dependency hierarchy verified. | Cross-audit of layers and definitions. | `PASSED` |
 | **G0-3: Epistemic Boundary** | Search, optimization, and neural inference strictly designated untrusted; verification and physics designated trusted. | Enforced in `TRUST.md` and `PHYSICS.md`. | `PASSED` |
 | **G0-4: Mathematical Rigor** | Formal definitions provided for Omega Tri-Graphs, Verification Ladder ($V_0 \to V_5$), and Epistemic Merkle DAGs. | Evaluated in `OMEGA.md` and `TRUST.md`. | `PASSED` |
-| **G0-5: Hardware Realism** | Concrete alignment with AArch64 bare-metal (EL1/EL0, SMMUv3) and heterogeneous accelerator reset rails. | Fully specified in `PHYSICS.md` & `ALPHA.md`.| `PASSED` |
+| **G0-5: Hardware Realism** | Concrete alignment with AArch64 bare-metal (EL1/EL0, SMMUv3) and heterogeneous accelerator reset rails. | Fully specified in `PHYSICS.md` & `ATLAS.md`.| `PASSED` |
 | **G0-6: Sovereignty Invariants** | Absolute prohibition of foreign runtimes in operational target; strict deprecation horizons for bootstrap scaffolds. | Formally codified in `SOVEREIGNTY.md`. | `PASSED` |
 | **G0-7: Provenance Anchoring** | Separation of Proofs established; unkeyed integrity, keyed auth, and anti-rollback freshness specified. | Codified in `TRUST.md` & `SOVEREIGNTY.md`.| `PASSED` |
 
@@ -240,7 +240,7 @@ Target Substrate:        AArch64 Host CPU + Blackwell/Hopper Accelerator Fabric
 
 Verified Corpus Elements:
   [✓] DOCTRINE-000: ARCHITECTURE.md  (Sovereign Computational Architecture)
-  [✓] DOCTRINE-001: ALPHA.md         (The Irreducible Bootstrap Seed)
+  [✓] DOCTRINE-001: ATLAS.md         (The Irreducible Bootstrap Seed)
   [✓] DOCTRINE-002: PHYSICS.md       (The Trusted Machine Authority)
   [✓] DOCTRINE-OMEGA: OMEGA.md       (The Omega Foundational Specification)
   [✓] DOCTRINE-004: AIEN.md          (The Sovereign Cognitive Engine)
@@ -248,7 +248,7 @@ Verified Corpus Elements:
   [✓] DOCTRINE-SOV: SOVEREIGNTY.md   (Sovereignty, Closure & Provenance)
   [✓] DOCTRINE-IDX: INDEX.md         (Master Index & Gate Verification Ledger)
 
-GATE STATUS:             RATIFIED / CLOSED / READY FOR MILESTONE 1 (ALPHA)
+GATE STATUS:             RATIFIED / CLOSED / MILESTONE 1 (ATLAS) [COMPLETE / QEMU QUALIFIED]
 Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9e25d2b77c
 ================================================================================
 ```

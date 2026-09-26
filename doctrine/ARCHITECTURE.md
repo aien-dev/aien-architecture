@@ -50,7 +50,7 @@ All computation within the Sovereign Machine flows through an unyielding, unidir
 ```
 
 1. **SILICON / UNAVOIDABLE FIRMWARE**: The immutable physical reality of transistor gates, crystal oscillators, package interconnects, and non-volatile manufacturer boot ROMs. It provides the bare electrical state.
-2. **ALPHA**: The irreducible software root artifact. A single, auditable, immutable binary (`alpha.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control.
+2. **ATLAS**: The irreducible software root artifact (formerly designated Alpha in early bootstrap drafts). A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control.
 3. **PHYSICS**: The sovereign governor and authority membrane. A bare-metal, capability-based physical supervisor operating at privileged CPU exception levels (AArch64 EL1/EL2). It enforces memory ownership, DMA boundaries, hardware traps, and the outbound effect membrane (AEGIS).
 4. **OMEGA**: The semantic calculus and living realization substrate. It decouples computational meaning from physical representation, synthesizing optimal machine code directly onto bare silicon and accelerator execution pipelines in response to mathematical invariant requests.
 5. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world-models in Cortex, reasons across possibility spaces, and commands transformations through verified effect brokers.
@@ -62,7 +62,7 @@ All computation within the Sovereign Machine flows through an unyielding, unidir
 The operational constitution of the Sovereign Machine is crystallized in four canonical statements:
 
 $$\begin{aligned}
-\mathbf{ALPHA\ AWAKENS.} &\quad \text{The machine establishes physical truth from electrical silence.} \\
+\mathbf{ATLAS\ AWAKENS.} &\quad \text{The machine establishes physical truth from electrical silence.} \\
 \mathbf{PHYSICS\ AUTHORIZES.} &\quad \text{No transformation occurs without hardware capability proof.} \\
 \mathbf{OMEGA\ REALIZES.} &\quad \text{Meaning is autonomously manifested into optimal physical execution.} \\
 \mathbf{AIEN\ THINKS.} &\quad \text{Autonomous cognition directs reality toward intended futures.}
@@ -116,8 +116,8 @@ Where:
 │    - SMMUv3 DMA Confinement          - AEGIS Outbound Effect Membrane                  │
 │    - Coherent Memory Ring Dispatch   - Monotonic State Invariant Enforcement           │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. ALPHA — THE IRREDUCIBLE BOOTSTRAP SEED                                              │
-│    - Immutable raw binary (alpha.bin)- Zero External Dependencies / No OS              │
+│ 1. ATLAS — THE IRREDUCIBLE BOOTSTRAP SEED                                              │
+│    - Immutable raw binary (atlas.bin)- Zero External Dependencies / No OS              │
 │    - Bare-Metal Architectural Setup  - SHA-256 Hardware Measurement & Handoff          │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -225,13 +225,13 @@ WORKSTREAMS:
 
 ```mermaid
 flowchart TD
-    M0["M0: DOCTRINE_V1"] --> M1["M1: ALPHA_BAREMETAL_BOOT"]
+    M0["M0: DOCTRINE_V1"] --> M1["M1: ATLAS_BAREMETAL_BOOT"]
     M0 --> M2["M2: PHYSICS_CORE_MEMBRANE"]
     M0 --> M3["M3: OMEGA_CALCULUS_G_S"]
     M0 --> M4["M4: ACCEL_C2C_COHERENCE"]
     M0 --> M5["M5: AIEN_SEED_TOPOLOGY"]
 
-    M1 --> M6["M6: ALPHA_MEASUREMENT_CHAIN"]
+    M1 --> M6["M6: ATLAS_MEASUREMENT_CHAIN"]
     M2 --> M7["M7: PHYSICS_DMA_CONFINEMENT"]
     M3 --> M8["M8: OMEGA_AARCH64_SYNTHESIS"]
     M4 --> M9["M9: ACCEL_TENSOR_DISPATCH"]
@@ -239,7 +239,7 @@ flowchart TD
 
     M6 & M7 & M8 & M9 & M10 --> M11["M11: SENTINEL_GATE_1"]
 
-    M11 --> M12["M12: ALPHA_STAGE2_ELIMINATION"]
+    M11 --> M12["M12: ATLAS_STAGE2_ELIMINATION"]
     M11 --> M13["M13: PHYSICS_EFFECT_BROKER"]
     M11 --> M14["M14: OMEGA_LIVING_MATVEC"]
     M11 --> M15["M15: ACCEL_BLACKWELL_NATIVE"]
@@ -265,19 +265,19 @@ flowchart TD
 
 | Milestone | Code Identifier | Stream | Description & Objective Invariants |
 | :--- | :--- | :---: | :--- |
-| **M0** | `DOCTRINE_V1` | **ALL** | **Foundational Specification.** Authoring and ratification of `ARCHITECTURE.md`, `SOVEREIGNTY.md`, `ALPHA.md`, and `OMEGA.md`. System laws codified. |
-| **M1** | `ALPHA_BAREMETAL_BOOT` | **A** | **First Bare-Metal Awakening.** `alpha.bin` compiled, flashed to physical ROM, boots AArch64 bare metal, initializes UART, executes memory hygiene, halts safely. |
+| **M0** | `DOCTRINE_V1` | **ALL** | **Foundational Specification.** Authoring and ratification of `ARCHITECTURE.md`, `SOVEREIGNTY.md`, `ATLAS.md`, and `OMEGA.md`. System laws codified. |
+| **M1** | `ATLAS_BAREMETAL_BOOT` | **A** | **First Bare-Metal Awakening.** `atlas.bin` compiled, flashed to physical ROM, boots AArch64 bare metal, initializes UART, executes memory hygiene, halts safely. |
 | **M2** | `PHYSICS_CORE_MEMBRANE` | **B** | **Supervisor Privilege Bringup.** Physics takes handoff from Alpha at EL1. Identity page tables, exception vector table, and basic memory partitions active. |
 | **M3** | `OMEGA_CALCULUS_G_S` | **C** | **Semantic Graph Formalization.** Mathematical specification of $\mathcal{G}_S$ AST nodes, dimensional broadcasting rules, and numerical error envelope calculus. |
 | **M4** | `ACCEL_C2C_COHERENCE` | **D** | **Coherent Interconnect Bringup.** Physical memory address mapping across NVLink-C2C. Verified 64-byte atomic read/write between CPU and GPU. |
 | **M5** | `AIEN_SEED_TOPOLOGY` | **E** | **Cognitive State Definition.** Initial data schema for Cortex graph store, semantic vocabulary tokens, and resident weight tensor descriptor layout. |
-| **M6** | `ALPHA_MEASUREMENT_CHAIN` | **A** | **Hardware Root of Trust.** Alpha computes SHA-256 digest of Physics staging memory, compares to fused hardware manifest, aborts on mismatch. |
+| **M6** | `ATLAS_MEASUREMENT_CHAIN` | **A** | **Hardware Root of Trust.** Alpha computes SHA-256 digest of Physics staging memory, compares to fused hardware manifest, aborts on mismatch. |
 | **M7** | `PHYSICS_DMA_CONFINEMENT` | **B** | **SMMUv3 Security Boundary.** Direct-memory access isolation configured for all PCIe peripherals. Unauthorized bus-mastering blocked at silicon level. |
 | **M8** | `OMEGA_AARCH64_SYNTHESIS` | **C** | **Direct CPU Code Synthesis.** Omega synthesizes machine opcodes directly into executable RAM pages. Verified execution of NEON variants $R_0$ through $R_3$. |
 | **M9** | `ACCEL_TENSOR_DISPATCH` | **D** | **Bare-Metal GPU Dispatch.** Host writes execution command buffer directly to GPU BAR0 registers; GPU executes tensor GEMM without CUDA driver. |
 | **M10** | `CORTEX_ZERO_COPY_STORE` | **E** | **Durable Cognitive Memory.** Non-volatile memory arena mounted in coherent space. Aien writes episodic records with zero serialization overhead. |
 | **M11** | `SENTINEL_GATE_1` | **F** | **First Formal Verification Gate.** Automated audit by `spark-sentinel`. Zero stub code permitted. Parity proof for M1-M10 verified on live silicon. |
-| **M12** | `ALPHA_STAGE2_ELIMINATION` | **A** | **Elimination of Vendor Shims.** Removal of UEFI/U-Boot firmware intermediaries. Alpha transitions directly from platform reset into sovereign execution. |
+| **M12** | `ATLAS_STAGE2_ELIMINATION` | **A** | **Elimination of Vendor Shims.** Removal of UEFI/U-Boot firmware intermediaries. Alpha transitions directly from platform reset into sovereign execution. |
 | **M13** | `PHYSICS_EFFECT_BROKER` | **B** | **Hardware AEGIS Enforcement.** Physical network and NVMe write paths gated behind cryptographic capability tokens. Outbound effects logged to Cortex. |
 | **M14** | `OMEGA_LIVING_MATVEC` | **C** | **Autonomous Adaptive Loop.** Omega measures cycle times of live MatVec kernels, synthesizes cache-bypassing variant $R_5$, and hot-swaps pointers atomically. |
 | **M15** | `ACCEL_BLACKWELL_NATIVE` | **D** | **Direct SM Microcode Synthesis.** Omega generates native streaming multiprocessor instruction streams targeting Blackwell tensor architecture directly. |
@@ -356,7 +356,7 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 ```
 
 ### Detailed Trace Walkthrough:
-1. **Cold Silicon Reset:** Electrical power stabilizes; CPU reset vector fetches the first instruction of `alpha.bin` from secure physical ROM.
+1. **Cold Silicon Reset:** Electrical power stabilizes; CPU reset vector fetches the first instruction of `atlas.bin` from secure physical ROM.
 2. **Alpha Execution:** Alpha initializes core architectural registers, clears scratchpad SRAM, and disables speculative prefetchers.
 3. **MMU & Cache Initialization:** Alpha constructs minimal identity page tables (EL1/EL2) and enables the data/instruction caches.
 4. **Cryptographic Measurement:** Alpha reads the Physics binary from non-volatile storage, computes its SHA-256 digest, and validates it against the platform Root of Trust.
@@ -392,7 +392,15 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 
 ```text
 MILESTONE 0  — DOCTRINE_V1                     Canonical doctrine corpus frozen and ratified. [COMPLETE]
-MILESTONE 1  — ALPHA_BOOT                      Canonical alpha.bin bootstrap seed. [IMPLEMENTED / QUALIFICATION REOPENED]
+MILESTONE 1  — ATLAS_BOOT                      Canonical atlas.bin bootstrap seed. [COMPLETE / QEMU QUALIFIED]
+  - Repository: https://github.com/aien-dev/atlas
+  - Canonical Artifact: atlas.bin (1,480 bytes, SHA-256: f7802501b410a0c19eff7b8fca8865c9ba9c96bfa4f8065ca8f508b67748b9a5)
+  - Historical Lineage: Formerly designated Alpha (alpha.bin) in early bootstrap drafting
+  - Dual-Seam Verification:
+    * Seam 1 (Static Audit): 100% word-reconciled (301 insns, 69 rodata words, 0 discrepancy), static target proof (ldr x19, =0x40200000; br x19), disjoint stack/descriptor proof (SP <= 0x401FC000 vs Descriptor @ 0x401FE000 with 8 KiB guard gap, empty intersection).
+    * Seam 2 (Execution Harness): Bare-metal QEMU virt; 268/268 mutations refused into fail-closed quiescence (exhaustive 256 single-byte offset sweep + 12 adversarial scenarios).
+    * Cryptographic Scheme: Bare-metal NIST FIPS 180-4 SHA-256 (KAT verified 100%).
+  - Native Hardware Status: ATLAS_BOOT_NATIVE_PASS remains pending and decoupled from QEMU qualification.
 MILESTONE 2  — PHYSICS_BOOT                    Minimal trusted machine authority nucleus.
 MILESTONE 3  — PHYSICS_EFFECTS                 Capabilities, EFFECT_INTENT admission cycle, and EFFECT_RECEIPT accounting.
 MILESTONE 4  — OMEGA_SEMANTICS                 Core semantic object model and canonical content-addressed identity.

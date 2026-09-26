@@ -5,7 +5,7 @@
 Document ID:     DOCTRINE-SOV-001
 Milestone:       Milestone 0 (DOCTRINE_V1)
 Classification:  Sovereign Machine Canonical Doctrine
-Target Substrate: Complete Sovereign Stack (Alpha -> Physics -> Omega -> Aien)
+Target Substrate: Complete Sovereign Stack (Atlas -> Physics -> Omega -> Aien)
 Status:          AUTHORITATIVE / CANONICAL / RATIFIED
 ```
 
@@ -48,13 +48,13 @@ Historically, this paradox has been resolved through inherited dependencies—co
 ### 2.2 Formal Definition of the Founding Exception
 The Sovereign Machine resolves the bootstrap paradox through **The Founding Exception**:
 
-$$\mathcal{A}_0 \equiv \text{Alpha}$$
+$$\mathcal{A}_0 \equiv \text{Atlas}$$
 
-* **Alpha is the Irreducible Root Artifact:** Alpha ($A_0$) is the singular, non-sovereign seed artifact permitted at system inception.
-* **Bounded Scope of Exception:** The exception applies strictly to the initial generation of `alpha.bin`. Once `alpha.bin` is assembled and sealed into physical silicon / ROM, the exception terminates.
+* **Atlas is the Irreducible Root Artifact:** Atlas ($A_0$) is the singular, non-sovereign seed artifact permitted at system inception.
+* **Bounded Scope of Exception:** The exception applies strictly to the initial generation of `atlas.bin`. Once `atlas.bin` is assembled and sealed into physical silicon / ROM, the exception terminates.
 * **The Lineage Invariant:**
   $$\forall \text{ artifact } \mathcal{X} \in \{\text{Physics}, \text{Omega}, \text{Aien}\}: \quad \text{Lineage}(\mathcal{X}) \subseteq \text{Evolution}(\mathcal{A}_0)$$
-  Every layer, engine, kernel, compiler, and neural network operating above Alpha must be derived, synthesized, and verified exclusively through the internal lineage initiated by Alpha.
+  Every layer, engine, kernel, compiler, and neural network operating above Atlas must be derived, synthesized, and verified exclusively through the internal lineage initiated by Atlas.
 * **The Scaffolding Deprecation Horizon:** The host machine, cross-assembler, and development environment used to craft $A_0$ are defined as **Scaffolding**. Scaffolding participates in the historical genesis of $A_0$, but is permanently discarded once the self-hosting loop closes.
 
 ---
@@ -79,7 +79,7 @@ An **Oracle** is an external computational entity queried solely for:
 │                                                                        │
 │   ┌────────────────────┐                   ┌───────────────────────┐   │
 │   │   ORACLE REALM     │                   │    SOVEREIGN REALM    │   │
-│   │ (Linux / CUDA / PT)│                   │(Alpha / Physics/Omega)│   │
+│   │ (Linux / CUDA / PT)│                   │(Atlas / Physics/Omega)│   │
 │   │                    │                   │                       │   │
 │   │ [ Reference Model ]│                   │ [ Sovereign Engine ]  │   │
 │   └─────────┬──────────┘                   └───────────┬───────────┘   │
@@ -112,19 +112,19 @@ Sovereignty is achieved when the machine completes the **Self-Hosting Closure Lo
 ```mermaid
 flowchart LR
     subgraph SELF_HOSTING_LOOP [The Sovereign Self-Hosting Loop]
-        ALPHA["ALPHA<br/>(Silicon Boot)"] --> PHYSICS["PHYSICS<br/>(Memory & Authority)"]
+        ATLAS["ATLAS<br/>(Silicon Boot)"] --> PHYSICS["PHYSICS<br/>(Memory & Authority)"]
         PHYSICS --> OMEGA["OMEGA<br/>(Living Code Synthesis)"]
         OMEGA --> AIEN["AIEN<br/>(Cognition & Training)"]
         AIEN -.->|"Regenerates & Recompiles"| OMEGA
         AIEN -.->|"Verifies & Patches"| PHYSICS
-        AIEN -.->|"Emits Validated"| ALPHA
+        AIEN -.->|"Emits Validated"| ATLAS
     end
 ```
 
 To validate this cycle, the architecture requires four sequential **Closure Proofs**:
 
-### 4.1 Proof 1: `ALPHA_BOOT` (Milestone 1 & 12)
-* **Theorem:** An immutable, raw binary image (`alpha.bin`) of $\le 64\text{ KB}$ can initialize an AArch64 bare-metal platform from cold reset, configure memory protection, verify secondary stages via SHA-256, and monotonically hand off control to Physics without invoking external firmware (UEFI/U-Boot) or third-party bootloaders.
+### 4.1 Proof 1: `ATLAS_BOOT` (Milestone 1 & 12)
+* **Theorem:** An immutable, raw binary image (`atlas.bin`) of $\le 64\text{ KB}$ can initialize an AArch64 bare-metal platform from cold reset, configure memory protection, verify secondary stages via SHA-256, and monotonically hand off control to Physics without invoking external firmware (UEFI/U-Boot) or third-party bootloaders.
 * **Verification Proof:** Tested via physical power-cycle reset on bare metal hardware. Serial console captures cold register state, zero exception faults, and clean EL1 entry within $8.2\text{ ms}$ of reset de-assertion.
 
 ### 4.2 Proof 2: `OMEGA_LIVING_MATVEC` (Milestone 14)
@@ -142,7 +142,7 @@ To validate this cycle, the architecture requires four sequential **Closure Proo
 ### 4.5 The Final Master Proof: `SOVEREIGN_CLOSURE` (Milestone 27)
 The system achieves full sovereign closure when:
 
-$$\mathcal{S}_{t+1} = \text{Omega}_{\text{sov}}\Big(\text{Physics}_{\text{sov}}\big(\text{Alpha}_{\text{sov}}(\text{Silicon})\big)\Big)$$
+$$\mathcal{S}_{t+1} = \text{Omega}_{\text{sov}}\Big(\text{Physics}_{\text{sov}}\big(\text{Atlas}_{\text{sov}}(\text{Silicon})\big)\Big)$$
 
 Where the newly synthesized system $\mathcal{S}_{t+1}$ is bit-for-bit functionally equivalent to $\mathcal{S}_t$, fully capable of bootstrapping itself on cold hardware with zero external dependencies.
 
@@ -204,13 +204,13 @@ Roadmap progression is strictly governed by four sequential **Verification Gates
 ```
 
 ### 6.1 Gate 0: Doctrine, Architecture, and Formal Specifications (M0)
-* **Gate Check:** Complete ratification of `ARCHITECTURE.md`, `SOVEREIGNTY.md`, `ALPHA.md`, and `OMEGA.md`.
+* **Gate Check:** Complete ratification of `ARCHITECTURE.md`, `SOVEREIGNTY.md`, `ATLAS.md`, and `OMEGA.md`.
 * **Standard:** All system concepts, formulas, memory structures, and hardware topologies defined without ambiguous terminology or unspecified layers.
 * **Verification Agent:** `spark-sentinel` doctrine audit passes with zero unresolved contradictions.
 
 ### 6.2 Gate 1: Bare-Metal Awakening & Memory Confinement (M1 – M11)
 * **Gate Invariants:**
-  1. `alpha.bin` boots bare-metal AArch64 hardware cleanly.
+  1. `atlas.bin` boots bare-metal AArch64 hardware cleanly.
   2. Physics takes EL1 handoff and establishes strict identity page tables.
   3. SMMUv3 blocks all unauthorized peripheral DMA transactions.
   4. Coherent NVLink-C2C memory space successfully exchanges 64-byte descriptors with zero cache corruption.

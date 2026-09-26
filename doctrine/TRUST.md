@@ -335,7 +335,7 @@ Every event—from training update and semantic specification to proof verificat
 │ Payload Elements:                                                      │
 │  ├─ Parent World Hash:       Digest of predecessor world state         │
 │  ├─ Semantic Graph Root:     SHA-256 root of Omega specification (G_S) │
-│  ├─ Realization Hash:        SHA-256 digest of executed binary (alpha) │
+│  ├─ Realization Hash:        SHA-256 digest of executed binary (atlas) │
 │  ├─ Proof Certificate:       Digest of formal proof document (Π)       │
 │  ├─ Verification Receipt:    Cryptographic attestation of V-Ladder pass│
 │  ├─ Profiling Telemetry:     Signed hardware counter measurements     │
