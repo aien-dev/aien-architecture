@@ -5,7 +5,7 @@ Document ID:     SPEC-ACCEL-M16
 Milestone:       Milestone 16 (BLACKWELL_NATIVE_PATH_KNOWN)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Empirical Characterization of Native Blackwell Submission Architecture
-Status:          OPEN / IN PROGRESS
+Status:          RATIFIED / COMPLETE
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> M15 (Authority) -> M16 (Discovery)
 ```
 
@@ -126,3 +126,23 @@ Milestone 16 is complete when:
 4. **Zero Ambient Authority**: All submissions remain strictly mediated through the capability and memory bounds established in Milestone 15.
 
 Milestone 16 provides the empirical foundation upon which **Milestone 17 (`OMEGA_BLACKWELL_VECTOR`)** synthesizes autonomous GPU compute.
+
+---
+
+## 6. Empirical Verification & Qualification
+
+Milestone 16 was qualified on NVIDIA DGX Spark (`spark-b87b`) on 2026-09-26.
+
+- **Authoritative Evidence Collection**: `physics/research/m16/run-20260926-10/`
+- **Raw Evidence Digest**: `sha256: 5068e2274fa1dc9401365a2f085bc2187f63230b4909d0ac1bceee804ea230a6`
+- **Physics Qualification Receipt**: `evidence/m16-blackwell-native-path-receipt.json` (`physics@f72e297`)
+- **Qualification Scope**:
+  1. Complete critical path verified with zero `UNKNOWN` or `INFERRED` links (all links `[OBSERVED]` or `[DOCUMENTED]`).
+  2. Usermode doorbell aperture identified at BAR0 offset `0xbb0000` (class `0xC661` `HOPPER_USERMODE_A`), with register offset `+0x90` (`NVC361_NOTIFY_CHANNEL_PENDING`).
+  3. GPFIFO 8-byte entry structure and `NVC06F` pushbuffer method headers decoded.
+  4. Device completion attributed to pushbuffer method `0x5c` (`SEM_ADDR_LO`) writing coherent memory marker with `RELEASE` (`0x1`) flanked by `MEM_OP_D` flushes.
+  5. Hardware causality verified via controlled negative perturbation test (`causality_test.c`: withheld doorbell halts execution; released doorbell immediately updates marker).
+  6. Minimum sovereign transaction verified directly in pure C (`sovereign_submit.c`) without proprietary userspace runtimes (`libcuda`).
+
+**Milestone 16 is RATIFIED and CLOSED.** Milestone 17 (`OMEGA_BLACKWELL_VECTOR`) is **IN PROGRESS**.
+
