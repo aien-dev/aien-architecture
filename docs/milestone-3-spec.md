@@ -277,11 +277,7 @@ EffectIntent (64 bytes, little-endian, 64-bit aligned):
   +0x24: operation             (u32) — Requested operation bitmask
   +0x28: target_base           (u64) — Target physical address / base
   +0x30: target_size           (u64) — Target byte length / size
-  +0x38: constraints           (u64) — Execution constraints flags
-  +0x40: expected_invariants   (u64) — Invariant assertions
-  +0x48: param0                (u64) — Operation parameter 0 (e.g. data byte/address)
-  +0x50: param1                (u64) — Operation parameter 1 (e.g. length)
-  +0x58: reserved1             (u64 = 0)
+  +0x38: param0                (u64) — Operation parameter 0 / constraints (e.g. data byte/address)
 ```
 
 **Invariants:**
