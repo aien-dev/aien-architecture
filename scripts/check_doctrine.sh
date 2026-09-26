@@ -34,9 +34,6 @@ done
 # when that issue closes.
 # ---------------------------------------------------------------------------
 declare -A DEFERRED=(
-  # pending #8: SOVEREIGNTY.md rewrite (milestone numbering, closure gate,
-  # EL handoff wording) is owned by aien-dev/aien-architecture#8.
-  ["doctrine/SOVEREIGNTY.md"]="pending #8"
 )
 
 FAILS=0
@@ -92,7 +89,7 @@ check_pattern "fixed-el1-handoff" \
   'Monotonic Handoff \(EL1\)|Handoff \(EL1\)|EL1 [Hh]andoff|strictly at \*\*EL1|EL1 Jump|at EL1 privilege level'
 
 check_pattern "obsolete-m27-closure" \
-  'SOVEREIGN(_MACHINE)?_CLOSURE|(Milestone|MILESTONE|M) ?27\b[^|]*AIEN_HUMAN_INTERFACE|AIEN_HUMAN_INTERFACE[^|]*(Milestone|MILESTONE|\bM) ?27\b'
+  '(Milestone|MILESTONE|\bM) ?27\b[^|]*SOVEREIGN(_MACHINE)?_CLOSURE|SOVEREIGN(_MACHINE)?_CLOSURE[^|]*(Milestone|MILESTONE|\bM) ?27\b|(Milestone|MILESTONE|M) ?27\b[^|]*AIEN_HUMAN_INTERFACE|AIEN_HUMAN_INTERFACE[^|]*(Milestone|MILESTONE|\bM) ?27\b'
 
 check_pattern "obsolete-roadmap-generation" \
   '\b(28|31)-[Mm]ilestone|[Tt]wenty-eight (precise )?milestones|[Tt]hirty-one milestones|^MILESTONE [0-9]+ +— |\bM[0-9]+ ?(-|–) ?M27\b'
@@ -117,12 +114,15 @@ for f in "${FILES[@]}"; do
   while IFS= read -r hit; do
     report "physics-zero-range" "$f" "${hit%%:*}" "${hit#*:}"
   done < <(normative "$f" | awk '
-    /[Pp][Hh][Yy][Ss][Ii][Cc][Ss] [Zz][Ee][Rr][Oo]/ {
+    # Only ranges labelled as Physics Zero: "Physics Zero ... Mx-My" (within
+    # 30 chars) or "Mx-My (Physics Zero".
+    {
       s = $0
-      while (match(s, /M[0-9]+ ?[-–] ?M[0-9]+/)) {
-        r = substr(s, RSTART, RLENGTH); gsub(/ /, "", r); sub(/–/, "-", r)
-        if (r != "M27-M35" && r != "M36-M40" && r != "M0-M40") { print NR ":" $0; break }
-        s = substr(s, RSTART + RLENGTH)
+      while (match(s, /[Pp]hysics [Zz]ero[^.]{0,30}M[0-9]+ ?[-–] ?M[0-9]+|M[0-9]+ ?[-–] ?M[0-9]+ ?\([Pp]hysics [Zz]ero/)) {
+        t = substr(s, RSTART, RLENGTH); s = substr(s, RSTART + RLENGTH)
+        match(t, /M[0-9]+ ?[-–] ?M[0-9]+/); r = substr(t, RSTART, RLENGTH)
+        gsub(/ /, "", r); sub(/–/, "-", r)
+        if (r != "M27-M35") { print NR ":" $0; break }
       }
     }')
 done

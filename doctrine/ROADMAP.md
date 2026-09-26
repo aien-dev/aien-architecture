@@ -34,7 +34,7 @@ Status vocabulary:
 | :--- | :--- | :--- | :--- | :--- |
 | **M0** | Foundational | `DOCTRINE_V1` | Foundational Specification. Ratification of complete architectural corpus. | COMPLETE |
 | **M1** | Foundational | `ATLAS_BOOT` | Irreducible bootstrap seed (`atlas.bin`). Dual-seam verified. | COMPLETE / QEMU QUALIFIED |
-| **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. | REOPENED / IN PROGRESS |
+| **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. Requalified 2026-09-26 (`aien-dev/physics#3`, receipt `qualification_receipt.json`). QEMU only; `PHYSICS_BOOT_NATIVE_PASS` pending. | COMPLETE / QEMU QUALIFIED |
 | **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). | PLANNED |
 | **M4** | Omega Core Substrate | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent content-addressed identity. | PLANNED |
 | **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). | PLANNED |
