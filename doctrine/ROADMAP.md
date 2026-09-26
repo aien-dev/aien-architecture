@@ -214,6 +214,7 @@ One nontrivial abstraction not present in the initial library that:
 - Mandate: Verified native Blackwell tensor matrix multiplication with tensor core acceleration.
 - Architecture: Synthesizes sm_121 tensor core instructions using QMD launch descriptors and native M16 pushbuffer submission.
 - Sovereignty Boundary: Crosses from verified static instruction fixtures to dynamic native code generation: semantic MatMul contract lowers through OMEGA instruction selection, operand and field encoding, tensor-core instruction sequencing, dynamic QMD launch descriptors, and native M16 submission on physical GB10 silicon under exact and numerically bounded verification.
+- Mandatory Tensor-Core Gate: INT32 matrix multiplication serves as an intermediate codegen milestone; completion strictly requires physical GB10 FP16/BF16 tensor core MMA execution with FP32 accumulation and verified tensor instruction traces.
 
 
 ### M22 — `OMEGA_OPTIMIZER`
