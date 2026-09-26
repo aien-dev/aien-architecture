@@ -5,7 +5,7 @@ Document ID:     SPEC-PHYSICS-M15
 Milestone:       Milestone 15 (PHYSICS_ACCELERATOR_LINK)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Bounded Coherent Memory Interface, SMMUv3 DMA Sandboxing & Accelerator Authority
-Status:          SPECIFIED / IN PROGRESS (aien-dev/aien-architecture#27, aien-dev/physics#10, aien-dev/omega#21)
+Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#27, aien-dev/physics#10, aien-dev/omega#21)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> AIEN
 ```
 

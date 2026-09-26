@@ -47,7 +47,7 @@ Status vocabulary:
 | **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
-| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. | PLANNED |
+| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. Qualified 2026-09-26 under `aien-dev/physics` (commit `b2c5f3c...`, receipt `ffb67bf...`) and `aien-dev/omega` (commit `b06eb3b...`, receipt `019af47...`). | COMPLETE |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell SM architecture (MMIO, queue submission, doorbells). | PLANNED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | PLANNED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
@@ -148,6 +148,23 @@ One nontrivial abstraction not present in the initial library that:
 - Machine-aware instruction scheduling specialized for DGX Spark Grace Neoverse V2 (4-wide issue, multi-register pre-load) vs QEMU virt (2-wide baseline sequential).
 - 10/10 canonical M14 qualification gates passed (101/101 cumulative gates across M4-M14 with zero regressions).
 - Specification: [`docs/milestone-14-spec.md`](../docs/milestone-14-spec.md).
+
+### M15 — `PHYSICS_ACCELERATOR_LINK`
+- Qualified 2026-09-26 under `aien-dev/physics` (implementation `b2c5f3c7a6b84f1693a8a6113b741f56fa7c3ec2`, receipt `ffb67bfd96d29c8e82ef6ff447781b0f55fb507a`) and `aien-dev/omega` (implementation `b06eb3b21a32811021ea526f72d90f4bff5408c9`, receipt `019af47dc8ec4d8f0797b5e40e2cf948c4cf89be`).
+- Bounded accelerator physical authority in Physics:
+  - Bounded coherent LPDDR5x DRAM envelope `[0x80000000, 0x2080000000)` (128 GiB, 0 discrete VRAM, hardware coherent).
+  - ARM SMMUv3 Stage 1 IOVA translation (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`, IOMMU group 20) with fail-closed DMA sandboxing.
+  - Queue authority and exclusive doorbell mediation (unprivileged doorbells denied fail-closed).
+  - Non-disruptive device recovery and fault isolation without host OS disruption.
+  - 192-byte immutable `EffectReceipt` with rolling SHA-256 seal chain.
+- Sovereign Omega accelerator client interface (`OmegaAccelPort`):
+  - Formulates 64-byte `EffectIntent` structures without raw hardware register access.
+  - Verifies Physics `EffectReceipt` signatures and maintains local rolling seal chain.
+  - Dynamically binds accelerator port directly to `OmegaMachineGraph` ($G_M$), recalculating `MACHINE_ID`.
+- Zero foreign toolchain: 0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python, 0 CUDA runtime/driver.
+- 10/10 canonical M15 qualification gates passed across Physics and Omega (121/121 cumulative gates with zero regressions).
+- Empirical hardware audit report: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
+- Specification: [`docs/milestone-15-spec.md`](../docs/milestone-15-spec.md).
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
