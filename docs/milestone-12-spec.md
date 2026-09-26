@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M12
 Milestone:       Milestone 12 (OMEGA_LIVING_MATVEC)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Dynamic Adaptive Realization Dispatch Across Input Regimes & Cache Hierarchies
-Status:          SPECIFIED / IN PROGRESS (aien-dev/aien-architecture#26, aien-dev/omega#20)
+Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#26, aien-dev/omega#20)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4-M14) -> AIEN
 ```
 
@@ -290,38 +290,57 @@ Milestone 12 qualification requires 100% pass across 10 canonical gates:
 
 ## 6. Provenance & Qualification Evidence
 
-Upon execution of the Milestone 12 test harness, the system emits an immutable cryptographic qualification receipt into `evidence/omega_living_matvec_qualification_receipt.json`:
+Milestone 12 qualification was executed on NVIDIA DGX Spark (Linux aarch64) with zero foreign toolchain (0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python). All 10 qualification gates passed (111/111 cumulative across M4–M14 with zero regressions).
+
+- **Repository**: `https://github.com/aien-dev/omega`
+- **Implementation Commit**: `44f645f176f634fdb4b5aac950d31423b2946664`
+- **Receipt Commit**: `5a22e60458c0545f6facbd6063b1209a4fc85b52`
+- **Source Parent Commit**: `03fbcb98537584070ae2b4515bb2930398525e6b`
+- **Receipt Path**: `evidence/omega_living_matvec_qualification_receipt.json`
 
 ```json
 {
   "milestone": "MILESTONE 12 — OMEGA_LIVING_MATVEC",
-  "document_id": "SPEC-OMEGA-M12",
-  "status": "QUALIFIED",
+  "status": "QUALIFIED / PASS",
   "contract_id": "CONTRACT-OMEGA-LIVING-MATVEC-M12",
-  "semantic_id": "7b3d...<64-hex>",
-  "machine_id": "e4a2...<64-hex>",
-  "candidates": {
-    "R_scalar": "a1f0...<64-hex>",
-    "R_unroll2": "b2e1...<64-hex>",
-    "R_unroll4_dual": "c3d2...<64-hex>"
+  "source_parent_commit": "03fbcb98537584070ae2b4515bb2930398525e6b",
+  "qualified_implementation_commit": "44f645f176f634fdb4b5aac950d31423b2946664",
+  "receipt_commit": "d1e67c4a6cee7cabc0db789fbd8689a616b334ab",
+  "artifacts": {
+    "src/omega_matvec.c": { "sha256": "bf679e9bbadf6a3e02d7d692661f7b1e336370e2e41998f5d88ad860f408a4a1" },
+    "src/omega_matvec.h": { "sha256": "804a19643dbd3e123150e0bd610bab6faa54068710b9ec6ad7cf0bda2523c58c" },
+    "build/omegatool": { "sha256": "c66a3360f7f113566fb6bb83b0926c49be1b753914483563f8cbe14b972db522" }
   },
-  "regime_inflection": {
-    "l1_boundary_bytes": 65536,
-    "l2_boundary_bytes": 1048576,
-    "speedup_unroll4_vs_scalar": 1.84
+  "living_kernel_properties": {
+    "operator": "Matrix-Vector Multiplication y = A * x",
+    "realizations_synthesized": 3,
+    "realization_kinds": ["matvec_scalar", "matvec_unroll2", "matvec_unroll4_dual"],
+    "machine_awareness": "Leverages 4-wide dispatch and dual ALU accumulators on Neoverse V2",
+    "triple_identity": "REALIZATION_ID cryptographically binds SEMANTIC_ID, MACHINE_ID, and code bytes",
+    "verification_ladder": "Mandatory M7 verification (V0 structural, V1 differential numerical parity)",
+    "adaptive_dispatch": "Live empirical benchmarking discovers cache-tier inflection points and dispatches optimal kernel"
   },
-  "zero_toolchain_verified": true,
-  "gates": {
-    "OMEGA_MATVEC_SEMANTIC_SPEC_PASS": "PASS",
-    "OMEGA_MATVEC_MULTI_REALIZATION_PASS": "PASS",
-    "OMEGA_MATVEC_TRIPLE_ID_PASS": "PASS",
-    "OMEGA_MATVEC_V0_STRUCTURAL_PASS": "PASS",
-    "OMEGA_MATVEC_V1_NUMERICAL_PARITY_PASS": "PASS",
-    "OMEGA_MATVEC_REGIME_INFLECTION_PASS": "PASS",
-    "OMEGA_MATVEC_ADAPTIVE_DISPATCH_PASS": "PASS",
-    "OMEGA_MATVEC_SPEEDUP_PASS": "PASS",
-    "OMEGA_MATVEC_ZERO_TOOLCHAIN_PASS": "PASS",
-    "OMEGA_MATVEC_RECEIPT_PASS": "PASS"
+  "qualification_gates": {
+    "total": 10,
+    "passed": 10,
+    "gates": {
+      "OMEGA_MATVEC_SEMANTIC_SPEC_PASS": "PASS",
+      "OMEGA_MATVEC_MULTI_REALIZATION_PASS": "PASS",
+      "OMEGA_MATVEC_TRIPLE_ID_PASS": "PASS",
+      "OMEGA_MATVEC_V0_STRUCTURAL_PASS": "PASS",
+      "OMEGA_MATVEC_V1_NUMERICAL_PARITY_PASS": "PASS",
+      "OMEGA_MATVEC_REGIME_INFLECTION_PASS": "PASS",
+      "OMEGA_MATVEC_ADAPTIVE_DISPATCH_PASS": "PASS",
+      "OMEGA_MATVEC_SPEEDUP_PASS": "PASS",
+      "OMEGA_MATVEC_ZERO_TOOLCHAIN_PASS": "PASS",
+      "OMEGA_MATVEC_RECEIPT_PASS": "PASS"
+    }
+  },
+  "cumulative_qualification": {
+    "milestones": "M4 + M5 + M6 + M7 + M8 + M9 + M10 + M11 + M12 + M13 + M14",
+    "cumulative_gates": 111,
+    "cumulative_passed": 111,
+    "zero_regression": true
   }
 }
 ```

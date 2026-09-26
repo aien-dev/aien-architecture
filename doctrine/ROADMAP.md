@@ -44,7 +44,7 @@ Status vocabulary:
 | **M9** | Program Synthesis & Library Learning | `OMEGA_SYNTHESIS_V0` | Deterministic typed program synthesis over base primitives. Qualified 2026-09-26 under `aien-dev/omega` (commit `39905a3...`, receipt `evidence/omega_synthesis_v0_qualification_receipt.json`). | COMPLETE |
 | **M10** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_V1` | Versioned procedural program library, provenance tracking, and verified component catalog. Qualified 2026-09-26 under `aien-dev/omega` (commit `1808ed8...`, receipt commit `d3ac970...`). | COMPLETE |
 | **M11** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_DISCOVERY` | Autonomous abstraction discovery from program corpus with verified reuse. Qualified 2026-09-26 under `aien-dev/omega` (commit `1ee43fb...`, receipt commit `8e0a50a...`). | COMPLETE |
-| **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. | PLANNED |
+| **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. | PLANNED |
@@ -126,6 +126,20 @@ One nontrivial abstraction not present in the initial library that:
 2. Preserves their semantics;
 3. Is reused on held-out tasks;
 4. Reduces search cost.
+
+### M12 — `OMEGA_LIVING_MATVEC`
+- Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f176f634fdb4b5aac950d31423b2946664`, receipt commit `5a22e60458c0545f6facbd6063b1209a4fc85b52`).
+- Pure mathematical Matrix-Vector multiplication specification ($y = Ax$, contract `CONTRACT-OMEGA-LIVING-MATVEC-M12`) without hardware commitment.
+- Machine-aware synthesis generating 3 distinct candidate AArch64 realizations targeting MachineGraph ($G_M$):
+  - $R_0$: `matvec_scalar` (18 insns, 72 bytes)
+  - $R_1$: `matvec_unroll2` (31 insns, 124 bytes)
+  - $R_2$: `matvec_unroll4_dual` (44 insns, 176 bytes, dual ALU accumulators targeting 4-wide Neoverse V2 dispatch)
+- Cryptographic triple identity binding: `REALIZATION_ID = SHA-256(OMG0 | KIND_REALIZATION | profile | entry_offset | code_len | SEMANTIC_ID | MACHINE_ID | code_bytes)`.
+- Verification ladder: V0 structural verification and V1 differential numerical parity ($\hat{\epsilon} = 0$) against mathematical Oracle.
+- Living kernel discovers cache-tier inflection points and adaptively dispatches optimal realization, achieving 1.15x–1.20x measured speedup on DGX Spark.
+- Zero foreign toolchain: 0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python.
+- 10/10 canonical M12 qualification gates passed (111/111 cumulative gates across M4–M14 with zero regressions).
+- Specification: [`docs/milestone-12-spec.md`](../docs/milestone-12-spec.md).
 
 ### M14 — `OMEGA_REALIZATION_SYNTHESIS`
 - Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d`, receipt commit `03fbcb9`).
