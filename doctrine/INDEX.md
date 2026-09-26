@@ -262,11 +262,11 @@ Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9
 ## 4. The Sovereign Program-Learning Doctrine (Omega Synthesis → AIEN)
 
 ### 4.1 The Synthesis Doctrine
-> **`WEIGHTS SUGGEST.`**  
-> **`PROGRAMS EXPLAIN.`**  
-> **`OMEGA VERIFIES.`**  
-> **`PHYSICS AUTHORIZES.`**  
-> **`EXPERIMENTS FALSIFY.`**  
+> **`AIEN PROPOSES.`**  
+> **`OMEGA DEFINES.`**  
+> **`PHYSICS REALIZES.`**  
+> **`AEGIS VERIFIES.`**  
+> **`HARDWARE ACTS.`**  
 > **`EVIDENCE TEACHES.`**
 
 ### 4.2 The Three Speeds of Intelligence
