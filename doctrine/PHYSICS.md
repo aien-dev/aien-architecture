@@ -88,7 +88,7 @@ Physics exercises total, unshared jurisdiction over the physical resources of th
 ### 2.1 The Thirteen Physical Domains
 
 1. **Memory Ownership**: Physics manages physical frame allocation, page table hierarchies (Stage 1 and Stage 2 translations), page attribute tables (`MAIR_EL1`), and memory type tags. No component may map or access memory without a valid memory capability.
-2. **CPU Privilege**: Physics runs at EL1 (or EL2 hypervisor), enforcing complete isolation between supervisor domains and unprivileged EL0 user-space runtimes.
+2. **CPU Privilege**: Physics runs at the exception level declared by the machine contract (EL1 or EL2, no implicit EL2 -> EL1 transition), enforcing complete isolation between supervisor domains and unprivileged EL0 user-space runtimes.
 3. **Interrupts**: Physics controls the Generic Interrupt Controller (GICv3/v4). It binds, prioritizes, filters, and delivers physical interrupts. No external process may mask or usurp hardware IRQs.
 4. **Timers**: Physics configures physical and virtual timers (`CNTP_CTL_EL0`, `CNTV_CTL_EL0`). It enforces preemptive execution slicing and deadline tracking.
 5. **Faults**: Physics traps all processor exceptions (Data Aborts, Instruction Aborts, Alignment Faults, Illegal Instructions). Faults are isolated to the offending domain; uncontained corruption triggers fail-safe quarantine.

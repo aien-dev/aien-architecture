@@ -26,10 +26,10 @@ All computation within the Sovereign Machine flows through an unyielding, unidir
                                    │ Raw Hardware Reset
                                    ▼
        ┌────────────────────────────────────────────────────────┐
-       │                        ALPHA                           │
+       │                        ATLAS                           │
        │             (The Irreducible Bootstrap Seed)           │
        └───────────────────────────┬────────────────────────────┘
-                                   │ Monotonic Handoff (EL1)
+                                   │ Monotonic Handoff (contract-defined EL)
                                    ▼
        ┌────────────────────────────────────────────────────────┐
        │                       PHYSICS                          │
@@ -50,7 +50,7 @@ All computation within the Sovereign Machine flows through an unyielding, unidir
 ```
 
 1. **SILICON / UNAVOIDABLE FIRMWARE**: The immutable physical reality of transistor gates, crystal oscillators, package interconnects, and non-volatile manufacturer boot ROMs. It provides the bare electrical state.
-2. **ATLAS**: The irreducible software root artifact (formerly designated Alpha in early bootstrap drafts). A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control.
+2. **ATLAS**: The irreducible software root artifact. A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control.
 3. **PHYSICS**: The sovereign governor and authority membrane. A bare-metal, capability-based physical supervisor operating at privileged CPU exception levels (AArch64 EL1/EL2). It enforces memory ownership, DMA boundaries, hardware traps, and the outbound effect membrane (AEGIS).
 4. **OMEGA**: The semantic calculus and living realization substrate. It decouples computational meaning from physical representation, synthesizing optimal machine code directly onto bare silicon and accelerator execution pipelines in response to mathematical invariant requests.
 5. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world-models in Cortex, reasons across possibility spaces, and commands transformations through verified effect brokers.
@@ -68,7 +68,7 @@ $$\begin{aligned}
 \mathbf{AIEN\ OBSERVES,\ THINKS,\ HYPOTHESIZES,\ SEARCHES,\ DISCOVERS,\ AND\ INVENTS.} &\quad \text{Autonomous discovery intelligence builds its own science of reality.}
 \end{aligned}$$
 
-No layer may perform the duty of another. Aien cannot authorize effects; Physics cannot reason about semantic intent; Omega cannot violate physical memory bounds; Alpha cannot remain active after handoff.
+No layer may perform the duty of another. Aien cannot authorize effects; Physics cannot reason about semantic intent; Omega cannot violate physical memory bounds; Atlas cannot remain active after handoff.
 
 ---
 
@@ -128,7 +128,7 @@ Where:
 │    - Machine Graph (G_M)             - Direct Bare-Metal Code Synthesis                │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
 │ 2. PHYSICS — THE TRUSTED PHYSICAL GOVERNOR                                             │
-│    - AArch64 EL1 Supervisor         - Hardware Capability System                      │
+│    - AArch64 EL1/EL2 Supervisor     - Hardware Capability System                      │
 │    - SMMUv3 DMA Confinement          - AEGIS Outbound Effect Membrane                  │
 │    - Coherent Memory Ring Dispatch   - Monotonic State Invariant Enforcement           │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
@@ -138,10 +138,10 @@ Where:
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-### 2.1 Layer 1: Alpha (The Irreducible Bootstrap Seed)
-* **Ontological Role:** Alpha is the genesis seed. It awakens the bare processor from cold silicon reset, guarantees architectural hygiene, configures base page tables, validates the physical environment, verifies the cryptographic hash of Physics, and executes an irreversible jump.
-* **Canonical Invariant:** Alpha is immutable, auditable, deterministic, non-intelligent, and minimal. Its entire footprint is measured in kilobytes. It possesses no dynamic memory allocator, no file systems, no network drivers, and no speculative execution pathways.
-* **Handoff:** Alpha transitions CPU execution monotonically to Physics at EL1/EL2, locks the reset vector registers, and completely terminates. It leaves zero running background processes or Resident Monitor code.
+### 2.1 Layer 1: Atlas (The Irreducible Bootstrap Seed)
+* **Ontological Role:** Atlas is the genesis seed. It awakens the bare processor from cold silicon reset, guarantees architectural hygiene, configures base page tables, validates the physical environment, verifies the cryptographic hash of Physics, and executes an irreversible jump.
+* **Canonical Invariant:** Atlas is immutable, auditable, deterministic, non-intelligent, and minimal. Its entire footprint is measured in kilobytes. It possesses no dynamic memory allocator, no file systems, no network drivers, and no speculative execution pathways.
+* **Handoff:** Atlas transitions CPU execution monotonically to Physics at the exception level declared by the machine contract (EL1 or EL2, with no implicit EL2 -> EL1 transition), locks the reset vector registers, and completely terminates. It leaves zero running background processes or Resident Monitor code.
 
 ### 2.2 Layer 2: Physics (The Trusted Physical Governor)
 * **Ontological Role:** Physics is the deterministic governor of the machine. It enforces physical laws upon execution: space, time, authority, and side effects.
@@ -194,7 +194,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 │           AArch64 CPU HOST            │               │      BLACKWELL / HOPPER        │
 │     "Trusted Physical Governor"       │               │      ACCELERATOR ENGINE        │
 │                                       │               │ "Residence of Cognition"       │
-│  - Runs Physics at EL1                │               │  - Runs Aien Core Mind         │
+│  - Runs Physics at contract EL        │               │  - Runs Aien Core Mind         │
 │  - Owns Platform MMU & SMMUv3         │               │  - Full HBM Resident Weights   │
 │  - Hardware Watchdogs & Safety        │               │  - Persistent Unified KV Pool  │
 │  - Gatekeeper of AEGIS Effects        │               │  - Autonomous Tensor Pipeline  │
@@ -204,7 +204,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 
 ### 3.1 The CPU: Trusted Physical Governor
 * The CPU is not the computational workhorse; it is the **Governor**.
-* It runs the bare-metal **Physics** kernel at highest execution privilege (EL1).
+* It runs the bare-metal **Physics** kernel at the privileged exception level declared by the machine contract (EL1 or EL2; the current QEMU contract `CONTRACT-QEMU-VIRT-AARCH64-M2` specifies EL1).
 * It holds exclusive authority over interrupt dispatch, physical timer registers, hardware security modules (TPM/HSM), bus configuration, and peripheral controllers (NVMe, Network PHY).
 * It monitors the accelerator through non-maskable hardware watchdogs. If the accelerator diverges, hangs, or violates memory boundaries, the CPU resets the accelerator fabric and restores verified cognitive snapshots.
 
@@ -225,161 +225,9 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 
 ---
 
-## 4. The 28-Milestone Execution Roadmap & Workstreams A–F
+## 4. The Sovereign Roadmap
 
-The construction of the Sovereign Machine is organized into **six concurrent workstreams (A through F)** spanning **twenty-eight precise milestones (0 through 27)**.
-
-```text
-WORKSTREAMS:
-  [A] Bootstrap & Hardware Sovereignty (Milestones 0, 1, 6, 12, 18, 24)
-  [B] Physics & Capability Authority   (Milestones 2, 7, 13, 19, 25)
-  [C] Omega Language & Living Engine   (Milestones 3, 8, 14, 20, 26)
-  [D] Accelerator & Native Compute     (Milestones 4, 9, 15, 21)
-  [E] Cognitive Substrate & Cortex     (Milestones 5, 10, 16, 22, 27)
-  [F] Verification & Formal Closure    (Milestones 11, 17, 23)
-```
-
-```mermaid
-flowchart TD
-    M0["M0: DOCTRINE_V1"] --> M1["M1: ATLAS_BAREMETAL_BOOT"]
-    M0 --> M2["M2: PHYSICS_CORE_MEMBRANE"]
-    M0 --> M3["M3: OMEGA_CALCULUS_G_S"]
-    M0 --> M4["M4: ACCEL_C2C_COHERENCE"]
-    M0 --> M5["M5: AIEN_SEED_TOPOLOGY"]
-
-    M1 --> M6["M6: ATLAS_MEASUREMENT_CHAIN"]
-    M2 --> M7["M7: PHYSICS_DMA_CONFINEMENT"]
-    M3 --> M8["M8: OMEGA_AARCH64_SYNTHESIS"]
-    M4 --> M9["M9: ACCEL_TENSOR_DISPATCH"]
-    M5 --> M10["M10: CORTEX_ZERO_COPY_STORE"]
-
-    M6 & M7 & M8 & M9 & M10 --> M11["M11: SENTINEL_GATE_1"]
-
-    M11 --> M12["M12: ATLAS_STAGE2_ELIMINATION"]
-    M11 --> M13["M13: PHYSICS_EFFECT_BROKER"]
-    M11 --> M14["M14: OMEGA_LIVING_MATVEC"]
-    M11 --> M15["M15: ACCEL_BLACKWELL_NATIVE"]
-    M11 --> M16["M16: AIEN_RESIDENT_KV_POOL"]
-
-    M12 & M13 & M14 & M15 & M16 --> M17["M17: SENTINEL_GATE_2"]
-
-    M17 --> M18["M18: SOVEREIGN_TOOLCHAIN_GEN1"]
-    M17 --> M19["M19: PHYSICS_MULTI_TENANT_ISOLATION"]
-    M17 --> M20["M20: OMEGA_POLYMORPHIC_SYNTHESIS"]
-    M17 --> M21["M21: ACCEL_AUTONOMOUS_SCHEDULE"]
-    M17 --> M22["M22: AIEN_SEED_TRAINING"]
-
-    M18 & M19 & M20 & M21 & M22 --> M23["M23: SENTINEL_GATE_3"]
-
-    M23 --> M24["M24: SOVEREIGN_HARDWARE_BOOT_FINAL"]
-    M23 --> M25["M25: PHYSICS_COMPLETE_GOVERNANCE"]
-    M23 --> M26["M26: OMEGA_TOTAL_CALCULUS"]
-    M24 & M25 & M26 --> M27["M27: SOVEREIGN_MACHINE_CLOSURE"]
-```
-
-### 4.1 Master Milestone Specification (0 through 40)
-
-```text
-FOUNDATIONAL ERA (M0 - M3)
-  M0:  DOCTRINE_V1                     Canonical architecture codified & ratified. [COMPLETE]
-  M1:  ATLAS_BOOT                      Irreducible bootstrap seed (atlas.bin). [COMPLETE / QEMU QUALIFIED]
-  M2:  PHYSICS_BOOT                    Physical machine authority nucleus (physics.bin). [REOPENED / IN PROGRESS]
-  M3:  PHYSICS_EFFECTS                 Capabilities, effect admission, and signed receipts.
-
-OMEGA CORE SUBSTRATE (M4 - M7)
-  M4:  OMEGA_SEMANTICS                 Semantic object model, types, and identity.
-  M5:  OMEGA_AARCH64                   Native AArch64 realization generator (no LLVM).
-  M6:  OMEGA_SELF_HOST                 Omega reproduces minimal realization compiler.
-  M7:  OMEGA_VERIFY                    V0-V2 mandatory verification; V3-V5 framework.
-
-PROGRAM SYNTHESIS & LIBRARY LEARNING (M8 - M14)
-  M8:  OMEGA_PROGRAM_CORE              Synthesis tasks, cost models, program IDs.
-  M9:  OMEGA_SYNTHESIS_V0              Deterministic typed program synthesis.
-  M10: OMEGA_LIBRARY_V1                Versioned procedural library and catalog.
-  M11: OMEGA_LIBRARY_DISCOVERY         Abstraction discovery from program corpus.
-  M12: OMEGA_LIVING_MATVEC             Adaptive multi-target realization selection.
-  M13: OMEGA_MACHINE_GRAPH             Formal physical hardware topology graph.
-  M14: OMEGA_REALIZATION_SYNTHESIS     Automated G_S x G_M -> G_R synthesis.
-
-ACCELERATOR COGNITION SUBSTRATE (M15 - M19)
-  M15: PHYSICS_ACCELERATOR_LINK        Bounded coherent CPU/GPU memory interface.
-  M16: BLACKWELL_NATIVE_PATH_KNOWN     Empirical hardware execution characterization.
-  M17: OMEGA_BLACKWELL_VECTOR          Verified Blackwell vector compute realization.
-  M18: OMEGA_BLACKWELL_MATMUL          Verified Blackwell tensor matrix multiplication.
-  M19: OMEGA_ACCELERATOR_RESIDENT      Persistent GPU-resident execution substrate.
-
-SOVEREIGN TRAINING RUNTIME (M20 - M26)
-  M20: OMEGA_TENSOR                    Tensor semantics, strides, shapes, and types.
-  M21: OMEGA_AUTODIFF                  Sovereign automatic differentiation engine.
-  M22: OMEGA_OPTIMIZER                 SGD / Adam / AdamW verified realizations.
-  M23: OMEGA_SEARCH_GUIDE_TRAINING     First search guide trained on Omega traces.
-  M24: AIEN_0                          First sovereign neural guide ranking subgoals.
-  M25: AIEN_GUIDED_SYNTHESIS           Neural-guided synthesis with verified parity.
-  M26: AIEN_ABSTRACTION_DISCOVERY      AIEN proposes concepts; Omega validates survival.
-
-PHYSICS ZERO DISCOVERY ERA (M27 - M35)
-  M27: PHYSICS_ZERO_PROTOCOL           Contamination firewall & sealed evaluation specs.
-  M28: PHYSICS_ZERO_HIDDEN_WORLDS      Discrete & continuous sealed worlds (P0-0..P0-2).
-  M29: AIEN_THEORY_DISCOVERY           OMEGA_THEORY population, competition, revision.
-  M30: AIEN_ACTIVE_EXPERIMENTATION     Active distinguishing experiment formulation.
-  M31: AIEN_CONCEPT_FORMATION          Latent concept discovery (OMEGA_DISCOVERED_CONCEPT).
-  M32: PHYSICS_ZERO_ALIEN_WORLDS       Discovery on unfamiliar laws (P0-5).
-  M33: PHYSICS_ZERO_NOVEL_REGIME       Extrapolation to unobserved state spaces.
-  M34: PHYSICS_ZERO_NOVEL_PHENOMENON   Predictive discovery of unobserved phenomena.
-  M35: PHYSICS_ZERO_REAL_LAB           Safe, capability-bounded physical lab discovery.
-
-GENERAL AIEN ERA (M36 - M40)
-  M36: AIEN_HUMAN_INTERFACE            Perceptual adapter: Human Language <-> Omega.
-  M37: AIEN_RESIDENT                   Persistent accelerator-resident cognition.
-  M38: OMEGA_CONTINUAL_LIBRARY_LEARNING Continuous Wake/Solve/Verify/Sleep loop.
-  M39: AIEN_SCIENTIFIC_AUTONOMY        Autonomous hypothesis, experiment, and theory cycle.
-  M40: AIEN_SUCCESSION                 AIEN-N proposes candidate AIEN-N+1.
-```
-
-| Milestone | Code Identifier | Scope & Objective Invariants |
-| :--- | :--- | :--- |
-| **M0** | `DOCTRINE_V1` | Foundational Specification. Ratification of complete architectural corpus. [COMPLETE] |
-| **M1** | `ATLAS_BOOT` | Irreducible bootstrap seed (`atlas.bin`). Dual-seam verified. [COMPLETE / QEMU QUALIFIED] |
-| **M2** | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. [REOPENED / IN PROGRESS] |
-| **M3** | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts. |
-| **M4** | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent identity. |
-| **M5** | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (zero foreign compiler bloat). |
-| **M6** | `OMEGA_SELF_HOST` | Omega reproduces the minimal realization compiler through its own semantic graph. |
-| **M7** | `OMEGA_VERIFY` | Mandatory V0-V2 verification engine; V3-V5 proof-carrying code framework. |
-| **M8** | `OMEGA_PROGRAM_CORE` | Explicit program representation, synthesis task schema, program cost modeling. |
-| **M9** | `OMEGA_SYNTHESIS_V0` | Deterministic typed program synthesis over base primitives. |
-| **M10** | `OMEGA_LIBRARY_V1` | Versioned procedural program library and verified component catalog. |
-| **M11** | `OMEGA_LIBRARY_DISCOVERY` | Autonomous abstraction discovery from program corpus with verified reuse. |
-| **M12** | `OMEGA_LIVING_MATVEC` | Autonomous adaptive kernel selection across varying input regimes and cache dynamics. |
-| **M13** | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies. |
-| **M14** | `OMEGA_REALIZATION_SYNTHESIS`| Automated $G_S 	imes G_M 	o G_R$ synthesis targeting declared hardware capabilities. |
-| **M15** | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. |
-| **M16** | `BLACKWELL_NATIVE_PATH_KNOWN`| Empirical execution characterization of native Blackwell SM architecture. |
-| **M17** | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. |
-| **M18** | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. |
-| **M19** | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing permanently in accelerator coherent memory. |
-| **M20** | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. |
-| **M21** | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. |
-| **M22** | `OMEGA_OPTIMIZER` | Verified sovereign optimizer realizations (SGD, Adam, AdamW). |
-| **M23** | `OMEGA_SEARCH_GUIDE_TRAINING`| Sovereign training pipeline for search guides using Omega-generated traces. |
-| **M24** | `AIEN_0` | First sovereign neural search guide ranking subgoals and pruning search branches. |
-| **M25** | `AIEN_GUIDED_SYNTHESIS` | Neural-guided synthesis achieving lower search cost under invariant verification parity. |
-| **M26** | `AIEN_ABSTRACTION_DISCOVERY` | AIEN proposes candidate abstractions; Omega enforces survival based on utility. |
-| **M27** | `PHYSICS_ZERO_PROTOCOL` | Contamination firewall specification and sealed evaluation benchmark contracts. |
-| **M28** | `PHYSICS_ZERO_HIDDEN_WORLDS` | Discrete and continuous sealed benchmark worlds with randomized channels. |
-| **M29** | `AIEN_THEORY_DISCOVERY` | Executable `OMEGA_THEORY` synthesis, population competition, and calibrated prediction. |
-| **M30** | `AIEN_ACTIVE_EXPERIMENTATION`| Active experiment design distinguishing competing theories ($P(R|A) 
-eq P(R|B)$). |
-| **M31** | `AIEN_CONCEPT_FORMATION` | Autonomous invention of reusable latent concepts (`OMEGA_DISCOVERED_CONCEPT`). |
-| **M32** | `PHYSICS_ZERO_ALIEN_WORLDS` | Scientific discovery in universes governed by non-human, unfamiliar physical laws. |
-| **M33** | `PHYSICS_ZERO_NOVEL_REGIME` | Extrapolative theory prediction in unobserved physical state regimes. |
-| **M34** | `PHYSICS_ZERO_NOVEL_PHENOMENON`| Predictive discovery and experimental realization of unobserved physical phenomena. |
-| **M35** | `PHYSICS_ZERO_REAL_LAB` | Capability-bounded, safety-governed autonomous discovery in physical laboratories. |
-| **M36** | `AIEN_HUMAN_INTERFACE` | Bi-directional perceptual adapter mapping human natural language to Omega semantics. |
-| **M37** | `AIEN_RESIDENT` | Persistent, high-throughput cognitive loop resident in accelerator HBM memory. |
-| **M38** | `OMEGA_CONTINUAL_LIBRARY_LEARNING`| Continuous Wake/Solve/Verify/Sleep compounding loop. |
-| **M39** | `AIEN_SCIENTIFIC_AUTONOMY` | Fully autonomous scientific discovery cycle: observe, hypothesize, test, discover. |
-| **M40** | `AIEN_SUCCESSION` | Sovereign succession protocol: AIEN-N trains and proposes AIEN-N+1 candidate. |
+Milestone numbering, code identifiers, and milestone status are maintained in exactly one place: **[`ROADMAP.md`](ROADMAP.md)** (the 41-milestone M0-M40 Sovereign Roadmap, including Physics Zero M27-M35 and General AIEN M36-M40). This document does not restate the roadmap table or milestone status.
 
 ---
 
@@ -392,7 +240,7 @@ The Sovereign Machine enforces six non-negotiable architectural **Hard Stops**. 
 3. **No Foreign Weight Ingestion:** No black-box neural network checkpoints may be ingested into Aien without full cryptographic training provenance and dataset validation.
 4. **No Bypass of Physics Governor:** Accelerator code may never directly manipulate system MMU tables, interrupt registers, or platform power states.
 5. **No Undefined Precision Divergence:** Invariant verification failure: if an Omega realization produces numerical error exceeding the defined semantic envelope ($\hat{\epsilon} > \epsilon$), execution halts immediately.
-6. **No Non-Deterministic Bootstrap:** If Alpha experiences an unexpected state transition, branching anomaly, or hash mismatch, the system enters an unrecoverable low-power lock state.
+6. **No Non-Deterministic Bootstrap:** If Atlas experiences an unexpected state transition, branching anomaly, or hash mismatch, the system enters an unrecoverable low-power lock state.
 
 ### 5.2 Performance Philosophy
 The performance doctrine is governed by **Mechanical Sympathy**:
@@ -426,8 +274,8 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 
 ```text
  PHASE I: AWAKENING (Steps 1-6)
- [1] Cold Silicon Reset ──> [2] Alpha Executes ──> [3] MMU & Cache Init ──>
- [4] SHA-256 Measure   ──> [5] EL1 Jump       ──> [6] Alpha Terminates
+ [1] Cold Silicon Reset ──> [2] Atlas Executes ──> [3] MMU & Cache Init ──>
+ [4] SHA-256 Measure   ──> [5] Contract-EL Jump ──> [6] Atlas Terminates
 
  PHASE II: GOVERNANCE & RESIDENCE (Steps 7-12)
  [7] Physics Brings Up ──> [8] SMMUv3 Locks   ──> [9] NVLink-C2C Setup ──>
@@ -444,11 +292,11 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 
 ### Detailed Trace Walkthrough:
 1. **Cold Silicon Reset:** Electrical power stabilizes; CPU reset vector fetches the first instruction of `atlas.bin` from secure physical ROM.
-2. **Alpha Execution:** Alpha initializes core architectural registers, clears scratchpad SRAM, and disables speculative prefetchers.
-3. **MMU & Cache Initialization:** Alpha constructs minimal identity page tables (EL1/EL2) and enables the data/instruction caches.
-4. **Cryptographic Measurement:** Alpha reads the Physics binary from non-volatile storage, computes its SHA-256 digest, and validates it against the platform Root of Trust.
-5. **Monotonic Handoff:** Alpha issues an `ERET` instruction, jumping into Physics entry point at EL1 privilege level.
-6. **Alpha Termination:** Alpha's code space is permanently unmapped from page tables; Alpha ceases execution.
+2. **Atlas Execution:** Atlas initializes core architectural registers, clears scratchpad SRAM, and disables speculative prefetchers.
+3. **MMU & Cache Initialization:** Atlas constructs minimal identity page tables (EL1/EL2) and enables the data/instruction caches.
+4. **Cryptographic Measurement:** Atlas reads the Physics binary from non-volatile storage, computes its SHA-256 digest, and validates it against the platform Root of Trust.
+5. **Monotonic Handoff:** Atlas transfers control to the Physics entry point under `PHYSICS_ENTRY_ABI` at the exception level declared by the machine contract, with no implicit EL2 -> EL1 transition (the current QEMU contract `CONTRACT-QEMU-VIRT-AARCH64-M2` specifies EL1).
+6. **Atlas Termination:** Atlas's code space is permanently unmapped from page tables; Atlas ceases execution.
 7. **Physics Bringup:** Physics establishes its core memory allocator, initializes the exception vector table, and brings up the diagnostic console.
 8. **SMMUv3 Lock:** Physics configures memory protection contexts for all PCIe peripherals, locking DMA access to isolated buffers.
 9. **NVLink-C2C Coherent Setup:** Physics configures the high-speed chip-to-chip coherent memory bus between AArch64 host and Blackwell GPU.
@@ -474,55 +322,3 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 ================================================================================
 ```
 
-
-## 5. The 31-Milestone Sovereign Program-Learning Roadmap
-
-```text
-MILESTONE 0  — DOCTRINE_V1                     Canonical doctrine corpus frozen and ratified. [COMPLETE]
-MILESTONE 1  — ATLAS_BOOT                      Canonical atlas.bin bootstrap seed. [COMPLETE / QEMU QUALIFIED]
-  - Repository: https://github.com/aien-dev/atlas
-  - Canonical Artifact: atlas.bin (1,480 bytes, SHA-256: f7802501b410a0c19eff7b8fca8865c9ba9c96bfa4f8065ca8f508b67748b9a5)
-  - Historical Lineage: Formerly designated Alpha (alpha.bin) in early bootstrap drafting
-  - Dual-Seam Verification:
-    * Seam 1 (Static Audit): 100% word-reconciled (301 insns, 69 rodata words, 0 discrepancy), static target proof (ldr x19, =0x40200000; br x19), disjoint stack/descriptor proof (SP <= 0x401FC000 vs Descriptor @ 0x401FE000 with 8 KiB guard gap, empty intersection).
-    * Seam 2 (Execution Harness): Bare-metal QEMU virt; 268/268 mutations refused into fail-closed quiescence (exhaustive 256 single-byte offset sweep + 12 adversarial scenarios).
-    * Cryptographic Scheme: Bare-metal NIST FIPS 180-4 SHA-256 (KAT verified 100%).
-  - Native Hardware Status: ATLAS_BOOT_NATIVE_PASS remains pending and decoupled from QEMU qualification.
-MILESTONE 2  — PHYSICS_BOOT                    Minimal trusted machine authority nucleus.
-MILESTONE 3  — PHYSICS_EFFECTS                 Capabilities, EFFECT_INTENT admission cycle, and EFFECT_RECEIPT accounting.
-MILESTONE 4  — OMEGA_SEMANTICS                 Core semantic object model and canonical content-addressed identity.
-MILESTONE 5  — OMEGA_AARCH64                   Direct bare-metal machine code generation (no LLVM).
-MILESTONE 6  — OMEGA_SELF_HOST                 Self-hosting compilation of the minimal Omega realization layer.
-MILESTONE 7  — OMEGA_VERIFY                    Epistemic verification kernel:
-                                               - REQUIRED: V0 Structural/Type/Capability, V1 Differential, V2 Property/Invariant.
-                                               - FRAMEWORK DEFINED FOR: V3 Adversarial, V4 Symbolic, V5 Proof-Carrying.
-MILESTONE 8  — OMEGA_PROGRAM_CORE              Semantic procedure graph representation, SYNTHESIS_TASK, and cost models.
-MILESTONE 9  — OMEGA_SYNTHESIS_V0              Deterministic typed enumeration and constraint solver solving canonical closed domains.
-MILESTONE 10 — OMEGA_LIBRARY_V1                Versioned procedure library, provenance tracking, and library generation tags.
-MILESTONE 11 — OMEGA_LIBRARY_DISCOVERY         One nontrivial abstraction not present in the initial library that:
-                                               1. Compresses multiple verified programs;
-                                               2. Preserves their semantics;
-                                               3. Is reused on held-out tasks;
-                                               4. Reduces search cost.
-MILESTONE 12 — OMEGA_LIVING_MATVEC             Living MatVec selecting among verified realization variants and procedure reuse.
-MILESTONE 13 — OMEGA_MACHINE_GRAPH             Hardware topology and transformation description reported by Physics.
-MILESTONE 14 — OMEGA_REALIZATION_SYNTHESIS     Synthesis engine applied to physical code generation (G_S x G_M -> G_R).
-MILESTONE 15 — PHYSICS_ACCELERATOR_LINK        Zero-copy shared memory rings and capability tables (CPU governor <-> accelerator).
-MILESTONE 16 — BLACKWELL_NATIVE_PATH_KNOWN     Native GPU MMIO, queue submission, and doorbell mechanics mapped empirically.
-MILESTONE 17 — OMEGA_BLACKWELL_VECTOR          First verified native Blackwell compute realization (general GPU compute).
-MILESTONE 18 — OMEGA_BLACKWELL_MATMUL          High-throughput matrix multiplication on Blackwell.
-MILESTONE 19 — OMEGA_ACCELERATOR_RESIDENT      Persistent OMEGA execution substrate remains resident in accelerator-accessible
-                                               coherent memory and maintains device execution state without repeated host-side initialization.
-MILESTONE 20 — OMEGA_TENSOR                    Native tensor algebraic foundations and numeric domains.
-MILESTONE 21 — OMEGA_AUTODIFF                  Symbolic graph autodiff (G_S_fwd -> G_S_grad).
-MILESTONE 22 — OMEGA_OPTIMIZER                 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference
-                                               realizations and optional accelerator-fused realizations.
-MILESTONE 23 — OMEGA_SEARCH_GUIDE_TRAINING     Sovereign training runtime trains initial search-guide model on Omega trace corpus.
-MILESTONE 24 — AIEN_0                          First learned synthesis guide ranking primitives, subgoals, and search branches.
-MILESTONE 25 — AIEN_GUIDED_SYNTHESIS           Neural-guided synthesis beats unguided search in node count while preserving 100% soundness.
-MILESTONE 26 — AIEN_ABSTRACTION_DISCOVERY      AIEN proposes candidate abstractions; Omega verifies and measures before promotion.
-MILESTONE 27 — AIEN_HUMAN_INTERFACE            Bidirectional natural language adapter (Language <-> Omega Task).
-MILESTONE 28 — AIEN_RESIDENT                   Persistent accelerator-resident AIEN cognitive execution.
-MILESTONE 29 — OMEGA_CONTINUAL_LIBRARY_LEARNING Autonomous continuous Wake/Solve/Verify -> Sleep/Compress/Promote cycle.
-MILESTONE 30 — AIEN_SUCCESSION                 Closed-loop self-improvement: AIEN-N designs AIEN-N+1 under Physics canary control.
-```

@@ -72,6 +72,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 │ 6 │ TRUST.md          │ DOCTRINE-005     │ Trust — Epistemic Verification Doctrine & Trust Boundaries│
 │ 7 │ DISCOVERY.md      │ DOCTRINE-006     │ Discovery & Physics Zero — Sovereign Scientific Intelligence│
 │ 8 │ SOVEREIGNTY.md    │ DOCTRINE-SOV-001 │ Sovereignty and Closure: Canonical Law & Provenance       │
+│ R │ ROADMAP.md        │ DOCTRINE-ROADMAP │ The 41-Milestone Sovereign Roadmap (M0-M40) & Status      │
 └───┴───────────────────┴──────────────────┴───────────────────────────────────────────────────────────┘
 ```
 
@@ -98,10 +99,10 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
   - **Five Tenets of Atlas:** Small, Fixed, Auditable, Deterministic, Non-Intelligent.
   - **The Executable Identity Invariant:**
     $$\text{tested bytes} \equiv \text{evaluated bytes} \equiv \text{authorized bytes} \equiv \text{executed bytes}$$
-  - **The Canonical Supporting Evidence Bundle:** Seven immutable artifacts (`atlas.bin`, `alpha.manifest`, `alpha.sha256`, `alpha.decode`, `alpha.memory-map`, `alpha.control-flow`, `alpha.audit`).
+  - **The Canonical Supporting Evidence Bundle:** Seven immutable artifacts (`atlas.bin`, `atlas.manifest`, `atlas.sha256`, `atlas.decode`, `atlas.memory-map`, `atlas.control-flow`, `atlas.audit`).
 - **Key Invariants:**
   - Zero cognitive mechanisms, zero neural weights, zero heap allocation, zero dynamic syscalls.
-  - Monotonic EL1 handoff: once control is transferred to Physics, Atlas is never re-entered.
+  - Monotonic handoff at the exception level declared by the machine contract (no implicit EL2 -> EL1 transition): once control is transferred to Physics, Atlas is never re-entered within the boot epoch.
 
 ---
 
@@ -172,7 +173,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 - **Core Principles:**
   - **The Sovereignty Law:** The final deployed Sovereign Machine must not depend upon Rust, Cargo, LLVM, GCC, Python, Linux, POSIX, CUDA, PyTorch, or foreign weights.
   - **The Severance Invariant:** If all external repositories, cloud providers, and foreign toolchains vanish, the machine continues self-executing and evolving indefinitely.
-  - **The Founding Exception & The Scaffold:** Temporary reliance on modern toolchains during initial bootstrapping, subject to strict deprecation horizons terminating at Milestone 27 (`SOVEREIGN_MACHINE_CLOSURE`).
+  - **The Founding Exception & The Scaffold:** Temporary reliance on modern toolchains during initial bootstrapping, subject to strict deprecation horizons terminating at sovereign closure (closure gate placement on the M0-M40 roadmap pending the SOVEREIGNTY.md rewrite, aien-dev/aien-architecture#8).
   - **The Oracle Principle:** Epistemic grounding using external instruments as temporary measurement comparators, never as operational dependencies.
 - **Key Invariants:**
   - Absolute self-hosting: every compiler, kernel, scheduler, and weight is built from self-contained lineage.
@@ -214,7 +215,7 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 
 ## 5. Milestone 0 (`DOCTRINE_V1`) Gate Verification & Sign-Off
 
-The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria before Milestone 1 (`BOOTSTRAP_SEED_ATLAS`) may be entered:
+The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria before Milestone 1 (`ATLAS_BOOT`) may be entered:
 
 ### 5.1 Gate Verification Criteria Matrix
 
@@ -250,7 +251,7 @@ Verified Corpus Elements:
   [✓] DOCTRINE-SOV: SOVEREIGNTY.md   (Sovereignty, Closure & Provenance)
   [✓] DOCTRINE-IDX: INDEX.md         (Master Index & Gate Verification Ledger)
 
-GATE STATUS:             RATIFIED / CLOSED / MILESTONE 1 (ATLAS) [COMPLETE / QEMU QUALIFIED]
+GATE STATUS:             RATIFIED / CLOSED (current milestone status: see ROADMAP.md)
 Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9e25d2b77c
 ================================================================================
 ```

@@ -1,7 +1,9 @@
 # Specification: Milestone 1 — Atlas Bootstrap Seed (`ATLAS_BOOT`)
 
+<!-- HISTORICAL-PROVENANCE:BEGIN -->
 > [!NOTE]
 > **Lineage & Provenance Note:** *Formerly designated Alpha (`alpha.bin`) during early lineage bootstrap drafting. Every prior architectural responsibility and contract of ALPHA transfers to ATLAS unchanged.*
+<!-- HISTORICAL-PROVENANCE:END -->
 
 ## Problem Statement
 
@@ -82,7 +84,7 @@ Verification is formally separated into two distinct, decoupled seams:
 
 ### Seam 1: Independent Artifact-Audit Seam
 Operates on the static artifact `atlas.bin` and supporting ledgers without requiring machine execution:
-- **Byte Accounting & Reachability:** Every reachable instruction and byte from entry to terminal points must be mapped to an entry in `alpha.decode` and `alpha.audit`.
+- **Byte Accounting & Reachability:** Every reachable instruction and byte from entry to terminal points must be mapped to an entry in `atlas.decode` and `atlas.audit`.
 - **Control-Flow Graph Verification:** All branch targets must resolve within declared executable memory bounds with no indirect jumps to unverified addresses.
 - **Memory Access Bounds:** Validates that every read/write operation is statically constrained within the designated scratchpad RAM or payload address windows.
 - **Artifact-Ledger Co-evolution:** For each specific `atlas.bin`, its decode ledger, CFG, and audit log must agree. Instruction ordering may evolve across iterations as long as the artifact and ledger update together.

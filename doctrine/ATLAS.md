@@ -1,7 +1,9 @@
 # DOCTRINE-001: ATLAS — The Irreducible Bootstrap Seed
 
+<!-- HISTORICAL-PROVENANCE:BEGIN -->
 > [!NOTE]
-> **Lineage & Provenance Note:** *Formerly designated Atlas (`atlas.bin`) during early lineage bootstrap drafting. Every prior architectural responsibility and contract of ATLAS transfers to ATLAS unchanged.*
+> **Historical Lineage & Provenance Note (not normative):** *Formerly designated Alpha (`alpha.bin`) during early lineage bootstrap drafting. Every prior architectural responsibility and contract of ALPHA transfers to ATLAS unchanged. Only `atlas.*` artifacts are canonical.*
+<!-- HISTORICAL-PROVENANCE:END -->
 
 ```text
 Document ID:     DOCTRINE-001
@@ -38,7 +40,7 @@ The doctrine of Atlas rests upon five fundamental tenets:
 │           │                     │                        │             │
 │           ▼                     ▼                        ▼             │
 │      Strict MMU /          SHA-256 /                 Monotonic         │
-│      Registers           Manifest Match            Handoff (EL1)       │
+│      Registers           Manifest Match         Handoff (contract EL)   │
 └─────────────────────────────────┬──────────────────────────────────────┘
                                   │
                                   ▼
@@ -150,10 +152,9 @@ Atlas executes directly on bare metal AArch64 hardware. It relies on a rigorous 
 
 ### 4.2 Entry Address & Privilege Level
 - **Entry Address**: Standardized at physical base address `0x4000_0000` (or `0x8000_0000` depending on platform board definitions, codified in `atlas.manifest`).
-- **Entry Exception Level**: Atlas enters at **EL2** (Hypervisor) or **EL1** (Privileged Kernel).
-  - If entered at EL2: Atlas establishes basic virtualization controls (`HCR_EL2 = 0x80000000`), configures `SPSR_EL2` to drop to EL1h, sets `ELR_EL2` to the entry point of the EL1 setup stage, and executes `eret`.
-  - If entered at EL1: Atlas proceeds directly with EL1 configuration.
-- **Physics Handoff Level**: Control is transferred to Physics strictly at **EL1h** with interrupts masked (`DAIF = 0xF`).
+- **Entry Exception Level**: Declared by the machine contract (**EL2** or **EL1**). Atlas verifies `CurrentEL` against the contract and enters the fail-closed halt state on any mismatch.
+- **Physics Handoff Level**: Declared by the machine contract. Control is transferred to Physics under `PHYSICS_ENTRY_ABI` at the contract-defined exception level with interrupts masked (`DAIF = 0xF`). Atlas performs no implicit EL2 -> EL1 transition.
+- **Current QEMU Contract**: `CONTRACT-QEMU-VIRT-AARCH64-M2` specifies EL1 entry. Register names below are shown for an EL1 contract; an EL2 contract uses the corresponding `_EL2` registers.
 
 ### 4.3 Architectural Register State
 Upon entry into Atlas:
