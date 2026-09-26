@@ -47,7 +47,7 @@ Substrate rule: **a QEMU pass never implies, substitutes for, or partially satis
 | :--- | :--- | :--- |
 | M0 `DOCTRINE_V1` | COMPLETE | Ratified doctrine corpus. |
 | M1 `ATLAS_BOOT` | COMPLETE / QEMU QUALIFIED | `aien-dev/atlas`; QEMU gates only. `ATLAS_BOOT_NATIVE_PASS` pending. |
-| M2 `PHYSICS_BOOT` | REOPENED / IN PROGRESS (requalification) | aien-architecture#6, `aien-dev/physics#1`. QEMU only. `PHYSICS_BOOT_NATIVE_PASS` pending. |
+| M2 `PHYSICS_BOOT` | QEMU QUALIFIED (requalified 2026-09-26) | aien-architecture#6, `aien-dev/physics#1`, `aien-dev/physics#3`. QEMU only. `PHYSICS_BOOT_NATIVE_PASS` pending. |
 | Physical DGX Spark / native Blackwell execution of this stack | NOT DEMONSTRATED | No native receipt exists. |
 | Sovereign training (any AIEN lineage) | NOT DEMONSTRATED | No training has occurred in the sovereign stack. |
 | `SOVEREIGN_MACHINE_CLOSURE` | TARGET | No closure evidence exists. |
@@ -191,7 +191,7 @@ The architecture requires the following **Closure Proofs**. Each is a target unt
 ### 4.2 Proof 2: `PHYSICS_BOOT`
 * **ROADMAP POSITION:** M2 `PHYSICS_BOOT` (prerequisite for M3 `PHYSICS_EFFECTS`).
 * **TARGET / THEOREM:** `physics.bin` accepts the Atlas handoff, validates and copies the ingress descriptor, installs contract-driven exception vectors, establishes physical frame authority and a kernel-private capability root, and reaches a quiescent ready state as the sole authority over physical effects.
-* **CURRENT STATUS:** REOPENED / IN PROGRESS for requalification (aien-architecture#6, `aien-dev/physics#1`). Evaluated under QEMU only. **Native: NOT DEMONSTRATED.**
+* **CURRENT STATUS:** QEMU QUALIFIED after requalification (aien-architecture#6, `aien-dev/physics#1`, `aien-dev/physics#3`). **Native: NOT DEMONSTRATED.**
 * **REQUIRED EVIDENCE:** QEMU receipts for every M2 gate on the current revision (see `docs/milestone-2-spec.md`); then a physical cold boot through Atlas into Physics on the target substrate.
 * **QUALIFICATION ARTIFACT:** `PHYSICS_BOOT_QEMU_PASS` and the M2 static/runtime gates; `PHYSICS_BOOT_NATIVE_PASS` (pending).
 * **PASS/FAIL:** All M2 gates PASS on the current revision for the claimed substrate. A QEMU PASS does not satisfy the native gate.
@@ -205,23 +205,25 @@ The architecture requires the following **Closure Proofs**. Each is a target unt
 * **PASS/FAIL (target thresholds):** Selected realization achieves $> 85\%$ of measured STREAM bandwidth on the same substrate; numerical error $\hat{\epsilon} \le 10^{-6}$ against an IEEE-754 double-precision reference; zero foreign toolchain invocations.
 
 ### 4.4 Proof 4: `OMEGA_ACCELERATOR_NATIVE`
-* **ROADMAP POSITION:** M15 `PHYSICS_ACCELERATOR_LINK` through M18 `OMEGA_BLACKWELL_MATMUL` (M13 `OMEGA_MACHINE_GRAPH` and M14 `OMEGA_REALIZATION_SYNTHESIS` are prerequisites).
+* **ROADMAP POSITION:** M15 `PHYSICS_ACCELERATOR_LINK` through M18 `OMEGA_BLACKWELL_MATMUL`; prerequisites are M13 `OMEGA_MACHINE_GRAPH` and M14 `OMEGA_REALIZATION_SYNTHESIS`.
 * **TARGET / THEOREM:** Omega can emit native accelerator code and dispatch schedules for the accelerator described by the MachineGraph (currently NVIDIA Blackwell, as integrated in DGX Spark), submitting vector and tensor-contraction workloads over the PHYSICS-authorized CPU/accelerator link, without linking against the CUDA runtime, the CUDA driver, or closed user-mode libraries.
 * **CURRENT STATUS:** TARGET. **NOT DEMONSTRATED.** No native Blackwell execution of this stack has been recorded.
 * **REQUIRED EVIDENCE:** Physical-silicon execution trace confirming completion of Omega-synthesized vector and matmul workloads, with completion handles posted through PHYSICS-mediated rings; numerical parity against an Oracle reference; an audit showing zero CUDA host API calls and no foreign driver in the path. Emulation cannot satisfy this proof.
 * **QUALIFICATION ARTIFACT:** Native receipts for M15-M18 (e.g. `OMEGA_BLACKWELL_MATMUL_NATIVE_PASS`; exact gate names to be fixed in those milestone specifications).
 * **PASS/FAIL:** All M15-M18 native gates PASS on physical hardware; any CUDA or foreign-driver dependency in the qualified path is FAIL.
 
-### 4.5 Proof 5: `AIEN_SEED_TRAINING`
+### 4.5 Proof 5: `AIEN_0` sovereign training
 * **ROADMAP POSITION:** M20 `OMEGA_TENSOR` through M24 `AIEN_0` (requires M19 `OMEGA_ACCELERATOR_RESIDENT`).
 * **TARGET / THEOREM:** The lineage can compute forward and backward passes, formulate weight updates, and update model parameters held in accelerator-accessible memory (§4.7) using Omega-synthesized kernels on provenance-ledgered sovereign datasets, without PyTorch, JAX, or foreign training orchestration frameworks.
 * **CURRENT STATUS:** TARGET. **NOT DEMONSTRATED.** No sovereign training has occurred.
 * **REQUIRED EVIDENCE:** A training run on the native target substrate with: the provenance root of every training shard (§5.3); step-level numerical parity of forward, backward, and optimizer steps against an Oracle reference on identical inputs and initialization (Oracle used for verification only, §3.2); the full loss trajectory; the resulting checkpoint's lineage manifest.
-* **QUALIFICATION ARTIFACT:** `AIEN_SEED_TRAINING_NATIVE_PASS` receipt plus the checkpoint's lineage manifest (to be defined in the M20-M24 specifications).
+* **QUALIFICATION ARTIFACT:** `AIEN_0_TRAINING_NATIVE_PASS` receipt plus the checkpoint's lineage manifest (to be defined in the M20-M24 specifications).
 * **PASS/FAIL (target thresholds):** Training loss decreases over $\ge 1{,}000$ continuous gradient steps; per-step parity within the tolerance fixed by the milestone specification; zero foreign framework or foreign weight in the path.
 
 ### 4.6 The Master Gate: `SOVEREIGN_MACHINE_CLOSURE`
+<!-- HISTORICAL-PROVENANCE:BEGIN -->
 `SOVEREIGN_MACHINE_CLOSURE` is a **stable named architectural gate**, not a roadmap milestone number. Earlier drafts placed it at "Milestone 27"; in the canonical M0-M40 roadmap, M27 is `PHYSICS_ZERO_PROTOCOL`, and closure has no milestone number of its own.
+<!-- HISTORICAL-PROVENANCE:END -->
 
 * **ROADMAP POSITION:** Cross-cutting. It cannot be evaluated until its prerequisites exist: native qualification of M1-M3, Omega self-hosting (M6) and verification (M7), native accelerator execution (M15-M19), and the sovereign training runtime through M24 `AIEN_0`. Its earliest possible evaluation is therefore after M24. Reaching any roadmap milestone, including M27-M35 (Physics Zero) or M36-M40, does not imply closure; any claim that a lineage (including `AIEN-P0`) is *sovereign* additionally requires this gate.
 * **TARGET / THEOREM:** The permanent lineage (§1.1) reproduces itself:
@@ -352,7 +354,7 @@ Roadmap progression is governed by four sequential **Verification Gates**, align
   2. Physics takes the handoff and establishes frame authority, exception vectors, and the capability root (M2).
   3. PHYSICS admits physical effects only through the capability-checked `EFFECT_INTENT` / `EFFECT_RECEIPT` cycle (M3).
   4. Zero stub code in the active runtime path.
-* **CURRENT STATUS:** IN PROGRESS. M1 QEMU qualified; M2 reopened for requalification under QEMU; M3 not started. No native gate has passed.
+* **CURRENT STATUS:** IN PROGRESS. M1 and M2 QEMU qualified; M3 not started. No native gate has passed.
 * **REQUIRED EVIDENCE / QUALIFICATION ARTIFACT:** QEMU and native receipts for every M1-M3 gate, including `ATLAS_BOOT_NATIVE_PASS` and `PHYSICS_BOOT_NATIVE_PASS`.
 * **PASS/FAIL:** Every M1-M3 gate PASS on native hardware; 100% deterministic boot across 50 consecutive native cold resets. QEMU passes alone leave Gate 1 open.
 
