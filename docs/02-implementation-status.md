@@ -5,6 +5,8 @@ This is a review snapshot, not a permanent truth source.
 
 Reviewed `aien-sovereign-core` `main` at `8d5f837` (merge of #98). That history includes #99 at `9cec202` (runtime change `7af0715`: CPU bf16 KV decode, a real child fork with shared KV page checks, Cortex record for an allowed mail effect), #100 (architecture roadmap), #101 (`aien-capability` and `aien-mcp`), and #102 (experimental PEARL harness). AEGIS `main` includes #32 at `6272261` (closed local-shell catalog, unadvertised unavailable tools, production secret resolution fails closed unless `AIEN_DEV_SECRET_FALLBACK` is set). RSI measured-canary promotion is `spark-rsi` #27.
 
+**Additional observation (2026-09-25):** the GB10 reference host staged and brought up `Qwen/Qwen3-Coder-30B-A3B-Instruct` (MoE, 30B total / 3B active) for out-of-process serving. Evidence here is runtime, not a merged commit: the HF BF16 snapshot verified (28 files, revision `b2cff646`), a `Q8_0` GGUF staged at a stable local path with SHA-256 `f22993e29318b5b9ec2026f6b65802a5ca99b38ab4844aab83aed8a26ce00ff6`, and an SGLang FP8 (`e4m3`) container (`Qwen3MoeForCausalLM`) that loaded weights in 148.30 s and reached KV-cache allocation and CUDA-graph capture. Correctness and health checks were still pending at snapshot time.
+
 Legend:
 
 - ✅ implemented in meaningful code
@@ -25,6 +27,7 @@ Legend:
 | Vault-first resolution | 🟡 | AEGIS fails closed unless `AIEN_DEV_SECRET_FALLBACK` is explicitly on (#32). That rule is not yet every resolver |
 | Tool/Skill semantic split | 🟡 | `SkillRegistry` still owns atomic handlers such as `bash_eval` and `read_file`. `cortex_recall` and `telemetry_ping` stay callable, are not advertised, and return unavailable. Local shell is a closed catalog of whole command forms |
 | Long-context production native model path | 🟡 | evolving; verify branch/commit before claiming |
+| Production model serving (external runtimes) | 🟡 | `Qwen3-Coder-30B-A3B-Instruct` staged on the GB10 reference host: SGLang FP8 (`e4m3`) loaded weights in 148.30 s and reached KV-cache allocation / CUDA-graph capture; a `Q8_0` GGUF is staged for llama.cpp. Correctness and health checks pending (2026-09-25 observation) |
 | Effect Broker | 🟡 | mail can check policy and record an allow in Cortex. There is still no single broker that every irreversible effect must pass through |
 | Signed World commits | 🟡 | provenance primitives exist; World commit is not yet universal signed envelope |
 | Portable accelerator ABI | 🟡 | multiple backends exist; core still contains hardware-specific history |

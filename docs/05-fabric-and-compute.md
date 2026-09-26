@@ -78,6 +78,18 @@ Target:
 
 The scheduler should ask about capabilities (`bf16`, `fp4`, memory, unified memory, etc.), not vendor model names.
 
+## Reference deployment evidence
+
+The GB10 reference host is one `Machine` in the model above; its accelerators and staged models are advertised capabilities, not architectural special cases.
+
+Out-of-process serving is the current path for large models while the native runtime path matures:
+
+- `Qwen/Qwen3-Coder-30B-A3B-Instruct` (MoE, 30B total / 3B active),
+- SGLang, FP8 (`e4m3`) checkpoint, `Qwen3MoeForCausalLM`: weights loaded in 148.30 s, then KV-cache allocation and CUDA-graph capture,
+- llama.cpp-compatible `Q8_0` GGUF staged at a stable local path.
+
+Observed resource state at bring-up: ~72.96 GB accelerator memory available, ~23.36 GB weight usage, static memory fraction 0.75. These are measurements, not placement guarantees.
+
 ## Failure model
 
 Work is leased.
