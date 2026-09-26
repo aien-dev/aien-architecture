@@ -91,7 +91,7 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 - Specification: [`docs/milestone-1-spec.md`](../docs/milestone-1-spec.md).
 
 ### M2 — `PHYSICS_BOOT`
-- Reopened for requalification under aien-dev/aien-architecture#6 and aien-dev/physics#1 (descriptor ingress, frame authority, and exception confinement hardening). M2 is **not** complete until that requalification closes.
+- Requalified 2026-09-26 under aien-dev/aien-architecture#6, aien-dev/physics#1, and aien-dev/physics#3 (descriptor ingress anti-expansion, frame authority bounds, and exception confinement hardening). Ratified via qualification receipt (`qualification_receipt.json`).
 - Exception level is contract-driven: Physics checks `CurrentEL` against the machine contract and installs `VBAR_EL1` or `VBAR_EL2` accordingly, with no implicit EL2 -> EL1 transition. The current QEMU contract, `CONTRACT-QEMU-VIRT-AARCH64-M2`, specifies EL1 entry.
 - `PHYSICS_BOOT_QEMU_PASS` does not imply `PHYSICS_BOOT_NATIVE_PASS`.
 - Specification: [`docs/milestone-2-spec.md`](../docs/milestone-2-spec.md).
