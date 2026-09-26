@@ -48,7 +48,7 @@ Status vocabulary:
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
-| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Qualified 2026-09-26 under `aien-dev/physics`. | COMPLETE / BLACKWELL_NATIVE_PATH_KNOWN |
+| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | IN PROGRESS |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
 | **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
@@ -165,19 +165,30 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: [`docs/milestone-15-spec.md`](../docs/milestone-15-spec.md).
 - Hardware Audit: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
 
-### M16 — `BLACKWELL_NATIVE_PATH_KNOWN`
-- Status: **COMPLETE / BLACKWELL_NATIVE_PATH_KNOWN**.
-- Qualified 2026-09-26 under `aien-dev/physics` (receipt `f72e2978a3a7...`).
-- Grounded on live DGX Spark (`spark-b87b`) hardware:
-  - Critical submission path empirically verified with 0 `UNKNOWN` or `INFERRED` links.
+### M16 - `BLACKWELL_NATIVE_PATH_KNOWN`
+- Status: **COMPLETE / CORRECTIVELY REQUALIFIED**.
+- Requalified 2026-09-26 under `aien-dev/physics`:
+  - Implementation Commit: `physics@a2c0d7fbc03f7ce91fcb6389312a0ee8630322cd`
+  - Requalification Receipt Commit: `physics@92038f7`
+  - Canonical Main Commit: `physics@b64753d95bacb1114ba48decde48239f0c542e12` (PR #11)
+  - Requalification Receipt: `physics/evidence/m16-blackwell-native-path-requalification-receipt.json`
+  - Audit Dossier: `physics/evidence/m16-requalification/M16_REQUALIFICATION_AUDIT.md`
+- Historical Original Qualification:
+  - Original Commit: `physics@f72e2974793a288c5dd910180f4685deffa31bb7`
+  - Original Receipt: `physics/evidence/m16-blackwell-native-path-receipt.json`
+  - Status: **SUPERSEDED / FAILED INDEPENDENT RUNTIME AUDIT**
+  - Historical Record: Retained in git history as an immutable audit record. The original harness linked and loaded `libcuda.so.1`, called CUDA initialization APIs (`cuInit`, `cuStreamCreate`), and reused session-specific queue addresses.
+- Grounded on live DGX Spark (`spark-b87b`) hardware without libcuda:
+  - Hardware: NVIDIA GB10 (Grace Blackwell, sm_121 / 0xa04), GPU ID `0xf0100`, bus `0000000f:01:00.0`.
+  - Zero Foreign Userspace Runtime: `ldd`, `nm -u`, and `/proc/$PID/maps` verified zero `libcuda`, `libcudart`, or `libnvidia` dependencies. Linked strictly against standard C library (`libc.so.6`).
+  - Native Resource Allocation: Raw ioctls on `/dev/nvidiactl`, `/dev/nvidia0`, and `/dev/nvidia-uvm` dynamically allocate client, device, subdevice, memory, and channel resources.
   - Usermode doorbell aperture: class `0xC661` (`HOPPER_USERMODE_A`) at BAR0 offset `0xbb0000` (`0x24bb0000`), register offset `+0x90` (`NVC361_NOTIFY_CHANNEL_PENDING`).
-  - GPFIFO format: 1,024 8-byte entries per channel at `0x200200000` base, step `0x2000`.
-  - Pushbuffer command stream: `NVC06F_DMA_SEC_OP_INC_METHOD` packets (`SET_OBJECT` method `0x000`, `MEM_OP_A` method `0x28`, `SEM_ADDR_LO` method `0x5c`).
+  - GPFIFO format: 1,024 8-byte entries per channel; bit 41 (`LEVEL_SUBROUTINE`) pushbuffer dispatch.
+  - Pushbuffer command stream: `NVC06F_DMA_SEC_OP_INC_METHOD` packets (`SET_OBJECT` method `0x000` to `BLACKWELL_COMPUTE_B` `0xcec0`, `SEM_ADDR_LO` method `0x5c`).
   - Completion attribution: pushbuffer method `0x5c` (`SEM_ADDR_LO`) writing coherent memory marker with `RELEASE` (`0x1`) flanked by `MEM_OP_D` flushes, polled directly by CPU across NVLink-C2C.
-  - Causality proven: controlled negative perturbation test demonstrates that withholding the doorbell store strictly prevents execution, while issuing the store immediately triggers completion.
-  - Minimum sovereign transaction: direct C submission executed without proprietary userspace runtimes (`libcuda`).
-- Raw evidence bundle sealed under `physics/research/m16/run-20260926-10/` (SHA-256 `5068e2274fa1dc9401365a2f085bc2187f63230b4909d0ac1bceee804ea230a6`).
-- Qualification Receipt: `physics/evidence/m16-blackwell-native-path-receipt.json`.
+  - Causality proven: 5/5 consecutive trials demonstrate that withholding the doorbell store strictly prevents execution (marker remains 0x0), while issuing the store immediately triggers completion (marker transitions to target value).
+  - Concurrency verified: Independent contexts execute concurrently without memory collision or crosstalk.
+- Raw evidence bundle sealed under `physics/evidence/m16-requalification/` (with `SHA256SUMS`).
 - Specification: [`docs/milestone-16-spec.md`](../docs/milestone-16-spec.md).
 
 ### M17 — `OMEGA_BLACKWELL_VECTOR`

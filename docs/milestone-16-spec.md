@@ -133,16 +133,41 @@ Milestone 16 provides the empirical foundation upon which **Milestone 17 (`OMEGA
 
 Milestone 16 was qualified on NVIDIA DGX Spark (`spark-b87b`) on 2026-09-26.
 
-- **Authoritative Evidence Collection**: `physics/research/m16/run-20260926-10/`
-- **Raw Evidence Digest**: `sha256: 5068e2274fa1dc9401365a2f085bc2187f63230b4909d0ac1bceee804ea230a6`
-- **Physics Qualification Receipt**: `evidence/m16-blackwell-native-path-receipt.json` (`physics@f72e297`)
-- **Qualification Scope**:
-  1. Complete critical path verified with zero `UNKNOWN` or `INFERRED` links (all links `[OBSERVED]` or `[DOCUMENTED]`).
-  2. Usermode doorbell aperture identified at BAR0 offset `0xbb0000` (class `0xC661` `HOPPER_USERMODE_A`), with register offset `+0x90` (`NVC361_NOTIFY_CHANNEL_PENDING`).
-  3. GPFIFO 8-byte entry structure and `NVC06F` pushbuffer method headers decoded.
-  4. Device completion attributed to pushbuffer method `0x5c` (`SEM_ADDR_LO`) writing coherent memory marker with `RELEASE` (`0x1`) flanked by `MEM_OP_D` flushes.
-  5. Hardware causality verified via controlled negative perturbation test (`causality_test.c`: withheld doorbell halts execution; released doorbell immediately updates marker).
-  6. Minimum sovereign transaction verified directly in pure C (`sovereign_submit.c`) without proprietary userspace runtimes (`libcuda`).
+### 6.1 Historical Qualification Audit (Superseded)
 
-**Milestone 16 is RATIFIED and CLOSED.** Milestone 17 (`OMEGA_BLACKWELL_VECTOR`) is **IN PROGRESS**.
+- **Original Commit**: `physics@f72e2974793a288c5dd910180f4685deffa31bb7`
+- **Original Receipt**: `evidence/m16-blackwell-native-path-receipt.json`
+- **Audit Status**: **SUPERSEDED / FAILED INDEPENDENT RUNTIME AUDIT**
+- **Audit Findings**:
+  1. `sovereign_submit` linked and loaded `libcuda.so.1`.
+  2. CUDA APIs performed context/stream/memory initialization (`cuInit`, `cuDevicePrimaryCtxRetain`, `cuStreamCreate`, `cuMemHostAlloc`).
+  3. Session-specific queue, USERD, and work-submit token state was reused (`ring = 0x200202000`, `userd_gpput = 0x20080108c`, `token = 0x40000003`).
+  4. Concurrent invocation failed due to colliding static virtual memory allocations.
+  5. Referenced raw evidence was not committed to Git.
+  6. Original flush interpretation contained an unsupported claim regarding method execution semantics.
+  7. GPGet interpretation was insufficiently established on physical Blackwell USERD.
+  8. Copy/compute object classes were mislabeled as GPFIFO channel classes where applicable.
+  9. Physical-address claims lacked independent qualification (userspace virtual mappings were treated as verified physical addresses).
+
+The historical commit `physics@f72e297` is preserved in git history as an immutable audit record.
+
+### 6.2 Corrective Requalification (Ratified)
+
+- **Implementation Commit**: `physics@a2c0d7fbc03f7ce91fcb6389312a0ee8630322cd`
+- **Evidence Commit**: `physics@92038f7`
+- **Canonical Main Commit**: `physics@b64753d95bacb1114ba48decde48239f0c542e12` (PR #11)
+- **Authoritative Evidence Collection**: `physics/evidence/m16-requalification/` (sealed with `SHA256SUMS`)
+- **Physics Qualification Receipt**: `evidence/m16-blackwell-native-path-requalification-receipt.json`
+- **Audit Dossier**: `evidence/m16-requalification/M16_REQUALIFICATION_AUDIT.md`
+- **Requalification Scope**:
+  1. Complete critical path verified with zero `UNKNOWN` or `INFERRED` links.
+  2. Native RM client (`nvrm/nvrm.c`, `nvrm/nvrm.h`): Direct ioctls on `/dev/nvidiactl`, `/dev/nvidia0`, and `/dev/nvidia-uvm` dynamically allocate client, device, subdevice, memory, and channel resources.
+  3. Zero foreign userspace runtime: `ldd`, `nm -u`, and `/proc/$PID/maps` verified zero `libcuda`, `libcudart`, or `libnvidia` dependencies. Linked strictly against standard C library (`libc.so.6`).
+  4. Usermode doorbell aperture identified at BAR0 offset `0xbb0000` (class `0xC661` `HOPPER_USERMODE_A`), with register offset `+0x90` (`NVC361_NOTIFY_CHANNEL_PENDING`).
+  5. GPFIFO 8-byte entry structure and `NVC06F` pushbuffer method headers decoded with bit 41 (`LEVEL_SUBROUTINE`) dispatch.
+  6. Device completion attributed to pushbuffer method `0x5c` (`SEM_ADDR_LO`) writing coherent memory marker with `RELEASE` (`0x1`) flanked by `MEM_OP_D` flushes.
+  7. Hardware causality verified via controlled negative perturbation test: 5/5 trials demonstrate that withholding the doorbell store strictly prevents execution (marker remains 0x0), while issuing the store immediately triggers completion (marker transitions to 0x16c0ffee).
+  8. Concurrency verified: Independent contexts execute concurrently without memory collision or crosstalk.
+
+**Milestone 16 is CORRECTIVELY REQUALIFIED and RATIFIED.** Milestone 17 (`OMEGA_BLACKWELL_VECTOR`) is **IN PROGRESS**.
 
