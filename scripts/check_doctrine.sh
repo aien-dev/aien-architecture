@@ -137,7 +137,7 @@ else
     /^\| \*\*M[0-9]+\*\* \|/ {
       m = $2; gsub(/[ *M]/, "", m); m = m + 0; st = $6; gsub(/^ +| +$/, "", st)
       if (m + 0 != n) print NR ": expected row M" n ", found M" m
-      if (st !~ /^(COMPLETE|COMPLETE \/ QEMU QUALIFIED|REOPENED \/ IN PROGRESS|IN PROGRESS|PLANNED)$/)
+      if (st !~ /^(COMPLETE|COMPLETE \/ QEMU QUALIFIED|COMPLETE \/ HARDWARE BOUNDARY QUALIFIED|COMPLETE \/ CORRECTIVELY REQUALIFIED|COMPLETE \/ SILICON QUALIFIED|REOPENED \/ IN PROGRESS|IN PROGRESS|PLANNED)$/)
         print NR ": M" m " has unknown status \"" st "\""
       era = $3; gsub(/^ +| +$/, "", era)
       if (era == "Physics Zero Discovery" && (m < 27 || m > 35)) print NR ": M" m " is outside Physics Zero M27-M35"
