@@ -4,34 +4,34 @@
 
 When `ATLAS` completes the machine awakening and verifies the integrity of the secondary payload, the system requires an authoritative entity to govern the physical substrate. In conventional operating systems, this layer is burdened with monolithic complexity: multi-gigabyte kernel images, thousands of device drivers, complex POSIX abstractions, preemptive task schedulers, dynamic loadable modules, and sprawling memory management subsystems. This legacy surface area introduces ambient authority, non-deterministic latency, opaque failure states, and unverifiable execution paths.
 
-A sovereign computational architecture demands the opposite: **Physics must be a minimal, immutable, auditable authority nucleus, NOT a conventional operating system kernel.** It must answer a single constitutional question: *"What is allowed to become physically real?"* 
+A sovereign computational architecture demands the opposite: **Physics must be a minimal, immutable, auditable authority nucleus, NOT a conventional operating system kernel.** It must answer a single constitutional question: *"What is allowed to become physically real?"*
 
-Milestone 2 must establish the foundational Physics nucleus (`physics.bin`) without premature bloat: establishing architectural exception handling, validating inbound machine descriptors from Atlas, carving physical memory into bounded capability-governed frames, providing minimal polled diagnostic console output, and synthesizing the root capability record that terminates ambient authority.
+Milestone 2 establishes the foundational Physics nucleus (`physics.bin`): validating one-time ingress boot parameters from Atlas, adopting current-EL exception handling, carving physical memory into bounded capability-governed frame authority, establishing polled diagnostic console telemetry, and synthesizing the kernel-private root capability record that terminates ambient authority.
 
 ---
 
 ## Solution
 
-Implement and formally qualify the Physics Authority Nucleus (`physics.bin`) as the trusted physical machine authority of the Sovereign Machine. 
+Implement and formally qualify the Physics Authority Nucleus (`physics.bin`) as the trusted physical machine authority of the Sovereign Machine.
 
-Physics enters under the normative `PHYSICS_ENTRY_ABI` established by Atlas, validates the Machine Boot Descriptor, installs its own deterministic Exception Vector Table (`VBAR_EL1` / `VBAR_EL2`), initializes a bounded physical memory frame allocator over available system DRAM, claims ownership of the polled serial console, synthesizes the root capability record (`CAP_ROOT`), and establishes the initial zero-ambient-authority regime before awaiting higher-order Omega realization intents.
+Physics enters under the normative `PHYSICS_ENTRY_ABI` established by Atlas, validates and copies the one-time ingress Machine Boot Descriptor into kernel-private state, checks the current execution level (`CurrentEL`), installs its own deterministic 2,048-byte aligned 16-entry Exception Vector Table (`VBAR_EL1` or `VBAR_EL2`), establishes a disjoint physical memory layout, initializes physical frame authority over unreserved DRAM, takes ownership of the polled serial console, synthesizes the kernel-private root capability record (`CAP_ROOT`), verifies synchronous exception confinement, and establishes the initial zero-ambient-authority regime.
 
 ---
 
 ## User Stories
 
-1. **As a system architect**, I want Physics to remain a minimal authority nucleus ($\le 32\text{ KiB}$ text) rather than a full OS kernel, so that the trusted machine authority remains auditable, mathematically verifiable, and bounded.
-2. **As a security auditor**, I want Physics to strictly validate the inbound Machine Boot Descriptor, verification cookie (`0x5048595349435330`), and memory bounds passed by Atlas in registers `x0`–`x2`, so that Physics never executes on unverified or corrupted platform parameters.
-3. **As a bare-metal engineer**, I want Physics to install a complete, 16-entry AArch64 Exception Vector Table at `VBAR_EL1` (or `VBAR_EL2` per contract), so that all synchronous exceptions, IRQs, FIQs, and SErrors are deterministically confined rather than branching into undefined space.
-4. **As a verification engineer**, I want synchronous data and instruction aborts to be trapped and reported with syndrome information (`ESR_EL1`, `FAR_EL1`, `ELR_EL1`) before entering fail-closed quiescence, so that hardware memory violations can be diagnosed deterministically.
-5. **As a systems programmer**, I want a bounded physical memory frame allocator managing system DRAM beyond the Atlas scratchpad and Physics text, so that memory can only be granted via explicit, bounded physical capabilities.
-6. **As a platform engineer**, I want Physics to adopt the polled UART MMIO base from the boot descriptor and establish diagnostic telemetry (`PHYSICS: AWAKEN`, `PHYSICS: VBAR_SET`, `PHYSICS: MMU_BOUND`, `PHYSICS: CAP_GENESIS`), so that early kernel initialization is transparent without interrupt dependencies.
-7. **As a capability architect**, I want Physics to synthesize the initial Root Capability Record (`CAP_ROOT`) with Generation 1, so that all subsequent resource grants (memory, execution, devices) derive strictly from a monotonically narrowable root token.
-8. **As a test engineer**, I want intentional exception trigger tests (e.g., executing a software breakpoint or an unmapped memory access in a test harness) to verify that the vector table captures faults cleanly into diagnostic confinement.
-9. **As a compliance officer**, I want distinct qualification gates for QEMU emulation (`PHYSICS_BOOT_QEMU_PASS`) and physical DGX Spark hardware (`PHYSICS_BOOT_NATIVE_PASS`), so that qualification in virtual environments never implies physical hardware correctness.
-10. **As an infrastructure auditor**, I want an independent artifact-audit seam verifying byte decoding, memory bounding, and zero-discrepancy mathematical word accounting on `physics.bin`, mirroring the rigor of Milestone 1.
-11. **As a sovereign lineage maintainer**, I want Physics to strictly exclude higher-level cognitive structures (model inference, tokenizers, KV cache management, J-Space graphs, planning engines, and neural weights), preserving the inviolable Non-Cognitive Boundary.
-12. **As an operations engineer**, I want secondary SMP cores entering Physics to remain in bounded low-power quiescence (`wfe`) until explicitly assigned execution capabilities, preventing uncoordinated multi-core races.
+1. **As a system architect**, I want Physics to remain a minimal authority nucleus ($\le 32\text{ KiB}$ total code/rodata) rather than a full OS kernel, so that the trusted machine authority remains auditable, mathematically verifiable, and bounded.
+2. **As a security auditor**, I want Physics to treat the Atlas Machine Boot Descriptor as untrusted one-time ingress data, validating magic, version, length, overflow, DRAM containment, and device addresses before copying into kernel-private state and dropping all references to Atlas scratchpad RAM.
+3. **As a bare-metal engineer**, I want Physics to query `CurrentEL` and dynamically install the correct vector register (`VBAR_EL1` at EL1 or `VBAR_EL2` at EL2), failing closed if entered at an uncontracted exception level, with zero implicit EL switching.
+4. **As a verification engineer**, I want the AArch64 exception vector table to span exactly 2,048 bytes (`0x000`–`0x7FF`) with 16 architectural vector slots spaced 128 bytes (`0x80`) apart, each slot cleanly bounded without handler overlap.
+5. **As a test engineer**, I want deliberate exception triggers (e.g. software breakpoint or unmapped read) to capture raw architectural trap state (`VECTOR_SLOT`, `CURRENT_EL`, `ESR_ELx`, `ELR_ELx`, `SPSR_ELx`, `FAR_ELx` with validity flag) into a structured trap record and halt in fail-closed quiescence without host crash or unbounded loops.
+6. **As a systems programmer**, I want a strictly disjoint physical memory map defining non-overlapping reserved regions (`PHYSICS_IMAGE`, `PHYSICS_VECTOR_TABLE`, `PHYSICS_KERNEL_STACK`, `PHYSICS_BOOT_STATE`, `PHYSICS_CAPABILITY_TABLE`, `PHYSICS_STATIC_DATA`), so that stack, static data, and metadata cannot collide.
+7. **As a capability architect**, I want Physics to own **Physical Frame Authority**, where frames are allocated strictly above `FREE_FRAME_BASE = ALIGN_UP(PHYSICS_RESERVED_END, 4096)` and below `DRAM_END`, permanently excluding all reserved Physics pages.
+8. **As a security officer**, I want `CAP_ROOT` to be a non-transferable, kernel-private authority tree root with typed identity `CapabilityId { slot, generation }` rather than an ambient, address-dependent, raw memory pointer.
+9. **As a platform engineer**, I want Physics to validate UART MMIO parameters and emit structured diagnostic telemetry (`PHYSICS: AWAKEN`, `PHYSICS: INGRESS_VALID`, `PHYSICS: VBAR_INSTALLED`, `PHYSICS: FRAME_AUTH_BOUND`, `PHYSICS: CAP_ROOT_GENESIS`, `PHYSICS: QUIESCENT_READY`).
+10. **As an adversarial test engineer**, I want semantic descriptor corruption tests (bad cookie, invalid version, truncated length, zero DRAM, base+size overflow, out-of-profile UART) to deterministically fail closed before frame authority or capabilities are initialized.
+11. **As an auditor**, I want a generalized byte accounting audit reconciling `CODE_BYTES` + `RODATA_BYTES` + `CANONICAL_PADDING_BYTES` + `OTHER_DECLARED_BYTES` = `EXACT BINARY SIZE` with 0-byte discrepancy.
+12. **As a compliance officer**, I want distinct qualification gates for QEMU emulation (`PHYSICS_BOOT_QEMU_PASS`) and physical DGX Spark hardware (`PHYSICS_BOOT_NATIVE_PASS`), ensuring virtual qualification never implies physical hardware correctness.
 
 ---
 
@@ -39,182 +39,164 @@ Physics enters under the normative `PHYSICS_ENTRY_ABI` established by Atlas, val
 
 ### 1. The Anti-Bloat Law (Authority Nucleus vs OS Kernel)
 Physics is strictly bounded to physical authority mechanisms:
-- **Included:** Vector table (`VBAR`), physical frame tracking, capability record synthesis, polled console handoff, CPU fault confinement, and memory boundary enforcement.
+- **Included:** Entry ABI validation, ingress copy, contract-driven `VBAR_ELx`, physical frame authority, kernel-private capability root, polled console telemetry, raw fault confinement, and fail-closed panic.
 - **Strictly Excluded:** POSIX syscalls, fork/exec, preemptive multi-threading, dynamic linkers, VFS/filesystems, socket networking, graphics drivers, model runtimes, and user shells.
+- **Size Bounds:**
+  - `.text <= 32 KiB`
+  - `PHYSICS_TOTAL_IMAGE_BYTES <= 64 KiB` (including code, rodata, vector table, and alignment padding).
+
+### 2. Ingress Descriptor Validation & Isolation Boundary
+The Atlas Machine Boot Descriptor (`0x401FE000`) is treated as one-time ingress data:
+1. **Validation Checks (Prior to Consumption):**
+   - Cookie check: `x2 == 0x5048595349435330` (`'PHYSICS0'`).
+   - Pointer check: `x0 == 0x401FE000`.
+   - Length check: descriptor size $\ge 64$ bytes.
+   - Arithmetic overflow check: `DRAM_BASE + DRAM_SIZE` must not overflow 64-bit integer space.
+   - Image containment: Physics image (`0x40200000`..`0x40208000`) must be strictly contained within `[DRAM_BASE, DRAM_BASE + DRAM_SIZE)`.
+   - Device sanity: UART base must equal contract-approved address (`0x09000000` on QEMU Virt) with 4-byte alignment.
+   - Exception level: `CurrentEL[3:2]` must match contract expectation (EL1 or EL2).
+2. **Ingress Copy:**
+   - Validated fields are copied into `PHYSICS_BOOT_STATE` (`[0x40205800, 0x40206000)`).
+   - Once copied, Physics unsets all references to Atlas scratchpad memory (`x0`, `sp`). Atlas scratchpad memory is permanently uncoupled.
+
+### 3. Contract-Driven Exception Level & Vector Architecture
+1. **Contract-Driven EL Programming:**
+   - Physics reads `CurrentEL`.
+   - If `CurrentEL == 0x04` (EL1): programs `VBAR_EL1`.
+   - If `CurrentEL == 0x08` (EL2): programs `VBAR_EL2`.
+   - If any other value: vectors immediately to terminal quiescent panic.
+   - Zero implicit transitions between EL2 and EL1.
+2. **Vector Table Geometry (`PHYSICS_VECTOR_LAYOUT_PASS`):**
+   - Table base is strictly aligned to a 2 KiB boundary (`base % 2048 == 0`).
+   - Table span is exactly 2,048 bytes (`0x000`–`0x7FF`).
+   - 16 architectural vector slots spaced exactly 128 bytes (`0x80`) apart:
+     * `0x000`: Current EL with SP0 (Sync)
+     * `0x080`: Current EL with SP0 (IRQ)
+     * `0x100`: Current EL with SP0 (FIQ)
+     * `0x180`: Current EL with SP0 (SError)
+     * `0x200`: Current EL with SPx (Sync -> Main Trap)
+     * `0x280`: Current EL with SPx (IRQ)
+     * `0x300`: Current EL with SPx (FIQ)
+     * `0x380`: Current EL with SPx (SError)
+     * `0x400`: Lower EL AArch64 (Sync)
+     * `0x480`: Lower EL AArch64 (IRQ)
+     * `0x500`: Lower EL AArch64 (FIQ)
+     * `0x580`: Lower EL AArch64 (SError)
+     * `0x600`: Lower EL AArch32 (Sync)
+     * `0x680`: Lower EL AArch32 (IRQ)
+     * `0x700`: Lower EL AArch32 (FIQ)
+     * `0x780`: Lower EL AArch32 (SError)
+   - Every slot contains a bounded branch to a common trap collector. No slot code or data overlaps another.
+3. **Raw Exception State Capture:**
+   - On trap, handler saves `x0`–`x30` to `PHYSICS_BOOT_STATE`.
+   - Captures: `VECTOR_SLOT`, `CURRENT_EL`, `ESR_ELx`, `ELR_ELx`, `SPSR_ELx`.
+   - Evaluates `ESR_ELx.EC` (Exception Class): reads `FAR_ELx` only if the fault class makes FAR valid (Data Aborts, Instruction Aborts, Alignment, PC faults); otherwise marks `FAR_VALID = 0`.
+   - Emits minimal raw hexadecimal diagnostic telemetry over polled UART and enters `wfe; b .`.
+
+### 4. Disjoint Physical Memory Map
+Physics establishes strictly partitioned, pairwise non-overlapping memory regions:
 
 ```text
-       PHYSICS SCOPE BOUNDARY (MILESTONE 2)
-┌──────────────────────────────────────────────────┐
-│ INCLUDED (Minimal Authority Nucleus):            │
-│  • Entry ABI validation (Cookie, Descriptor, SP) │
-│  • 16-entry AArch64 Exception Vector Table (VBAR)│
-│  • Bounded DRAM frame bitmap / allocation bounds │
-│  • Polled UART console claim & telemetry         │
-│  • Root Capability Record (CAP_ROOT) synthesis   │
-│  • Fail-closed fault confinement & ESR decode    │
-├──────────────────────────────────────────────────┤
-│ EXCLUDED (Out of Scope for Milestone 2):         │
-│  [✗] Multi-level Stage-1 page tables (M3)        │
-│  [✗] SMMUv3 Stream Table Entries (M4)            │
-│  [✗] NVMe command queues & block store (M5)      │
-│  [✗] GICv3 interrupt distributor routing (M7)    │
-│  [✗] GPU PCIe link training & queues (M8)        │
-│  [✗] Cognitive models, agents, or J-Space        │
-└──────────────────────────────────────────────────┘
+0x4000_0000 ┌──────────────────────────────────────────┐ <── DRAM Base (Atlas Staging / DTB)
+            │ Unused / Staging / Atlas Scratchpad      │
+0x4020_0000 ├──────────────────────────────────────────┤ <── PHYSICS_IMAGE_BASE
+            │ PHYSICS_IMAGE (.text, .rodata)           │ [4 KiB] [0x40200000, 0x40201000)
+0x4020_1000 ├──────────────────────────────────────────┤ <── PHYSICS_VECTOR_TABLE (2 KiB aligned)
+            │ VBAR Table (16 x 128B slots)             │ [2 KiB] [0x40201000, 0x40201800)
+0x4020_1800 ├──────────────────────────────────────────┤ <── PHYSICS_KERNEL_STACK (grows downward)
+            │ Dedicated Kernel Stack                   │ [16 KiB][0x40201800, 0x40205800)
+            │ Initial SP = 0x40205800                  │
+0x4020_5800 ├──────────────────────────────────────────┤ <── PHYSICS_BOOT_STATE
+            │ Copied Ingress Descriptor & Trap Record  │ [2 KiB] [0x40205800, 0x40206000)
+0x4020_6000 ├──────────────────────────────────────────┤ <── PHYSICS_CAPABILITY_TABLE
+            │ CAP_ROOT & Authority Table               │ [4 KiB] [0x40206000, 0x40207000)
+0x4020_7000 ├──────────────────────────────────────────┤ <── PHYSICS_STATIC_DATA
+            │ Static Tables & Frame Bitmaps            │ [4 KiB] [0x40207000, 0x40208000)
+0x4020_8000 ├──────────────────────────────────────────┤ <── FREE_FRAME_BASE = ALIGN_UP(RESERVED_END, 4096)
+            │ Bounded Free DRAM Frames (Frame Auth)    │ [~125.9 MiB]
+0x4800_0000 └──────────────────────────────────────────┘ <── DRAM_END
 ```
 
-### 2. Normative Inbound ABI Contract (`PHYSICS_ENTRY_ABI`)
-Physics assumes control directly from Atlas conforming to the ratified contract:
-- **`x0`**: Pointer to the 64-byte Machine Boot Descriptor at `0x401FE000`.
-- **`x1`**: Physics payload size in bytes (`0x100` = 256 bytes for initial stub, extending up to 32 KiB for the full nucleus).
-- **`x2`**: Magic verification cookie `0x5048595349435330` (ASCII `'PHYSICS0'`).
-- **`DAIF`**: `0x3c0` (all interrupts masked: Debug, SError, IRQ, FIQ).
-- **`SP`**: Initial scratchpad stack pointer (`0x401FC000`), strictly disjoint from the descriptor.
-- **`PC`**: Entry at `0x40200000`.
+Formal Invariant:
+$$\forall \mathcal{R}_i, \mathcal{R}_j \in \{\text{IMAGE}, \text{VBAR}, \text{STACK}, \text{STATE}, \text{CAP\_TABLE}, \text{STATIC\_DATA}, \text{FREE\_DRAM}\}: \quad i \neq j \implies \mathcal{R}_i \cap \mathcal{R}_j = \emptyset$$
 
-Upon entry, Physics validates:
-1. `x2 == 0x5048595349435330` (magic cookie check; halts if invalid).
-2. `x0 == 0x401FE000` (descriptor address check).
-3. Reads descriptor contents: RAM Base (`0x40000000`), RAM Size (`128 MiB`), UART MMIO (`0x09000000`).
-4. Re-initializes stack pointer to a dedicated Physics Kernel Stack (`0x40208000`, growing down toward `0x40204000`), completely vacating the Atlas scratchpad.
+### 5. Physical Frame Authority
+Physics does not implement a general-purpose OS memory allocator (no slabs, heaps, or buddy systems). It implements **Physical Frame Authority**:
+- Granularity: strictly 4,096 bytes (4 KiB frames).
+- Managed Range: strictly `[FREE_FRAME_BASE, DRAM_END)`.
+- Invariant: Zero frames in `[0x00000000, FREE_FRAME_BASE)` can ever be granted or allocated.
+- Tracking: Bitmask located in `PHYSICS_STATIC_DATA`.
+- Checked Arithmetic: Base, frame index, and boundary math are overflow-checked.
+- Exhaustion: Returns typed error `ERR_FRAME_EXHAUSTED` (0); no silent wraparound.
 
-### 3. Exception Vector Architecture (`VBAR_EL1` / `VBAR_EL2`)
-Physics programs the Vector Base Address Register (`VBAR_EL1` or `VBAR_EL2` depending on entry exception level) pointing to a 2,048-byte aligned, 16-entry vector table:
-
-```text
-VBAR Base + 0x000: Current EL with SP0  (Synchronous)
-VBAR Base + 0x080: Current EL with SP0  (IRQ/vIRQ)
-VBAR Base + 0x100: Current EL with SP0  (FIQ/vFIQ)
-VBAR Base + 0x180: Current EL with SP0  (SError/vSError)
-
-VBAR Base + 0x200: Current EL with SPx  (Synchronous -> Main Kernel Fault Handler)
-VBAR Base + 0x280: Current EL with SPx  (IRQ -> Spurious / Masked Handler)
-VBAR Base + 0x300: Current EL with SPx  (FIQ -> Emergency Quiescent Trap)
-VBAR Base + 0x380: Current EL with SPx  (SError -> Fatal Hardware Trap)
-
-VBAR Base + 0x400: Lower EL using AArch64 (Synchronous -> Capability Trap / Syscall Gate)
-VBAR Base + 0x480: Lower EL using AArch64 (IRQ)
-VBAR Base + 0x500: Lower EL using AArch64 (FIQ)
-VBAR Base + 0x580: Lower EL using AArch64 (SError)
-
-VBAR Base + 0x600: Lower EL using AArch32 (Unimplemented -> Fatal Reject Trap)
-VBAR Base + 0x680: Lower EL using AArch32 (Unimplemented -> Fatal Reject Trap)
-VBAR Base + 0x700: Lower EL using AArch32 (Unimplemented -> Fatal Reject Trap)
-VBAR Base + 0x780: Lower EL using AArch32 (Unimplemented -> Fatal Reject Trap)
-```
-
-Each vector handler preserves `x0`–`x30`, extracts `ESR_EL1` (Exception Syndrome Register), `FAR_EL1` (Fault Address Register), and `ELR_EL1` (Exception Link Register), formats a diagnostic crash beacon over polled UART, and transitions the core to fail-closed quiescence.
-
-### 4. Bounded Physical Memory Frame Allocator
-Physics establishes a deterministic physical memory map from the Machine Boot Descriptor:
-- **Kernel Image Window:** `[0x40200000, 0x40208000)` (32 KiB reserved).
-- **Physical Free DRAM Window:** `[0x40208000, 0x48000000)` (~125.9 MiB).
-- **Page Size:** Standard 4 KiB granular frames.
-- **Allocator Design:** Bounded static frame allocator. A compact bitmap or frame table placed at the base of free DRAM (`0x40208000`) tracks frame allocation state. Memory is never allocated dynamically without binding to an issued `MEMORY_CAPABILITY`.
-
-### 5. Polled Console Governance & Telemetry
-Physics takes ownership of the UART transmitter configured by Atlas:
-- Confirms UART MMIO base `0x09000000`.
-- Implements polled output routine (`poll_tx_char`) using `FR.TXFF` status check.
-- Emits standardized milestone telemetry:
+### 6. Kernel-Private Root Capability (`CAP_ROOT`)
+- **Semantic Identity**: `CapabilityId { slot: 0, generation: 1 }`. The capability's identity is decoupled from its physical memory address.
+- **Scope**: Kernel-private root of the resource authority tree. Not transferable. Delegable only through strict monotonic attenuation.
+- **Structure**:
   ```text
-  PHYSICS: AWAKEN
-  PHYSICS: DESCRIPTOR_VALID
-  PHYSICS: VBAR_INSTALLED
-  PHYSICS: MEMORY_BOUND [128 MiB]
-  PHYSICS: ROOT_CAP_GENESIS
-  PHYSICS: QUIESCENT_READY
+  Capability Record (64 bytes):
+    +0x00: cap_id (slot: u32, generation: u32)
+    +0x08: principal_id (u64 = 0x1, Physics)
+    +0x10: resource_type (u32 = RES_UNIVERSAL_ROOT)
+    +0x14: allowed_ops (u32 = OP_ALL_AUTHORITY)
+    +0x18: bound_base (u64 = FREE_FRAME_BASE)
+    +0x20: bound_size (u64 = DRAM_END - FREE_FRAME_BASE)
+    +0x28: revocation_state (u32 = STATE_ACTIVE)
+    +0x2C: attenuation_depth (u32 = 0)
+    +0x30: provenance_digest (32 bytes = atlas.sha256)
   ```
-
-### 6. Root Capability Record (`CAP_ROOT`)
-To instantiate the Zero Ambient Authority doctrine, Physics synthesizes the genesis capability at physical address `0x40209000`:
-- **Principal:** `0x0000000000000001` (Physics Authority Nucleus).
-- **Resource ID:** `0xFFFFFFFFFFFFFFFF` (All Physical Resources).
-- **Allowed Operations:** `0xFFFFFFFF` (Full Sovereign Authority).
-- **Memory Bounds:** Base `0x40000000`, Size `128 MiB`.
-- **Generation:** `1` (Epoch Genesis).
-- **Lifetime:** `INFINITE_BOOT_EPOCH` (Valid until hard reset).
-- **Revocation State:** `ACTIVE`.
-- **Provenance Hash:** SHA-256 digest of `atlas.sha256` (chain of trust anchored in Atlas).
-
----
-
-## Hardware Ownership Boundary (Milestone 2)
-
-| Subsystem | Atlas (M1) State | Physics Nucleus (M2) Action | Subsequent Milestones |
-| :--- | :--- | :--- | :--- |
-| **Boot Core** | Awoken, verified payload, handed off | Owns core; installs `VBAR`; manages stack | Core power management & scheduling (M10) |
-| **Secondary Cores** | Quiescent / Parked | Preserves quiescent state (`wfe`); no spurious wakeups | SMP bring-up & affinity routing (M10) |
-| **Exception Vectors** | Default / Stubs | Installs 16-entry `VBAR_EL1` table | Virtualization exception traps (M7) |
-| **Memory Translation** | Disabled / Identity | Bounded physical frames initialized; page table prep | Stage-1 MMU translation tables (M3) |
-| **IOMMU / SMMUv3** | Untouched | DO NOT RECONFIGURE; Preserve entry state | SMMUv3 STE & CD programming (M4) |
-| **Interrupts (GIC)** | Masked in `DAIF` | Remains masked in `DAIF`; vector handlers armed | GICv3 distributor initialization (M7) |
-| **Console / UART** | Polled TX MMIO | Polled TX MMIO owned by Physics | Ring-buffered interrupt-driven console |
-| **Accelerators (GPU)** | Untouched | DO NOT INITIALIZE, RESET, OR CONFIGURE | PCIe enumeration, reset rails, doorbell queues (M8) |
+- Memory capabilities created in later milestones derive exclusively from allocator-owned free ranges (`[FREE_FRAME_BASE, DRAM_END)`) and permanently exclude all reserved Physics regions.
 
 ---
 
 ## Testing Decisions (Dual Verification Seams)
 
-Verification for Milestone 2 follows the exact same dual-seam methodology proven in Milestone 1:
-
 ### Seam 1: Independent Artifact-Audit Seam (`seam1_physics_audit.py`)
 Evaluates static properties of `physics.bin` without machine execution:
-1. **`PHYSICS_ARTIFACT_IDENTITY_PASS`**: Canonical digest of `physics.bin` matches `physics.sha256`.
-2. **`PHYSICS_AUDIT_PASS`**: 100% word-reconciled machine instruction accounting:
-   $$(\text{Instructions} \times 4) + (\text{Data Words} \times 4) = \text{Binary Size}$$
-   with exactly 0-byte discrepancy.
-3. **`PHYSICS_MACHINE_CONTRACT_PASS`**: Conforms to maximum size bound ($\le 32\text{ KiB}$) and entry ABI literal definitions.
-4. **`PHYSICS_VECTOR_ALIGNMENT_PASS`**: Vector base address is verified to be 2,048-byte aligned ($0x800$ alignment), with each of the 16 entries spaced by exactly 128 bytes ($0x80$ stride).
-5. **`PHYSICS_STATIC_MEMORY_BOUNDS_PASS`**: All memory dereferences are statically bounded within the kernel image or descriptor address ranges.
+1. `PHYSICS_ARTIFACT_IDENTITY_PASS`: Canonical digest matches `physics.sha256`.
+2. `PHYSICS_MACHINE_CONTRACT_PASS`: Code size $\le 32\text{ KiB}$, total image $\le 64\text{ KiB}$.
+3. `PHYSICS_AUDIT_PASS`: Generalized byte accounting:
+   $$\text{CODE\_BYTES} + \text{RODATA\_BYTES} + \text{CANONICAL\_PADDING\_BYTES} + \text{OTHER\_DECLARED\_BYTES} = \text{EXACT BINARY SIZE}$$
+   with exactly 0 unexplained bytes.
+4. `PHYSICS_VECTOR_LAYOUT_PASS`:
+   - Vector table base is strictly 2 KiB aligned (`base % 2048 == 0`).
+   - Table covers exactly `0x000`..`0x7FF` (2,048 bytes).
+   - All 16 vector slots exist at required `0x80` offsets without body overlap.
+5. `PHYSICS_MEMORY_DISJOINTNESS_PASS`: Static proof that all reserved regions (`IMAGE`, `VBAR`, `STACK`, `STATE`, `CAP_TABLE`, `STATIC_DATA`) are pairwise disjoint with positive gaps.
 
 ### Seam 2: External Execution Seam (`seam2_physics_harness.py`)
 Evaluates runtime execution in bare-metal QEMU AArch64 booted by `atlas.bin`:
-1. **`PHYSICS_BOOT_QEMU_PASS`**: Full lineage boot from reset: `atlas.bin` awakens, verifies `physics.bin`, and hands off cleanly. Physics emits the complete diagnostic telemetry sequence.
-2. **`PHYSICS_DESCRIPTOR_VALIDATION_PASS`**: Physics correctly reads and validates the Machine Boot Descriptor populated by Atlas.
-3. **`PHYSICS_EXCEPTION_CONFINEMENT_PASS`**: A test kernel deliberately executes an unmapped read or software breakpoint; Physics vectors to `VBAR_EL1`, traps the fault, emits `ESR_EL1`/`FAR_EL1` telemetry, and halts in fail-closed quiescence without host crash or unbounded loops.
-4. **`PHYSICS_ROOT_CAP_PASS`**: Physics synthesizes `CAP_ROOT` in memory with valid generation, provenance, and bounds.
-5. **`PHYSICS_CORRUPTION_REFUSAL_PASS`**: Corrupting descriptor values (e.g. invalid RAM size, invalid UART base) causes Physics to refuse execution and halt safely.
+1. `PHYSICS_ENTRY_EL_PASS`: Verifies current EL matches machine contract without implicit switching.
+2. `PHYSICS_DESCRIPTOR_INGRESS_PASS`: Validates ingress descriptor checks, copies fields, and vacates Atlas scratchpad.
+3. `PHYSICS_BOOT_QEMU_PASS`: Clean end-to-end boot from reset: Atlas verifies Physics $\rightarrow$ Physics initializes VBAR, frame authority, and CAP_ROOT $\rightarrow$ reaches `PHYSICS: QUIESCENT_READY`.
+4. `PHYSICS_FRAME_BOUNDS_PASS`: Tests frame allocation within bounds; asserts frames are strictly $\ge \text{FREE\_FRAME\_BASE}$ and $<\text{DRAM\_END}$.
+5. `PHYSICS_RESERVED_FRAME_REFUSAL_PASS`: Asserts allocator refuses any attempt to allocate frames in reserved regions.
+6. `PHYSICS_CAP_ROOT_PASS`: Validates `CapabilityId { slot: 0, generation: 1 }` in memory with valid provenance hash.
+7. `PHYSICS_EXCEPTION_STATE_CAPTURE_PASS`: Deliberate synchronous software exception (e.g. `brk #0` or deliberate unmapped read) vectors to `VBAR_ELx`, captures raw architectural state (`VECTOR_SLOT`, `CURRENT_EL`, `ESR_ELx`, `ELR_ELx`, `SPSR_ELx`, `FAR_ELx` with validity), emits crash telemetry, and halts in fail-closed quiescence.
+8. `PHYSICS_CORRUPTION_REFUSAL_PASS`: Hostile ingress corruption matrix (bad cookie, unsupported version, truncated length, DRAM size zero, DRAM base+size overflow, out-of-profile UART) halts safely before frame authority or capabilities are published.
 
-### Qualification Gate Hierarchy
+---
+
+## Qualification Gate Suite (Milestone 2)
 
 ```text
 QUALIFICATION SUITE: MILESTONE 2 (PHYSICS_BOOT)
 ├── Seam 1: Artifact Audit (Static)
 │   ├── [PASS] PHYSICS_ARTIFACT_IDENTITY_PASS
 │   ├── [PASS] PHYSICS_MACHINE_CONTRACT_PASS
-│   ├── [PASS] PHYSICS_AUDIT_PASS (Zero-delta word accounting)
-│   ├── [PASS] PHYSICS_VECTOR_ALIGNMENT_PASS (2048-byte alignment)
-│   └── [PASS] PHYSICS_STATIC_MEMORY_BOUNDS_PASS
+│   ├── [PASS] PHYSICS_AUDIT_PASS (Generalized byte accounting)
+│   ├── [PASS] PHYSICS_VECTOR_LAYOUT_PASS (2048B span, 16 x 0x80 slots)
+│   └── [PASS] PHYSICS_MEMORY_DISJOINTNESS_PASS (Pairwise disjoint regions)
 │
 └── Seam 2: Execution Harness (QEMU Virt)
+    ├── [PASS] PHYSICS_ENTRY_EL_PASS (Contract-driven CurrentEL)
+    ├── [PASS] PHYSICS_DESCRIPTOR_INGRESS_PASS (Validated ingress copy)
     ├── [PASS] PHYSICS_BOOT_QEMU_PASS (Atlas -> Physics golden boot)
-    ├── [PASS] PHYSICS_DESCRIPTOR_VALIDATION_PASS
-    ├── [PASS] PHYSICS_EXCEPTION_CONFINEMENT_PASS (Fault trap verification)
-    ├── [PASS] PHYSICS_ROOT_CAP_PASS (Genesis capability record)
-    └── [PASS] PHYSICS_CORRUPTION_REFUSAL_PASS
+    ├── [PASS] PHYSICS_FRAME_BOUNDS_PASS (Allocation strictly within free bounds)
+    ├── [PASS] PHYSICS_RESERVED_FRAME_REFUSAL_PASS (Reserved frames never allocated)
+    ├── [PASS] PHYSICS_CAP_ROOT_PASS (Kernel-private CAP_ROOT genesis)
+    ├── [PASS] PHYSICS_EXCEPTION_STATE_CAPTURE_PASS (Raw trap state capture)
+    └── [PASS] PHYSICS_CORRUPTION_REFUSAL_PASS (Hostile semantic ingress refusals)
 ```
 
 *Note: Native DGX Spark hardware qualification (`PHYSICS_BOOT_NATIVE_PASS`) remains strictly decoupled from QEMU qualification and will be evaluated on physical silicon.*
-
----
-
-## Deliverables & Acceptance Criteria
-
-1. **Repository Structure**:
-   - Implementation repository: [`aien-dev/physics`](https://github.com/aien-dev/physics)
-   - Canonical artifacts:
-     - `physics.bin` (Canonical root binary)
-     - `physics.manifest` (Metadata & ABI record)
-     - `physics.sha256` (Cryptographic digest)
-     - `physics.audit` (100% word-reconciled instruction ledger)
-     - `physics.decode` (Annotated disassembly)
-     - `physics.memory-map` (Normative layout & frame bounds)
-     - `physics.control-flow` (Vector table & CFG)
-2. **Verification Tooling**:
-   - `seam1_physics_audit.py` (Static audit validator)
-   - `seam2_physics_harness.py` (Dynamic QEMU execution test harness)
-   - `run_milestone2_gates.py` (Master qualification runner generating `qualification_receipt.json`)
-3. **Acceptance Invariant**:
-   - Every gate in the Qualification Suite passes 100%.
-   - End-to-end boot from cold reset: `atlas.bin` $\rightarrow$ `physics.bin` verified and authorized without manual intervention.
