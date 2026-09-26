@@ -46,7 +46,7 @@ Status vocabulary:
 | **M11** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_DISCOVERY` | Autonomous abstraction discovery from program corpus with verified reuse. Qualified 2026-09-26 under `aien-dev/omega` (commit `1ee43fb...`, receipt commit `8e0a50a...`). | COMPLETE |
 | **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. | PLANNED |
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
-| **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. | PLANNED |
+| **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. | PLANNED |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell SM architecture (MMIO, queue submission, doorbells). | PLANNED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | PLANNED |
@@ -126,6 +126,14 @@ One nontrivial abstraction not present in the initial library that:
 2. Preserves their semantics;
 3. Is reused on held-out tasks;
 4. Reduces search cost.
+
+### M14 — `OMEGA_REALIZATION_SYNTHESIS`
+- Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d`, receipt commit `03fbcb9`).
+- Automated machine-aware lowering synthesis ($G_S \times G_M \to G_R$) producing verified native AArch64 machine code without LLVM, GCC, GNU `as`, or JIT.
+- Cryptographic triple identity binding: `REALIZATION_ID = SHA-256(OMG0 | KIND_REALIZATION | profile | entry_offset | code_len | SEMANTIC_ID | MACHINE_ID | code_bytes)`.
+- Machine-aware instruction scheduling specialized for DGX Spark Grace Neoverse V2 (4-wide issue, multi-register pre-load) vs QEMU virt (2-wide baseline sequential).
+- 10/10 canonical M14 qualification gates passed (101/101 cumulative gates across M4-M14 with zero regressions).
+- Specification: [`docs/milestone-14-spec.md`](../docs/milestone-14-spec.md).
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
