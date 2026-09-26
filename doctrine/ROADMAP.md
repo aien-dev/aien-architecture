@@ -50,7 +50,7 @@ Status vocabulary:
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
-| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
+| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. | IN PROGRESS |
 | **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
@@ -208,7 +208,9 @@ One nontrivial abstraction not present in the initial library that:
 - Cortex Receipt: Space `atlas-memory`, receipt ID `dea831e3-33c8-480c-bff3-2f170bf9b3b0`.
 
 ### M18: `OMEGA_BLACKWELL_MATMUL`
-- Status: **PLANNED**.
+- Status: **IN PROGRESS**.
+- Formally opened 2026-09-26.
+- Specification: [`docs/milestone-18-spec.md`](../docs/milestone-18-spec.md).
 - Mandate: Verified native Blackwell tensor matrix multiplication with tensor core acceleration.
 - Architecture: Synthesizes sm_121 tensor core instructions using QMD launch descriptors and native M16 pushbuffer submission.
 - Sovereignty Boundary: Crosses from verified static instruction fixtures to dynamic native code generation: semantic MatMul contract lowers through OMEGA instruction selection, operand and field encoding, tensor-core instruction sequencing, dynamic QMD launch descriptors, and native M16 submission on physical GB10 silicon under exact and numerically bounded verification.
