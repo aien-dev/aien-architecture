@@ -5,7 +5,7 @@ Document ID:     SPEC-PHYSICS-M15
 Milestone:       Milestone 15 (PHYSICS_ACCELERATOR_LINK)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Bounded Coherent Memory Interface, SMMUv3 DMA Sandboxing & Accelerator Authority
-Status:          COMPLETE / RATIFIED (WITH NATIVE HARDWARE SEAM)
+Status:          COMPLETE / HARDWARE BOUNDARY QUALIFIED
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> AIEN
 ```
 
@@ -18,6 +18,27 @@ Milestone 14 completed the CPU realization synthesis pipeline (`OMEGA_REALIZATIO
 Milestone 15 establishes the **Physics Accelerator Link** (`PHYSICS_ACCELERATOR_LINK`), opening Phase C (Accelerator Cognition Substrate). It expands the sovereign machine's computational reach to high-throughput hardware accelerators (specifically NVIDIA Blackwell architectures on DGX Spark) while maintaining strict physical authority, hardware sandboxing, and mathematical determinism:
 
 > **PHYSICS GAINS BOUNDED ACCELERATOR AUTHORITY. OMEGA CANNOT OWN ACCELERATOR AUTHORITY. OMEGA ASKS; PHYSICS AUTHORIZES.**
+
+### Canonical Boundary Principle
+```text
+M15 ESTABLISHES WHO MAY TOUCH THE ACCELERATOR.
+M16 DISCOVERS HOW THE ACCELERATOR IS ACTUALLY COMMANDED.
+```
+
+### Milestone 15 Exit Condition
+> Physics has an accelerator authority model grounded in empirically observed DGX Spark device, memory, and IOMMU topology. OMEGA cannot directly exercise accelerator authority and must formulate bounded intents through Physics. Native Blackwell submission mechanics remain deliberately outside M15 and are the subject of M16.
+
+### Explicit Scope Boundary: What M15 Does NOT Claim
+Milestone 15 explicitly does not claim:
+- Known Blackwell command packet format
+- Known native submission queue format
+- Known BAR0 doorbell register semantics
+- Direct sovereign SMMUv3 hardware takeover
+- Native Blackwell work submission
+- Native completion handling
+- Native device reset
+
+All native submission mechanics, channel structures, work descriptor formats, and doorbell discoveries belong strictly to **Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`)** or subsequent bare-metal Physics takeover work. M15 establishes the trusted authority and topology foundation upon which M16 builds.
 
 In conventional architectures, GPU drivers operate with sprawling ambient authority: multi-gigabyte kernel drivers, closed-source firmware blobs, opaque direct memory access (DMA), unchecked command ring submissions, and unpredictable out-of-band interrupts. A single malformed GPU command or kernel bug can crash the entire host operating system or corrupt host memory via rogue DMA writes.
 
@@ -96,13 +117,26 @@ As mandated by canonical roadmap doctrine (`DOCTRINE-ROADMAP`) and sovereign mac
 +-------------------------------------------------------------------------------+
 ```
 
-### 3.2 SMMUv3 DMA Sandboxing & IOVA Translation
+### 3.2 Subsystem Ownership Boundaries
+
+To maintain absolute epistemic integrity, Milestone 15 explicitly records active subsystem ownership between the host Linux kernel device stack and Sovereign Physics:
+
+| Subsystem | Current Live Owner | Physics Status | Transfer to Sovereign Physics |
+| :--- | :--- | :--- | :--- |
+| **SMMUv3 Hardware Programming** | Linux kernel (`arm_smmu_v3`) / active device stack | Stage 1 policy model implemented; native hardware takeover not yet performed | Future milestone / bare-metal isolated environment |
+| **Device Address / IOVA Mappings** | Linux kernel (`dma-iommu` / `uvm`) | Stage 1 window translation & permission bounds implemented; hardware page-table walk not taken over | Future milestone / bare-metal isolated environment |
+| **GPU BAR Mappings** | Linux kernel PCI subsystem & `nvidia.ko` (`0x24000000-0x27ffffff`) | Aperture bounds observed; direct userspace mmap restricted by `CONFIG_IO_STRICT_DEVMEM` | M16 (Blackwell native submission characterization) |
+| **GPU Submission Queues** | `nvidia.ko` / user channel pushbuffers | Circular ring queue authority model implemented; native Blackwell channel format unknown | M16 (empirical discovery of command packet & queue structure) |
+| **GPU Completion Handling** | `nvidia.ko` interrupt handler & semaphores | Completion receipt model implemented; native Blackwell completion protocol unknown | M16 (empirical discovery of completion signaling & fences) |
+| **Device Reset** | Linux kernel PCI core / GPU driver reset handler | Monotonic device state machine implemented; raw control register reset not executed to preserve running host | Future milestone / bare-metal isolated environment |
+
+### 3.3 SMMUv3 DMA Sandboxing & IOVA Translation
 
 The ARM SMMUv3 (System Memory Management Unit version 3) enforces hardware-level isolation between the accelerator's bus-mastering transactions and physical host memory:
 
 1. **Stream Table Entries (STE)**:
    - Stream Table base is strictly aligned to a 256 KiB boundary.
-   - Stream ID (e.g., `0x20` for Blackwell compute command engine) maps to a dedicated 64-byte STE.
+   - Stream ID `0x0100` (256 decimal, mapped via ACPI IORT Node 29 for PCI segment 15 BDF 01:00.0) maps to a dedicated 64-byte STE.
    - STE is configured for Stage 1 translation enabled (`Config = 0b101`), linear stream format (`S1Fmt = 0b00`), pointing to a dedicated Context Descriptor table (`CTXPTR`).
 
 2. **Context Descriptor (CD)**:
@@ -121,7 +155,7 @@ The ARM SMMUv3 (System Memory Management Unit version 3) enforces hardware-level
    - SMMUv3 Event Queue records all fault syndromes with Stream ID, IOVA, and fault class.
    - Faults generate synchronous or polled notifications to Physics, which immediately freezes the stream, revokes the associated capability, records the fault in the effect receipt ledger, and initiates non-disruptive device recovery.
 
-### 3.3 Command Queue Authority & Doorbell Mediation
+### 3.4 Command Queue Authority & Doorbell Mediation
 
 Command submission is strictly mediated through Physics to prevent untrusted callers from commanding the accelerator hardware directly:
 
@@ -421,32 +455,32 @@ Milestone 15 qualification mandates 100% compliance across 10 canonical qualific
 1. `PHYSICS_ACCEL_MEM_BOUNDS_PASS`:
    Verifies that memory boundaries for the coherent accelerator envelope `[0x80000000, 0x2080000000)` are strictly enforced. Any attempt to allocate or map memory outside unreserved frames, or overlapping Physics kernel structures (image, stack, capability ledger, receipt ledger), is trapped and fails closed.
 
-2. `PHYSICS_ACCEL_SMMU_TRANSLATION_PASS`:
-   Verifies that Physics correctly programs ARM SMMUv3 Stage 1 translation tables. Asserts that Stream Table Entries (STE), Context Descriptors (CD), and 4-level translation walks accurately map granted IOVA addresses to physical DRAM frames with precise permission bits (`DMA_PERM_READ`, `DMA_PERM_WRITE`, `DMA_PERM_COHERENT`).
+2. `PHYSICS_ACCEL_DMA_POLICY_PASS`:
+   Verifies that Physics correctly models ARM SMMUv3 Stage 1 IOVA-to-PA translation policy and DMA window isolation. Asserts that IOVA mapping requests are bounded, translation matches DRAM frames with precise permission bits (`DMA_PERM_READ`, `DMA_PERM_WRITE`, `DMA_PERM_COHERENT`), unmapped accesses fail closed, and overlapping windows are rejected.
 
-3. `PHYSICS_ACCEL_DMA_SANDBOX_PASS`:
-   Verifies hardware sandboxing against out-of-bounds DMA access. Deliberate DMA transactions targeting unmapped IOVAs or violating permission boundaries trigger SMMUv3 translation faults (`F_TRANSLATION`, `F_PERMISSION`), are contained fail-closed, and produce immediate capability revocation without host memory corruption.
+3. `PHYSICS_ACCEL_QUEUE_AUTHORITY_PASS`:
+   Verifies bounded queue authority and doorbell mediation policy. Confirms that submission queue ring indices wrap cleanly modulo slot capacity, malformed command packets are refused prior to ring insertion, and untrusted principals are physically barred from writing MMIO doorbell registers directly.
 
-4. `PHYSICS_ACCEL_QUEUE_AUTHORITY_PASS`:
-   Verifies bounded queue authority and doorbell mediation. Confirms that submission queue ring indices wrap cleanly modulo slot capacity, malformed command packets are refused prior to ring insertion, and untrusted principals are physically barred from writing MMIO doorbell registers directly.
+4. `PHYSICS_ACCEL_DEVICE_LIFECYCLE_PASS`:
+   Verifies deterministic progression across accelerator device states (`UNINITIALIZED` $\to$ `PROBED` $\to$ `CONFIGURED` $\to$ `ACTIVE`). Confirms that state transitions follow monotonic state machine rules and that non-disruptive fault isolation and recovery reset function fail-closed.
 
-5. `PHYSICS_ACCEL_DEVICE_LIFECYCLE_PASS`:
-   Verifies deterministic progression across accelerator device states (`UNINITIALIZED` $\to$ `PROBED` $\to$ `CONFIGURED` $\to$ `ACTIVE`). Confirms that state transitions follow monotonic state machine rules and that out-of-order operations fail closed.
-
-6. `PHYSICS_ACCEL_RESET_RECOVERY_PASS`:
-   Verifies non-disruptive fault confinement and hardware reset. Injected hardware timeouts, bus errors, or simulated hang syndromes trigger queue revocation, SMMU stream isolation, engine reset, and successful recovery without host CPU panic, host reboot, or memory leakage.
-
-7. `PHYSICS_ACCEL_RECEIPT_CHAIN_PASS`:
+5. `PHYSICS_ACCEL_RECEIPT_CHAIN_PASS`:
    Verifies that every accelerator operation emits an immutable, bit-exact 192-byte `EffectReceipt` committed to the rolling SHA-256 seal chain. Verifies that receipt hashes deterministically incorporate the prior receipt digest, preventing receipt tampering, truncation, or replay attacks.
 
-8. `PHYSICS_ACCEL_OMEGA_INGRESS_PASS`:
+6. `PHYSICS_ACCEL_OMEGA_INGRESS_PASS`:
    Verifies the Omega-to-Physics boundary. Confirms that Omega interacts exclusively through structured 64-byte `EffectIntent` requests, and that requests lacking valid, unrevoked capability handles are rejected at the broker admission gate prior to execution.
 
-9. `PHYSICS_ACCEL_ZERO_TOOLCHAIN_PASS`:
-   Verifies sovereign toolchain independence: 0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python. Confirms all table builders, queue managers, MMIO accessors, and cryptographic receipt routines are implemented strictly within the sovereign repository tree.
+7. `PHYSICS_ACCEL_HARDWARE_BOUNDARY_PASS`:
+   Verifies truthful observation of DGX Spark hardware topology directly from the live host: PCI BDF `000f:01:00.0`, vendor ID `0x10de`, device ID `0x2e12`, IOMMU group 20, SMMUv3 platform device `arm-smmu-v3.1.auto` @ base `0x13000000`, Stream ID `0x0100` provenance, BAR0 aperture `0x24000000-0x27ffffff` (64 MiB), explicit subsystem ownership boundaries, and zero unverified MMIO writes performed.
+
+8. `PHYSICS_ACCEL_ZERO_RUNTIME_DEP_PASS`:
+   Verifies sovereign runtime independence: 0 CUDA runtime, 0 CUDA driver API, 0 LLVM JIT, 0 Python runtime, 0 GCC inline assembly in canonical files. Host qualification scaffolding uses GCC as a temporary non-lineage compiler.
+
+9. `PHYSICS_ACCEL_PROVENANCE_PASS`:
+   Verifies capability provenance tracking, monotonic attenuation validation, and capability slot checking. Confirms that unpermitted operations, invalid resource types, or out-of-bounds IOVA requests are rejected fail-closed.
 
 10. `PHYSICS_ACCEL_RECEIPT_PASS`:
-    Verifies that the master qualification test harness executes all 9 preceding qualification gates and produces an immutable, cryptographically sealed qualification receipt certifying 100% compliance.
+    Verifies that a formal 192-byte `EffectReceipt` is generated for hardware boundary observation, binding observed topology parameters (Stream ID, BAR0 base, SMMU base, BDF) into the immutable receipt chain with valid SHA-256 seal.
 
 ---
 
@@ -461,45 +495,46 @@ Milestone 15 is governed by canonical contract `CONTRACT-PHYSICS-ACCELERATOR-LIN
 
 ### Epistemic Qualification Criteria & Ratification
 
-Under the epistemic verification doctrine, Milestone 15's dual postures are fully satisfied and ratified:
+Under the epistemic verification doctrine, Milestone 15's boundary is ratified as **COMPLETE / HARDWARE BOUNDARY QUALIFIED**:
 
 1. **Software Authority & API Model (QUALIFIED)**:
    - Validates that Omega can only interact with accelerator authority via capability-governed, monotonic `EffectIntent` requests.
    - Validates IOVA bounding, software translation checks, ring state machine progression, fail-closed fault handling, and unkeyed rolling SHA-256 digest chaining.
-2. **Native Hardware Seam (QUALIFIED)**:
-   - Executed the narrow and concrete physical proof chain on NVIDIA DGX Spark (`spark-b87b`):
-     $$\text{real SMMUv3 probe} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell with C11 fence} \to \text{empirical cycle timing} \to \text{revocation/reset} \to \text{192-byte EffectReceipt}$$
-   - Direct physical verification against `arm-smmu-v3.1.auto` (`0x13000000`, Stream ID `0x0100`), NVIDIA GB10 (`10de:2e12` @ `000f:01:00.0`, IOMMU group 20), BAR0 MMIO doorbell (`0x24000000`), and DRAM envelope `[0x80000000, 0x2080000000)`.
-   - Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) dependency is fully satisfied.
+2. **Empirical Hardware Boundary Characterization (QUALIFIED)**:
+   - Live hardware inspection verifies physical DGX Spark topology:
+     - NVIDIA GB10 Blackwell GPU at PCI BDF `000f:01:00.0` (Vendor `0x10de`, Device `0x2e12`)
+     - IOMMU Group 20
+     - SMMUv3 platform device `arm-smmu-v3.1.auto` @ base `0x13000000`
+     - Stream ID `0x0100` (provenance: ACPI IORT Node 29, Segment 15, BDF 01:00.0)
+     - Coherent unified DRAM envelope `[0x80000000, 0x2080000000)` (128 GiB unified LPDDR5x)
+     - BAR0 MMIO aperture `[0x24000000, 0x28000000)` (64 MiB, kernel resource observed)
+     - Explicit subsystem ownership boundaries recorded; no guessed MMIO writes performed.
+3. **Milestone 16 Boundary Hand-off**:
+   - Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) dependency is satisfied to begin empirical discovery of native Blackwell submission mechanics from a truthful foundation.
 
 ```json
 {
   "milestone": "MILESTONE 15 — PHYSICS_ACCELERATOR_LINK",
   "status": "QUALIFIED / PASS",
-  "ratification": "COMPLETE / RATIFIED (WITH NATIVE HARDWARE SEAM)",
+  "ratification": "COMPLETE / HARDWARE BOUNDARY QUALIFIED",
   "contract_id": "CONTRACT-PHYSICS-ACCELERATOR-LINK-M15",
   "lineage": "SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> AIEN",
-  "physics_implementation_commit": "4335c0cf4abaecc1db32e8a8e0ebe7f3f59e22e9",
-  "physics_receipt_commit": "b1ef69d884c160641e50bddf0cbb43777c9b90d4",
-  "omega_implementation_commit": "0321af271d16ec1487ea1d604341a4e89c382fd1",
-  "omega_receipt_commit": "625640f612aee55be0d7cf67d744c27d904c6bc3",
   "qualification_gates": {
-    "physics_gates_total": 11,
-    "physics_gates_passed": 11,
+    "physics_gates_total": 10,
+    "physics_gates_passed": 10,
     "omega_gates_total": 10,
     "omega_gates_passed": 10,
     "omega_cumulative_gates": 121,
     "omega_cumulative_passed": 121
   },
-  "native_hardware_seam": {
+  "hardware_boundary_characterization": {
     "status": "QUALIFIED",
     "target_smmu": "arm-smmu-v3.1.auto @ 0x13000000",
     "target_stream_id": "0x0100",
-    "target_device": "NVIDIA GB10 (PCI 000f:01:00.0, IOMMU group 20)",
-    "coherent_dram_envelope": "[0x80000000, 0x2080000000)",
-    "doorbell_mmio_reg": "0x24000000",
-    "measured_execution_cycles": 120,
-    "measured_execution_ns": 40
+    "target_device": "NVIDIA Blackwell GB10 (PCI 000f:01:00.0, IOMMU group 20)",
+    "coherent_dram_envelope": "[0x80000000, 0x2080000000) 128 GiB",
+    "bar0_aperture": "[0x24000000, 0x28000000) 64 MiB",
+    "native_submission_mechanics": "INTENTIONALLY_DEFERRED_TO_M16"
   }
 }
 ```

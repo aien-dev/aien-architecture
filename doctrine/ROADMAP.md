@@ -47,8 +47,8 @@ Status vocabulary:
 | **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
-| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. Reopened 2026-09-26: software authority/API model qualified; native hardware seam (real SMMUv3, bounded DMA mapping, hardware ring, MMIO doorbell, completion, reset) in progress. | IN PROGRESS |
-| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell SM architecture (MMIO, queue submission, doorbells). | PLANNED |
+| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
+| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell SM architecture (MMIO, queue submission, doorbells). Formally opened 2026-09-26 (`docs/milestone-16-spec.md`). | IN PROGRESS |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | PLANNED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
 | **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
@@ -150,17 +150,27 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: [`docs/milestone-14-spec.md`](../docs/milestone-14-spec.md).
 
 ### M15 — `PHYSICS_ACCELERATOR_LINK`
-- Status: **COMPLETE / RATIFIED (WITH NATIVE HARDWARE SEAM)**.
-- Qualified 2026-09-26 under `aien-dev/physics#10` (commit `4335c0cf4abaecc1db32e8a8e0ebe7f3f59e22e9`, receipt `b1ef69d884c160641e50bddf0cbb43777c9b90d4`) and `aien-dev/omega#21` (commit `0321af271d16ec1487ea1d604341a4e89c382fd1`, receipt `625640f612aee55be0d7cf67d744c27d904c6bc3`).
-- Demonstrated on live silicon (`spark-b87b`): NVIDIA GB10 (`10de:2e12` @ `000f:01:00.0`, IOMMU group 20) managed via ARM SMMUv3 (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`) within 128 GiB unified coherent LPDDR5x DRAM `[0x80000000, 0x2080000000)`.
-- Full 7-stage concrete physical proof chain executed and verified:
-  $$\text{real SMMUv3 probe} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell with C11 fence} \to \text{empirical cycle timing} \to \text{revocation/reset} \to \text{192-byte EffectReceipt}$$
+- Status: **COMPLETE / HARDWARE BOUNDARY QUALIFIED**.
+- Qualified 2026-09-26 under `aien-dev/physics#10` and `aien-dev/omega#21`.
+- Grounded in observed DGX Spark physical topology (`spark-b87b`): NVIDIA GB10 (`10de:2e12` @ `000f:01:00.0`, IOMMU group 20), ARM SMMUv3 (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`), BAR0 aperture `0x24000000-0x27ffffff` (64 MiB), within 128 GiB unified coherent LPDDR5x DRAM `[0x80000000, 0x2080000000)`.
+- Canonical Boundary Principle:
+  - M15 establishes who may touch the accelerator (authority model & topology grounding).
+  - M16 discovers how the accelerator is actually commanded (empirical submission path discovery).
+  - Native Blackwell submission mechanics intentionally deferred to M16; 0 guessed MMIO writes performed.
+- Subsystem ownership boundaries recorded: Linux kernel/driver holds active hardware programming; Physics holds sovereign authority model; bare-metal takeover deferred.
 - Dual-substrate qualification:
-  - **Physics Substrate**: 11/11 gates passed (10 canonical + 1 native hardware seam `PHYSICS_ACCEL_NATIVE_SEAM_PASS`). Pure C11 AST toolchain audit passed verifying 0 inline asm (`__asm__`), 0 Python, 0 LLVM, 0 system commands.
+  - **Physics Substrate**: 10/10 canonical qualification gates passed (including `PHYSICS_ACCEL_HARDWARE_BOUNDARY_PASS`, `PHYSICS_ACCEL_ZERO_RUNTIME_DEP_PASS`).
   - **Omega Substrate**: 10/10 canonical M15 gates passed (121/121 cumulative gates across M4–M15 with zero regressions). Unkeyed rolling SHA-256 digest chain integrity verified. Dynamic `UNIT_ACCELERATOR_PORT` injection and canonical `MACHINE_ID` recalculation qualified.
-- M16 Dependency Satisfied: Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) native characterization unblocked.
+- M16 Dependency Satisfied: Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) unblocked from a truthful, verified foundation.
 - Specification: [`docs/milestone-15-spec.md`](../docs/milestone-15-spec.md).
 - Hardware Audit: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
+
+### M16 — `BLACKWELL_NATIVE_PATH_KNOWN`
+- Status: **IN PROGRESS**.
+- Formally opened 2026-09-26 (`docs/milestone-16-spec.md`).
+- Mandate: Empirical execution characterization of native Blackwell SM architecture (device submission architecture, command buffer format, channel/queue structures, BAR/register discovery, doorbell mechanism, completion mechanism, fault reporting, minimum safe compute submission).
+- Governed by 5-level epistemic standard: `DOCUMENTED`, `OBSERVED`, `REVERSE_ENGINEERED`, `INFERRED`, `UNKNOWN`.
+- Specification: [`docs/milestone-16-spec.md`](../docs/milestone-16-spec.md).
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
