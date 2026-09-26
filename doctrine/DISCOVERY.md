@@ -368,62 +368,9 @@ The system advances through nine verified benchmark tiers:
 
 ## 13. The 41-Milestone Sovereign Roadmap
 
-```text
-FOUNDATIONAL ERA (M0 - M3)
-  M0:  DOCTRINE_V1                     Canonical architecture codified & ratified. [COMPLETE]
-  M1:  ATLAS_BOOT                      Irreducible bootstrap seed (atlas.bin). [COMPLETE / QEMU QUALIFIED]
-  M2:  PHYSICS_BOOT                    Physical machine authority nucleus (physics.bin). [IN PROGRESS]
-  M3:  PHYSICS_EFFECTS                 Capabilities, effect admission, and signed receipts.
+The canonical 41-milestone roadmap (M0-M40), with milestone code identifiers and current status, is maintained in exactly one place: **[`ROADMAP.md`](ROADMAP.md)**. This document does not restate the roadmap table or milestone status.
 
-OMEGA CORE SUBSTRATE (M4 - M7)
-  M4:  OMEGA_SEMANTICS                 Semantic object model, types, and identity.
-  M5:  OMEGA_AARCH64                   Native AArch64 realization generator (no LLVM).
-  M6:  OMEGA_SELF_HOST                 Omega reproduces minimal realization compiler.
-  M7:  OMEGA_VERIFY                    V0-V2 mandatory verification; V3-V5 framework.
-
-PROGRAM SYNTHESIS & LIBRARY LEARNING (M8 - M14)
-  M8:  OMEGA_PROGRAM_CORE              Synthesis tasks, cost models, program IDs.
-  M9:  OMEGA_SYNTHESIS_V0              Deterministic typed program synthesis.
-  M10: OMEGA_LIBRARY_V1                Versioned procedural library and catalog.
-  M11: OMEGA_LIBRARY_DISCOVERY         Abstraction discovery from program corpus.
-  M12: OMEGA_LIVING_MATVEC             Adaptive multi-target realization selection.
-  M13: OMEGA_MACHINE_GRAPH             Formal physical hardware topology graph.
-  M14: OMEGA_REALIZATION_SYNTHESIS     Automated G_S x G_M -> G_R synthesis.
-
-ACCELERATOR COGNITION SUBSTRATE (M15 - M19)
-  M15: PHYSICS_ACCELERATOR_LINK        Bounded coherent CPU/GPU memory interface.
-  M16: BLACKWELL_NATIVE_PATH_KNOWN     Empirical hardware execution characterization.
-  M17: OMEGA_BLACKWELL_VECTOR          Verified Blackwell vector compute realization.
-  M18: OMEGA_BLACKWELL_MATMUL          Verified Blackwell tensor matrix multiplication.
-  M19: OMEGA_ACCELERATOR_RESIDENT      Persistent GPU-resident execution substrate.
-
-SOVEREIGN TRAINING RUNTIME (M20 - M26)
-  M20: OMEGA_TENSOR                    Tensor semantics, strides, shapes, and types.
-  M21: OMEGA_AUTODIFF                  Sovereign automatic differentiation engine.
-  M22: OMEGA_OPTIMIZER                 SGD / Adam / AdamW verified realizations.
-  M23: OMEGA_SEARCH_GUIDE_TRAINING     First search guide trained on Omega traces.
-  M24: AIEN_0                          First sovereign neural guide ranking subgoals.
-  M25: AIEN_GUIDED_SYNTHESIS           Neural-guided synthesis with verified parity.
-  M26: AIEN_ABSTRACTION_DISCOVERY      AIEN proposes concepts; Omega validates survival.
-
-PHYSICS ZERO DISCOVERY ERA (M27 - M35)
-  M27: PHYSICS_ZERO_PROTOCOL           Contamination firewall & sealed evaluation specs.
-  M28: PHYSICS_ZERO_HIDDEN_WORLDS      Discrete & continuous sealed worlds (P0-0..P0-2).
-  M29: AIEN_THEORY_DISCOVERY           OMEGA_THEORY population, competition, revision.
-  M30: AIEN_ACTIVE_EXPERIMENTATION     Active distinguishing experiment formulation.
-  M31: AIEN_CONCEPT_FORMATION          Latent concept discovery (OMEGA_DISCOVERED_CONCEPT).
-  M32: PHYSICS_ZERO_ALIEN_WORLDS       Discovery on unfamiliar laws (P0-5).
-  M33: PHYSICS_ZERO_NOVEL_REGIME       Extrapolation to unobserved state spaces.
-  M34: PHYSICS_ZERO_NOVEL_PHENOMENON   Predictive discovery of unobserved phenomena.
-  M35: PHYSICS_ZERO_REAL_LAB           Safe, capability-bounded physical lab discovery.
-
-GENERAL AIEN ERA (M36 - M40)
-  M36: AIEN_HUMAN_INTERFACE            Perceptual adapter: Human Language <-> Omega.
-  M37: AIEN_RESIDENT                   Persistent accelerator-resident cognition.
-  M38: OMEGA_CONTINUAL_LIBRARY_LEARNING Continuous Wake/Solve/Verify/Sleep loop.
-  M39: AIEN_SCIENTIFIC_AUTONOMY        Autonomous hypothesis, experiment, and theory cycle.
-  M40: AIEN_SUCCESSION                 AIEN-N proposes candidate AIEN-N+1.
-```
+The Physics Zero program defined in this document occupies the **Physics Zero Discovery Era (M27-M35)**, followed by the **General AIEN Era (M36-M40)**.
 
 ---
 
