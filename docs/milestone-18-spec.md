@@ -27,11 +27,19 @@ $$\text{Semantic MatMul Contract } (G_S) \longrightarrow \text{OMEGA Instruction
 ### Strict Epistemic Scope and Sovereignty Mandate
 Milestone 18 forbids qualifying by repeating the Milestone 17 method with a larger static or precompiled instruction table. Milestone 18 crosses the code generation boundary:
 1. **Instruction Selection**: OMEGA maps the semantic matrix multiplication contract into native Blackwell sm_121 instruction forms.
-2. **Register Allocation**: OMEGA allocates physical General Purpose Registers (R0 through R255) and Uniform Registers (UR0 through UR63) dynamically without hardcoded register assignments.
+2. **Bounded Deterministic Register Allocation**: OMEGA allocates physical General Purpose Registers and Uniform Registers dynamically by computing genuine live intervals and register assignments for active tile operands, accumulators, and base pointers, rather than returning predetermined hardcoded register numbers. General-purpose spilling, coalescing, and graph coloring are intentionally deferred to subsequent compiler milestones.
 3. **Operand and Field Encoding**: OMEGA programmatically encodes 128-bit sm_121 machine code words (opcodes, register indices, immediate constants, cache modifiers, and predicate masks).
 4. **Dynamic Instruction Sequencing**: OMEGA sequences the complete compute kernel: tile index calculation, global loads, tensor core math instructions, barrier synchronization, and global stores.
 5. **Dynamic Launch Descriptors**: Queue Meta Data (QMD Version 05_00) launch descriptors configure 2D CTA grid rasterization.
 6. **Native Hardware Submission**: Pushbuffer generation and GPFIFO ring submission execute directly via the qualified M16 substrate without proprietary userspace runtimes (`libcuda.so`, `libcudart.so`).
+
+### Mandatory Tensor-Core Completion Invariant
+INT32 matrix multiplication serves strictly as an intermediate codegen qualification step. Milestone 18 cannot complete until:
+1. FP16 or BF16 tensor-core MMA executes on physical GB10 silicon.
+2. Accumulation executes in FP32 precision.
+3. Machine code is generated dynamically by OMEGA without static instruction tables.
+4. Numerical parity falls strictly within bounded reference tolerances.
+5. Empirical hardware evidence proves that the physical tensor-core MMA execution path was utilized.
 
 ---
 
@@ -42,15 +50,15 @@ The computation is defined by an immutable machine-independent matrix multiplica
 1. **Operation**: General Matrix Multiplication:
    $$C[m, n] = \sum_{k=0}^{K-1} A[m, k] B[k, n] \quad \text{for } m \in [0, M-1], n \in [0, N-1]$$
 2. **Data Types & Precision Stages**:
-   - **Phase 1 (Exact Integer Verification)**: Signed/unsigned integer matrix multiplication with 32-bit integer accumulation ($C[m, n] = (\sum A[m,k] B[k,n]) \pmod{2^{32}}$). Requires bit-for-bit exact mathematical parity against the CPU reference oracle (zero epsilon tolerance).
-   - **Phase 2 (Accelerated Precision)**: 16-bit floating point (FP16 or BF16) matrix multiplication with FP32 accumulation. Requires strict ULP-bounded mathematical parity against IEEE-754 reference evaluation.
+   - **Intermediate Stage (Integer Codegen Qualification)**: Signed/unsigned 32-bit integer matrix multiplication ($C[m, n] = (\sum A[m,k] B[k,n]) \pmod{2^{32}}$). Requires bit-for-bit exact mathematical parity against the CPU reference oracle (zero epsilon tolerance).
+   - **Mandatory Final Stage (Tensor-Core Silicon Qualification)**: 16-bit floating point (FP16 or BF16) matrix multiplication with FP32 accumulation executing on GB10 tensor cores. Requires strict ULP-bounded mathematical parity against IEEE-754 reference evaluation.
 3. **Matrix Dimensions & Sweeps**:
    - Square canonical tiles: $M = N = K \in \{16, 32, 64, 128\}$.
    - Non-square rectangular boundary sweeps: $(M, K, N) \in \{(16, 64, 32), (32, 16, 64), (64, 32, 16)\}$.
    - Memory layouts: Row-major matrix $A$, column-major or row-major matrix $B$, row-major matrix $C$.
 4. **Deterministic Input Generator**:
    - Deterministic arithmetic pattern: $A[m, k] = (m \times 17 + k \times 31 + 7) \pmod{256}$, $B[k, n] = (k \times 13 + n \times 29 + 11) \pmod{256}$.
-   - Boundary tests: Identity matrix verification ($A \times I = A$), zero matrix annihilation ($A \times 0 = 0$), and maximum dynamic range wrap/overflow tests.
+   - Boundary tests: Identity matrix verification ($A \times I = A$), zero matrix annihilation ($A \times 0 = 0$), and dynamic range wrap tests.
 5. **Exact Verification Oracle**: CPU reference implementation evaluated on Host ARM64 vs physical GPU output buffer on GB10 silicon.
 
 ---
@@ -88,10 +96,11 @@ Milestone 18 implements the sovereign Blackwell code generator in OMEGA:
      - `BAR.SYNC`: CTA thread group synchronization.
      - `STG.E`: Global memory stores.
      - `EXIT` / `BRA`: Control flow and program termination.
-2. **Register Allocator (`omega_blackwell_regalloc`)**:
-   - Allocates general registers (R0 through R255) based on live intervals of tile inputs, accumulators, and memory pointers.
-   - Allocates uniform registers (UR0 through UR63) for uniform descriptors and grid invariants.
-   - Emits allocation failure if live ranges exceed hardware register capacity, preventing silent spill corruption.
+2. **Bounded Deterministic Register Allocator (`omega_blackwell_regalloc`)**:
+   - Scoped specifically to matrix multiplication kernels.
+   - Computes genuine live intervals and register assignments over active tile operands, accumulators, and base pointers.
+   - Rejects predetermined hardcoded register tables.
+   - Emits an allocation error if live ranges exceed hardware register capacity, preventing silent spill corruption.
 3. **Instruction Encoder (`omega_blackwell_encode_insn`)**:
    - Synthesizes 128-bit sm_121 instruction words programmatically from opcode specifications, register fields, immediate constants, and predicate masks.
    - Encodes control fields (stall cycles, yield flags, barrier synchronization markers) into instruction bundles.
@@ -99,6 +108,28 @@ Milestone 18 implements the sovereign Blackwell code generator in OMEGA:
    - Assembles the complete instruction sequence with 128-byte alignment.
    - Computes the runtime SHA-256 `code_digest`.
    - Validates that zero static instruction tables were used in the generation path.
+
+### 4.2 Ordered Development Sequence
+Execution follows a two-stage sequential progression:
+
+**Stage 1: Integer Codegen Foundation**
+1. INT32 semantic matrix multiplication contract.
+2. Minimal IR and selected instruction nodes.
+3. Bounded deterministic register allocator.
+4. Dynamic scalar integer instruction encoder.
+5. Physical INT32 matrix multiplication pass on GB10.
+6. Dynamic codegen variation proof (`M18_CODEGEN_VARIATION_PASS`).
+
+**Stage 2: Tensor-Core Acceleration & Qualification**
+7. FP16/BF16 semantic matrix contract with FP32 accumulation.
+8. Empirical determination of minimum sm_121 tensor MMA instruction forms using allowed research oracles.
+9. Integration of tensor MMA instruction forms into OMEGA dynamic encoder.
+10. Tensor tile register allocation.
+11. Dynamic tensor-core kernel generation.
+12. Physical GB10 tensor execution.
+13. FP32-accumulation numerical parity verification.
+14. Hardware evidence proof of tensor-core utilization.
+15. Clean-clone isolated reproduction, zero-libcuda proof, and durable qualification receipt.
 
 ---
 
@@ -110,11 +141,11 @@ Blackwell matrix dispatch utilizes the 384-byte Queue Meta Data Version 05_00 la
    - `cta_raster_width = (N + TILE_N - 1) / TILE_N`
    - `cta_raster_height = (M + TILE_M - 1) / TILE_M`
    - `cta_raster_depth = 1`
-   - Thread dimensions: Configured to match the warp/thread group allocation of the active tile configuration.
+   - Thread dimensions: Configured to match the warp and thread group allocation of the active tile configuration.
 2. **Memory and Caching Configuration**:
    - `qmd_group_id = 0x3f`
    - `sm_global_caching_enable = 1`
-   - Cache invalidation flags enabled on texture/data headers.
+   - Cache invalidation flags enabled on texture and data headers.
    - Constant buffer 0: Mapped to 1024 bytes containing 64-bit pointers ($A, B, C$), matrix dimensions ($M, K, N$), and row/column strides.
    - Shared memory size: Dynamically sized to accommodate tile buffers.
 3. **SKEDCHECK05 Compliance**:
@@ -135,25 +166,27 @@ Milestone 18 relies strictly on the qualified Milestone 16 native submission sub
 
 ## 7. Qualification Gates & Cumulative Accounting
 
-Milestone 18 qualification requires passing 16 Milestone 18 gates in addition to the 139 cumulative regression gates established through Milestone 17.
+Milestone 18 qualification requires passing 18 Milestone 18 gates in addition to the 139 cumulative regression gates established through Milestone 17. Total evaluated gates: 157.
 
 ### Milestone 18 Qualification Gates
-- **Gate 1**: Formal Mathematical Semantic Contract Specification & CPU Oracle Parity.
-- **Gate 2**: Machine Graph ($G_M$) Representation for GB10 Tensor Units & SM Architecture.
-- **Gate 3**: Dynamic sm_121 Instruction Encoder Unit Tests (Bitfield programmatic encoding).
-- **Gate 4**: Dynamic Register Allocator Determinism & Conflict Rejection.
-- **Gate 5**: Dynamic Instruction Sequencer & 128-Byte Bundle Alignment.
-- **Gate 6**: Code Truth Invariant: Zero Static Precompiled Instruction Tables in Codegen Core.
-- **Gate 7**: Dynamic Code Digest (`code_digest`) Computation and Realization Identity Binding.
-- **Gate 8**: QMD Version 05_00 2D Grid Launch Descriptor Synthesis.
-- **Gate 9**: Native M16 Submission Path & GPFIFO Pushbuffer Integration.
-- **Gate 10**: Square Matrix Parity ($16\times 16$, $32\times 32$) against OMEGA Semantic Oracle.
-- **Gate 11**: Non-Square Rectangular Matrix Parity ($16\times 64 \times 32$).
-- **Gate 12**: Boundary and Annihilation Matrix Tests (Identity, Zeros, Extreme Dynamic Range).
-- **Gate 13**: Coherent Memory Semaphore Completion & Execution Timing on Physical GB10.
-- **Gate 14**: Zero Foreign Userspace Runtime Verification (`ldd`, `nm -u`, `/proc/self/maps`).
-- **Gate 15**: Clean-Clone Isolated Reproduction on DGX Spark Silicon.
-- **Gate 16**: Cumulative Regression Parity: 139 / 139 prior milestone gates passing (M4 through M17).
+- **Gate 1: `OMEGA_BW_MATMUL_SEMANTIC_CONTRACT_PASS`**: Formal Mathematical Semantic Contract Specification & CPU Oracle Parity.
+- **Gate 2: `OMEGA_BW_MATMUL_MACHINE_GRAPH_PASS`**: Machine Graph ($G_M$) Representation for GB10 Tensor Units & SM Architecture.
+- **Gate 3: `OMEGA_BW_MATMUL_ENCODER_UNIT_PASS`**: Dynamic sm_121 Instruction Encoder Unit Tests (Bitfield programmatic encoding).
+- **Gate 4: `OMEGA_BW_MATMUL_BOUNDED_REGALLOC_PASS`**: Bounded Deterministic Live-Interval Register Allocation & Conflict Rejection.
+- **Gate 5: `OMEGA_BW_MATMUL_INSTRUCTION_SEQUENCING_PASS`**: Dynamic Instruction Sequencer & 128-Byte Bundle Alignment.
+- **Gate 6: `OMEGA_BW_MATMUL_CODE_TRUTH_PASS`**: Code Truth Invariant: Zero Static Precompiled Instruction Tables in Codegen Core.
+- **Gate 7: `OMEGA_BW_MATMUL_CODEGEN_VARIATION_PASS`**: Codegen Variation Proof: Generates distinct valid kernels across different configurations (such as $16\times 16\times 16$ FP16 vs $32\times 16\times 64$ BF16), demonstrating distinct register allocation traces, distinct instruction streams, distinct code digests, and successful execution for each.
+- **Gate 8: `OMEGA_BW_MATMUL_REALIZATION_ID_PASS`**: Dynamic Code Digest (`code_digest`) Computation and Realization Identity Binding.
+- **Gate 9: `OMEGA_BW_MATMUL_QMD_2D_PASS`**: QMD Version 05_00 2D Grid Launch Descriptor Synthesis.
+- **Gate 10: `OMEGA_BW_MATMUL_NATIVE_SUBMIT_PASS`**: Native M16 Submission Path & GPFIFO Pushbuffer Integration.
+- **Gate 11: `OMEGA_BW_MATMUL_INT32_INTERMEDIATE_PASS`**: Intermediate INT32 Execution on Physical GB10 with Exact Bit-for-Bit Parity.
+- **Gate 12: `OMEGA_BW_MATMUL_TENSOR_CORE_EXECUTION_PASS`**: Mandatory Silicon Completion Gate: Physical GB10 Tensor Core MMA Execution with FP32 Accumulation, Emitted Instruction Word Proof, and Hardware Completion Evidence.
+- **Gate 13: `OMEGA_BW_MATMUL_NUMERICAL_BOUND_PASS`**: Bounded Numerical Parity against Reference Oracle across Canonical Shapes ($16\times 16$, $32\times 32$, $16\times 64\times 32$).
+- **Gate 14: `OMEGA_BW_MATMUL_BOUNDARY_ANNIHILATION_PASS`**: Boundary and Annihilation Matrix Tests (Identity, Zeros, Extreme Dynamic Range).
+- **Gate 15: `OMEGA_BW_MATMUL_ZERO_LIBCUDA_PASS`**: Zero Foreign Userspace Runtime Verification (`ldd`, `nm -u`, `/proc/self/maps`).
+- **Gate 16: `OMEGA_BW_MATMUL_CLEAN_CLONE_PASS`**: Clean-Clone Isolated Reproduction on DGX Spark Silicon.
+- **Gate 17: `OMEGA_BW_MATMUL_REGRESSION_PASS`**: Cumulative Regression Parity: 139 / 139 prior milestone gates passing (M4 through M17).
+- **Gate 18: `OMEGA_BW_MATMUL_RECEIPT_PASS`**: Cryptographic Qualification Receipt Generation with Hardware Trace Evidence.
 
 ---
 
