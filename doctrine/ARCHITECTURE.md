@@ -283,7 +283,7 @@ flowchart TD
 FOUNDATIONAL ERA (M0 - M3)
   M0:  DOCTRINE_V1                     Canonical architecture codified & ratified. [COMPLETE]
   M1:  ATLAS_BOOT                      Irreducible bootstrap seed (atlas.bin). [COMPLETE / QEMU QUALIFIED]
-  M2:  PHYSICS_BOOT                    Physical machine authority nucleus (physics.bin). [COMPLETE / QEMU QUALIFIED]
+  M2:  PHYSICS_BOOT                    Physical machine authority nucleus (physics.bin). [REOPENED / IN PROGRESS]
   M3:  PHYSICS_EFFECTS                 Capabilities, effect admission, and signed receipts.
 
 OMEGA CORE SUBSTRATE (M4 - M7)
@@ -340,7 +340,7 @@ GENERAL AIEN ERA (M36 - M40)
 | :--- | :--- | :--- |
 | **M0** | `DOCTRINE_V1` | Foundational Specification. Ratification of complete architectural corpus. [COMPLETE] |
 | **M1** | `ATLAS_BOOT` | Irreducible bootstrap seed (`atlas.bin`). Dual-seam verified. [COMPLETE / QEMU QUALIFIED] |
-| **M2** | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. [COMPLETE / QEMU QUALIFIED] |
+| **M2** | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. [REOPENED / IN PROGRESS] |
 | **M3** | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts. |
 | **M4** | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent identity. |
 | **M5** | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (zero foreign compiler bloat). |
