@@ -49,7 +49,7 @@ Status vocabulary:
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
-| **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | IN PROGRESS |
+| **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization ($C[i] = (A[i] + B[i]) \pmod{2^{32}}$) generated from $G_S$ and executed via qualified M16 native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
 | **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
@@ -191,11 +191,26 @@ One nontrivial abstraction not present in the initial library that:
 - Raw evidence bundle sealed under `physics/evidence/m16-requalification/` (with `SHA256SUMS`).
 - Specification: [`docs/milestone-16-spec.md`](../docs/milestone-16-spec.md).
 
-### M17 — `OMEGA_BLACKWELL_VECTOR`
-- Status: **IN PROGRESS**.
-- Formally opened 2026-09-26.
-- Mandate: Verified native Blackwell vector compute realization generated directly from $G_S$ using the empirical native submission path established in M16.
-- Baseline: Direct pushbuffer method stream, GPFIFO ring submission, and BAR0 `+0x90` usermode doorbell without proprietary runtime dependency in the submission critical path.
+### M17: `OMEGA_BLACKWELL_VECTOR`
+- Status: **COMPLETE / SILICON QUALIFIED**.
+- Formally ratified 2026-09-26.
+- Implementation: `aien-dev/omega@27971cd` (PR #22).
+- Final Evidence Receipt: `aien-dev/omega@43f725e` (PR #23, `evidence/omega_blackwell_vector_qualification_receipt.json`).
+- M16 Authority Substrate: `aien-dev/physics@b64753d` (PR #11).
+- Specification: [`docs/milestone-17-spec.md`](../docs/milestone-17-spec.md).
+- Silicon Target: NVIDIA DGX Spark (`spark-b87b`), Grace Blackwell GB10 (sm_121, 128 GiB unified LPDDR5x RAM).
+- Semantic Contract: Unsigned 32-bit vector addition ($C[i] = (A[i] + B[i]) \pmod{2^{32}}$) with exact bit-for-bit mathematical parity against OMEGA semantic oracle across boundary lengths $N \in \{1, 15, 63, 64, 65, 127, 128, 256, 1024\}$.
+- Four-Component Realization Identity: $\text{SHA-256}(\text{spec\_id} \parallel \text{machine\_id} \parallel \text{code\_digest} \parallel \text{sm\_arch})$ uniquely locking semantic operation, machine graph, machine code artifact, and GPU SM microarchitecture.
+- Qualification Gates: 18 / 18 Milestone 17 qualification gates passed.
+- Cumulative Regression Accounting: 121 / 121 regression gates across prior milestones (M4 through M15) passed. Total 139 gates evaluated and passed (zero failures, zero regressions).
+- Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
+- Clean-Clone Reproduction: Verified from scratch on DGX Spark silicon in isolated clone `/tmp/omega-clean-m17`.
+- Cortex Receipt: Space `atlas-memory`, receipt ID `dea831e3-33c8-480c-bff3-2f170bf9b3b0`.
+
+### M18: `OMEGA_BLACKWELL_MATMUL`
+- Status: **PLANNED**.
+- Mandate: Verified native Blackwell tensor matrix multiplication with tensor core acceleration.
+- Architecture: Synthesizes sm_121 tensor core instructions using QMD launch descriptors and native M16 pushbuffer submission.
 
 
 ### M22 — `OMEGA_OPTIMIZER`
