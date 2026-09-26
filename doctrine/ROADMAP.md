@@ -219,7 +219,7 @@ One nontrivial abstraction not present in the initial library that:
 - Qualification Gates: 18 / 18 Milestone 18 gates passed + 139 / 139 cumulative regression gates (M4 through M17) passed. Total evaluated: 157 gates passing.
 - Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
 - Clean-Clone Reproduction: Verified from scratch on DGX Spark silicon in isolated clone `/tmp/omega_clean_m18`.
-- Cortex Receipt: Space `atlas-memory`.
+- Cortex Receipt: Space `atlas-memory`, receipt ID `03c34210-4ecc-4c79-9bf9-c3ac37e157f8`.
 
 
 ### M22 — `OMEGA_OPTIMIZER`
