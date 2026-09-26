@@ -50,7 +50,7 @@ Status vocabulary:
 | **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
-| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. | IN PROGRESS |
+| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
 | **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
@@ -208,13 +208,18 @@ One nontrivial abstraction not present in the initial library that:
 - Cortex Receipt: Space `atlas-memory`, receipt ID `dea831e3-33c8-480c-bff3-2f170bf9b3b0`.
 
 ### M18: `OMEGA_BLACKWELL_MATMUL`
-- Status: **IN PROGRESS**.
-- Formally opened 2026-09-26.
-- Specification: [`docs/milestone-18-spec.md`](../docs/milestone-18-spec.md).
-- Mandate: Verified native Blackwell tensor matrix multiplication with tensor core acceleration.
-- Architecture: Synthesizes sm_121 tensor core instructions using QMD launch descriptors and native M16 pushbuffer submission.
-- Sovereignty Boundary: Crosses from verified static instruction fixtures to dynamic native code generation: semantic MatMul contract lowers through OMEGA instruction selection, operand and field encoding, tensor-core instruction sequencing, dynamic QMD launch descriptors, and native M16 submission on physical GB10 silicon under exact and numerically bounded verification.
-- Mandatory Tensor-Core Gate: INT32 matrix multiplication serves as an intermediate codegen milestone; completion strictly requires physical GB10 FP16/BF16 tensor core MMA execution with FP32 accumulation and verified tensor instruction traces.
+- Status: **COMPLETE / SILICON QUALIFIED**.
+- Ratified 2026-09-26.
+- Implementation: `aien-dev/omega` (commit `9421737`, receipt commit `87349c0`).
+- Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`).
+- Hardware Target: NVIDIA DGX Spark (`spark-b87b`), Grace Blackwell GB10 (`sm_121`, 128 GiB unified LPDDR5x RAM).
+- Code Truth Doctrine: Zero static precompiled instruction tables in codegen core; dynamic sm_121 instruction selection, bounded linear-scan register allocation, 128-bit machine word encoding, and QMD launch descriptor synthesis.
+- Tensor Core Acceleration: Native physical GB10 execution of `HMMA.16816.F32` (FP16 inputs) and `HMMA.16816.F32.BF16` (BF16 inputs) with FP32 accumulation.
+- 9-Point Proof Bundle: (1) OMEGA IR HMMA node, (2) Quad/pair bounded regalloc trace, (3) Emitted 128-bit machine words, (4) Research-oracle instruction decode, (5) Runtime SHA-256 code digest, (6) Physical GB10 completion marker `0x44444444` and semaphore `6`, (7) FP32 numerical parity within bound (< 10^-4), (8) Controlled mutation test proving divergence/refusal, (9) Zero-libcuda runtime audit.
+- Qualification Gates: 18 / 18 Milestone 18 gates passed + 139 / 139 cumulative regression gates (M4 through M17) passed. Total evaluated: 157 gates passing.
+- Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
+- Clean-Clone Reproduction: Verified from scratch on DGX Spark silicon in isolated clone `/tmp/omega_clean_m18`.
+- Cortex Receipt: Space `atlas-memory`.
 
 
 ### M22 — `OMEGA_OPTIMIZER`
