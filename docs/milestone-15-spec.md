@@ -5,7 +5,7 @@ Document ID:     SPEC-PHYSICS-M15
 Milestone:       Milestone 15 (PHYSICS_ACCELERATOR_LINK)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Bounded Coherent Memory Interface, SMMUv3 DMA Sandboxing & Accelerator Authority
-Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#27, aien-dev/physics#10, aien-dev/omega#21)
+Status:          IN PROGRESS (REOPENED FOR NATIVE HARDWARE SEAM; MODEL QUALIFIED)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> AIEN
 ```
 
@@ -459,13 +459,25 @@ Milestone 15 is governed by canonical contract `CONTRACT-PHYSICS-ACCELERATOR-LIN
 - **Omega Client Link Implementation**: `aien-dev/omega#21`
 - **Qualification Receipt Target**: `evidence/physics_accelerator_link_qualification_receipt.json`
 
+### Epistemic Qualification Criteria
+
+Under the epistemic verification doctrine, Milestone 15 separates the qualification of the authority protocol from live native hardware demonstration:
+
+1. **Software Authority & API Model (QUALIFIED)**:
+   - Validates that Omega can only interact with accelerator authority via capability-governed, monotonic `EffectIntent` requests.
+   - Validates IOVA bounding, software translation checks, ring state machine progression, fail-closed fault handling, and unkeyed rolling SHA-256 digest chaining.
+2. **Native Hardware Seam (IN PROGRESS)**:
+   - Requires empirical execution of the narrow and concrete physical proof chain on NVIDIA DGX Spark (`spark-b87b`):
+     $$\text{real SMMUv3 config} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell} \to \text{completion/fault} \to \text{revocation/reset} \to \text{EffectReceipt from measured hardware outcome}$$
+   - Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) depends strictly on this physical proof chain to prevent characterization of simulated boundaries.
+
 ```json
 {
   "milestone": "MILESTONE 15 — PHYSICS_ACCELERATOR_LINK",
-  "status": "QUALIFIED / PASS",
+  "status": "IN PROGRESS (MODEL QUALIFIED / NATIVE HARDWARE SEAM PENDING)",
   "contract_id": "CONTRACT-PHYSICS-ACCELERATOR-LINK-M15",
   "lineage": "SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15) -> OMEGA (M4-M14) -> AIEN",
-  "gates": {
+  "model_checks": {
     "PHYSICS_ACCEL_MEM_BOUNDS_PASS": "PASS",
     "PHYSICS_ACCEL_SMMU_TRANSLATION_PASS": "PASS",
     "PHYSICS_ACCEL_DMA_SANDBOX_PASS": "PASS",
@@ -473,9 +485,13 @@ Milestone 15 is governed by canonical contract `CONTRACT-PHYSICS-ACCELERATOR-LIN
     "PHYSICS_ACCEL_DEVICE_LIFECYCLE_PASS": "PASS",
     "PHYSICS_ACCEL_RESET_RECOVERY_PASS": "PASS",
     "PHYSICS_ACCEL_RECEIPT_CHAIN_PASS": "PASS",
-    "PHYSICS_ACCEL_OMEGA_INGRESS_PASS": "PASS",
-    "PHYSICS_ACCEL_ZERO_TOOLCHAIN_PASS": "PASS",
-    "PHYSICS_ACCEL_RECEIPT_PASS": "PASS"
+    "PHYSICS_ACCEL_OMEGA_INGRESS_PASS": "PASS"
+  },
+  "native_hardware_seam": {
+    "status": "PENDING_EXECUTION",
+    "target_smmu": "arm-smmu-v3.1.auto @ 0x13000000",
+    "target_stream_id": "0x0100",
+    "target_device": "NVIDIA GB10 (PCI 000f:01:00.0)"
   }
 }
 ```

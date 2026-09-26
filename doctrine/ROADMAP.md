@@ -47,7 +47,7 @@ Status vocabulary:
 | **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
 | **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
 | **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
-| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. Qualified 2026-09-26 under `aien-dev/physics` (commit `b2c5f3c...`, receipt `ffb67bf...`) and `aien-dev/omega` (commit `b06eb3b...`, receipt `019af47...`). | COMPLETE |
+| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded coherent CPU/accelerator memory interface and SMMUv3 DMA sandboxing. Reopened 2026-09-26: software authority/API model qualified; native hardware seam (real SMMUv3, bounded DMA mapping, hardware ring, MMIO doorbell, completion, reset) in progress. | IN PROGRESS |
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell SM architecture (MMIO, queue submission, doorbells). | PLANNED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified Blackwell vector compute realization generated directly from $G_S$. | PLANNED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with tensor core acceleration. | PLANNED |
@@ -150,21 +150,19 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: [`docs/milestone-14-spec.md`](../docs/milestone-14-spec.md).
 
 ### M15 — `PHYSICS_ACCELERATOR_LINK`
-- Qualified 2026-09-26 under `aien-dev/physics` (implementation `b2c5f3c7a6b84f1693a8a6113b741f56fa7c3ec2`, receipt `ffb67bfd96d29c8e82ef6ff447781b0f55fb507a`) and `aien-dev/omega` (implementation `b06eb3b21a32811021ea526f72d90f4bff5408c9`, receipt `019af47dc8ec4d8f0797b5e40e2cf948c4cf89be`).
-- Bounded accelerator physical authority in Physics:
-  - Bounded coherent LPDDR5x DRAM envelope `[0x80000000, 0x2080000000)` (128 GiB, 0 discrete VRAM, hardware coherent).
-  - ARM SMMUv3 Stage 1 IOVA translation (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`, IOMMU group 20) with fail-closed DMA sandboxing.
-  - Queue authority and exclusive doorbell mediation (unprivileged doorbells denied fail-closed).
-  - Non-disruptive device recovery and fault isolation without host OS disruption.
-  - 192-byte immutable `EffectReceipt` with rolling SHA-256 seal chain.
-- Sovereign Omega accelerator client interface (`OmegaAccelPort`):
-  - Formulates 64-byte `EffectIntent` structures without raw hardware register access.
-  - Verifies Physics `EffectReceipt` signatures and maintains local rolling seal chain.
-  - Dynamically binds accelerator port directly to `OmegaMachineGraph` ($G_M$), recalculating `MACHINE_ID`.
-- Zero foreign toolchain: 0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python, 0 CUDA runtime/driver.
-- 10/10 canonical M15 qualification gates passed across Physics and Omega (121/121 cumulative gates with zero regressions).
-- Empirical hardware audit report: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
+- Status: **IN PROGRESS (REOPENED FOR NATIVE HARDWARE SEAM; MODEL QUALIFIED)**.
+- Reopened 2026-09-26: Epistemic audit established that commits `physics@b2c5f3c` / `ffb67bf` and `omega@b06eb3b` / `019af47` demonstrate the **software authority, intent/receipt, and capability mediation model**, but do not demonstrate physical accelerator authority on live silicon.
+- Dual qualification posture:
+  - **M15 Authority & API Model**: QUALIFIED (8/8 model checks pass; capability token attenuation, IOVA bounds checking, ring simulation, state machine transitions, unkeyed SHA-256 rolling digest chain).
+  - **M15 Live Native Accelerator Authority**: IN PROGRESS / HARDWARE SEAM PENDING. Requires the narrow and concrete physical proof chain:
+    $$\text{real SMMUv3 config} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell} \to \text{completion/fault} \to \text{revocation/reset} \to \text{EffectReceipt from measured hardware outcome}$$
+- M16 Dependency Invariant: Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) cannot begin characterization until this native hardware seam is executed and verified on physical Blackwell GB10 / SMMUv3 silicon (`spark-b87b`).
+- Corrected Sovereignty & Identity Accounting:
+  - Stream ID: Standardized to observed hardware Stream ID `0x0100` (256 decimal, ACPI IORT Node 29 mapping segment 15 `01:00.0` to `arm-smmu-v3.1.auto`).
+  - Toolchain: Host C build uses GCC 13.3; hardware barrier implemented via standard C11 `<stdatomic.h>` (`atomic_thread_fence(memory_order_seq_cst)`), eliminating GCC inline assembly (`__asm__ volatile ("dsb sy")`).
+  - Cryptography: Receipts verified via unkeyed rolling SHA-256 digest chain for tamper-evident ledger integrity (not asymmetric signatures or MACs).
 - Specification: [`docs/milestone-15-spec.md`](../docs/milestone-15-spec.md).
+- Hardware Audit: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
