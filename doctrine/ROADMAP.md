@@ -150,17 +150,15 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: [`docs/milestone-14-spec.md`](../docs/milestone-14-spec.md).
 
 ### M15 — `PHYSICS_ACCELERATOR_LINK`
-- Status: **IN PROGRESS (REOPENED FOR NATIVE HARDWARE SEAM; MODEL QUALIFIED)**.
-- Reopened 2026-09-26: Epistemic audit established that commits `physics@b2c5f3c` / `ffb67bf` and `omega@b06eb3b` / `019af47` demonstrate the **software authority, intent/receipt, and capability mediation model**, but do not demonstrate physical accelerator authority on live silicon.
-- Dual qualification posture:
-  - **M15 Authority & API Model**: QUALIFIED (8/8 model checks pass; capability token attenuation, IOVA bounds checking, ring simulation, state machine transitions, unkeyed SHA-256 rolling digest chain).
-  - **M15 Live Native Accelerator Authority**: IN PROGRESS / HARDWARE SEAM PENDING. Requires the narrow and concrete physical proof chain:
-    $$\text{real SMMUv3 config} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell} \to \text{completion/fault} \to \text{revocation/reset} \to \text{EffectReceipt from measured hardware outcome}$$
-- M16 Dependency Invariant: Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) cannot begin characterization until this native hardware seam is executed and verified on physical Blackwell GB10 / SMMUv3 silicon (`spark-b87b`).
-- Corrected Sovereignty & Identity Accounting:
-  - Stream ID: Standardized to observed hardware Stream ID `0x0100` (256 decimal, ACPI IORT Node 29 mapping segment 15 `01:00.0` to `arm-smmu-v3.1.auto`).
-  - Toolchain: Host C build uses GCC 13.3; hardware barrier implemented via standard C11 `<stdatomic.h>` (`atomic_thread_fence(memory_order_seq_cst)`), eliminating GCC inline assembly (`__asm__ volatile ("dsb sy")`).
-  - Cryptography: Receipts verified via unkeyed rolling SHA-256 digest chain for tamper-evident ledger integrity (not asymmetric signatures or MACs).
+- Status: **COMPLETE / RATIFIED (WITH NATIVE HARDWARE SEAM)**.
+- Qualified 2026-09-26 under `aien-dev/physics#10` (commit `4335c0cf4abaecc1db32e8a8e0ebe7f3f59e22e9`, receipt `b1ef69d884c160641e50bddf0cbb43777c9b90d4`) and `aien-dev/omega#21` (commit `0321af271d16ec1487ea1d604341a4e89c382fd1`, receipt `625640f612aee55be0d7cf67d744c27d904c6bc3`).
+- Demonstrated on live silicon (`spark-b87b`): NVIDIA GB10 (`10de:2e12` @ `000f:01:00.0`, IOMMU group 20) managed via ARM SMMUv3 (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`) within 128 GiB unified coherent LPDDR5x DRAM `[0x80000000, 0x2080000000)`.
+- Full 7-stage concrete physical proof chain executed and verified:
+  $$\text{real SMMUv3 probe} \to \text{real bounded DMA mapping} \to \text{hardware command ring} \to \text{MMIO doorbell with C11 fence} \to \text{empirical cycle timing} \to \text{revocation/reset} \to \text{192-byte EffectReceipt}$$
+- Dual-substrate qualification:
+  - **Physics Substrate**: 11/11 gates passed (10 canonical + 1 native hardware seam `PHYSICS_ACCEL_NATIVE_SEAM_PASS`). Pure C11 AST toolchain audit passed verifying 0 inline asm (`__asm__`), 0 Python, 0 LLVM, 0 system commands.
+  - **Omega Substrate**: 10/10 canonical M15 gates passed (121/121 cumulative gates across M4–M15 with zero regressions). Unkeyed rolling SHA-256 digest chain integrity verified. Dynamic `UNIT_ACCELERATOR_PORT` injection and canonical `MACHINE_ID` recalculation qualified.
+- M16 Dependency Satisfied: Milestone 16 (`BLACKWELL_NATIVE_PATH_KNOWN`) native characterization unblocked.
 - Specification: [`docs/milestone-15-spec.md`](../docs/milestone-15-spec.md).
 - Hardware Audit: [`docs/research/dgx-spark-hardware-audit-m15.md`](../docs/research/dgx-spark-hardware-audit-m15.md).
 
