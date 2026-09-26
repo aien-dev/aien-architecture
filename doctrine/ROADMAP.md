@@ -37,7 +37,7 @@ Status vocabulary:
 | **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. Requalified 2026-09-26 (`aien-dev/physics#3`, receipt `qualification_receipt.json`). QEMU only; `PHYSICS_BOOT_NATIVE_PASS` pending. | COMPLETE / QEMU QUALIFIED |
 | **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). Qualified 2026-09-26 under `aien-dev/physics#9` (commit `766f8fd6...`, receipt commit `a7dc4ef7...`). QEMU only; native hardware qualification remains separately gated. | COMPLETE / QEMU QUALIFIED |
 | **M4** | Omega Core Substrate | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent content-addressed identity. Qualified 2026-09-26 under `aien-dev/omega` (commit `30bb116...`, receipt commit `a975573...`). | COMPLETE |
-| **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). | PLANNED |
+| **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). Qualified 2026-09-26 under `aien-dev/omega` (commit `2dd4102...`, receipt commit `34dbe93...`). | COMPLETE |
 | **M6** | Omega Core Substrate | `OMEGA_SELF_HOST` | Omega reproduces the minimal realization compiler through its own semantic graph. | PLANNED |
 | **M7** | Omega Core Substrate | `OMEGA_VERIFY` | Mandatory V0-V2 verification engine; V3-V5 proof-carrying code framework. | PLANNED |
 | **M8** | Program Synthesis & Library Learning | `OMEGA_PROGRAM_CORE` | Explicit program representation, synthesis task schema (`SYNTHESIS_TASK`), program cost modeling. | PLANNED |
@@ -103,6 +103,18 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 - Anti-bloat budget: `physics.elf` text size 10,624 bytes (32.4% of 32 KiB budget); `physics.bin` total image 18,432 bytes (28.1% of 64 KiB budget).
 - Native Hardware Status: QEMU qualified only; native hardware qualification remains separately gated.
 - Specification: [`docs/milestone-3-spec.md`](../docs/milestone-3-spec.md).
+
+### M5 — `OMEGA_AARCH64`
+- Qualified 2026-09-26 under `aien-dev/omega` (commit `2dd41024345d207d57f59d4c7940176b6697b099`, receipt commit `34dbe93e9fa22aee50b8eb426e6d1e43444490f2`).
+- Direct AArch64 machine byte realization generator without LLVM, Clang, GCC, or GNU `as`.
+- Verified pure integer register lowering ($G_S \to$ AArch64) for $F(a, b, c) = (a + b) - c$.
+- Content-addressed `REALIZATION_ID` cryptographic binding to M4 `SEMANTIC_ID`.
+- Triple verification seams:
+  1. Static independent instruction bitmask decoder.
+  2. Native DGX Spark in-memory execution (`mprotect PROT_EXEC`).
+  3. Bare-metal QEMU virt runner execution with PL011 UART telemetry and semihosting clean exit.
+  4. Adversarial single-bit mutation refusal gate.
+- 9/9 canonical M5 qualification gates passed. Specification: [`docs/milestone-5-spec.md`](../docs/milestone-5-spec.md).
 
 ### M7 — `OMEGA_VERIFY`
 - REQUIRED: V0 Structural/Type/Capability, V1 Differential, V2 Property/Invariant.
