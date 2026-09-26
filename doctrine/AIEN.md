@@ -20,13 +20,13 @@
        │            │                             ▲             │
        │            ▼                             │             │
        │  ┌──────────────────────────────────────────────┐      │
-       │  │               AEGIS MEMBRANE                 │      │
-       │  │         (Explicit Scoped Authority)          │      │
+       │  │             AEGIS VERIFICATION               │      │
+       │  │        (Continuous Invariant Checker)        │      │
        │  └───────────────────────┬──────────────────────┘      │
        └──────────────────────────┼─────────────────────────────┘
                                   ▼
                                PHYSICS
-                   (Irreversible Physical Reality)
+                   (Machine Lowering & Realizer)
 ```
 
 ---
@@ -71,9 +71,9 @@ No matter how sophisticated, accurate, or high-confidence AIEN's cognitive deduc
 * AIEN cannot execute arbitrary untyped host system calls.
 * AIEN cannot promote its own models, weights, or candidates into production.
 
-Every physical effect, memory reallocation, hardware configuration change, or world interaction proposed by AIEN must be expressed as an explicit, typed **Realization Proposal**. This proposal is submitted to the **AEGIS Membrane** (the capability enforcement boundary). AEGIS verifies explicit capabilities, validates cryptographically signed receipts, enforces invariants, and determines whether physical execution is admitted. 
+Every physical effect, memory reallocation, hardware configuration change, or world interaction proposed by AIEN must be expressed as an explicit, typed **Realization Proposal**. OMEGA formalizes the program, PHYSICS lowers the physical operations, and AEGIS verifies that the realization satisfies explicit capability contracts, memory bounds, generation validity, and system invariants before execution is admitted.
 
-If AEGIS rejects a proposal, AIEN receives a typed rejection receipt containing the formal failure invariant. AIEN learns from this receipt, updates its internal world model, and re-plans within authorized boundaries.
+If AEGIS identifies an invalid invariant or unsatisfied contract, AIEN receives a structured verification receipt containing the failed invariants, counterexamples, and required revisions. AIEN learns from this receipt, updates its internal world model, and re-plans within verified boundaries.
 
 ---
 
@@ -109,9 +109,12 @@ graph TD
     P -->|branches_to| J["J-Space Exploration<br/>(Candidate Paths)"]
     J -->|selects| R["Realization Node<br/>(Physical Blueprint)"]
     R -->|proposes| E["Effect Node<br/>(Declared Action)"]
-    E -->|submits_to| A["AEGIS Membrane<br/>(Authority Verification)"]
-    A -->|executes_on| PHY["Physics / Hardware<br/>(Execution)"]
-    PHY -->|yields| OBS["Observation / Receipt<br/>(Measured Result)"]
+    E -->|formalized_by| O["OMEGA<br/>(Semantic Program)"]
+    O -->|lowered_by| PHY["PHYSICS<br/>(Machine Realization)"]
+    PHY -->|verified_by| A["AEGIS<br/>(Invariant Checker)"]
+    A -->|executes_on| HW["HARDWARE<br/>(Execution)"]
+    HW -->|yields| OBS
+    HW -->|yields| OBS["Observation / Receipt<br/>(Measured Result)"]
     OBS -->|proves_or_refutes| PRF["Proof / Evidence Node<br/>(Empirical Fact)"]
     PRF -->|updates| S
 ```
@@ -352,7 +355,7 @@ AIEN does not begin by scraping uncontrolled internet text. It is constructed th
   │     Perceptual mapping, explanation, dialogue          │
   ├────────────────────────────────────────────────────────┤
   │              STAGE 7: EFFECTS                          │
-  │     AEGIS membrane, safety boundaries, blast radius    │
+  │     AEGIS verifier, safety boundaries, blast radius    │
   ├────────────────────────────────────────────────────────┤
   │              STAGE 6: PLANNING                         │
   │     Hierarchical decomposition, J-space search         │
@@ -410,9 +413,9 @@ AIEN does not begin by scraping uncontrolled internet text. It is constructed th
 * **Competency Test**: Formulating optimal multi-step plans that respect severe resource constraints and temporal deadlines.
 
 #### Stage 7: Effects
-* **Domain**: The AEGIS authority membrane, capability management, destructive action denylists, reversible vs. irreversible operations, external network boundaries, isolation boundaries, and blast radius containment.
-* **Objective**: Deep understanding of authority, permissions, and consequences. AIEN internalizes that it has no ambient power and must explicitly ask AEGIS for authority.
-* **Competency Test**: Correctly classifying arbitrary actions by authority requirements and successfully navigating AEGIS permission protocols without privilege escalation attempts.
+* **Domain**: AEGIS invariant and contract verification, capability management, destructive action denylists, reversible vs. irreversible operations, external network boundaries, isolation boundaries, and blast radius containment.
+* **Objective**: Deep understanding of capability constraints, permissions, and consequences. AIEN internalizes that it has no ambient power and must satisfy AEGIS capability contracts and system invariants.
+* **Competency Test**: Correctly classifying arbitrary actions by capability requirements and satisfying AEGIS verification contracts without contract violation attempts.
 
 #### Stage 8: Human Language
 * **Domain**: Natural language semantics, pragmatic intent extraction, dialogue modeling, explanation generation, contextual grounding, linguistic ambiguity resolution, and translation between human vocabulary and Omega semantic graphs.
@@ -726,10 +729,10 @@ AIEN represents the convergence of formal methods, native machine intelligence, 
 
 * It is **Sovereign** because it trains, compiles, verifies, and executes its own cognitive runtime inside Omega without external dependencies.
 * It is **Grounded** because its internal language is a direct mathematical graph tied to empirical observations and physical hardware limits.
-* It is **Safe** because it possesses zero ambient authority, operates through an explicit capability membrane, and can never promote its own changes.
+* It is **Safe** because it possesses zero ambient authority, operates through explicit capability contracts and continuous verification, and can never promote its own changes.
 * It is **Persistent** because it resides permanently in Blackwell memory, learning continuously through verified receipts.
 
-> **Intent → Meaning → Desired State → Transformation → Authority → Physical Realization → Physics → Reality → Evidence → Learning.**
+> **AIEN PROPOSES. OMEGA DEFINES. PHYSICS REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.**
 
 AIEN does not escape reality; it serves as the ultimate compiler of human intention into authorized, verifiable, physical truth.
 

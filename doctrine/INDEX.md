@@ -111,7 +111,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 - **Scope:** Physical execution governance, MMU/SMMUv3 management, hardware capability enforcement, and effect admission.
 - **Core Principles:**
   - **The Physical Mandate:** "What is allowed to become physically real?" Physics is the Constitution of the Machine.
-  - **AEGIS Capability Membrane:** Unforgeable, cryptographically validated capability tokens gating every MMIO dereference, DMA transaction, and PCIe door-bell toggle.
+  - **AEGIS Invariant & Capability Verification:** Unforgeable, cryptographically validated capability contracts checking every MMIO dereference, DMA transaction, and PCIe doorbell toggle.
   - **Hardware SMMUv3 DMA Sandboxing:** Stage-2 page table confinement isolating all accelerator memory access from host kernel RAM.
 - **Key Invariants:**
   - Intelligence proposes; Physics disposes. No effect acts upon reality without an authorized `EFFECT_INTENT` token.
@@ -144,7 +144,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
   - **Dual-Loop Cognitive Engine:** Rapid inner-loop reactive dispatch paired with deep outer-loop reflective synthesis and memory promotion.
 - **Key Invariants:**
   - Aien is an unprivileged producer of hypotheses.
-  - Every proposed mutation must exit through the AEGIS capability membrane into the trusted Effect Broker.
+  - Every proposed mutation must be verified by AEGIS against capability contracts before lowering and execution.
 
 ---
 
@@ -206,7 +206,7 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 │                          │ Integrity (unkeyed) != Auth (signed) !=     │
 │                          │ Freshness (monotonic hardware counters).    │
 ├──────────────────────────┼─────────────────────────────────────────────┤
-│ 5. Physical Confinement  │ PHYSICS.md (SMMUv3) + AEGIS membrane        │
+│ 5. Physical Confinement  │ PHYSICS.md (SMMUv3) + AEGIS verifier        │
 │    under Malice          │ strictly isolate untrusted AIEN execution.  │
 └──────────────────────────┴─────────────────────────────────────────────┘
 ```

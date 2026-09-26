@@ -379,8 +379,8 @@ Roadmap progression is governed by four sequential **Verification Gates**, align
 * **QUALIFICATION ARTIFACT:** `SOVEREIGN_MACHINE_CLOSURE_PASS` (§4.6).
 * **PASS/FAIL:** Sovereign Code Ratio $= 100.0\%$. Foreign Dependency Count $= 0$. All evidence recorded as native receipts.
 
-### 6.5 Authority Naming
-PHYSICS is the canonical authority root for all physical effects. Earlier doctrine names an **AEGIS** membrane as the final physical-effect boundary; in sovereign doctrine AEGIS refers only to a legacy scaffold / reference implementation of policy and capability checking. It may formulate or pre-validate an `EFFECT_INTENT`, but it holds no authority of its own: admission, refusal, and the resulting receipt belong to PHYSICS.
+### 6.5 Architectural Separation of Lowering and Verification
+Under ratified ADR 0013, PHYSICS is Machine Physics: the physical compiler, lowering backend, and machine realizer that lowers formal OMEGA programs into physical machine operations. AEGIS is the continuous invariant and contract checker that verifies semantic fidelity, types, bounds, object generations, capability contracts, and post-execution state transitions. PHYSICS is not a gatekeeper, and AEGIS is not an authority oracle. PHYSICS realizes operations within verified contracts, HARDWARE executes state transitions, and EVIDENCE records the immutable result.
 
 ```text
 ================================================================================

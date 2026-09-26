@@ -5,7 +5,7 @@
 Document ID:     DOCTRINE-005
 Milestone:       Milestone 0 (DOCTRINE_V1)
 Classification:  Sovereign Machine Canonical Doctrine
-Target Substrate: Epistemic Engine, Verification Kernels, AEGIS Capability Membrane, Hardware Fault Isolation
+Target Substrate: Epistemic Engine, Verification Kernels, AEGIS Capability Verifier, Hardware Fault Isolation
 Status:          AUTHORITATIVE / CANONICAL / RATIFIED
 ```
 
@@ -52,14 +52,14 @@ The Sovereign Machine rejects this compromise. In our architecture:
 │                                │ Verified Admission                    │
 │                                ▼                                       │
 │                ┌───────────────────────────────┐                       │
-│                │       AEGIS CAPABILITY        │                       │
-│                │      MEMBRANE & BROKER        │                       │
+│                │            PHYSICS            │                       │
+│                │ (Machine Lowering & Realizer) │                       │
 │                └───────────────┬───────────────┘                       │
-│                                │ Authorized Effect Intent              │
+│                                │ Lowered Realization                   │
 │                                ▼                                       │
 │                ┌───────────────────────────────┐                       │
-│                │            PHYSICS            │                       │
-│                │  (Hardware Governor & SMMUv3) │                       │
+│                │             AEGIS             │                       │
+│                │(Invariant & Capability Checker│                       │
 │                └───────────────┬───────────────┘                       │
 └────────────────────────────────┼───────────────────────────────────────┘
                                  ▼
@@ -82,8 +82,8 @@ The system maintains a strict, unbreachable perimeter between the **Untrusted Do
 | **Untrusted ($\mathcal{U}$)** | Generated AArch64 / PTX / SASS Assembly, Dynamic Native Binaries | `UNTRUSTED_EXECUTION` | Direct machine instructions synthesized by untrusted processes. Must never execute in privileged EL1/EL2. |
 | **Trusted ($\mathcal{T}$)** | Omega Semantic Calculus ($G_S$), Type & Invariant Contracts | `TRUSTED_CONTRACT` | Pure mathematical declarations of truth, conservation laws, shape relations, and numerical bounds. |
 | **Trusted ($\mathcal{T}$)** | Verification Kernels ($V_0$ through $V_5$), Static Shape / SMT Checkers | `TRUSTED_VERIFIER` | Small, formally verified, deterministic algorithms with provable polynomial-time complexity bounds. |
-| **Trusted ($\mathcal{T}$)** | AEGIS Capability Membrane, Effect Broker, Token Allocator | `TRUSTED_AUTHORITY` | Cryptographically signed, unforgeable capability tokens; monotonic reference counters; strict capability revocation. |
-| **Trusted ($\mathcal{T}$)** | Physics Hardware Governor, SMMUv3 Page Tables, Watchdogs, Resets | `TRUSTED_PHYSICS` | Immutable Bare-Metal Governor, hardware-enforced DMA isolation, interrupt management, and hardware reset rails. |
+| **Trusted ($\mathcal{T}$)** | AEGIS Capability Verifier, Contract Checker | `TRUSTED_VERIFIER` | Machine-verifiable capability contracts, bounds checking, monotonic reference/generation counters, strict invariant verification. |
+| **Trusted ($\mathcal{T}$)** | Machine Physics Realizer, SMMUv3 Page Tables, Watchdogs, Resets | `TRUSTED_PHYSICS` | Physical lowering compiler, hardware-enforced DMA isolation, interrupt management, and hardware reset rails. |
 | **Trusted ($\mathcal{T}$)** | Cryptographic Provenance Ledger, Merkle DAG, Keyed Signers | `TRUSTED_PROVENANCE` | Append-only, tamper-evident cryptographic evidence tree with hardware Root-of-Trust anchors. |
 
 ### 2.2 Boundary Invariants
@@ -265,8 +265,8 @@ The Sovereign Machine is designed under the assumption of **Cognitive Malice and
 ### 5.1 Adversarial Containment Mechanisms
 1. **EL0 Isolation & No-Execute Stack:** All untrusted cognitive components run in ARMv8.2-A / ARMv9-A EL0 (User Mode) with page tables mapping code segments strictly `Read-Only + Execute-Never` (`UXN`/`PXN`) for mutable data structures.
 2. **SMMUv3 DMA Sandboxing:** Any device DMA or accelerator transfer requested by an untrusted entity is routed through Stage-2 translation tables owned exclusively by the Physics EL1 kernel. Physical host RAM is completely inaccessible outside explicitly mapped contiguous guest buffers.
-3. **AEGIS Non-Bypassability:** Direct MMIO registers and accelerator doorbells are unmapped from user space. Ringing an accelerator doorbell requires submitting an authenticated `EFFECT_INTENT` token to the trusted Effect Broker.
-4. **Cold-State Reconstruction:** If the AIEN cognitive engine suffers memory corruption or becomes unresponsive, the Physics governor issues an immediate SIGKILL, wipes the transient scratchpad, reloads the immutable checkpoint from the cryptographic ledger, and resumes execution from the last ratified World state.
+3. **AEGIS Non-Bypassability:** Direct MMIO registers and accelerator doorbells are unmapped from user space. Ringing an accelerator doorbell requires submitting an authenticated `EFFECT_INTENT` token to the trusted Effect Broker adapter after AEGIS verifies the contract.
+4. **Cold-State Reconstruction:** If the AIEN cognitive engine suffers memory corruption or becomes unresponsive, the Physics host runtime issues an immediate SIGKILL, wipes the transient scratchpad, reloads the immutable checkpoint from the cryptographic ledger, and resumes execution from the last ratified World state.
 
 ---
 
@@ -307,14 +307,14 @@ In heterogeneous supercomputing environments (e.g., AArch64 host CPUs coupled vi
 Heterogeneous accelerator pipelines enforce a three-stage temporal bounding contract:
 - **Soft Timer ($T_{soft} = 50\text{ ms}$):** Triggers a non-blocking asynchronous liveness probe on the command queue ring buffer.
 - **Drain Timer ($T_{drain} = 250\text{ ms}$):** If the command queue does not advance, Physics dispatches a priority interrupt to drain pending queues and halt speculative dispatches.
-- **Hard Hardware Watchdog ($T_{hard} = 1000\text{ ms}$):** A bare-metal timer clocked independently from the accelerator fabric. Upon expiration, the Physics governor initiates immediate, non-maskable hardware capability revocation.
+- **Hard Hardware Watchdog ($T_{hard} = 1000\text{ ms}$):** A bare-metal timer clocked independently from the accelerator fabric. Upon expiration, the Physics host runtime initiates immediate, non-maskable hardware capability revocation.
 
 ### 6.2 GPU Capability Revocation & Hardware Reset Protocol
 When an accelerator locks up, fails an MMU check, or exhausts watchdog bounds:
 1. **Atomic Capability Revocation:** Physics unmaps the accelerator doorbell registers from all EL0 address spaces and clears the corresponding AEGIS capability tokens. In-flight command descriptors are marked `TERMINATED_BY_WATCHDOG`.
 2. **Hardware Secondary Bus / Function-Level Reset (FLR):** Physics asserts a PCIe Function-Level Reset (FLR) or Secondary Bus Reset to the physical PCIe endpoint. The GPU core undergoes a complete silicon reset without rebooting the host AArch64 CPU or destabilizing the EL1 kernel.
 3. **VRAM Cleansing & State Re-isolation:** Following the reset, the physical VRAM address space is zeroed by the Physics kernel to prevent cross-tenant or speculative data leakage.
-4. **Queue Recovery & Transaction Rollback:** Active tasks assigned to the failed accelerator are rolled back to their last verified checkpoint in the World graph and rescheduled on an alternate compute engine (or fallen back to scalar CPU execution).
+4. **Queue Recovery & Transaction Rollback:** Active tasks assigned to the failed accelerator are rolled back to their last verified checkpoint in the World graph and rescheduled on an alternate compute engine (or fallen back to scalar CPU execution). AEGIS verifies required rollback / recovery obligations when the contract requires them. If the obligation cannot be demonstrated, the realization remains unverified.
 5. **Forensic Evidence Ledgering:** The crash syndrome registers (Advanced Error Reporting [AER] caps, MMU fault syndromes, device status words) are serialized into a signed forensic record and appended to the persistent ledger.
 
 ---
@@ -340,7 +340,7 @@ Every event—from training update and semantic specification to proof verificat
 │  ├─ Verification Receipt:    Cryptographic attestation of V-Ladder pass│
 │  ├─ Profiling Telemetry:     Signed hardware counter measurements     │
 │  ├─ Policy Digest:           Digest of active AEGIS constitutional rule│
-│  ├─ Signer Identity:         Public Key of authorized Machine/Governor │
+│  ├─ Signer Identity:         Public Key of authorized Machine/Signer   │
 │  └─ Hardware Freshness:      Monotonic hardware counter / TPM nonce    │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -358,7 +358,7 @@ To ensure cryptographic hygiene and prevent architectural circularities, the led
 │                        │ corruption. (Store v1 DAG / CRC32-C).         │
 ├────────────────────────┼───────────────────────────────────────────────┤
 │ 2. Authorization Proof │ Keyed asymmetric signatures (Ed25519) proving │
-│                        │ an authorized actor or governor explicitly    │
+│                        │ an authorized machine or signer explicitly    │
 │                        │ admitted the action under active AEGIS policy.│
 ├────────────────────────┼───────────────────────────────────────────────┤
 │ 3. Freshness /         │ Hardware-rooted monotonic counters proving    │
