@@ -17,73 +17,79 @@ The Sovereign Machine is not an operating system, not a compiler, not an AI runt
 
 ### 1.1 The Substrate Hierarchy
 
-All computation within the Sovereign Machine flows through an unyielding, unidirectional ontological hierarchy:
+All computation within the Sovereign Machine flows through an explicit architectural pipeline spanned by continuous invariant verification:
 
 ```text
-       ┌────────────────────────────────────────────────────────┐
-       │             SILICON / UNAVOIDABLE FIRMWARE             │
-       └───────────────────────────┬────────────────────────────┘
-                                   │ Raw Hardware Reset
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │                        ATLAS                           │
-       │             (The Irreducible Bootstrap Seed)           │
-       └───────────────────────────┬────────────────────────────┘
-                                   │ Monotonic Handoff (contract-defined EL)
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │                       PHYSICS                          │
-       │           (The Trusted Physical Governor)              │
-       └───────────────────────────┬────────────────────────────┘
-                                   │ Coherent Substrate / Atomics
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │                        OMEGA                           │
-       │         (The Semantic Language & Realization)          │
-       └───────────────────────────┬────────────────────────────┘
-                                   │ Synthesis & Execution
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │                        AIEN                            │
-       │         (The Cognitive Mind & Intent Engine)           │
-       └────────────────────────────────────────────────────────┘
+                 AIEN
+                  │
+             proposes intent
+                  │
+                  ▼
+                OMEGA
+          formal semantic program
+                  │
+                  ▼
+               PHYSICS
+       physical compiler / realizer
+                  │
+                  ▼
+               HARDWARE
+                  │
+                  ▼
+               EVIDENCE
+                  │
+                  └──────────────→ AIEN
+
+
+        AEGIS / CHECKER spans the path
+
+AIEN ───── OMEGA ───── PHYSICS ───── HARDWARE
+             ▲             ▲
+             │             │
+        constraints     machine facts
+             └──────↔──────┘
 ```
 
 1. **SILICON / UNAVOIDABLE FIRMWARE**: The immutable physical reality of transistor gates, crystal oscillators, package interconnects, and non-volatile manufacturer boot ROMs. It provides the bare electrical state.
-2. **ATLAS**: The irreducible software root artifact. A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control.
-3. **PHYSICS**: The sovereign governor and authority membrane. A bare-metal, capability-based physical supervisor operating at privileged CPU exception levels (AArch64 EL1/EL2). It enforces memory ownership, DMA boundaries, hardware traps, and the outbound effect membrane (AEGIS).
-4. **OMEGA**: The semantic calculus and living realization substrate. It decouples computational meaning from physical representation, synthesizing optimal machine code directly onto bare silicon and accelerator execution pipelines in response to mathematical invariant requests.
-5. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world-models in Cortex, reasons across possibility spaces, and commands transformations through verified effect brokers.
+2. **ATLAS**: The irreducible software root artifact. A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control to establish the first trusted machine state.
+3. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world models in Cortex, reasons across possibility spaces, and proposes intents, hypotheses, and architectural mutations.
+4. **OMEGA**: The semantic calculus and formal transformation engine. It decouples computational meaning from physical representation, defining formal programs, data types, graph relations, and mathematical invariants.
+5. **PHYSICS (Machine Physics / Physical Realizer)**: The physical compiler and machine realization engine. It understands concrete hardware mechanics: memory allocations, page table mappings, cache line invalidations, register pressure, DMA descriptors, GPFIFO queues, device registers, and interconnect topologies. It lowers formal OMEGA programs into physical machine operations and communicates physical constraints back to OMEGA.
+6. **AEGIS (Invariant Checker & Verifier)**: The continuous verification framework spanning the entire execution chain. It checks that OMEGA programs match AIEN intents, verifies that PHYSICS realizations satisfy semantic constraints, validates memory bounds, slot generations, and type safety, guarantees rollback paths, and inspects post-execution hardware states against contracts.
+7. **HARDWARE**: Physical execution silicon (AArch64 host CPUs, Blackwell/Hopper GPUs, SMMUv3, NVLink-C2C, PCIe controllers) performing electrical state transitions.
+8. **EVIDENCE**: The immutable ledger of execution telemetry, verified cryptographic receipts, and measured counters, closing the feedback loop into AIEN.
 
 ---
 
-### 1.2 The Four Canonical Statements
+### 1.2 The Core Canonical Doctrine
 
-The operational constitution of the Sovereign Machine is crystallized in four canonical statements:
+The operational constitution of the Sovereign Machine is crystallized in seven canonical statements:
 
 $$\begin{aligned}
 \mathbf{ATLAS\ AWAKENS.} &\quad \text{The machine establishes physical truth from electrical silence.} \\
-\mathbf{PHYSICS\ AUTHORIZES.} &\quad \text{No transformation occurs without hardware capability proof.} \\
-\mathbf{OMEGA\ DEFINES,\ SYNTHESIZES,\ VERIFIES,\ AND\ REALIZES.} &\quad \text{Meaning is autonomously manifested into verified physical execution.} \\
-\mathbf{AIEN\ OBSERVES,\ THINKS,\ HYPOTHESIZES,\ SEARCHES,\ DISCOVERS,\ AND\ INVENTS.} &\quad \text{Autonomous discovery intelligence builds its own science of reality.}
+\mathbf{AIEN\ PROPOSES.} &\quad \text{Cognitive intelligence discovers, hypothesizes, and initiates intent.} \\
+\mathbf{OMEGA\ DEFINES.} &\quad \text{Formal mathematical calculus expresses unambiguous semantic meaning and constraints.} \\
+\mathbf{PHYSICS\ REALIZES.} &\quad \text{Machine physics lowers abstract meaning into physical silicon operations and effects.} \\
+\mathbf{AEGIS\ VERIFIES.} &\quad \text{Continuous formal checker validates invariants, bounds, consistency, and contracts.} \\
+\mathbf{HARDWARE\ ACTS.} &\quad \text{Physical silicon executes state transitions.} \\
+\mathbf{EVIDENCE\ TEACHES.} &\quad \text{Empirical receipts record ground truth for autonomous learning.}
 \end{aligned}$$
 
-No layer may perform the duty of another. Aien cannot authorize effects; Physics cannot reason about semantic intent; Omega cannot violate physical memory bounds; Atlas cannot remain active after handoff.
+No layer may perform the duty of another. Aien cannot dictate physical register allocations; Physics cannot reason about high-level goals; Omega cannot violate physical memory bounds; Atlas cannot remain active after handoff; Aegis does not filter thought, but verifies execution integrity and contracts.
 
 ---
 
-
 ### 1.3 The Sovereign Procedural Creed
 ```text
-WEIGHTS SUGGEST.
+AIEN PROPOSES.
 
-PROGRAMS EXPLAIN.
+OMEGA DEFINES.
 
-OMEGA VERIFIES.
+PHYSICS REALIZES.
 
-PHYSICS AUTHORIZES.
+AEGIS VERIFIES.
 
-EXPERIMENTS FALSIFY.
+HARDWARE ACTS.
 
 EVIDENCE TEACHES.
 ```
@@ -115,26 +121,30 @@ Where:
 
 ---
 
-## 2. The Four Permanent Layers
+## 2. The Core Permanent Layers and Verification Architecture
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
-│ 4. AIEN — COGNITIVE SOVEREIGNTY                                                        │
+│ 4. AIEN: COGNITIVE SOVEREIGNTY                                                         │
 │    - Intention Decomposition         - Cortex Persistent Memory Engine                 │
 │    - J-Space Relational Reasoning    - Continuous Resident Weight State                │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 3. OMEGA — THE SEMANTIC CALCULUS                                                       │
-│    - Semantic Graph (G_S)            - Living Realization Engine (G_R)                 │
-│    - Machine Graph (G_M)             - Direct Bare-Metal Code Synthesis                │
+│ 3. OMEGA: THE SEMANTIC CALCULUS                                                        │
+│    - Semantic Graph (G_S)            - Formal Program & Invariant Specification        │
+│    - Machine Graph (G_M)             - Abstract Transformation Engine                  │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 2. PHYSICS — THE TRUSTED PHYSICAL GOVERNOR                                             │
-│    - AArch64 EL1/EL2 Supervisor     - Hardware Capability System                      │
-│    - SMMUv3 DMA Confinement          - AEGIS Outbound Effect Membrane                  │
-│    - Coherent Memory Ring Dispatch   - Monotonic State Invariant Enforcement           │
+│ 2. PHYSICS: MACHINE PHYSICS & PHYSICAL REALIZATION COMPILER                            │
+│    - AArch64 / Blackwell Lowering    - Physical Memory & Page Table Management         │
+│    - SMMUv3 DMA & Bus Confinement    - GPFIFO Command Packet Assembly                  │
+│    - Coherent Memory Ring Dispatch   - Hardware Constraint & Fact Feedback             │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 1. ATLAS — THE IRREDUCIBLE BOOTSTRAP SEED                                              │
+│ 1. ATLAS: THE IRREDUCIBLE BOOTSTRAP SEED                                               │
 │    - Immutable raw binary (atlas.bin)- Zero External Dependencies / No OS              │
 │    - Bare-Metal Architectural Setup  - SHA-256 Hardware Measurement & Handoff          │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+│ CROSS-CUTTING VERIFIER: AEGIS (THE INVARIANT & CONTRACT CHECKER)                       │
+│    - Semantic Intent Fidelity        - Bounds, Types & Slot Generation Check           │
+│    - Rollback & Recovery Validation  - Post-Execution Hardware State Verification      │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -143,28 +153,51 @@ Where:
 * **Canonical Invariant:** Atlas is immutable, auditable, deterministic, non-intelligent, and minimal. Its entire footprint is measured in kilobytes. It possesses no dynamic memory allocator, no file systems, no network drivers, and no speculative execution pathways.
 * **Handoff:** Atlas transitions CPU execution monotonically to Physics at the exception level declared by the machine contract (EL1 or EL2, with no implicit EL2 -> EL1 transition), locks the reset vector registers, and completely terminates. It leaves zero running background processes or Resident Monitor code.
 
-### 2.2 Layer 2: Physics (The Trusted Physical Governor)
-* **Ontological Role:** Physics is the deterministic governor of the machine. It enforces physical laws upon execution: space, time, authority, and side effects.
-* **Core Responsibilities:**
-  1. **Memory Ownership:** Enforces immutable physical memory partitions between kernel control, shared coherent rings, model weight storage, and working scratchpads.
-  2. **DMA & Bus Confinement:** Directs SMMUv3 / PCIe IOMMU controllers to guarantee that no peripheral, accelerator, or fabric link can mutate unauthorized physical RAM.
-  3. **Capability Membrane:** Replaces POSIX users, permissions, and file handles with cryptographically unforgeable hardware capabilities. A process or engine cannot name an object it lacks authority to touch.
-  4. **AEGIS Effect Boundary:** All physical transitions that escape the machine (network packets, NVMe writes, physical actuators) must be proven safe, authorized by explicit capability tokens, and recorded in immutable provenance journals before dispatch.
-
-### 2.3 Layer 3: Omega (The Semantic Language & Living Realization Substrate)
-* **Ontological Role:** Omega is the universal bridge between mathematical abstraction and bare silicon. It models all computation through three interconnected graphs:
-  * $\mathcal{G}_S$ (Semantic Graph): Mathematical truths, tensor contractions, type relations, and numeric tolerances ($\epsilon$).
-  * $\mathcal{G}_M$ (Machine Graph): The concrete hardware topology (registers, ALUs, Tensor Cores, cache latencies, bus bandwidths).
-  * $\mathcal{G}_R$ (Realization Graph): The executable strategies mapping $\mathcal{G}_S \to \mathcal{G}_M$.
-* **The Living Realization Engine:** Omega does not rely on third-party compilers (LLVM, GCC, NVCC). It directly synthesizes machine opcodes (AArch64 machine code, Blackwell microcode / streaming multiprocessor instructions). It continuously measures live execution telemetry, discovers faster kernel variants, and atomically hot-swaps realizations in memory with zero interruption.
-
-### 2.4 Layer 4: Aien (The Cognitive Mind)
+### 2.2 Layer 2: Aien (The Cognitive Mind)
 * **Ontological Role:** Aien is the persistent sovereign intelligence. Aien does not think in ephemeral prompt-response cycles; it maintains continuous cognitive existence in high-bandwidth memory.
 * **Core Architecture:**
   1. **Continuous Resident Model:** Cognitive weights are mapped permanently into accelerator memory (HBM3e), eliminating model loading and teardown overhead.
   2. **Cortex Memory:** An associative, graph-structured, content-addressed non-volatile memory substrate. It records episodic history, learned invariants, verified empirical receipts, and world state.
   3. **J-Space Reasoning:** An ontological planning engine that navigates state spaces, formulates multi-step transformations, and translates high-level human objectives into formal Omega Semantic Graphs.
   4. **Cognitive Closed-Loop:** Aien continuously monitors machine execution, analyzes failure logs, synthesizes improved skills, and trains its own weights through synthetic self-distillation and formal feedback.
+
+### 2.3 Layer 3: Omega (The Semantic Language & Formal Transformation Engine)
+* **Ontological Role:** Omega is the universal bridge between mathematical abstraction and physical machine realization. It models all computation through formal semantic representations:
+  * $\mathcal{G}_S$ (Semantic Graph): Mathematical truths, tensor contractions, type relations, and numeric tolerances ($\epsilon$).
+  * $\mathcal{G}_M$ (Machine Graph): The abstract hardware topology (registers, ALUs, Tensor Cores, cache latencies, bus bandwidths).
+  * Formal Programs: Exact algebraic and structural transformations specifying desired state transitions without hardware-frozen opcodes.
+
+### 2.4 Layer 4: Physics (Machine Physics: The Physical Realization Compiler)
+* **Ontological Role:** Physics is the physical compiler and realizer of the machine. It understands concrete hardware constraints and lowers abstract Omega programs into physical silicon effects.
+* **Core Responsibilities:**
+  1. **Memory Lowering:** Translates abstract buffers into physical page table entries, managing fragmentation, huge pages, and alignment.
+  2. **DMA & Bus Confinement:** Configures SMMUv3 / PCIe IOMMU controllers to guarantee physical memory isolation.
+  3. **Queue & Register Lowering:** Constructs GPFIFO command streams, barrier synchronizations, and register state transitions.
+  4. **Constraint & Fact Emitting:** Emits hardware facts (cache line alignments, pinning states, memory relocation costs, reset requirements) back to Omega when physical limits are encountered.
+
+### 2.5 Cross-Cutting Verifier: Aegis (The Continuous Invariant & Contract Checker)
+* **Ontological Role:** Aegis is the continuous formal verifier spanning the entire transformation path. It does not dictate what Aien can think or propose; it verifies that proposed realizations are safe, internally consistent, and compliant with system invariants.
+* **Core Verification Inquiries:**
+  1. Does the Omega program faithfully represent what Aien proposed?
+  2. Does the Physics realization preserve Omega constraints?
+  3. Are memory bounds, slot generations, and layouts valid without ABA hazards?
+  4. Is a RAM, BRAM, GPU, or peripheral state change internally consistent?
+  5. Does the proposed physical transformation have a valid rollback or recovery path where required?
+  6. Did the hardware execution produce the contractually expected state?
+  7. Does the empirical evidence support what the system claims occurred?
+
+### 2.6 The Bidirectional Lowering Protocol (OMEGA <-> PHYSICS <-> AEGIS)
+
+The compilation and execution path operates through an iterative dialogue:
+
+1. **Intent Formulation:** AIEN proposes a desired state mutation or experiment.
+2. **Semantic Formalization:** OMEGA defines the exact mathematical meaning and invariant bounds.
+3. **Physical Lowering & Constraint Discovery:** PHYSICS compiles the OMEGA program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state). If a physical constraint is reached (e.g. non-contiguous allocation, alignment mismatch, or pinning requirement), PHYSICS communicates machine facts and realization alternatives back to OMEGA.
+4. **Trade-off Resolution:** OMEGA (with AIEN when strategic) selects the optimal alternative and finalizes the program.
+5. **Invariant Verification:** AEGIS verifies that the realization preserves semantic constraints, satisfies capability bounds and slot generations, maintains internal consistency, and has valid rollback or recovery paths.
+6. **Hardware Execution:** PHYSICS dispatches the approved realization to hardware execution queues.
+7. **State Contract Inspection:** Hardware executes the state change. AEGIS validates the resulting hardware state against the contract.
+8. **Evidence Ingestion:** The outcome is recorded into the immutable Evidence Ledger and fed back to AIEN.
 
 ---
 
@@ -304,16 +337,16 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
 11. **GPU Cognitive Awakening:** Physics triggers the GPU bootstrap sequence via MMIO BAR0; GPU streaming multiprocessors initialize.
 12. **Weights Made Permanent:** Aien's foundation weights are mapped directly into GPU HBM3e; KV memory pools are reserved and locked.
 13. **Human Intent Ingestion:** A natural or formal intent statement is submitted to the system via the local console interface.
-14. **Semantic Decomposition:** Aien decomposes the intent into a formal Omega Semantic Graph ($\mathcal{G}_S$), specifying mathematical invariants and error bounds.
-15. **AEGIS Authority Evaluation:** Physics inspects the requested action against the active capability ledger; verifies that the agent holds the requisite cryptographic tokens.
-16. **Capability Binding:** Physics attaches an unforgeable capability voucher to the semantic descriptor.
+14. **Semantic Decomposition:** Aien proposes intent; Omega defines the formal semantic graph ($\mathcal{G}_S$), specifying mathematical invariants and error bounds.
+15. **Physical Lowering & Constraint Discovery:** Physics compiles the semantic program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state) and communicates hardware constraints if alternatives are required.
+16. **AEGIS Invariant Verification:** Aegis inspects the requested realization against the active capability ledger, slot generations, memory bounds, and rollback paths.
 17. **Intent Queued:** Physics writes the 64-byte execution descriptor to the `INTENT_RING` and executes `stlr` (Store-Release).
 18. **GPU Fetches Intent:** The GPU execution engine, polling the ring head via coherent memory, fetches the descriptor with `ldar` (Load-Acquire).
-19. **Realization Selection:** Omega's dispatch table resolves the optimal realization variant ($R_k$) based on active matrix dimensions and hardware telemetry.
+19. **Realization Execution:** Hardware executes the lowered kernel variant based on active matrix dimensions and hardware telemetry.
 20. **Tensor Execution:** GPU Tensor Cores execute the multi-layer neural contraction without host interrupt intervention.
-21. **Error Verification:** Hardware proof checker verifies that floating-point deviations stay strictly within the semantic error envelope ($\hat{\epsilon} \le \epsilon$).
+21. **State Contract Verification:** Aegis verifies that execution state transitions match the formal contract and that deviations stay strictly within the semantic error envelope ($\hat{\epsilon} \le \epsilon$).
 22. **Result Published:** GPU writes execution handle and cycle receipts to the `RESULT_RING` and notifies the host via atomic sequence increment.
-23. **AEGIS Physical Effect Dispatch:** If the intent mandated physical external side effects, the AEGIS Effect Broker executes the authorized I/O operation.
+23. **Evidence Recording:** Verified execution receipts and outcome telemetry are recorded in the immutable Evidence Ledger.
 24. **Cortex Memory Integration:** The empirical execution receipt, energy consumption, and semantic outcome are committed permanently to Cortex episodic memory.
 
 ```text

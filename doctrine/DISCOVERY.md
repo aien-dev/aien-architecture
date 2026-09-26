@@ -63,14 +63,17 @@ SILICON / UNAVOIDABLE FIRMWARE
 ```text
 ATLAS AWAKENS.
 
-PHYSICS AUTHORIZES.
+AIEN PROPOSES.
 
-OMEGA DEFINES, SYNTHESIZES,
-VERIFIES, AND REALIZES.
+OMEGA DEFINES.
 
-AIEN OBSERVES, THINKS,
-HYPOTHESIZES, SEARCHES,
-DISCOVERS, AND INVENTS.
+PHYSICS REALIZES.
+
+AEGIS VERIFIES.
+
+HARDWARE ACTS.
+
+EVIDENCE TEACHES.
 ```
 
 ---
@@ -80,9 +83,9 @@ DISCOVERS, AND INVENTS.
 Architectural terminology maintains a permanent, foundational separation:
 
 ```text
-PHYSICS
+PHYSICS (MACHINE PHYSICS)
 =
-THE TRUSTED MACHINE AUTHORITY (Constitutional governor of silicon, memory, devices, and effect admission)
+THE PHYSICAL COMPILER & MACHINE REALIZER (Lowering formal Omega programs to silicon states, page tables, and hardware queues, with AEGIS continuous invariant verification)
 
 PHYSICS ZERO
 =
@@ -377,15 +380,15 @@ The Physics Zero program defined in this document occupies the **Physics Zero Di
 ## 14. The Procedural Intelligence Creed
 
 ```text
-WEIGHTS SUGGEST.
+AIEN PROPOSES.
 
-PROGRAMS EXPLAIN.
+OMEGA DEFINES.
 
-OMEGA VERIFIES.
+PHYSICS REALIZES.
 
-PHYSICS AUTHORIZES.
+AEGIS VERIFIES.
 
-EXPERIMENTS FALSIFY.
+HARDWARE ACTS.
 
 EVIDENCE TEACHES.
 ```
