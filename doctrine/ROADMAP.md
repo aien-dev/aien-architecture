@@ -51,7 +51,7 @@ Status vocabulary:
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
-| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | PLANNED |
+| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | IN PROGRESS |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
 | **M22** | Sovereign Training Runtime | `OMEGA_OPTIMIZER` | Verified sovereign optimizer realizations (SGD, Adam, AdamW). | PLANNED |
@@ -220,6 +220,19 @@ One nontrivial abstraction not present in the initial library that:
 - Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
 - Clean-Clone Reproduction: Verified from scratch on DGX Spark silicon in isolated clone `/tmp/omega_clean_m18`.
 - Cortex Receipt: Space `atlas-memory`, receipt ID `03c34210-4ecc-4c79-9bf9-c3ac37e157f8`.
+
+### M19: `OMEGA_ACCELERATOR_RESIDENT`
+- Status: **IN PROGRESS**.
+- Specification: `docs/milestone-19-spec.md`.
+- Target Substrate: Persistent Omega Execution Substrate in Coherent Memory on NVIDIA DGX Spark (`spark-b87b`, Grace Blackwell GB10, `sm_121`, 128 GiB unified LPDDR5x RAM).
+- Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`), `aien-dev/omega` M18 (commit `7273c37`).
+- Architecture: `OmegaAcceleratorWorld` holding persistent RM client, GPU device object, VAS aperture, GPFIFO compute channel, USERD doorbell mapping, completion semaphore ring, code registry, buffer registry, and coherent scratch arena.
+- Core Invariant: `resident != immortal`. Every resident object requires explicit monotonic generation counters, capability-bounded access scopes, fail-closed stale handle refusal, deterministic capability revocation, and clean zero-leak teardown.
+- Heterogeneous Workload: Sustained alternating execution across Vector Addition, INT32 MatMul, FP16 Tensor MMA, and BF16 Tensor MMA on the shared persistent channel.
+- Queue Wraparound: GPFIFO pushbuffer ring circular wraparound verified without channel stalls, race conditions, or pushbuffer corruption.
+- Sustained Execution Target: >= 1,000 heterogeneous operations executed without context teardown or re-initialization, with bounded resident memory consumption.
+- Qualification Gates: 18 Milestone 19 gates + 157 cumulative regression gates (M4 through M18) = 175 total evaluated gates.
+- Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
 
 
 ### M22 — `OMEGA_OPTIMIZER`
