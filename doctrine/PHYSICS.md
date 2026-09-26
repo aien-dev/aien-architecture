@@ -22,6 +22,11 @@ $$\mathbf{\text{“What is allowed to become physically real?”}}$$
 
 If an operation is not explicitly validated, authorized, and admitted by Physics, that operation cannot act upon physical memory, cannot mutate storage cells, cannot transmit photons or electrons across a network wire, and cannot command an accelerator core. Physics is the sole arbiter of physical existence on the machine.
 
+### 1.1 PHYSICS vs. PHYSICS ZERO: Canonical Distinction
+It is an architectural violation to conflate the machine authority with the scientific discovery program:
+- **`PHYSICS`**: **The Trusted Machine Authority.** The constitutional governor of silicon, CPU exception levels, memory isolation, SMMUv3 DMA protection, device registers, and the Effect Cycle.
+- **`PHYSICS ZERO`**: **The Clean-Room Scientific Discovery Program.** An autonomous epistemological methodology wherein AIEN discovers the underlying structure of reality from raw observation without ever receiving human physical theories, constants, or terminology. See [`DISCOVERY.md`](file:///home/drakestapleton/workspace/aien-architecture/doctrine/DISCOVERY.md).
+
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
 │                        COGNITIVE & REASONING LAYERS                    │

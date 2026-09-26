@@ -70,7 +70,8 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 │ 4 │ OMEGA.md          │ DOCTRINE-OMEGA   │ The Omega Foundational Specification                      │
 │ 5 │ AIEN.md           │ DOCTRINE-004     │ AIEN Foundational Doctrine: Sovereign Cognitive Engine    │
 │ 6 │ TRUST.md          │ DOCTRINE-005     │ Trust — Epistemic Verification Doctrine & Trust Boundaries│
-│ 7 │ SOVEREIGNTY.md    │ DOCTRINE-SOV-001 │ Sovereignty and Closure: Canonical Law & Provenance       │
+│ 7 │ DISCOVERY.md      │ DOCTRINE-006     │ Discovery & Physics Zero — Sovereign Scientific Intelligence│
+│ 8 │ SOVEREIGNTY.md    │ DOCTRINE-SOV-001 │ Sovereignty and Closure: Canonical Law & Provenance       │
 └───┴───────────────────┴──────────────────┴───────────────────────────────────────────────────────────┘
 ```
 
@@ -245,6 +246,7 @@ Verified Corpus Elements:
   [✓] DOCTRINE-OMEGA: OMEGA.md       (The Omega Foundational Specification)
   [✓] DOCTRINE-004: AIEN.md          (The Sovereign Cognitive Engine)
   [✓] DOCTRINE-005: TRUST.md         (Epistemic Verification & Trust Boundaries)
+  [✓] DOCTRINE-006: DISCOVERY.md     (Discovery & Physics Zero)
   [✓] DOCTRINE-SOV: SOVEREIGNTY.md   (Sovereignty, Closure & Provenance)
   [✓] DOCTRINE-IDX: INDEX.md         (Master Index & Gate Verification Ledger)
 
@@ -263,6 +265,7 @@ Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9
 > **`PROGRAMS EXPLAIN.`**  
 > **`OMEGA VERIFIES.`**  
 > **`PHYSICS AUTHORIZES.`**  
+> **`EXPERIMENTS FALSIFY.`**  
 > **`EVIDENCE TEACHES.`**
 
 ### 4.2 The Three Speeds of Intelligence
