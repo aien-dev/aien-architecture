@@ -470,3 +470,37 @@ typedef struct __attribute__((aligned(64))) {
     omega_intent_entry_t entries[4096];
 } omega_intent_ring_t;
 ```
+
+
+---
+
+## 11. Program Synthesis, Procedure Library & Concept Formation
+
+### 11.1 The Internal Trust Decomposition of OMEGA
+OMEGA contains both trusted verification authorities and untrusted generative/search machinery:
+
+```text
+OMEGA
+├── OMEGA SEMANTIC CORE          TRUSTED CONTRACT
+├── OMEGA VERIFIER               TRUSTED CHECKER (V0-V2 mandatory; V3-V5 progressive)
+├── OMEGA SYNTHESIS              UNTRUSTED SEARCH (Enumeration, e-graphs, constraints)
+├── OMEGA ABSTRACTION MINER      UNTRUSTED SEARCH (Subgraph mining, candidate formation)
+├── OMEGA REALIZATION SEARCH     UNTRUSTED SEARCH (Instruction scheduling, tiling search)
+└── OMEGA LIBRARY
+      ├── CANDIDATE               UNTRUSTED (Unverified speculation)
+      └── VERIFIED/PROMOTED       TRUSTED BY EVIDENCE (Formally verified & measured)
+```
+
+### 11.2 Deterministic Synthesis Engine (V0)
+Synthesis begins deterministically without neural guidance:
+- Typed enumeration + constraint propagation + cost bounds + dynamic programming + e-graph equivalence pruning + bidirectional search.
+- Solves closed-domain synthesis tasks before any neural guide is trained.
+
+### 11.3 Two Distinct Libraries
+- **Semantic Library:** Platform-independent abstractions (`MAP`, `FOLD`, `NORMALIZE`, `ATTENTION`). Survives across hardware substrate transitions.
+- **Realization Library:** Target-specific implementation blocks (`NEON_TILE_4`, `BLACKWELL_TILE_X`, `CACHE_BLOCKED_GEMM`). Ephemeral and substrate-bound.
+
+### 11.4 Abstraction Discovery and Expandable Invariant
+When repeated subgraphs are mined during sleep phases:
+- A candidate abstraction must prove net positive value via Minimum Description Length (MDL) compression and search reduction on held-out tasks.
+- **The Expandable Invariant:** Every promoted abstraction $\mathcal{A}$ must retain its exact formal expansion graph $\mathcal{G}_{\text{exp}}$ ($\mathcal{A} \leftrightarrow \mathcal{G}_{\text{exp}}$) to permit auditing, proof checking, recompilation, and migration.

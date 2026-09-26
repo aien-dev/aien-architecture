@@ -425,3 +425,23 @@ Authority:       Physics & Sovereign Machine Architecture Board
 Sign-off Hash:   e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 ==========================================================================
 ```
+
+
+---
+
+## 8. Epistemic Separation in Program Synthesis & Search
+
+### 8.1 Synthesis is Untrusted
+- Candidate programs synthesized by OMEGA search or proposed by AIEN are strictly UNTRUSTED proposals.
+- No program acquires physical authority until verified by the trusted verifier and admitted by Physics.
+
+### 8.2 Staged Verification Ladder for Synthesis
+For early program synthesis (Milestones 7-11):
+- **Mandatory Early Tiers:**
+  - $V_0$: Structural, Type, and Capability Verification (linear static scan).
+  - $V_1$: Differential Verification (comparison against golden reference execution).
+  - $V_2$: Property & Invariant Verification (algebraic properties, bounds, conservation).
+- **Progressively Maturing Tiers:**
+  - $V_3$: Adversarial Corner Fuzzing.
+  - $V_4$: Symbolic Equivalence Proofs.
+  - $V_5$: Proof-Carrying Realization.

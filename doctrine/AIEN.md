@@ -732,3 +732,22 @@ AIEN represents the convergence of formal methods, native machine intelligence, 
 > **Intent → Meaning → Desired State → Transformation → Authority → Physical Realization → Physics → Reality → Evidence → Learning.**
 
 AIEN does not escape reality; it serves as the ultimate compiler of human intention into authorized, verifiable, physical truth.
+
+
+---
+
+## 12. AIEN as Synthesis Intelligence & Search Prior
+
+### 12.1 AIEN is Not a Weight Matrix
+- **AIEN** is the sovereign synthesis intelligence that searches, synthesizes, composes, learns, and proposes.
+- The model inside AIEN is one component: the **search prior over Omega's discrete possibility space**.
+- **Weights hold intuition; programs hold procedure; Omega abstractions hold concepts; Cortex holds experience; proofs hold justification; Physics holds authority.**
+
+### 12.2 Sovereign Cold-Start Dataset
+> **Sovereign Training Corpus Scoping:**  
+> *Omega's sovereign search traces provide the cold-start training corpus for AIEN-0, removing the need for a foreign pretrained search-guide model or foreign procedural training corpus.*
+
+AIEN-0 learns:
+1. $\text{Task} + \text{Library} \to \text{Likely Useful Primitives}$
+2. $\text{Task} + \text{Partial Program} \to \text{Likely Next Operation}$
+3. $\text{Task} + \text{Search State} \to \text{Likely Subgoal}$

@@ -386,3 +386,48 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
                     THE SOVEREIGN MACHINE STANDS ESTABLISHED
 ================================================================================
 ```
+
+
+## 5. The 31-Milestone Sovereign Program-Learning Roadmap
+
+```text
+MILESTONE 0  — DOCTRINE_V1                     Canonical doctrine corpus frozen and ratified. [COMPLETE]
+MILESTONE 1  — ALPHA_BOOT                      Canonical alpha.bin bootstrap seed. [IMPLEMENTED / QUALIFICATION REOPENED]
+MILESTONE 2  — PHYSICS_BOOT                    Minimal trusted machine authority nucleus.
+MILESTONE 3  — PHYSICS_EFFECTS                 Capabilities, EFFECT_INTENT admission cycle, and EFFECT_RECEIPT accounting.
+MILESTONE 4  — OMEGA_SEMANTICS                 Core semantic object model and canonical content-addressed identity.
+MILESTONE 5  — OMEGA_AARCH64                   Direct bare-metal machine code generation (no LLVM).
+MILESTONE 6  — OMEGA_SELF_HOST                 Self-hosting compilation of the minimal Omega realization layer.
+MILESTONE 7  — OMEGA_VERIFY                    Epistemic verification kernel:
+                                               - REQUIRED: V0 Structural/Type/Capability, V1 Differential, V2 Property/Invariant.
+                                               - FRAMEWORK DEFINED FOR: V3 Adversarial, V4 Symbolic, V5 Proof-Carrying.
+MILESTONE 8  — OMEGA_PROGRAM_CORE              Semantic procedure graph representation, SYNTHESIS_TASK, and cost models.
+MILESTONE 9  — OMEGA_SYNTHESIS_V0              Deterministic typed enumeration and constraint solver solving canonical closed domains.
+MILESTONE 10 — OMEGA_LIBRARY_V1                Versioned procedure library, provenance tracking, and library generation tags.
+MILESTONE 11 — OMEGA_LIBRARY_DISCOVERY         One nontrivial abstraction not present in the initial library that:
+                                               1. Compresses multiple verified programs;
+                                               2. Preserves their semantics;
+                                               3. Is reused on held-out tasks;
+                                               4. Reduces search cost.
+MILESTONE 12 — OMEGA_LIVING_MATVEC             Living MatVec selecting among verified realization variants and procedure reuse.
+MILESTONE 13 — OMEGA_MACHINE_GRAPH             Hardware topology and transformation description reported by Physics.
+MILESTONE 14 — OMEGA_REALIZATION_SYNTHESIS     Synthesis engine applied to physical code generation (G_S x G_M -> G_R).
+MILESTONE 15 — PHYSICS_ACCELERATOR_LINK        Zero-copy shared memory rings and capability tables (CPU governor <-> accelerator).
+MILESTONE 16 — BLACKWELL_NATIVE_PATH_KNOWN     Native GPU MMIO, queue submission, and doorbell mechanics mapped empirically.
+MILESTONE 17 — OMEGA_BLACKWELL_VECTOR          First verified native Blackwell compute realization (general GPU compute).
+MILESTONE 18 — OMEGA_BLACKWELL_MATMUL          High-throughput matrix multiplication on Blackwell.
+MILESTONE 19 — OMEGA_ACCELERATOR_RESIDENT      Persistent OMEGA execution substrate remains resident in accelerator-accessible
+                                               coherent memory and maintains device execution state without repeated host-side initialization.
+MILESTONE 20 — OMEGA_TENSOR                    Native tensor algebraic foundations and numeric domains.
+MILESTONE 21 — OMEGA_AUTODIFF                  Symbolic graph autodiff (G_S_fwd -> G_S_grad).
+MILESTONE 22 — OMEGA_OPTIMIZER                 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference
+                                               realizations and optional accelerator-fused realizations.
+MILESTONE 23 — OMEGA_SEARCH_GUIDE_TRAINING     Sovereign training runtime trains initial search-guide model on Omega trace corpus.
+MILESTONE 24 — AIEN_0                          First learned synthesis guide ranking primitives, subgoals, and search branches.
+MILESTONE 25 — AIEN_GUIDED_SYNTHESIS           Neural-guided synthesis beats unguided search in node count while preserving 100% soundness.
+MILESTONE 26 — AIEN_ABSTRACTION_DISCOVERY      AIEN proposes candidate abstractions; Omega verifies and measures before promotion.
+MILESTONE 27 — AIEN_HUMAN_INTERFACE            Bidirectional natural language adapter (Language <-> Omega Task).
+MILESTONE 28 — AIEN_RESIDENT                   Persistent accelerator-resident AIEN cognitive execution.
+MILESTONE 29 — OMEGA_CONTINUAL_LIBRARY_LEARNING Autonomous continuous Wake/Solve/Verify -> Sleep/Compress/Promote cycle.
+MILESTONE 30 — AIEN_SUCCESSION                 Closed-loop self-improvement: AIEN-N designs AIEN-N+1 under Physics canary control.
+```

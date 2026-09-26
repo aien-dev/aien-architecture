@@ -252,3 +252,65 @@ GATE STATUS:             RATIFIED / CLOSED / READY FOR MILESTONE 1 (ALPHA)
 Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9e25d2b77c
 ================================================================================
 ```
+
+
+---
+
+## 4. The Sovereign Program-Learning Doctrine (Omega Synthesis → AIEN)
+
+### 4.1 The Synthesis Doctrine
+> **`WEIGHTS SUGGEST.`**  
+> **`PROGRAMS EXPLAIN.`**  
+> **`OMEGA VERIFIES.`**  
+> **`PHYSICS AUTHORIZES.`**  
+> **`EVIDENCE TEACHES.`**
+
+### 4.2 The Three Speeds of Intelligence
+1. **Fast Learning (AIEN Model / Search Prior):** *"What should I try next?"* Implicit, speculative intuition. Search prior over Omega's possibility space. Rapidly retrainable and disposable.
+2. **Medium-Term Learning (Omega Procedure Library):** *"What reusable procedures have we discovered?"* Explicit, typed, composable, verifiable semantic subgraphs.
+3. **Long-Term Knowledge (Omega Semantics + Proofs + Cortex Evidence):** *"What does this mean? What has been verified? What was observed?"* Durable epistemic ground.
+
+### 4.3 Division of State & Durability
+* **Weights** hold search intuition.
+* **Programs** hold explicit procedure.
+* **Omega Abstractions** hold reusable concepts.
+* **Cortex** holds empirical experience.
+* **Proofs** hold trusted justification.
+* **Physics** holds physical machine authority.
+
+### 4.4 Trust Decomposition Inside OMEGA
+The epistemic boundary runs directly through OMEGA. Search and synthesis components are strictly UNTRUSTED; semantic contracts and verification checkers are TRUSTED:
+
+```text
+OMEGA
+├── OMEGA SEMANTIC CORE          TRUSTED CONTRACT
+├── OMEGA VERIFIER               TRUSTED CHECKER
+├── OMEGA SYNTHESIS              UNTRUSTED SEARCH
+├── OMEGA ABSTRACTION MINER      UNTRUSTED SEARCH
+├── OMEGA REALIZATION SEARCH     UNTRUSTED SEARCH
+└── OMEGA LIBRARY
+      ├── CANDIDATE               UNTRUSTED
+      └── VERIFIED/PROMOTED       TRUSTED BY EVIDENCE
+```
+
+Canonical Synthesis Pipeline:
+```text
+AIEN
+  ↓
+CANDIDATE IDEA
+
+OMEGA SYNTHESIS / COMPOSITION
+  ↓
+CANDIDATE PROGRAM OR REALIZATION
+
+OMEGA TRUSTED VERIFIER
+  ↓
+VERIFIED SEMANTIC CANDIDATE
+
+PHYSICS
+  ↓
+AUTHORIZED PHYSICAL EFFECT
+```
+
+### 4.5 Sovereign Training Corpus Scoping
+> *Omega's sovereign search traces provide the cold-start training corpus for AIEN-0, removing the need for a foreign pretrained search-guide model or foreign procedural training corpus.*
