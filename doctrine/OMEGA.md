@@ -365,7 +365,7 @@ Omega completely abolishes serialized RPC. Coordination occurs across a **Unifie
 |                                                                                       |
 |  +---------------------+   +---------------------+   +-----------------------------+  |
 |  |   SEMANTIC_STORE    |   |     INTENT_RING     |   |         EFFECT_RING         |  |
-|  | Immutable Graph ASTs|   | Lock-free SPSC FIFO |   | Pre-approved physical acts  |  |
+|  | Immutable Graph ASTs|   | Lock-free SPSC FIFO |   | Verified physical acts      |  |
 |  +---------------------+   +---------------------+   +-----------------------------+  |
 |  +---------------------+   +---------------------+   +-----------------------------+  |
 |  |     RESULT_RING     |   |      PROOF_RING     |   |       EVIDENCE_STORE        |  |

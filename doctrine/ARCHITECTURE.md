@@ -195,7 +195,7 @@ The compilation and execution path operates through an iterative dialogue:
 3. **Physical Lowering & Constraint Discovery:** PHYSICS compiles the OMEGA program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state). If a physical constraint is reached (e.g. non-contiguous allocation, alignment mismatch, or pinning requirement), PHYSICS communicates machine facts and realization alternatives back to OMEGA.
 4. **Trade-off Resolution:** OMEGA (with AIEN when strategic) selects the optimal alternative and finalizes the program.
 5. **Invariant Verification:** AEGIS verifies that the realization preserves semantic constraints, satisfies capability bounds and slot generations, maintains internal consistency, and has valid rollback or recovery paths.
-6. **Hardware Execution:** PHYSICS dispatches the approved realization to hardware execution queues.
+6. **Hardware Execution:** PHYSICS dispatches the verified realization to hardware execution queues.
 7. **State Contract Inspection:** Hardware executes the state change. AEGIS validates the resulting hardware state against the contract.
 8. **Evidence Ingestion:** The outcome is recorded into the immutable Evidence Ledger and fed back to AIEN.
 
@@ -212,7 +212,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 │                                                                                        │
 │   ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────────────┐  │
 │   │   SEMANTIC_STORE    │   │     INTENT_RING     │   │         EFFECT_RING         │  │
-│   │ Immutable Graph ASTs│   │ Lock-free SPSC FIFO │   │ Pre-approved physical acts  │  │
+│   │ Immutable Graph ASTs│   │ Lock-free SPSC FIFO │   │ Verified physical acts      │  │
 │   └─────────────────────┘   └─────────────────────┘   └─────────────────────────────┘  │
 │   ┌─────────────────────┐   ┌─────────────────────┐   ┌─────────────────────────────┐  │
 │   │     RESULT_RING     │   │      PROOF_RING     │   │       EVIDENCE_STORE        │  │
@@ -230,7 +230,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 │  - Runs Physics at contract EL        │               │  - Runs Aien Core Mind         │
 │  - Owns Platform MMU & SMMUv3         │               │  - Full HBM Resident Weights   │
 │  - Hardware Watchdogs & Safety        │               │  - Persistent Unified KV Pool  │
-│  - Gatekeeper of AEGIS Effects        │               │  - Autonomous Tensor Pipeline  │
+│  - Checks AEGIS Invariants & Bounds   │               │  - Autonomous Tensor Pipeline  │
 │  - Low-latency Ring Dispatch          │               │  - Direct SM Micro-Execution   │
 └───────────────────────────────────────┘               └────────────────────────────────┘
 ```
@@ -252,7 +252,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 * Coordination relies strictly on **64-byte aligned, lock-free ring buffers** utilizing hardware acquire/release atomics:
   * `INTENT_RING`: CPU submits evaluated semantic requests to the accelerator.
   * `RESULT_RING`: Accelerator posts completion status and memory handles to the CPU.
-  * `EFFECT_RING`: Accelerator requests real-world side effects; CPU AEGIS membrane validates capabilities before physical emission.
+  * `EFFECT_RING`: Accelerator requests real-world side effects; CPU AEGIS verifier validates capabilities and invariants before physical emission.
   * `PROOF_RING`: Verification workers audit execution traces against formal mathematical invariants.
   * `EVIDENCE_STORE`: Hardware performance telemetry (cycles, cache misses, energy) is continuously recorded for Omega's living optimization loop.
 
@@ -271,7 +271,7 @@ The Sovereign Machine enforces six non-negotiable architectural **Hard Stops**. 
 1. **No Foreign Binary Inclusion:** No precompiled x86/ARM ELF shared libraries, closed-source kernel modules, or binary blobs may execute within the sovereign boundary.
 2. **No Unsigned Physical Effects:** No outbound physical action (disk block mutation, network transmission, GPIO trigger) may execute without a valid, cryptographically verified AEGIS capability token.
 3. **No Foreign Weight Ingestion:** No black-box neural network checkpoints may be ingested into Aien without full cryptographic training provenance and dataset validation.
-4. **No Bypass of Physics Governor:** Accelerator code may never directly manipulate system MMU tables, interrupt registers, or platform power states.
+4. **No Bypass of Machine Physics Authority:** Accelerator code may never directly manipulate system MMU tables, interrupt registers, or platform power states.
 5. **No Undefined Precision Divergence:** Invariant verification failure: if an Omega realization produces numerical error exceeding the defined semantic envelope ($\hat{\epsilon} > \epsilon$), execution halts immediately.
 6. **No Non-Deterministic Bootstrap:** If Atlas experiences an unexpected state transition, branching anomaly, or hash mismatch, the system enters an unrecoverable low-power lock state.
 
@@ -315,12 +315,12 @@ The operational realization of the Sovereign Machine is demonstrated by a comple
  [10] Rings Mapped     ──> [11] GPU Awoken    ──> [12] Weights Permanent
 
  PHASE III: COGNITION & INTENT (Steps 13-18)
- [13] Intent Ingested  ──> [14] G_S Decomposed──> [15] AEGIS Authority ──>
- [16] Capability Bound ──> [17] Intent Queued ──> [18] GPU Fetches Intent
+ [13] Intent Ingested  ──> [14] G_S Decomposed──> [15] Physics Lower ──>
+ [16] AEGIS Verified   ──> [17] Intent Queued ──> [18] GPU Fetches Intent
 
  PHASE IV: REALIZATION & CLOSURE (Steps 19-24)
  [19] Kernel Select    ──> [20] Tensor Exec   ──> [21] Error Verified  ──>
- [22] Result Published ──> [23] AEGIS Effect  ──> [24] Cortex Learned
+ [22] Result Published ──> [23] Evidence Sealed──> [24] Cortex Learned
 ```
 
 ### Detailed Trace Walkthrough:

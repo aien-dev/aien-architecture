@@ -85,8 +85,10 @@ For irreversible tools:
 J-Space
   → stages intent
   → winner selected
-  → AEGIS authorizes
-  → Effect Broker
+  → OMEGA formalizes program
+  → PHYSICS lowers realization
+  → AEGIS verifies contract
+  → Effect Broker adapter
   → aien-mcp effect driver
   → MCP tools/call
 ```

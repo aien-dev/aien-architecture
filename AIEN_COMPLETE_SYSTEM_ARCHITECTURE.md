@@ -96,7 +96,7 @@ flowchart TD
 
 The central design principle is:
 
-> **AIEN is one logical runtime. Machines are interchangeable capability providers. Models are interchangeable inference providers. MCP is an adapter. Tools are atomic capabilities. Skills are composed procedures. J-Space is the branch-and-judge planning substrate. Worlds hold state. AEGIS authorizes. The Effect Broker performs irreversible actions. Provenance proves. Cortex remembers. RSI improves.**
+> **AIEN is one logical runtime. Machines are interchangeable capability providers. Models are interchangeable inference providers. MCP is an adapter. Tools are atomic capabilities. Skills are composed procedures. J-Space is the branch-and-judge planning substrate. Worlds hold state. AEGIS verifies. The Effect Broker adapter performs verified irreversible actions. Provenance proves. Cortex remembers. RSI improves.**
 
 ---
 
@@ -614,7 +614,7 @@ That does not naturally support Fabric placement.
 
 ### Target
 
-Move definitions into a Capability Graph. AEGIS authorizes calls but does not own routing or placement.
+Move definitions into a Capability Graph. AEGIS verifies calls against capability contracts but does not own routing or placement.
 
 ---
 

@@ -540,9 +540,13 @@ could all compete inside J-Space for the same Transformation.
 
 J-Space selects.
 
-AEGIS authorizes.
+OMEGA formalizes.
 
-The Effect Broker executes.
+PHYSICS lowers.
+
+AEGIS verifies.
+
+The Effect Broker adapter executes.
 
 Those remain separate jobs.
 
