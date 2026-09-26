@@ -35,7 +35,7 @@ Status vocabulary:
 | **M0** | Foundational | `DOCTRINE_V1` | Foundational Specification. Ratification of complete architectural corpus. | COMPLETE |
 | **M1** | Foundational | `ATLAS_BOOT` | Irreducible bootstrap seed (`atlas.bin`). Dual-seam verified. | COMPLETE / QEMU QUALIFIED |
 | **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. Requalified 2026-09-26 (`aien-dev/physics#3`, receipt `qualification_receipt.json`). QEMU only; `PHYSICS_BOOT_NATIVE_PASS` pending. | COMPLETE / QEMU QUALIFIED |
-| **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). | PLANNED |
+| **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). Qualified 2026-09-26 under `aien-dev/physics#9` (commit `766f8fd6...`, receipt commit `a7dc4ef7...`). QEMU only; native hardware qualification remains separately gated. | COMPLETE / QEMU QUALIFIED |
 | **M4** | Omega Core Substrate | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent content-addressed identity. | PLANNED |
 | **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). | PLANNED |
 | **M6** | Omega Core Substrate | `OMEGA_SELF_HOST` | Omega reproduces the minimal realization compiler through its own semantic graph. | PLANNED |
@@ -95,6 +95,14 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 - Exception level is contract-driven: Physics checks `CurrentEL` against the machine contract and installs `VBAR_EL1` or `VBAR_EL2` accordingly, with no implicit EL2 -> EL1 transition. The current QEMU contract, `CONTRACT-QEMU-VIRT-AARCH64-M2`, specifies EL1 entry.
 - `PHYSICS_BOOT_QEMU_PASS` does not imply `PHYSICS_BOOT_NATIVE_PASS`.
 - Specification: [`docs/milestone-2-spec.md`](../docs/milestone-2-spec.md).
+
+### M3 — `PHYSICS_EFFECTS`
+- Qualified 2026-09-26 under `aien-dev/physics#9` (merged as commit `766f8fd6b898f4df793ffa809f031040ba0912fa`), ratified via qualification receipt `m3/m3_qualification_receipt.json` in commit `a7dc4ef7e0ea9fa733d06114eb31a26d70cb3e53`.
+- Bounded 32-record capability ledger with monotonic attenuation, ancestor-chain validation on use (instantaneous descendant revocation), single canonical effect broker with 10-stage fail-closed admission decoupled from physical handlers, append-only receipt ledger with rolling cryptographic SHA-256 seal chain, and 32-entry replay cache.
+- In-guest bare-metal test suite in QEMU virt AArch64 passed 21/21 tests (`0x001FFFFF`). Python-free qualification runner evaluated all 19 canonical gates with 100% pass and zero regressions on M1 or M2.
+- Anti-bloat budget: `physics.elf` text size 10,624 bytes (32.4% of 32 KiB budget); `physics.bin` total image 18,432 bytes (28.1% of 64 KiB budget).
+- Native Hardware Status: QEMU qualified only; native hardware qualification remains separately gated.
+- Specification: [`docs/milestone-3-spec.md`](../docs/milestone-3-spec.md).
 
 ### M7 — `OMEGA_VERIFY`
 - REQUIRED: V0 Structural/Type/Capability, V1 Differential, V2 Property/Invariant.
