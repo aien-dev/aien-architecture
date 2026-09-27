@@ -1,6 +1,6 @@
 # ADR 0015: Resident Semantic Store Boundary, Object Identity, and Reconstruction Contract
 
-**Status:** Proposed
+**Status:** Accepted by operator, 2026-09-27
 **Author:** AIEN Architecture Working Group
 **Date:** 2026-09-27
 **Target Repositories:** `aien-architecture`, `aienos`, `omega`, `physics` (FORGE), `aegis-runtime`, `cortex-rs`, `aien-sovereign-core`
@@ -19,7 +19,7 @@ Previous milestones established foundational primitives across isolated subsyste
 - **OMEGA** (M4, M19) proved hardware-neutral semantic calculus, canonical object encodings (`OMG0`), deterministic `SemanticId` derivation, and accelerator residency.
 - **FORGE** (formerly Machine Physics, M2, M16; ADR 0014) proved physical machine lowering, DMA descriptors, and Blackwell GPU execution pipelines.
 - **AIENOS Store v1** (ADR 0015 in `aienos`) proved an append-only, content-addressed, crash-safe 4096-byte unit object store over NVMe.
-- **AIENOS Continuity** (ADR 0016 in `aienos`, Proposed) proved deterministic single-agent provisioning and resume across reboots.
+- **AIENOS Continuity** (ADR 0016 in `aienos`, Proposed) describes QEMU-qualified single-agent provisioning and resume; its durable object format is not yet frozen.
 - **CORTEX** (M18) proved epistemic fact storage, vector similarity ranking, and evidence retrieval.
 
 However, the complete contract connecting live volatile memory to durable block storage across reboots remains unratified. Without an unambiguous architecture contract:
@@ -41,9 +41,9 @@ This ADR ratifies the **Resident Semantic Store boundary**, establishing the aut
 2. **Persistent Storage Role**:
    Persistent storage is **durable recovery material, historical evidence, and the immutable lineage anchor**. Disk is not the active working state. Storage does not become authoritative for live operations while the machine is running.
 3. **Durability Authority Transition**:
-   Persistent storage becomes canonical truth for a specific committed point in time **only upon the successful, atomic publication of a verified generation commit**. 
+   Persistent storage becomes canonical recovery material for a generation only after Store v1 writes the inactive superblock and its second hardware flush succeeds. The Store validates the complete root before selecting it on recovery.
 4. **Crash Authority**:
-   Following an uncommitted crash, power loss, or kernel panic, all volatile memory is considered void. The **last successfully committed generation in the persistent Store becomes the authoritative root** from which a new, authoritative `ResidentWorld` is deterministically reconstructed.
+   Following a crash, power loss, or kernel panic, all volatile memory is considered void. Store v1 classifies both superblocks and validates their referenced graphs and history. Only a completely valid selected root can supply the authoritative recovery material for a new `ResidentWorld`; degraded selection is read-only inspection.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -67,6 +67,8 @@ This ADR ratifies the **Resident Semantic Store boundary**, establishing the aut
 │ ContinuityManifest ──► OmegaResidentRoot ──► Canonical Semantic Objects │
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
+The ContinuityManifest-to-OmegaResidentRoot binding is a required future extension of proposed AIENOS ADR 0016, not a field in its current durable format.
 
 ---
 
@@ -172,64 +174,36 @@ An `OmegaResidentRoot` minimally and normatively binds:
 
 ### 6. Generation & Commit Model
 
-Durability is not an incremental background leak; it is an explicit, staged transaction barrier. A state transition becomes durable if and only if the complete commit protocol completes past the durability linearization point.
+Durability is an explicit Store v1 transaction barrier. The Store v1 commit protocol is fixed by accepted AIENOS ADR 0015; this ADR does not define a different storage transaction or ContinuityManifest byte layout.
 
 #### The Ordered Commit Protocol:
-1. **Phase 1: Working State Freeze**:
-   The runtime freezes the candidate `ResidentWorld` changeset in volatile memory. Active reasoning steps on this generation complete or pause.
-2. **Phase 2: Canonical Serialization**:
-   All new or modified semantic objects in the changeset are serialized into canonical Omega wire format (`OMG0`).
-3. **Phase 3: Semantic Identity Derivation**:
-   The runtime computes and verifies the `SemanticId` for every candidate object.
-4. **Phase 4: Store Deduplication & Staging**:
-   The runtime computes candidate `Store ObjectIds`. The current Store catalog is inspected. Objects already committed in previous generations are deduplicated.
-5. **Phase 5: Append Canonical Objects**:
-   New application objects (`KIND_OMEGA_OBJECT = 24`) are written to the uncommitted append arena of Store v1.
-6. **Phase 6: Assemble OmegaResidentRoot**:
-   The runtime constructs `OmegaResidentRoot` (kind 25), sorting its mapping table by `SemanticId`, binding the root set, Cortex references, and policy digest.
-7. **Phase 7: Append OmegaResidentRoot**:
-   `OmegaResidentRoot` is written to the append arena.
-8. **Phase 8: Assemble ContinuityManifest**:
-   A new `ContinuityManifest` (kind 17) is constructed with `sequence = previous + 1`, `incarnation = current`, binding `AgentRoot`, `AgentStateCheckpoint`, Cortex WAL segments, and the new `OmegaResidentRoot` `ObjectId`.
-9. **Phase 9: Assemble Full Catalog**:
-   The full updated Store catalog (kind 1) is written to the append arena, sorted by `ObjectId`.
-10. **Phase 10: Arena Hardware Flush**:
-    A hardware cache flush / NVMe flush command is issued to ensure all newly written extents reach non-volatile media.
-11. **Phase 11: Write CommitRecord**:
-    A single-unit `CommitRecord` (kind 2) is written to the append arena, referencing the new Catalog, high-water mark, and generation.
-12. **Phase 12: Pre-Commit Hardware Flush**:
-    A second NVMe flush is issued, ensuring the `CommitRecord` is durable on media.
-13. **Phase 13: The Durability Linearization Point (Superblock Publication)**:
-    The active Superblock is toggled (Unit 0 Superblock A $\leftrightarrow$ Unit 1 Superblock B) by writing the updated 4096-byte block with the incremented Store generation, pointing to the new `CommitRecord`, followed by a final NVMe hardware flush.
+1. **Freeze and preflight in memory**: Freeze the candidate `ResidentWorld` changeset; derive canonical `SemanticId` and Store `ObjectId` values; validate deduplication targets. Check all sizes, counts, arithmetic, catalog limits, transaction geometry, and bounded-region capacity before the first persistent write. A failed preflight writes nothing.
+2. **Write new application objects**: Append every new Store application object contiguously, beginning at the predecessor's committed high-water. This includes canonical Omega objects and `OmegaResidentRoot`. A ContinuityManifest that binds the root is written here only after the proposed ADR 0016 durable format has been extended and accepted; this ADR does not assign it new binary fields.
+3. **Write the complete new Catalog**: Append one immutable full Catalog after the application objects, sorted by Store `ObjectId`. It describes the complete committed application-object set.
+4. **Write the CommitRecord**: Append the one-unit CommitRecord immediately after the Catalog, binding the catalog, predecessor identities, generation, and exclusive committed high-water.
+5. **First hardware flush**: Flush the new application objects, complete Catalog, and CommitRecord to durable media.
+6. **Write the inactive superblock slot**: Write the updated Store v1 superblock to the slot that is inactive for the predecessor generation. Do not rewrite the currently authoritative older superblock as part of this transaction.
+7. **Second hardware flush — commit point**: Flush the newly written inactive superblock. **Successful completion of this second flush is the Store v1 durability commit point.**
 
 ```text
-Staged Objects ──► Staged Root ──► Staged Manifest ──► Flush ──► CommitRecord ──► Flush ──► [SUPERBLOCK PUBLISH] ──► Flush
-                                                                                                        ▲
-                                                                                       Durability Linearization Point
+new application objects → complete new Catalog → CommitRecord → hardware flush
+    → write INACTIVE superblock slot → hardware flush → COMMIT / DURABILITY POINT
 ```
 
-#### Crash Semantics Around Linearization Point:
-- **Crash Before Point (Phases 1–12)**:
-  The transaction is void. The active Superblock on disk still points to the prior generation. On reboot, the mount engine inspects the prior active superblock; uncommitted arena extents beyond the prior high-water mark are ignored and overwritten on subsequent writes.
-- **Crash During Point (Phase 13)**:
-  The superblock write is an atomic 4096-byte sector operation protected by a CRC32/SHA-256 checksum. If the write is torn or incomplete, the superblock fails checksum verification, and the mount engine falls back to the alternate valid superblock. Either the old generation mounts or the new generation mounts; a half-committed generation is mathematically impossible.
-- **Crash After Point (Phase 13 complete)**:
-  The new generation is permanently durable. On reboot, the mount engine selects the new superblock as the highest valid generation.
+#### Crash Semantics Around the Commit Point:
+- **Before the inactive-slot write**: The older superblock remains untouched. Appended bytes beyond its exclusive high-water are uncommitted and may be reused after recovery.
+- **During the inactive-slot write or second flush**: No physical 4096-byte write atomicity is assumed. Recovery reads both slots, verifies CRC32C and every referenced Store object and history relationship, then applies the Store v1 classification rules in Section 8. A torn or graph-invalid slot cannot become authoritative. A valid older root may be exposed read-only as `DegradedRecovery` under the specified conditions.
+- **After the second flush succeeds**: The new generation has crossed the Store v1 durability commit point. Recovery still validates its complete root and history before selecting it; I/O errors and corruption have their own fail-closed classifications.
 
 ---
 
-### 7. Storage Atomicity & Fault Tolerance
+### 7. Storage Crash Consistency & Fault Tolerance
 
-1. **Atomic Publication Primitive**:
-   Store v1 achieves atomicity exclusively through **ping-pong Superblock publication** across Unit 0 and Unit 1. The superblock write is the sole atomic switch of authority.
-2. **Ahead-of-Time Writing**:
-   All payload objects, indexes, manifests, catalogs, and commit records are appended ahead of time in the passive arena. They do not alter system authority until the superblock references them.
-3. **Specific Fault Behaviors**:
-   - **Power Cut**: If power cuts at any microsecond, the active superblock remains valid. Torn writes in the arena never affect committed state.
-   - **Partial / Torn Block Write**: Discarded by checksum failure on mount; mount falls back to the previous intact superblock.
-   - **Filesystem / OS Crash**: Bypassed; AIENOS interacts directly with block storage over NVMe without host filesystem layers.
-   - **Duplicate / Replayed Commit**: Monotonic generation counters in the superblock and sequential monotonic sequence counters in `ContinuityManifest` reject replayed commits.
-   - **Storage-Full Condition**: If the append arena lacks space for the complete changeset, catalog, and commit record, the transaction aborts cleanly before Phase 10. Volatile memory retains the dirty state, and no generation is published.
+1. **Store unit and device geometry**: A Store v1 unit is 4096 bytes; supported physical logical-block sizes are 512 and 4096 bytes. A 4096-byte superblock write is **not** assumed physically atomic on either device. The Store uses two superblock slots, CRC32C, CommitRecord and Catalog SHA-256, application `ObjectId` checks, full graph validation, and generation/history validation to select a root after a crash.
+2. **Ordered publication**: New application objects, the complete Catalog, and the CommitRecord are appended and flushed before the inactive superblock is written. The older authoritative slot is never rewritten by that transaction. The second flush is the commit point.
+3. **Failure classification**: A torn slot, malformed root, corrupt object, inconsistent history, and I/O error have distinct Store v1 outcomes. Fallback to a valid peer is read-only `DegradedRecovery` where ADR 0015 requires it; a checksum-valid but graph-invalid root never becomes authoritative. The mount path neither repairs nor formats media implicitly.
+4. **Replay boundary**: Store generations and predecessor links establish crash-consistent history. Store v1 alone does not detect a malicious full-device replay; the M5 off-disk `AntiRollbackSource` provides that freshness authority.
+5. **Capacity failure**: Insufficient space for the whole transaction is a preflight failure with zero persistent writes. Volatile dirty state remains uncommitted.
 
 ---
 
@@ -238,19 +212,23 @@ Staged Objects ──► Staged Root ──► Staged Manifest ──► Flush �
 When AIENOS boots on physical silicon or within a virtual machine, cold recovery executes strictly as follows:
 
 ```text
-1. Mount Block Device
+1. Open the bounded Store v1 region without writing or repairing it
    ↓
-2. Evaluate Superblock A (Unit 0) and Superblock B (Unit 1)
+2. Read both superblock slots; any referenced-object or slot read error is MountError::Io
    ↓
-3. Select highest valid generation with verified checksum
+3. Validate each candidate root in the frozen Store v1 trust order:
+   Bounded Region → Superblock CRC32C → CommitRecord SHA-256 → Catalog SHA-256
+   → sorted/bounded/non-overlapping descriptors → application ObjectIds
+   → generation/history relationship
    ↓
-4. Validate CommitRecord & Catalog
+4. Apply Store v1 root classification; only a completely valid root may be selected
    ↓
 5. Count AgentRoot objects (0 = Stop/Unprovisioned, >1 = Stop/Conflict, 1 = Continue)
    ↓
-6. Trace ContinuityManifest chain to current tip (Verify monotonic sequence & hashes)
+6. Trace the supported ContinuityManifest chain to its unique tip (verify sequence, links, and ObjectIds)
    ↓
-7. Extract OmegaResidentRoot ObjectId from ContinuityManifest
+7. Resolve the OmegaResidentRoot ObjectId through the accepted future ADR 0016
+   Continuity-format extension; without that extension, resident recovery is blocked
    ↓
 8. Read & verify OmegaResidentRoot (Check magic, format_version, agent binding)
    ↓
@@ -273,15 +251,21 @@ When AIENOS boots on physical silicon or within a virtual machine, cold recovery
    ↓
 14. Re-establish capabilities: Evaluate durable policy against physical hardware ID; mint runtime tokens
    ↓
-15. Commit new incarnation manifest before observation (incarnation + 1)
+15. On a normal writable mount, commit a new incarnation manifest before observation;
+    a DegradedRecovery mount permits read-only inspection only
    ↓
 16. Resume AIEN sovereign execution loop
 ```
 
+Store v1 preserves these distinct classifications: `Unformatted`, `ForeignOrUnknown`, `UnsupportedVersion`, `Corrupt/RecoveryRequired`, `DegradedRecovery`, `ConflictingRoots`, and `InconsistentHistory`. Both all-zero slots mean `Unformatted`; foreign nonzero slots without Store magic mean `ForeignOrUnknown`; a CRC-valid unsupported version or feature means `UnsupportedVersion` without fallback. Two fully valid equivalent roots at the same generation are redundant; non-equivalent roots at that generation are `ConflictingRoots`. Fully valid adjacent roots require matching Store UUID and region geometry and an exact predecessor generation, CommitRecord ID, and Catalog ID relationship; otherwise they are `InconsistentHistory`. Nonadjacent valid generations are also `InconsistentHistory`.
+
+If one root is fully valid and its peer is invalid, apply ADR 0015's exact cases: a newer graph-invalid peer or a structurally invalid peer yields read-only `DegradedRecovery`; a fully valid newer root may be selected over a graph-invalid older peer; an all-zero peer with one valid root is a valid Store. A graph-invalid peer at the same generation does not silently become a writable fallback. CRC-valid unsupported format does not fall back. `MountError::Io` remains an I/O error, not corruption. No checksum-only generation ranking is permitted.
+
 #### Anomaly Resolution Rules:
-- **Newest Generation Corrupt**: If the newest manifest or root fails verification, fail closed to **Recovery Core** (`CONTINUITY: CORRUPT`). Never attempt heuristic salvage.
+- **Store Root Failure**: Apply Store v1 classification before Continuity inspection. A permitted `DegradedRecovery` root is read-only; corruption, unsupported format, conflicting roots, inconsistent history, and I/O errors do not resume normal operation.
+- **Continuity or Resident Root Failure**: If the selected Store root is valid but its Continuity manifest or Omega root fails semantic validation, fail closed to **Recovery Core** (`CONTINUITY: CORRUPT`). Never attempt heuristic salvage.
 - **Missing Object**: If any object in the transitive closure of the root set is missing from the Store, fail closed (`CONTINUITY: CORRUPT`). Never run with a partial semantic graph.
-- **Parent Generation Valid**: The Recovery Core operator interface may authorize fallback to the parent generation via an explicit operator signature.
+- **Historical Parent Valid**: Recovery Core may inspect an older committed generation and, after offline operator authorization under ADR 0006, initiate the forward rollback described in Section 9. This is distinct from Store v1 automatic crash fallback.
 - **No Valid Generation**: If no valid `AgentRoot` exists, halt with `CONTINUITY: UNPROVISIONED`. Never mint an automatic replacement identity.
 - **Unverified Evidence**: If an evidence receipt claims a generation that cannot be reconstructed from storage, mark the receipt as unverified and halt in Recovery Core.
 
@@ -289,17 +273,10 @@ When AIENOS boots on physical silicon or within a virtual machine, cold recovery
 
 ### 9. Rollback Architecture
 
-1. **Transparent Automatic Rollback (Uncommitted Crashes)**:
-   If a crash occurs before the durability linearization point, recovery automatically mounts the prior committed generation. This is standard crash recovery, not historical rollback.
-2. **Operator-Authorized Rollback (Committed Generations)**:
-   Reverting to an earlier committed generation is an **exceptional operator-authorized action** performed exclusively through Recovery Core (ADR 0006). It requires offline operator cryptographic authorization.
-3. **History Immutability Rule**:
-   Rollback **never mutates or truncates history in-place**. When rolling back to generation $K$ from generation $N$:
-   - A new forward generation $N+1$ is committed.
-   - The new `ContinuityManifest` sets `sequence = N + 1`, `incarnation = current + 1`.
-   - It sets `rollback_parent_id = generation_K_manifest_id`.
-   - The semantic root of generation $K$ is reinstated as the active root of generation $N+1$.
-   Historical generations $K..N$ remain immutable in the store for auditability.
+1. **Automatic crash fallback and degraded inspection**: Before the second Store v1 flush succeeds, recovery may select the prior completely valid committed root under ADR 0015. A damaged peer may instead yield read-only `DegradedRecovery`. Neither event is an operator-requested historical rollback, and degraded inspection cannot make new in-band commits.
+2. **Operator-authorized historical rollback**: Selecting an earlier committed semantic state after a later generation was committed is an exceptional Recovery Core action. ADR 0006 requires local, offline operator authentication. Store v1 structural validity and M5 freshness/authentication checks still apply; a malicious disk replay is not authorized by a high or low generation number alone.
+3. **Forward-only history rule**: An authorized historical selection does not rewrite or truncate generations $K..N$. After validating the selected historical state and authorization, the system must produce a **new forward Store generation** after $N$ whose resident semantic root represents the selected state, preserving the intervening history for audit. The normal running world resumes only after this forward generation and its required security/freshness commitments are durable.
+4. **Continuity-format prerequisite**: Proposed ADR 0016 has no `rollback_parent_id` field and its durable format is not frozen. Before implementation, ADR 0016 / the Continuity format **MUST be extended and accepted** to bind the selected historical root, its source generation, authorization evidence, and new forward continuity view. This ADR sets the semantic requirement without assigning on-disk offsets, field names, or binary encoding.
 
 ---
 
@@ -374,15 +351,13 @@ When AIENOS boots on physical silicon or within a virtual machine, cold recovery
 
 ### 13. Capability & Security State Reconstruction
 
-1. **Surviving Authority**:
-   The only security state that survives reboot is **durable policy definitions, cryptographic root identities, and agent key material** stored in `AgentRoot` or signed policy manifests.
-2. **Prohibition of Serialized Booleans**:
-   A serialized boolean flag (such as `is_authorized = true`) or a serialized runtime slot number **must never recreate authority across reboot**.
-3. **Re-derivation of Runtime Capabilities**:
-   Upon boot, all runtime capabilities must be re-evaluated from scratch:
-   - FORGE inspects physical hardware and derives a clean `ForgeMachineDescriptor`.
-   - AEGIS evaluates the durable security policy against the verified hardware descriptor.
-   - AEGIS issues freshly minted runtime capability tokens with newly generated slot generation numbers.
+1. **Persistent ownership**:
+   - `AgentRoot` (Continuity kind 16) carries persistent logical agent continuity identity. It does **not** contain secret key material or reusable authorization state.
+   - `KeySlotManifest` (M5 kind 21) carries wrapped `K_vol` for boot and recovery keyslots. Persistent storage may hold this wrapped key material according to the M5 security contract, never plaintext live `K_vol` in `AgentRoot`.
+   - `SecurityManifest` (M5 kind 22) authenticates the logical commit roots under the M5 key hierarchy.
+   - `AntiRollbackSource` is the off-disk or hardware freshness authority. Store v1 generations alone do not provide malicious replay protection.
+2. **Boot validation order**: First validate the Store v1 structure and history; then apply M5 keyslot unwrap and authenticated security-root checks; then compare the off-disk freshness anchor. A failed security or freshness check halts in Recovery Core before resident execution.
+3. **Fresh runtime authority**: FORGE observes current physical hardware; AEGIS evaluates durable policy against that verified hardware. Runtime capabilities and slot generations are freshly derived and minted after boot. Persistent records must never contain reusable live capability handles, authorization booleans such as `is_authorized = true`, or hardware addresses.
 
 ---
 
@@ -406,16 +381,17 @@ PROPOSED ──► WRITTEN ──► DURABLE ──► RECOVERED (or REJECTED)
 
 | Failure Event | Detection Mechanism | Safe State | Fallback Action | Operator Evidence |
 |---|---|---|---|---|
-| **Process crash before commit** | Prior superblock valid on reboot | Prior committed generation intact | Ignore uncommitted arena bytes | `RECOVERY_PRIOR_GENERATION_RESUMED` |
-| **Process crash during commit** | Checksum validation of CommitRecord | Prior committed generation intact | Discard partial arena extents | `RECOVERY_UNCOMMITTED_ARENA_IGNORED` |
-| **Power loss before publication** | Active superblock generation unchanged | Prior committed generation intact | Resume prior generation | `RECOVERY_POWER_CUT_PRIOR_CLEAN` |
-| **Power loss during publication** | Superblock CRC32/SHA-256 failure | Alternate superblock valid | Mount alternate valid superblock | `RECOVERY_SUPERBLOCK_TORN_FALLBACK` |
-| **Power loss after publication** | New superblock passes checksum | New committed generation intact | Resume new generation | `RECOVERY_NEW_GENERATION_RESUMED` |
+| **Crash before inactive-slot write** | Full Store v1 root validation finds the older root | Prior committed generation intact | Ignore uncommitted append tail beyond its high-water | `RECOVERY_PRIOR_GENERATION_RESUMED` |
+| **Crash during inactive-slot write or second flush** | Dual-slot CRC32C, object graph, and history validation | Only a fully valid root may be selected | Apply ADR 0015 normal or read-only degraded classification; never trust a torn slot | `RECOVERY_SUPERBLOCK_TORN_FALLBACK` |
+| **Power loss after successful second flush** | New root passes full graph and history validation | New committed generation is selectable | Resume only after Continuity and M5 checks also pass | `RECOVERY_NEW_GENERATION_RESUMED` |
 | **Truncated object** | Store envelope length != read length | Fail closed to Recovery Core | Halt; require operator inspection | `RECOVERY_OBJECT_TRUNCATED_REFUSED` |
 | **Corrupted object bytes** | `SHA256(bytes) != ObjectId` | Fail closed to Recovery Core | Halt; refuse dirty state | `RECOVERY_OBJECT_CHECKSUM_MISMATCH` |
 | **Missing root object** | `OmegaResidentRoot` not in catalog | Fail closed to Recovery Core | Halt; never guess root | `RECOVERY_ROOT_OBJECT_MISSING` |
 | **Missing child object** | Traversal encounters missing ID | Fail closed to Recovery Core | Halt; reject partial graph | `RECOVERY_GRAPH_CLOSURE_INCOMPLETE` |
 | **SemanticId mismatch** | Canonical decode digest != SemanticId | Fail closed to Recovery Core | Halt; refuse invalid semantics | `RECOVERY_SEMANTIC_ID_DIVERGENCE` |
+| **Conflicting or inconsistent Store roots** | Same-generation non-equivalence or invalid predecessor/history relationship | `ConflictingRoots` or `InconsistentHistory` | Halt normal resume; require Recovery Core inspection | `RECOVERY_ROOT_HISTORY_REFUSED` |
+| **Degraded Store root** | One fully valid root and a peer matching ADR 0015 degraded cases | Read-only `DegradedRecovery` | Permit inspection; prohibit in-band commits and normal resident execution | `RECOVERY_DEGRADED_READ_ONLY` |
+| **Unsupported Store format** | CRC-valid unsupported version or features | `UnsupportedVersion` | Halt; do not fall back to another root | `RECOVERY_UNSUPPORTED_FORMAT` |
 | **Invalid capability state** | Policy validation fails during boot | Recovery Core minimal privilege | Refuse execution grants | `SECURITY_CAPABILITY_REISSUANCE_FAILED`|
 | **GPU reconstruction failure** | FORGE kernel compilation error | Degraded CPU-only resident state | Alert operator; no GPU ops | `FORGE_REALIZATION_GPU_FAILED` |
 | **Cortex unavailable/corrupt** | Cortex database integrity check fail | Epistemic read-only recovery | Halt learning; allow inspection| `CORTEX_CHECKPOINT_INTEGRITY_FAILED` |
@@ -429,7 +405,7 @@ PROPOSED ──► WRITTEN ──► DURABLE ──► RECOVERED (or REJECTED)
 #### 1. AIEN ResidentWorld
 - **Owner**: `aien-sovereign-core`
 - **Boundary**: Operates entirely in coherent volatile memory; issues commit barriers to AIENOS; never performs direct disk I/O.
-- **Failure Behavior**: On crash or panic, all volatile state is abandoned; recovers exclusively from the last durable generation.
+- **Failure Behavior**: On crash or panic, all volatile state is abandoned; recovery uses only a fully validated selected Store root and resumes normally only from a writable valid mount.
 - **Evidence**: Emits `RESIDENT_WORLD_EPOCH_ADVANCED` and `RESIDENT_GENERATION_PROPOSED`.
 
 #### 2. Omega Semantic Calculus
@@ -441,7 +417,7 @@ PROPOSED ──► WRITTEN ──► DURABLE ──► RECOVERED (or REJECTED)
 #### 3. AIENOS System Store v1
 - **Owner**: `aienos` (Kernel Store subsystem)
 - **Boundary**: Fixed 4096-byte unit append-only block storage over NVMe; content-addressed `ObjectId` hashing; owns Superblocks, Catalogs, and CommitRecords.
-- **Failure Behavior**: Read errors yield `MountError::Io`; corrupted bytes yield `MountError::Corrupt`; never auto-formats or repairs.
+- **Failure Behavior**: Read errors yield `MountError::Io`; Store v1 preserves `Unformatted`, `ForeignOrUnknown`, `UnsupportedVersion`, `Corrupt/RecoveryRequired`, `DegradedRecovery`, `ConflictingRoots`, and `InconsistentHistory`; never auto-formats or repairs.
 - **Evidence**: Superblock transaction receipts and Store unit extent maps.
 
 #### 4. AIENOS Continuity Subsystem
@@ -500,16 +476,16 @@ Future implementation work is strictly partitioned across existing repositories 
 
 ### 19. Acceptance Gates for ADR 0015
 
-This ADR is considered ready for ratification because it normatively and unambiguously settles all 15 core architectural questions:
+This accepted architecture boundary answers 15 core questions; proposed Continuity-format additions remain prerequisites for implementation:
 1. **What lives only in RAM?** Dynamic goals, active reasoning state, scratchpad buffers, compiled kernel caches, and physical hardware addresses.
-2. **What can survive reboot?** Immutable `DURABLE` Store v1 objects (`AgentRoot`, `ContinuityManifest`, `OmegaResidentRoot`, canonical semantic objects, Cortex checkpoints).
+2. **What can survive reboot?** Immutable `DURABLE` Store v1 objects (`AgentRoot`, `ContinuityManifest`, `OmegaResidentRoot`, canonical semantic objects, Cortex checkpoints, and M5 security objects). The Continuity binding to OmegaResidentRoot awaits an accepted ADR 0016 format extension.
 3. **What is immutable?** All committed Store v1 objects, historical generations, and canonical semantic bytes.
 4. **What is mutable?** Active `ResidentWorld` working memory in volatile RAM (prior to commit freeze).
 5. **What identifies a semantic object?** `SemanticId` = SHA-256 of canonical Omega wire encoding (`OMG0`).
-6. **What identifies a durable generation?** The cryptographic digest of `ContinuityManifest` and monotonic generation number published in the active Superblock.
-7. **What is the single durability commit point?** The hardware-flushed publication of the active Superblock (Unit 0 $\leftrightarrow$ Unit 1).
-8. **What happens on power loss at every stage?** Defined in Section 6 & 15; state remains cleanly at the prior committed generation or cleanly advances to the new generation.
-9. **How is the newest valid generation selected?** Mount evaluates Superblocks A and B, verifies checksums, and selects the highest valid generation number.
+6. **What identifies a durable generation?** A fully validated Store v1 CommitRecord `ObjectId` and generation, with matching Catalog and superblock fields; the ContinuityManifest identifies the agent continuity view within that generation.
+7. **What is the single durability commit point?** Successful completion of the second hardware flush after writing the inactive superblock slot.
+8. **What happens on power loss at every stage?** Sections 6, 8, and 15 define full validation, read-only degraded cases, and fail-closed errors; a torn 4096-byte write is never presumed atomic.
+9. **How is a root selected?** Both slots pass through bounded-region, CRC32C, CommitRecord, Catalog, descriptor, application-object, and generation/history validation. ADR 0015 classifications determine normal, degraded, or refused recovery.
 10. **What is reconstructed rather than restored?** Graph adjacency indexes, lookup tables, runtime task queues, memory allocators, GPU VAs, and device channels.
 11. **What authority must be re-derived after reboot?** All runtime capabilities, hardware access rights, and execution tokens are re-issued by AEGIS from durable policy.
 12. **How does Cortex relate to resident state?** Distinct epistemic store referenced via immutable, typed `EpistemicRef` handles.
@@ -523,8 +499,8 @@ This ADR is considered ready for ratification because it normatively and unambig
 
 ### Positive Consequences
 - **Complete Decoupling**: AIEN's intelligence is formally liberated from physical silicon placement.
-- **Crash Immunity**: The system can lose power at any microsecond and guarantee zero corruption of committed state.
-- **Clear Roadmap**: Builders 2 through 10 have exact, unambiguous technical specifications to implement.
+- **Crash Consistency**: Store v1 can reject torn or invalid roots and select a fully valid history according to its normal or degraded recovery rules.
+- **Clear Boundary**: Builders 2 through 10 have a defined semantic contract; Continuity-format amendments must be accepted before resident-state implementation.
 
 ### Negative Consequences / Tradeoffs
 - **Catalog Bound**: Store v1's 4,096-entry catalog requires future live-set migration (Builder 9) before long-running continuous deployments exhaust entries.
