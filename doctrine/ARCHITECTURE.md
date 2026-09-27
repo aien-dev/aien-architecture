@@ -199,6 +199,22 @@ The compilation and execution path operates through an iterative dialogue:
 7. **State Contract Inspection:** Hardware executes the state change. AEGIS validates the resulting hardware state against the contract.
 8. **Evidence Ingestion:** The outcome is recorded into the immutable Evidence Ledger and fed back to AIEN.
 
+These steps describe the **dependency structure** of one realization. They are not a runtime turn order (§2.7).
+
+### 2.7 Runtime Composition: One Resident Reaction System (ADR 0016)
+
+AIEN, OMEGA, and AEGIS are **faculties of one resident system**, not sequential services. There is no semantic master loop:
+
+- Work activates when its dependencies become ready in one shared, generation-addressed object world.
+- Physical resources are arbitrated below semantic readiness. The allocator schedules work, not faculties.
+- Authority is unforgeable. The capability root (natively the AIENOS kernel capability authority) alone mints and revokes enforceable capabilities. AEGIS decides policy. The shared world may hold capability references but never invent them.
+- Behavior is continuous. Durable learning is promoted only at verified generation barriers, committed through the ADR 0015 protocol.
+- Every nontrivial transition leaves a structured, content-addressed causal record.
+
+The doctrine sentence `ATLAS AWAKENS … EVIDENCE TEACHES` remains the statement of responsibilities and causal dependencies.
+
+The full standard, its terminology mapping, and the R0–R16 gates are in [ADR 0016](../docs/adr/0016-resident-reaction-architecture.md). The code migration map is in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](../docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
+
 ---
 
 ## 3. Hardware Topology: The Heterogeneous Cognitive Substrate

@@ -19,3 +19,4 @@ Current ADRs:
 - [0013 - Machine Physics Lowering and AEGIS Invariant Verification Chain](0013-machine-physics-lowering-and-aegis-invariant-checker.md) — naming superseded by ADR 0014
 - [0014 - Rename Machine Physics to FORGE](0014-rename-machine-physics-to-forge.md)
 - [0015 - Resident Semantic Store Boundary, Object Identity, and Reconstruction Contract](0015-resident-semantic-store.md)
+- [0016 - AIEN, Omega, and AEGIS are faculties of one resident reaction system](0016-resident-reaction-architecture.md)
