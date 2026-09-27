@@ -3,7 +3,7 @@
 ```text
 Document ID:     DOCTRINE-ROADMAP
 Classification:  Sovereign Machine Canonical Doctrine (Single Roadmap Source)
-Target Substrate: Complete Sovereign Stack (Atlas -> Physics -> Omega -> Aien)
+Target Substrate: Complete Sovereign Stack (Atlas -> AIENOS -> AIEN / OMEGA / FORGE / AEGIS)
 Status:          AUTHORITATIVE / CANONICAL
 ```
 
@@ -17,7 +17,7 @@ This file is the **single authoritative source** for Sovereign Machine milestone
 - Milestone status is changed **only** here. A status change must cite the qualifying evidence (issue, PR, or receipt).
 - `scripts/check_doctrine.sh` enforces this: it fails if another doctrine page duplicates the roadmap table, carries its own milestone status tags, or cites a milestone code identifier under a milestone number different from the one below.
 
-Status vocabulary:
+> **Historical naming rule:** ADR 0014 renames the current machine-realization subsystem to **FORGE**. Existing milestone identifiers such as `PHYSICS_BOOT`, `PHYSICS_EFFECTS`, and `PHYSICS_ACCELERATOR_LINK` remain unchanged because milestone/evidence identity is historical provenance.\n\nStatus vocabulary:
 
 | Status | Meaning |
 | :--- | :--- |
@@ -51,7 +51,7 @@ Status vocabulary:
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
-| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | IN PROGRESS |
+| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | REOPENED / IN PROGRESS |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
 | **M22** | Sovereign Training Runtime | `OMEGA_OPTIMIZER` | Verified sovereign optimizer realizations (SGD, Adam, AdamW). | PLANNED |
