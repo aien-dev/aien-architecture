@@ -66,7 +66,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 ├───┼───────────────────┼──────────────────┼───────────────────────────────────────────────────────────┤
 │ 1 │ ARCHITECTURE.md   │ DOCTRINE-000     │ Sovereign Computational Architecture                      │
 │ 2 │ ATLAS.md          │ DOCTRINE-001     │ Atlas — The Irreducible Bootstrap Seed                    │
-│ 3 │ PHYSICS.md        │ DOCTRINE-002     │ Physics — The Trusted Machine Authority                   │
+│ 3 │ FORGE.md        │ DOCTRINE-002     │ Physics — The Trusted Machine Authority                   │
 │ 4 │ OMEGA.md          │ DOCTRINE-OMEGA   │ The Omega Foundational Specification                      │
 │ 5 │ AIEN.md           │ DOCTRINE-004     │ AIEN Foundational Doctrine: Sovereign Cognitive Engine    │
 │ 6 │ TRUST.md          │ DOCTRINE-005     │ Trust — Epistemic Verification Doctrine & Trust Boundaries│
@@ -106,7 +106,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 
 ---
 
-### 3.3 [`PHYSICS.md`](file:///home/drakestapleton/workspace/aien-architecture/doctrine/PHYSICS.md) — DOCTRINE-002: Physics — The Trusted Machine Authority
+### 3.3 [`FORGE.md`](file:///home/drakestapleton/workspace/aien-architecture/doctrine/FORGE.md) — DOCTRINE-002: Physics — The Trusted Machine Authority
 - **Document ID:** `DOCTRINE-002`
 - **Scope:** Physical execution governance, MMU/SMMUv3 management, hardware capability enforcement, and effect admission.
 - **Core Principles:**
@@ -192,7 +192,7 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 │ Invariant                │ Doctrinal Interaction                       │
 ├──────────────────────────┼─────────────────────────────────────────────┤
 │ 1. Intelligence !=       │ AIEN.md proposes; TRUST.md verifies;        │
-│    Authority             │ PHYSICS.md authorizes; ATLAS.md boots.      │
+│    Authority             │ FORGE.md authorizes; ATLAS.md boots.      │
 ├──────────────────────────┼─────────────────────────────────────────────┤
 │ 2. Decoupling of Meaning │ OMEGA.md specifies invariant semantics;     │
 │    from Representation   │ TRUST.md proves equivalence;                │
@@ -202,11 +202,11 @@ The power of `DOCTRINE_V1` lies in the airtight mathematical and operational coh
 │                          │ TRUST.md records Merkle digests;            │
 │                          │ SOVEREIGNTY.md seals self-hosting closure.  │
 ├──────────────────────────┼─────────────────────────────────────────────┤
-│ 4. Separation of Proofs  │ TRUST.md & PHYSICS.md enforce:              │
+│ 4. Separation of Proofs  │ TRUST.md & FORGE.md enforce:              │
 │                          │ Integrity (unkeyed) != Auth (signed) !=     │
 │                          │ Freshness (monotonic hardware counters).    │
 ├──────────────────────────┼─────────────────────────────────────────────┤
-│ 5. Physical Confinement  │ PHYSICS.md (SMMUv3) + AEGIS verifier        │
+│ 5. Physical Confinement  │ FORGE.md (SMMUv3) + AEGIS verifier        │
 │    under Malice          │ strictly isolate untrusted AIEN execution.  │
 └──────────────────────────┴─────────────────────────────────────────────┘
 ```
@@ -223,9 +223,9 @@ The `DOCTRINE_V1` Gate requires satisfying seven strict verification criteria be
 | :--- | :--- | :--- | :---: |
 | **G0-1: Corpus Completeness** | All seven foundational doctrine documents authored, formatted, and cross-referenced in `/home/drakestapleton/workspace/aien-architecture/doctrine/`. | Verified on physical filesystem. | `PASSED` |
 | **G0-2: Ontological Consistency** | Zero terminological or authority contradictions across documents. Unidirectional dependency hierarchy verified. | Cross-audit of layers and definitions. | `PASSED` |
-| **G0-3: Epistemic Boundary** | Search, optimization, and neural inference strictly designated untrusted; verification and physics designated trusted. | Enforced in `TRUST.md` and `PHYSICS.md`. | `PASSED` |
+| **G0-3: Epistemic Boundary** | Search, optimization, and neural inference strictly designated untrusted; verification and physics designated trusted. | Enforced in `TRUST.md` and `FORGE.md`. | `PASSED` |
 | **G0-4: Mathematical Rigor** | Formal definitions provided for Omega Tri-Graphs, Verification Ladder ($V_0 \to V_5$), and Epistemic Merkle DAGs. | Evaluated in `OMEGA.md` and `TRUST.md`. | `PASSED` |
-| **G0-5: Hardware Realism** | Concrete alignment with AArch64 bare-metal (EL1/EL0, SMMUv3) and heterogeneous accelerator reset rails. | Fully specified in `PHYSICS.md` & `ATLAS.md`.| `PASSED` |
+| **G0-5: Hardware Realism** | Concrete alignment with AArch64 bare-metal (EL1/EL0, SMMUv3) and heterogeneous accelerator reset rails. | Fully specified in `FORGE.md` & `ATLAS.md`.| `PASSED` |
 | **G0-6: Sovereignty Invariants** | Absolute prohibition of foreign runtimes in operational target; strict deprecation horizons for bootstrap scaffolds. | Formally codified in `SOVEREIGNTY.md`. | `PASSED` |
 | **G0-7: Provenance Anchoring** | Separation of Proofs established; unkeyed integrity, keyed auth, and anti-rollback freshness specified. | Codified in `TRUST.md` & `SOVEREIGNTY.md`.| `PASSED` |
 
@@ -243,7 +243,7 @@ Target Substrate:        AArch64 Host CPU + Blackwell/Hopper Accelerator Fabric
 Verified Corpus Elements:
   [✓] DOCTRINE-000: ARCHITECTURE.md  (Sovereign Computational Architecture)
   [✓] DOCTRINE-001: ATLAS.md         (The Irreducible Bootstrap Seed)
-  [✓] DOCTRINE-002: PHYSICS.md       (The Trusted Machine Authority)
+  [✓] DOCTRINE-002: FORGE.md       (The Trusted Machine Authority)
   [✓] DOCTRINE-OMEGA: OMEGA.md       (The Omega Foundational Specification)
   [✓] DOCTRINE-004: AIEN.md          (The Sovereign Cognitive Engine)
   [✓] DOCTRINE-005: TRUST.md         (Epistemic Verification & Trust Boundaries)
@@ -264,7 +264,7 @@ Sign-off Hash:           4a8b79e13d964fcf81ec0a1f9e2b1735cb0e4871d87a2cf956102a9
 ### 4.1 The Synthesis Doctrine
 > **`AIEN PROPOSES.`**  
 > **`OMEGA DEFINES.`**  
-> **`PHYSICS REALIZES.`**  
+> **`FORGE REALIZES.`**  
 > **`AEGIS VERIFIES.`**  
 > **`HARDWARE ACTS.`**  
 > **`EVIDENCE TEACHES.`**
@@ -318,3 +318,6 @@ AUTHORIZED PHYSICAL EFFECT
 
 ### 4.5 Sovereign Training Corpus Scoping
 > *Omega's sovereign search traces provide the cold-start training corpus for AIEN-0, removing the need for a foreign pretrained search-guide model or foreign procedural training corpus.*
+
+
+> **Naming note:** current machine realization is FORGE under ADR 0014. Historical PHYSICS identifiers in milestone/evidence records remain valid provenance.
