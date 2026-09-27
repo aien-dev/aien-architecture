@@ -1,8 +1,11 @@
 .github/ISSUE_TEMPLATE/architecture-gap.md
 .github/PULL_REQUEST_TEMPLATE.md
+AGENTS.md
 AIEN_COMPLETE_SYSTEM_ARCHITECTURE.md
 CONTRIBUTING.md
+CURRENT_EXECUTION_PLAN.md
 LICENSE-NOTICE.md
+PLAN_AUTHORITY.md
 README.md
 docs/00-system-map.md
 docs/01-github-repository-map.md
@@ -26,6 +29,13 @@ docs/adr/0005-effect-broker.md
 docs/adr/0006-vault-only.md
 docs/adr/0007-jspace-effect-boundary.md
 docs/adr/0008-relational-paths.md
+docs/adr/0014-rename-machine-physics-to-forge.md
 docs/adr/README.md
+docs/archive/plans/2026-09-22/12-roadmap.md
+docs/archive/plans/2026-09-22/AIEN_COMPLETE_SYSTEM_ARCHITECTURE.md
+docs/archive/plans/2026-09-25/14-master-architectural-plan.md
+docs/archive/plans/2026-09-25/AIEN_MASTER_ARCHITECTURAL_PLAN.md
+docs/archive/plans/README.md
 docs/research/pearl.md
 docs/research/prior-art.md
+doctrine/FORGE.md

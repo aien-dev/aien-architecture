@@ -16,4 +16,5 @@ Current ADRs:
 - [0010 - Canary observations are measurements](0010-canary-observations-are-measurements.md)
 - [0011 - An inference context is model state](0011-inference-context-is-model-state.md)
 - [0012 - One shell dispatch, then a landing split](0012-shell-dispatch-then-landing.md)
-- [0013 - Machine Physics Lowering and AEGIS Invariant Verification Chain](0013-machine-physics-lowering-and-aegis-invariant-checker.md)
+- [0013 - Machine Physics Lowering and AEGIS Invariant Verification Chain](0013-machine-physics-lowering-and-aegis-invariant-checker.md) — naming superseded by ADR 0014
+- [0014 - Rename Machine Physics to FORGE](0014-rename-machine-physics-to-forge.md)

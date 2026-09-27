@@ -43,7 +43,7 @@ All computation within the Sovereign Machine flows through an explicit architect
 
         AEGIS / CHECKER spans the path
 
-AIEN ───── OMEGA ───── PHYSICS ───── HARDWARE
+AIEN ───── OMEGA ───── FORGE ───── HARDWARE
              ▲             ▲
              │             │
         constraints     machine facts
@@ -54,8 +54,8 @@ AIEN ───── OMEGA ───── PHYSICS ───── HARDWARE
 2. **ATLAS**: The irreducible software root artifact. A single, auditable, immutable binary (`atlas.bin`) that awakens the silicon, establishes architectural hygiene, verifies the secondary boot stage, and immediately relinquishes control to establish the first trusted machine state.
 3. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world models in Cortex, reasons across possibility spaces, and proposes intents, hypotheses, and architectural mutations.
 4. **OMEGA**: The semantic calculus and formal transformation engine. It decouples computational meaning from physical representation, defining formal programs, data types, graph relations, and mathematical invariants.
-5. **PHYSICS (Machine Physics / Physical Realizer)**: The physical compiler and machine realization engine. It understands concrete hardware mechanics: memory allocations, page table mappings, cache line invalidations, register pressure, DMA descriptors, GPFIFO queues, device registers, and interconnect topologies. It lowers formal OMEGA programs into physical machine operations and communicates physical constraints back to OMEGA.
-6. **AEGIS (Invariant Checker & Verifier)**: The continuous verification framework spanning the entire execution chain. It checks that OMEGA programs match AIEN intents, verifies that PHYSICS realizations satisfy semantic constraints, validates memory bounds, slot generations, and type safety, guarantees rollback paths, and inspects post-execution hardware states against contracts.
+5. **FORGE (Machine Realization Engine / Physical Realizer)**: The physical compiler and machine realization engine. It understands concrete hardware mechanics: memory allocations, page table mappings, cache line invalidations, register pressure, DMA descriptors, GPFIFO queues, device registers, and interconnect topologies. It lowers formal OMEGA programs into physical machine operations and communicates physical constraints back to OMEGA.
+6. **AEGIS (Invariant Checker & Verifier)**: The continuous verification framework spanning the entire execution chain. It checks that OMEGA programs match AIEN intents, verifies that FORGE realizations satisfy semantic constraints, validates memory bounds, slot generations, and type safety, guarantees rollback paths, and inspects post-execution hardware states against contracts.
 7. **HARDWARE**: Physical execution silicon (AArch64 host CPUs, Blackwell/Hopper GPUs, SMMUv3, NVLink-C2C, PCIe controllers) performing electrical state transitions.
 8. **EVIDENCE**: The immutable ledger of execution telemetry, verified cryptographic receipts, and measured counters, closing the feedback loop into AIEN.
 
@@ -75,7 +75,7 @@ $$\begin{aligned}
 \mathbf{EVIDENCE\ TEACHES.} &\quad \text{Empirical receipts record ground truth for autonomous learning.}
 \end{aligned}$$
 
-No layer may perform the duty of another. Aien cannot dictate physical register allocations; Physics cannot reason about high-level goals; Omega cannot violate physical memory bounds; Atlas cannot remain active after handoff; Aegis does not filter thought, but verifies execution integrity and contracts.
+No layer may perform the duty of another. Aien cannot dictate physical register allocations; Forge cannot reason about high-level goals; Omega cannot violate physical memory bounds; Atlas cannot remain active after handoff; Aegis does not filter thought, but verifies execution integrity and contracts.
 
 ---
 
@@ -85,7 +85,7 @@ AIEN PROPOSES.
 
 OMEGA DEFINES.
 
-PHYSICS REALIZES.
+FORGE REALIZES.
 
 AEGIS VERIFIES.
 
@@ -133,7 +133,7 @@ Where:
 │    - Semantic Graph (G_S)            - Formal Program & Invariant Specification        │
 │    - Machine Graph (G_M)             - Abstract Transformation Engine                  │
 ├────────────────────────────────────────────────────────────────────────────────────────┤
-│ 2. PHYSICS: MACHINE PHYSICS & PHYSICAL REALIZATION COMPILER                            │
+│ 2. FORGE: MACHINE REALIZATION & PHYSICAL LOWERING COMPILER                            │
 │    - AArch64 / Blackwell Lowering    - Physical Memory & Page Table Management         │
 │    - SMMUv3 DMA & Bus Confinement    - GPFIFO Command Packet Assembly                  │
 │    - Coherent Memory Ring Dispatch   - Hardware Constraint & Fact Feedback             │
@@ -167,8 +167,8 @@ Where:
   * $\mathcal{G}_M$ (Machine Graph): The abstract hardware topology (registers, ALUs, Tensor Cores, cache latencies, bus bandwidths).
   * Formal Programs: Exact algebraic and structural transformations specifying desired state transitions without hardware-frozen opcodes.
 
-### 2.4 Layer 4: Physics (Machine Physics: The Physical Realization Compiler)
-* **Ontological Role:** Physics is the physical compiler and realizer of the machine. It understands concrete hardware constraints and lowers abstract Omega programs into physical silicon effects.
+### 2.4 Layer 4: Forge (The Machine Realization Compiler)
+* **Ontological Role:** Forge is the physical compiler and realizer of the machine. It understands concrete hardware constraints and lowers abstract Omega programs into physical silicon effects.
 * **Core Responsibilities:**
   1. **Memory Lowering:** Translates abstract buffers into physical page table entries, managing fragmentation, huge pages, and alignment.
   2. **DMA & Bus Confinement:** Configures SMMUv3 / PCIe IOMMU controllers to guarantee physical memory isolation.
@@ -186,16 +186,16 @@ Where:
   6. Did the hardware execution produce the contractually expected state?
   7. Does the empirical evidence support what the system claims occurred?
 
-### 2.6 The Bidirectional Lowering Protocol (OMEGA <-> PHYSICS <-> AEGIS)
+### 2.6 The Bidirectional Lowering Protocol (OMEGA <-> FORGE <-> AEGIS)
 
 The compilation and execution path operates through an iterative dialogue:
 
 1. **Intent Formulation:** AIEN proposes a desired state mutation or experiment.
 2. **Semantic Formalization:** OMEGA defines the exact mathematical meaning and invariant bounds.
-3. **Physical Lowering & Constraint Discovery:** PHYSICS compiles the OMEGA program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state). If a physical constraint is reached (e.g. non-contiguous allocation, alignment mismatch, or pinning requirement), PHYSICS communicates machine facts and realization alternatives back to OMEGA.
+3. **Physical Lowering & Constraint Discovery:** FORGE compiles the OMEGA program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state). If a physical constraint is reached (e.g. non-contiguous allocation, alignment mismatch, or pinning requirement), FORGE communicates machine facts and realization alternatives back to OMEGA.
 4. **Trade-off Resolution:** OMEGA (with AIEN when strategic) selects the optimal alternative and finalizes the program.
 5. **Invariant Verification:** AEGIS verifies that the realization preserves semantic constraints, satisfies capability bounds and slot generations, maintains internal consistency, and has valid rollback or recovery paths.
-6. **Hardware Execution:** PHYSICS dispatches the verified realization to hardware execution queues.
+6. **Hardware Execution:** FORGE dispatches the verified realization to hardware execution queues.
 7. **State Contract Inspection:** Hardware executes the state change. AEGIS validates the resulting hardware state against the contract.
 8. **Evidence Ingestion:** The outcome is recorded into the immutable Evidence Ledger and fed back to AIEN.
 
