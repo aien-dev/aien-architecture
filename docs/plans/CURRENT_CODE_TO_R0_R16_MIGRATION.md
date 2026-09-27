@@ -109,7 +109,7 @@ Parallelization groups (§4) are marked **G0–G6**.
 | `crates/aienos-kernel/src/caps.rs` (466 lines) | Kernel-owned `CapTable`; handles `{index, generation}`; `derive` enforces subset + DERIVE right; cascading `revoke`; tombstones | **The native capability root** (ADR 0014 gives capabilities to AIENOS). Add epoch and lease/expiry; expose a read-only authority view for resident readiness checks | **Adapt** | — | ABI frozen in `abi.rs` (generation-0 rejected); adding fields needs an ABI version | kernel unit tests, `ipc.rs:461`, `task_runtime.rs:664/813` | R7 (native) | G3 |
 | `artifact_loader.rs:796`, `admission.rs:291` | Only mint path: admission grants → caps | AEGIS `PolicyDecision` → root mint (slow path); fast path = existing capability | **Adapt** | R7 | Minting remains centralized in the kernel (correct) | `artifact_loader_tests.rs`, H01–H29 corpus | R8 | G3 |
 | `kernel/src/scheduler.rs` (380 lines, host-tested) | Fixed-capacity run-queue policy | Native physical admission below semantic readiness (§8): schedules work, not faculties | **Adapt** | R5 host semantics | Not driven by a live loop yet | host tests | R5 (native) | G3 |
-| `store/engine.rs`, `checkpoint.rs`, `recovery.rs`, `recovery_core.rs` (Store v1) | A/B superblock atomic commit; crash recovery | Durable side of the generation barrier; commits go through the ADR 0015 ordered protocol | **Keep** | ADR 0015 merge | Store v1 catalog bound of 4,096 entries (ADR 0015 Builder 9) | Store golden/negative, `qemu_store_crash_test.sh` | R9 | G4 |
+| `store/engine.rs`, `checkpoint.rs`, `recovery.rs`, `recovery_core.rs` (Store v1) | A/B superblock atomic commit; crash recovery | Durable side of the generation barrier; commits go through the ADR 0015 ordered protocol | **Keep** | ADR 0015 (merged) | Store v1 catalog bound of 4,096 entries (ADR 0015 Builder 9) | Store golden/negative, `qemu_store_crash_test.sh` | R9 | G4 |
 | `continuity.rs` (872 lines) | Agent provisioning/resume, manifest sequence | "Boot becomes awakening" (§30): restore last valid generation, rebuild indexes, re-mint capabilities | **Adapt** | R9, ADR 0015 | Continuity format not frozen (aienos ADR 0016 Proposed) | `continuity_tests.rs`, `qemu_continuity_test.sh` | R9, R14 | G4 |
 | `aienos-aegis` (host crate): `capability.rs` HMAC token, `broker.rs`, `world.rs` JSpaceWorld | HMAC-SHA256 token over editable JSON scope; in-memory audit; branch overlay with rollback | Token: **Replace** as an authority mechanism (a keyed MAC over editable fields in the same process is convention, not a root). JSpaceWorld rollback semantics: **Adapt** for speculative reactions (§24) | Replace / Adapt | R7, R8 | Not linked into kernel or boot today, so low blast radius | `phase_3_to_5_integration.rs` | R8, R13 | G3 |
 | `aienos-cortex` (host) | Epistemic records (observation / fact / hypothesis) | Cortex hot state as world objects; new observation wakes AIEN reactions | **Adapt** | R11 | — | crate tests | R11 | G5 |
@@ -161,7 +161,7 @@ G2  shared-world substrate (physics shared_world + omega worker)
 G3  native root (aienos)                              │
     caps.rs epoch + lease ─ read-only authority view ─ R7-native ─ R8-native
          │
-G4  durability [blocked on ADR 0015 merge, PR #41]
+G4  durability [ADR 0015 merged 2026-09-27; starts after R5–R8]
     choose causal hash ─ R9 generation barrier via Store v1
          │
 G5  faculties
@@ -176,7 +176,7 @@ Why this order:
 
 - R5 and R6 come before any real faculty. A reaction system without admission and storm control must not grow (§22: inspection before scale).
 - R7 comes before R8 because the root must exist before resident authority can refer to it.
-- R9 waits on ADR 0015 because generation commits must use its commit protocol.
+- R9 uses the ADR 0015 commit protocol (merged 2026-09-27) and follows R5–R8.
 - R12 needs silicon. Its claim is never made from host runs (§60 item 8).
 
 Disjoint ownership, so these groups can run at the same time:

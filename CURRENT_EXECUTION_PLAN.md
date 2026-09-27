@@ -503,7 +503,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 - Host-only gates R3–R8 proceed now in new Omega files (`omega/src/runtime/`), disjoint from M19R.
 - R1/R2 (shared world, cross-engine ABI) and R12 (resident CPU/GPU cooperation) wait for M19R Gate 2 and an idle GB10.
-- R9 (generation barrier) waits for ADR 0015 to merge.
+- R9 (generation barrier) commits through the now-merged ADR 0015 protocol and follows R5–R8.
 - Lane 4's World/effects and J-Space work must be expressed as reactions over the shared world, not as a new orchestrator.
 
 These lanes converge before AIEN_0 is promoted into the live runtime.

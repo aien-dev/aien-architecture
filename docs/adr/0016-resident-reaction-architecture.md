@@ -3,7 +3,7 @@
 **Status:** Accepted by operator, 2026-09-27 (directive: "Treat this document as the architectural decision. Do not redesign it back into a service pipeline.")
 **Gate:** `R0_REACTION_ARCHITECTURE_LOCKED` — satisfied when this ADR is merged to `main`.
 **Supersedes:** nothing. **Amends:** the runtime-composition reading of `doctrine/ARCHITECTURE.md` §1.1 and §2.6 (see "Doctrine reconciliation").
-**Related:** ADR 0005 (effect broker), ADR 0007 (J-Space effect boundary), ADR 0013/0014 (FORGE realizes, AEGIS verifies, AIENOS owns capabilities), ADR 0015 (Resident Semantic Store, open as aien-dev/aien-architecture#41).
+**Related:** ADR 0005 (effect broker), ADR 0007 (J-Space effect boundary), ADR 0013/0014 (FORGE realizes, AEGIS verifies, AIENOS owns capabilities), ADR 0015 (Resident Semantic Store, accepted and merged 2026-09-27).
 **Migration map:** [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](../plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md) (NOT A MASTER PLAN).
 
 ---
@@ -75,7 +75,7 @@ ADR 0015 governs durable state: memory categories, `OmegaResidentRoot`, the Stor
 | Resident | `RECONSTRUCTIBLE`, `DERIVED` |
 | Durable | `DURABLE` |
 
-The generation barrier (Part II §17–18, gate R9) must commit through the ADR 0015 ordered commit protocol. R9 therefore cannot start until ADR 0015 is merged; its §18 no-premature-implementation rule applies. R0–R8 are in-memory and do not write persistent formats, so they are not blocked by ADR 0015.
+The generation barrier (Part II §17–18, gate R9) must commit through the ADR 0015 ordered commit protocol. ADR 0015 is merged (2026-09-27), so R9 may start once its own prerequisites (R5–R8) hold. R0–R8 are in-memory and do not write persistent formats, so they are not blocked by ADR 0015.
 
 ### Invariants carried into every stage
 
