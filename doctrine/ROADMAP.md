@@ -51,7 +51,7 @@ This file is the **single authoritative source** for Sovereign Machine milestone
 | **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
 | **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
-| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. | REOPENED / IN PROGRESS |
+| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. Implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, authority substrate `aien-dev/physics` (`b64753d95bacb1114ba48decde48239f0c542e12`). REOPENED per errata E-M19-1..10 (`docs/errata/m19-errata.md`); closes via the M19R Foundation Recovery Program (`docs/m19r-recovery-program.md`). | REOPENED / IN PROGRESS |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
 | **M22** | Sovereign Training Runtime | `OMEGA_OPTIMIZER` | Verified sovereign optimizer realizations (SGD, Adam, AdamW). | PLANNED |
@@ -222,7 +222,7 @@ One nontrivial abstraction not present in the initial library that:
 - Cortex Receipt: Space `atlas-memory`, receipt ID `03c34210-4ecc-4c79-9bf9-c3ac37e157f8`.
 
 ### M19: `OMEGA_ACCELERATOR_RESIDENT`
-- Status: **IN PROGRESS**.
+- Status: **REOPENED / IN PROGRESS**.
 - Specification: `docs/milestone-19-spec.md`.
 - Target Substrate: Persistent Omega Execution Substrate in Coherent Memory on NVIDIA DGX Spark (`spark-b87b`, Grace Blackwell GB10, `sm_121`, 128 GiB unified LPDDR5x RAM).
 - Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`), `aien-dev/omega` M18 (commit `7273c37`).
@@ -233,7 +233,16 @@ One nontrivial abstraction not present in the initial library that:
 - Sustained Execution Target: >= 1,000 heterogeneous operations executed without context teardown or re-initialization, with bounded resident memory consumption.
 - Qualification Gates: 18 Milestone 19 gates + 157 cumulative regression gates (M4 through M18) = 175 total evaluated gates.
 - Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
+- Ratification binding: implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, physics authority `b64753d95bacb1114ba48decde48239f0c542e12`.
+- Independent rerun (2026-09-27, DGX Spark): all 175 gates (M4-M19) re-executed and passed at `omega ae2476d`, with binary SHA-256, manifest digest, and rolling state digest reproduced byte-for-byte against the committed receipt. The M19 receipt's `157`/`175` counts were asserted literals at qualification time; this independent rerun corroborates that the underlying gates did pass on silicon.
+- Naming: the machine realization subsystem is renamed FORGE per ADR 0014 ("FORGE REALIZES; AEGIS VERIFIES"). This is not a history rewrite: M19's own artifacts (`aien-dev/physics` M16 commit `b64753d`), the `is_physics_authorized` field serialized in historical fingerprints, and identifiers such as `PHYSICS_ACCELERATOR_LINK` keep their historical names.
+- Reopened: errata E-M19-1 through E-M19-10 are recorded in `docs/errata/m19-errata.md`, mapping each gap the receipt did not derive or enforce to the M19R recovery gate that closes it. M19 re-closes when the M19R Combined Foundation Admission Gate (`docs/m19r-recovery-program.md`) passes.
 
+### M19R: `FOUNDATION_REPAIR`
+- Status: **IN PROGRESS**.
+- Specification: `docs/m19r-recovery-program.md`.
+- Objective: repair the M19 qualification substrate (truthful evidence, GPU memory lifecycle, FORGE-realize/AEGIS-verify seam, observed hardware identity, FP32 machine vocabulary) before any Sovereign Training Runtime milestone (M20 onward) is qualified on top of it.
+- Gate: the Combined Foundation Admission Gate in `docs/m19r-recovery-program.md` covers only the foundation (evidence, runtime lifecycle, realize/verify seam, hardware identity, FP32 substrate). M19 re-closes, and M20 (`OMEGA_TENSOR`) opens, only after that foundation admission gate passes; M20-M24 remain separately qualified milestones, each with its own gate and receipt.
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
