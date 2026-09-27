@@ -499,6 +499,13 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 **Lane 4 — Composition:** Capability Graph, Skill Router, World/effects, J-Space, Fabric interface design.
 
+**Lane 5 — Resident reaction runtime (ADR 0016):** R0–R16, sequenced in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
+
+- Host-only gates R3–R8 proceed now in new Omega files (`omega/src/runtime/`), disjoint from M19R.
+- R1/R2 (shared world, cross-engine ABI) and R12 (resident CPU/GPU cooperation) wait for M19R Gate 2 and an idle GB10.
+- R9 (generation barrier) waits for ADR 0015 to merge.
+- Lane 4's World/effects and J-Space work must be expressed as reactions over the shared world, not as a new orchestrator.
+
 These lanes converge before AIEN_0 is promoted into the live runtime.
 
 ## 17. Immediate next gates
