@@ -1472,6 +1472,29 @@ Represent authority relationships in the live graph. Fast path: valid existing c
 
 Gate: `R8_CONSTITUTIONAL_AEGIS_PASS`
 
+**Scope note (2026-09-28).** This note fixes what R8 refers to. It does not
+change subsystem responsibilities.
+
+- **"AEGIS" here is the verifier faculty** of ARCHITECTURE §2.5. It is not
+  the `aegis-runtime` program. That program is legacy orchestration: it
+  becomes the reference oracle (Part I) and is written in Rust. R8 does not
+  build on it.
+- **The authority root is the native AIENOS capability authority**
+  (ARCHITECTURE §2.7, aienos `native/capability/`, in C).
+- **FORGE (formerly PHYSICS) realizes.** It "is not the kernel and is not the
+  policy authority" (FORGE.md).
+
+R8 therefore means four things:
+
+1. Authority relationships are live world objects: which subject holds which
+   capability, for which object, under which lease and epoch.
+2. A reaction holding a valid existing capability proceeds with no policy
+   round trip.
+3. A reaction that needs new authority publishes a request object. An AEGIS
+   policy reaction evaluates it, and only the AIENOS root mints the grant.
+4. The reduction in synchronous policy round trips is measured against the
+   current `spark-aegis` shell-out path.
+
 # 42. R9 — GENERATION BARRIER
 
 Implement coherent durable learning.
