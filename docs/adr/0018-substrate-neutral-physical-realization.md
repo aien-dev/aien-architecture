@@ -169,28 +169,28 @@ Physics Zero (M27–M35, `CURRENT_EXECUTION_PLAN.md` §13) is scientific discove
 - It does not change the ARGUS ABI, the R16 scope, Omega runtime code, or any FORGE v1 type.
 - It does not choose concrete wire encodings for the V2 descriptor or evidence; those are AR1 deliverables, reviewed against this ADR.
 
-## 11. Current code facts (audit basis, 2026-09-29)
+## 11. Audit basis at ADR drafting time (2026-09-29)
 
-These facts come from read-only audits. Omega file:line references are at `aien-dev/omega` `8e7a445` (audit basis); omega `main` is now `f308ac7` (`#72`, `aienos.lock` pin only). Physics references are at `aien-dev/physics#13` head `5781222` unless marked `main`.
+These facts record the frozen audit basis at the time this ADR was drafted (2026-09-29). While Omega #60, Physics #13, and Physics #16 were open or companion drafts when this audit was captured, all three have since merged to `main` (Omega #60 as `c0edef0`, Physics #13 as `5969159`, and Physics #16 as `1f7c321`). Omega file:line references are at `aien-dev/omega` `8e7a445` (audit basis). Physics references are at `aien-dev/physics#13` head `5781222` unless marked `main`.
 
-**Omega — already substrate-neutral:**
+**Omega: already substrate-neutral:**
 - `src/runtime/rx_capq.h:84-102` `CqNeed` names an operation, types, effect class, authority ceiling, locality, latency/energy/reliability budgets and evidence requirement. No substrate field.
 - `src/runtime/rx_capq.h:104-126` `CqCandidate` carries an opaque `realization_id` (u32). `CQ_SRC_PHYSICAL` (`rx_capq.h:51-56`) is a provider origin, not a substrate.
 - `src/runtime/rx_graph.h:234-239` `AG_REAL_HARDWARE` is an existing placeholder realization kind ("none exists on this host").
 
-**Omega — the seams this ADR must eventually touch (after R16):**
+**Omega: the seams this ADR must eventually touch (after R16):**
 - `src/runtime/rx_route.h:61` `enum { RX_COG_HW_CPU_P = 1u, RX_COG_HW_CPU_E = 2u, RX_COG_HW_GPU = 4u };` is **the one hardware-naming type on main**. It filters eligibility (`rx_route.c:323`) and is hashed into the registry digest (`rx_route.c:124`), so adding bits changes registry identity.
 - `src/runtime/rx_contract.{h,c}`: contracts are **exact-only**; field types are integer words; zero hits for tolerance/epsilon/float. `RC_EFFECT_CLASSES` includes a `physical` bit (`rx_contract.h:175`) with no `CQ_FX_*` counterpart.
 - The only tolerance-style parity path is the M18 matmul comparator (`src/omega_blackwell_submit.c` ~658-662, fixed `1e-4` absolute) against `omega_matmul_cpu_oracle_{i32,f16,bf16}` (`src/omega_blackwell_matmul.h:50-55`). The exact integer oracle is `omega_matvec_reference` (`src/omega_matvec.h:74`).
-- `aien-dev/omega#60` (empirical cost model, OPEN, conflicting): arms are anonymous indices (`RX_CM_ARMS` 8); the only hardware axis is CPU core class (`RX_CM_CORE_X925/A725/OTHER`); `RX_CM_OPS 1` (matvec only); observations carry `failed` but no error/accuracy field. **No substrate axis.**
+- `aien-dev/omega#60` (empirical cost model, merged as `c0edef0`; open/conflicting during drafting audit): arms are anonymous indices (`RX_CM_ARMS` 8); the only hardware axis is CPU core class (`RX_CM_CORE_X925/A725/OTHER`); `RX_CM_OPS 1` (matvec only); observations carry `failed` but no error/accuracy field. **No substrate axis.**
 - `EffectPayload` v2 (`src/omega_types.h:166-177`): 64-bit `capability_generation`, 178-byte wire form; v1 refused at `src/omega_canonical.c:48-49` and `src/omega_core.c:295`.
 
-**FORGE v1 (`aien-dev/physics#13`, open, unmerged):**
+**FORGE v1 (`aien-dev/physics#13`, merged as `5969159`; open at drafting audit):**
 - Type names are neutral (`ForgeMachineDescriptor`, `ForgeRealizationRequest`, `ForgeExecutionEvidence`), but the API is **NVIDIA-bound at submit**: `forge_realize.h:29` takes `Nvrm *`; error codes `FORGE_SEAM_ERR_NVRM`; feature/observation flags named after RM classes; `forge_descriptor.c:343` rejects any `pci_vendor_id != 0x10de`.
 - The v1 descriptor is a fixed 208-byte stream hashed with SHA-256. **The only frozen, reproducible v1 identity is the KAT digest** `10d63d05f888eaba4fe473c5f17febe22f462f543ae0c2b005a9a8e5417e09fd` (`forge_descriptor.c:486`), independently reproduced. The live GB10 descriptor digest is boot-volatile (it includes total memory, driver/firmware versions and PCI BDF).
 - `ir_payload`'s pointer value is never hashed (§5.3).
 - SHA-256 comes from `physics` `main:sha256_clean.c`, which is pinned into firmware builds: reuse, never modify or duplicate its exported symbols.
-- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion draft "FORGE substrate V2" is `aien-dev/physics#16` (branch `feat/forge-substrate-v2`, host-only KAT: 47 checks and 6 gates PASS; frozen V2 machine digest `89cb5ba6…06c0`).
+- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion PR "FORGE substrate V2" is `aien-dev/physics#16` (merged as `1f7c321`, branch `feat/forge-substrate-v2`, host-only KAT: 47 checks and 6 gates PASS; frozen V2 machine digest `89cb5ba6…06c0`).
 
 ## 12. Workstream gates AR0–AR7
 
