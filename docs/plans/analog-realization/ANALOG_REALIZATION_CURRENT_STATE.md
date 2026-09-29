@@ -40,7 +40,7 @@
 
 ## 2. Discrepancies found
 
-1. **Roadmap R15/R16 rows were stale.** `doctrine/ROADMAP.md` said R15 "Not qualified" and R16 "Not started". Live evidence: R15 PASS (omega#67), R16 PASS (omega#68 merged `6fdc4c3`). Corrected.
+1. **Roadmap R15/R16 rows were stale.** `doctrine/ROADMAP.md` said R15 "Not qualified" and R16 "Not started". Live evidence: R15 PASS (omega#67), R16 IN PROGRESS (omega#68 merged `6fdc4c3` with only the G1/G2 inventory gate PASS; G3-G8 not yet evidenced). Corrected.
 2. **physics#13 receipts normalized to digest names.** Historically flat, gate-named receipts in physics#13 were resolved by physics#17 (`fa48b7d`). Canonical digest-named receipts now live under `evidence/M19R/` (`a39269e80dce563be52a5daf6d73d37826e4ee995195af4a8ed064999598d79e.json` and `b81da4e265f5c0770d796423f65a0267d1748eda26bfdcb9a0c1a62493526062.json`), with compatibility symlinks preserved.
 3. **omega#60 is merged.** Landed on `main` at 2026-09-29T12:56:58Z (`c0edef0`).
 4. **omega#70 landed.** The ARGUS producer v1.1 PR merged (`e853a11`). Omega R16 (#68) merged (`6fdc4c3`) with R16 inventory gate PASS.
