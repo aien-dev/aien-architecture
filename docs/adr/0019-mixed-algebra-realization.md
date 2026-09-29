@@ -1,6 +1,6 @@
 # ADR 0019: Mixed-Algebra Realization
 
-**Status:** PROPOSED. Operator Drake Stapleton decides.
+**Status:** Accepted by operator Drake Stapleton, 2026-09-29.
 **Gate:** `MA-0` satisfied when this ADR is accepted by the operator and merged to `main`.
 **Supersedes:** nothing. **Amends:** nothing. **Extends:** ARCH-0018 (substrate-neutral physical realization) with the algebraic axis that ARCH-0018 left open.
 **Related:** ARCH-0002 (hardware-neutral Machine identities), ARCH-0013 / ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0015 (Resident Semantic Store), ARCH-0016 (resident reaction architecture, R0 to R16), ARCH-0017 (ARGUS), ARCH-0018 (substrate-neutral physical realization).
