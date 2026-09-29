@@ -1,6 +1,6 @@
 # Mixed Algebra - Current State
 
-**NOT A MASTER PLAN.** This is a finite workstream document for the proposed ADR 0019 (ARCH-0019, not yet written), mixed-algebra semantics and realization in Omega. It builds on ADR 0018 (ARCH-0018, ACCEPTED). `CURRENT_EXECUTION_PLAN.md` still owns cross-project sequencing and `doctrine/ROADMAP.md` still owns milestone status. Nothing in this document is a milestone.
+**NOT A MASTER PLAN.** This is a finite workstream document for ADR 0019 (ARCH-0019, ACCEPTED 2026-09-29), mixed-algebra semantics and realization in Omega. It builds on ADR 0018 (ARCH-0018, ACCEPTED). `CURRENT_EXECUTION_PLAN.md` still owns cross-project sequencing and `doctrine/ROADMAP.md` still owns milestone status. Nothing in this document is a milestone.
 
 **Written:** 2026-09-29. Code facts come from two read-only audits of the commits below; code was read, README and spec claims were not taken as evidence. Ten file:line claims were re-checked by hand on the same date (see §17).
 
