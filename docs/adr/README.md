@@ -30,3 +30,4 @@ Current ADRs:
 - [0015 - Resident Semantic Store Boundary, Object Identity, and Reconstruction Contract](0015-resident-semantic-store.md)
 - [0016 - AIEN, Omega, and AEGIS are faculties of one resident reaction system](0016-resident-reaction-architecture.md)
 - [0017 - ARGUS is the defensive plane; it observes, detects, and proposes, but never authorizes](0017-argus-defensive-plane.md) — Proposed, awaiting ratification (amended 2026-09-29: hostile-review rules, measured performance, event ABI v1.1)
+- [0018 - Substrate-neutral physical realization](0018-substrate-neutral-physical-realization.md) - Accepted by operator Drake Stapleton, 2026-09-29

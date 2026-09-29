@@ -238,6 +238,7 @@ One nontrivial abstraction not present in the initial library that:
 - Ratification binding: implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, physics authority `b64753d95bacb1114ba48decde48239f0c542e12`.
 - Independent rerun (2026-09-27, DGX Spark): all 175 gates (M4-M19) re-executed and passed at `omega ae2476d`, with binary SHA-256, manifest digest, and rolling state digest reproduced byte-for-byte against the committed receipt. The M19 receipt's `157`/`175` counts were asserted literals at qualification time; this independent rerun corroborates that the underlying gates did pass on silicon.
 - Naming: the machine realization subsystem is renamed FORGE per ADR 0014 ("FORGE REALIZES; AEGIS VERIFIES"). This is not a history rewrite: M19's own artifacts (`aien-dev/physics` M16 commit `b64753d`), the `is_physics_authorized` field serialized in historical fingerprints, and identifiers such as `PHYSICS_ACCELERATOR_LINK` keep their historical names.
+- Substrate-neutral realization (analog, neuromorphic, FPGA/CGRA, photonic, future substrates) is ADR 0018 (ARCH-0018, PROPOSED); its workstream gates AR0-AR7 are sequenced in `CURRENT_EXECUTION_PLAN.md` §6 C3 and carry no M-number.
 - Reopened: errata E-M19-1 through E-M19-10 are recorded in `docs/errata/m19-errata.md`, mapping each gap the receipt did not derive or enforce to the M19R recovery gate that closes it. M19 re-closes when the M19R Combined Foundation Admission Gate (`docs/m19r-recovery-program.md`) passes.
 
 ### M19R: `FOUNDATION_REPAIR`
@@ -251,7 +252,7 @@ One nontrivial abstraction not present in the initial library that:
 | :--- | :--- | :--- | :--- |
 | Gate 1 (M19R) | Truthful, immutable evidence; receipts derived from observed gate output | Merged | `aien-dev/omega#30` (`04d80f5`), `aien-dev/omega#33` (merge `49480cd`, 2026-09-27); receipt `evidence/M19R/c4d87451bbde1d8f09442191f735e893fd47916e72a6330c96df84e9e6028404.json`, recorded from clean omega `e5159fa` + physics `29bf6ea` |
 | Gate 2 (M19R-RUNTIME) | GPU memory lifecycle, exactly-once completion, long-run soak | Merged | `aien-dev/omega#31` (`1feb832`), `aien-dev/omega#33` (same receipt as Gate 1: PASS=229, 100,000-cycle soak passed, RM balance/allocations/mappings/registries back to zero) |
-| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | Open, not merged | `aien-dev/physics#13`; receipts must be regenerated in the digest-named schema (`evidence/<AREA>/<digest>.json`) |
+| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | Open, not merged | `aien-dev/physics#13` head `5781222`, mergeable, no review/CI; receipts hand-written, not digest-named |
 | Gate 5 (OMEGA-NUMERIC-0) | FP32 Blackwell machine vocabulary | Open, not merged | `aien-dev/omega#32`; needs rebase onto main and digest-named receipts |
 
   The Combined Foundation Admission Gate (Gate 14) has not passed, so M19 stays REOPENED and M20 stays PLANNED.
@@ -276,8 +277,11 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R11 `R11_CONTINUOUS_COGNITION` | PASS | DGX Spark CPU | #47 (`628daf5`, `evidence/R11/6aa6b3b3...json`) |
 | R12 resident GPU seat | PASS | GB10 silicon | #44 (`05b0692`), hardening #45 (`4331bf3`) (`evidence/R12/`) |
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
+| R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
 | R15 quantitative performance | PASS | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates) |
 | R16 orchestrator retirement | IN PROGRESS | DGX Spark | #68 draft (spec pre-registered, active inventory) |
+
+Status corrected 2026-09-29 from live evidence.
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
