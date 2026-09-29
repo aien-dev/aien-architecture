@@ -36,9 +36,10 @@ Nothing in this document may become runtime behaviour until all of the following
 | FORGE v1 boundary | physics #13 (FORGE-0 seam, FORGE-HWID probe) open | physics #13 merged with its Gate 3 / Gate 4 receipts |
 | Authority instance identity across restart | replay determinism proven; instance identity is an open ABI v2 question (D7, MachineId decision pending) | D7 decided and receipted |
 | ARGUS-0 | complete under documented limits (+3.87 % R8 with a spare core) | already acceptable; ARGUS-1 continues in parallel |
+| ARGUS-1 containment live | code started (aienos feat/argus-1-l0, spec #162); gates not yet run | `ARGUS1_G1`..`G13` PASS. Until then the Arena is **observe-and-record only**: Candidates may be proposed, verified and measured in draft Worlds, but no Candidate may act with real permissions and no promotion request may be created |
 | Omega empirical optimizer | omega #60 open, unmerged | #60 merged (its arm / judge / learner vocabulary becomes canonical) |
 
-Until then: schemas, receipts formats and this contract may be written and reviewed. No Arena code runs on the Spark.
+Until then: schemas, receipt formats and this contract may be written and reviewed. No Arena code runs on the Spark. Independently of the rows above, ARGUS-1 containment must be live before any Arena Candidate acts with real permissions (ARGUS-1 row); before that, evaluation is observe-and-record only.
 
 ### 0.2 Reading rules
 
