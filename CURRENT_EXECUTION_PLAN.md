@@ -39,6 +39,14 @@ As of 2026-09-27:
 - J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components.
 - RSI exists as an evaluation/promotion substrate but should not be placed on the critical path until the execution boundaries below are stable.
 
+Addendum, 2026-09-29 (from live evidence):
+
+- ADR 0016 R15 (quantitative performance) PASSED: `aien-dev/omega#67`, merge `bba3bd3`, receipt `evidence/R15/065c6884...json`, 16/16 gates.
+- ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` draft, spec and loop inventory pre-registered, no receipt on `main`.
+- Omega effect capabilities now carry 64-bit generations (`aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused.
+- The FORGE v1 realize/verify seam is still open in `aien-dev/physics#13` (M19R Gates 3-4, unmerged, no review/CI).
+- ADR 0018 (substrate-neutral physical realization) is PROPOSED; see §6 C3.
+
 ## 3. Program rule
 
 Do not build higher layers on a lower layer whose qualification is known to be misleading.
@@ -158,6 +166,25 @@ FORGE owns:
 FORGE does not own human intent, semantic truth, capability policy, or learned planning.
 
 **Exit gate:** Omega can request a realization without importing Forge implementation internals directly.
+
+### C3. Substrate-neutral realization (ADR 0018, workstream AR0–AR7)
+
+ADR 0018 (PROPOSED) extends FORGE from the digital CPU+GPU Machine to any physical substrate (analog, neuromorphic, FPGA/CGRA, optical/photonic, future) attached as a capability provider. AR0–AR7 are **workstream gates, not roadmap milestones**; they carry no M-number and do not reorder §17. Supporting documents: `docs/plans/analog-realization/` (NOT A MASTER PLAN).
+
+| Gate | Scope | Blocked on |
+|---|---|---|
+| AR0 | ADR 0018 accepted and merged | **Open:** ADR proposed, not accepted by the operator |
+| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | `aien-dev/physics#13` merge (C1 seam); companion draft on physics branch `feat/forge-substrate-v2` |
+| AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | AR1. May proceed as new files; must not touch `omega/src/runtime/` |
+| AR3 | Calibration, uncertainty and evidence qualification | AR2. Same file rule as AR2 |
+| AR4 | First physical analog operation (matvec, digital oracle vs physical analog, same contract) | AR3 + R16 closed (`aien-dev/omega#68`) + an operator decision on a physical device |
+| AR5 | Omega multi-substrate empirical selection | `aien-dev/omega#60` landed + R16 closed |
+| AR6 | Fabric-connected analog Machine | Phase F5 (Fabric) |
+| AR7 | J-Space / RSI multi-substrate optimization | Phase H3 (RSI optimization loop) |
+
+Order inside the existing sequence: AR1 follows the C1 FORGE boundary; AR2–AR3 run beside Phase C/E without touching Omega runtime code; AR4–AR5 follow R16; AR6 follows F5; AR7 follows H3.
+
+**Exit gate (AR4):** one matvec realized on a physical analog substrate satisfies the same SemanticResultContract as its digital oracle, with bounded error, repeatability, a fresh bound calibration, complete evidence, no authority bypass, no vendor identity in the semantic program, clean digital fallback, and no way for a faulted device to corrupt the World.
 
 ## 7. Phase D — AIENOS trusted substrate
 
@@ -506,6 +533,13 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 - R9 (generation barrier) commits through the now-merged ADR 0015 protocol and follows R5–R8.
 - Lane 4's World/effects and J-Space work must be expressed as reactions over the shared world, not as a new orchestrator.
 
+**Lane 6 — Substrate-neutral realization (ADR 0018):** AR0–AR7, sequenced in §6 C3; collision rules in `docs/plans/analog-realization/ANALOG_REALIZATION_COLLISION_MAP.md`.
+
+- Must not add a new central loop, scheduler, service or callback path, and must not create a second World.
+- No edits to `omega/src/runtime/` (or other R16-mapped files) until R16 (`aien-dev/omega#68`) closes.
+- The ARGUS event ABI is untouched; analog telemetry needs are documentation only.
+- New code in R16-scanned repositories (omega, aienos, physics) must stay clean of the R16 loop-inventory patterns.
+
 These lanes converge before AIEN_0 is promoted into the live runtime.
 
 ## 17. Immediate next gates
@@ -518,3 +552,5 @@ Do not start another master plan. Execute these:
 4. Finish and qualify AIENOS M5 trust/encryption.
 5. Finish Omega general FP32 numerical support.
 6. Proceed to AIENOS M6 and Omega M20 in parallel.
+
+The ADR 0018 workstream runs as Lane 6 and does not reorder these gates.

@@ -174,6 +174,7 @@ Where:
   2. **DMA & Bus Confinement:** Configures SMMUv3 / PCIe IOMMU controllers to guarantee physical memory isolation.
   3. **Queue & Register Lowering:** Constructs GPFIFO command streams, barrier synchronizations, and register state transitions.
   4. **Constraint & Fact Emitting:** Emits hardware facts (cache line alignments, pinning states, memory relocation costs, reset requirements) back to Omega when physical limits are encountered.
+  5. **Substrate-Neutral Realization (ADR 0018, PROPOSED):** Realizes over one or more typed physical substrates (digital CPU, digital GPU, analog, neuromorphic, FPGA/CGRA, optical/photonic, future substrates), each attached as a capability provider rather than an architectural identity, and emits calibration and measurement evidence with every physical result.
 
 ### 2.5 Cross-Cutting Verifier: Aegis (The Continuous Invariant & Contract Checker)
 * **Ontological Role:** Aegis is the continuous formal verifier spanning the entire transformation path. It does not dictate what Aien can think or propose; it verifies that proposed realizations are safe, internally consistent, and compliant with system invariants.
@@ -185,6 +186,7 @@ Where:
   5. Does the proposed physical transformation have a valid rollback or recovery path where required?
   6. Did the hardware execution produce the contractually expected state?
   7. Does the empirical evidence support what the system claims occurred?
+  8. Does a bounded or stochastic numerical result satisfy the semantic result contract, with calibration and measurement conditions in evidence? (ADR 0018, PROPOSED)
 
 ### 2.6 The Bidirectional Lowering Protocol (OMEGA <-> FORGE <-> AEGIS)
 
@@ -220,6 +222,8 @@ The full standard, its terminology mapping, and the R0–R16 gates are in [ADR 0
 ## 3. Hardware Topology: The Heterogeneous Cognitive Substrate
 
 The Sovereign Machine breaks with legacy symmetric computing and traditional coprocessor paradigms. It establishes a specialized dual-topology where CPU and GPU operate in a tightly coupled, asymmetric master-governor relationship.
+
+This CPU+GPU dual topology is the first qualified Machine, not the definition of a Machine. Additional substrates (analog, neuromorphic, FPGA/CGRA, optical/photonic, future) attach as FORGE capability providers under ADR 0018 (PROPOSED); they do not change what a Machine is or what Omega programs mean.
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
