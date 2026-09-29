@@ -8,7 +8,7 @@
 | Status | PROPOSED (draft for orchestrator review) |
 | Opened | 2026-09-29 |
 | Authority | ARCH-0016 (resident reaction architecture), ARCH-0015 (Resident Semantic Store), ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0007 (J-Space effect boundary), OS-0012 (self-construction, capability growth, generations), ARCH-0017 (ARGUS defensive plane, merged on main) |
-| Lineage | Omega `OMEGA_COGNITIVE_ROUTING_PASS` (#57), `OMEGA_PLAN_REUSE_PASS` (#58), `OMEGA_EMPIRICAL_OPTIMIZER_PASS` (#60, merged), R9 generation barrier (`rx_generation`), physics #13 FORGE-0 / FORGE-HWID (open) |
+| Lineage | Omega `OMEGA_COGNITIVE_ROUTING_PASS` (#57), `OMEGA_PLAN_REUSE_PASS` (#58), `OMEGA_EMPIRICAL_OPTIMIZER_PASS` (#60, merged), R9 generation barrier (`rx_generation`), physics #13 FORGE-0 / FORGE-HWID (merged) |
 
 ---
 
@@ -37,7 +37,7 @@ Nothing in this document may become runtime behaviour until all of the following
 | Prerequisite | In plain words | Status today | Closes when |
 |---|---|---|---|
 | R16 orchestrator retirement | the old central "conductor" program is fully replaced by self-starting pieces | W2/W4 done, W5 not done; omega #68 is a draft | `R16_ORCHESTRATOR_RETIRED` receipt (pending, omega #68) on omega main |
-| FORGE v1 boundary | the part that turns a method into machine code has a proven, sealed edge and can read the real hardware's identity | physics #13 (FORGE-0 seam, FORGE-HWID probe) open | physics #13 merged with its Gate 3 / Gate 4 receipts |
+| FORGE v1 boundary | the part that turns a method into machine code has a proven, sealed edge and can read the real hardware's identity | physics #13 merged (5969159; Gates 3 and 4 pass) | closed (physics #13 merged with Gate 3 / Gate 4 receipts) |
 | Authority instance identity across restart | after a reboot the permission system can prove it is the same one as before | replay determinism proven; instance identity is an open question for the next version of the binary interface (ABI v2, decision D7; which machine identifier to use is pending) | D7 decided and a receipt recorded for it |
 | ARGUS-0 | the watchdog's first stage is finished within stated limits | ARGUS-0 complete under documented limits 2026-09-29 (R8 +3.87 % with a spare core; runtime findings cleared at aienos d39dd5b), per aienos `feat/argus-0` c30f168 `ARGUS0_GATES.md` | closed as recorded; ARGUS-1 continues in parallel |
 | ARGUS-1 containment live | the watchdog can actually fence off a misbehaving piece | code started (aienos feat/argus-1-l0, spec #162); gates not yet run | `ARGUS1_G1`..`G13` PASS. Until then the Arena is **observe-and-record only**: Candidates may be proposed, verified and measured in draft Worlds, but no Candidate may act with real permissions and no promotion request may be created |
@@ -112,7 +112,7 @@ When the winner is handed to the store, it becomes an `RxGenDraft` (omega `rx_ge
 | `RxGenDraft` blob | Arena content |
 |---|---|
 | `provenance` | the **CandidateHeader** below, in the omega canonical encoding (big-endian, per omega `spec/canonical-encoding.md`; exact bytes re-checked after OSC-0B, §0.1), digest = `candidate_id` |
-| `realization` | the Omega program plus the FORGE realization plan (a `ForgeVerifiedRealization` (pending: physics #13) once sealed) |
+| `realization` | the Omega program plus the FORGE realization plan (a `ForgeVerifiedRealization` (physics #13 merged) once sealed) |
 | `config` | mutation parameters (tile size, unroll factor, arm selection, …) |
 | `model` | unused in V1 (reserved for learned components; forbidden mutation surface) |
 | `evidence` | root digest of the Evidence packages about this Candidate (§4.4), written by the measurement/judge reaction; the proposer and Candidate code have no write path to it |
@@ -160,7 +160,7 @@ REALIZED    FORGE produced a realization for every declared substrate, or report
    ↓
 VERIFIED    OMEGA semantic check + AEGIS invariant check both PASS; realization sealed
    ↓         (FAIL → REJECTED; sealed realization mutated → REJECTED,
-   ↓          NEG_POST_VERIFICATION_MUTATION_REFUSED (pending: physics #13))
+   ↓          NEG_POST_VERIFICATION_MUTATION_REFUSED (physics #13 merged))
 EVALUATING  running in its draft World against training + validation workloads
    ↓
 EVALUATED   all pre-registered measurements recorded as Evidence
@@ -384,7 +384,7 @@ Verdicts use the project's existing forms: PASS, FAIL, PASS-WITH-DOCUMENTED-LIMI
 - Arena principal (proposer, allocator, judge, learner, cost model) requests a capability it was not granted at run start → refused.
 - Proposer, learner or Candidate attempts to read the holdout → refused (no capability); judge attempts a second holdout read → refused, run FAIL.
 - Learner object file references `rx_gen_*` → build fails (`nm -u`).
-- Sealed realization mutated after verification → `NEG_POST_VERIFICATION_MUTATION_REFUSED` (pending: physics #13).
+- Sealed realization mutated after verification → `NEG_POST_VERIFICATION_MUTATION_REFUSED` (physics #13 merged).
 - Crash injected mid-promotion → recovery reports OLD or NEW, never torn.
 - Evaluation contract edited after first Candidate → EA-G3 FAIL, run void.
 
