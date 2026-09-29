@@ -279,7 +279,7 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
 | R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
 | R15 quantitative performance | PASS | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates) |
-| R16 orchestrator retirement | IN PROGRESS | DGX Spark | #68 draft (spec pre-registered, active inventory) |
+| R16 orchestrator retirement | PASS | DGX Spark | #68 merged (`6fdc4c3`, R16-G1/G2 inventory gate PASS, 0 unclassified, 0 question) |
 
 Status corrected 2026-09-29 from live evidence.
 
