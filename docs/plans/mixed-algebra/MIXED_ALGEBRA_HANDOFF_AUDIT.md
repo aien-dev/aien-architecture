@@ -35,7 +35,7 @@ The digital closure gate is being built on omega branch `feat/mixed-algebra-digi
 - ADR 0019 accepted plus Amendment 1 (arch #60, `13b4766`): lowest measured cost wins; a tie never changes the choice.
 
 ### Implemented but unmerged
-- MA-6 GPU realizations, branch `feat/mixed-algebra-gpu` (`b41811f` encoder ops LOP3_LUT, POPC, IADD3_R3, LDG_E_OFF; `753adda` realizations + pre-registration). No PR open. `git ls-tree` shows only the three inherited MA-2 receipts under `evidence/`; no GPU chip receipt exists. `spec/mixed-algebra-ma6-gpu.md` section 8 "Results" is empty. GPU claims are pre-registration only.
+- MA-6 GPU realizations, branch `feat/mixed-algebra-gpu` (`b41811f` encoder ops LOP3_LUT, POPC, IADD3_R3, LDG_E_OFF; `753adda` realizations + pre-registration). No PR open. `git ls-tree` shows only the three inherited MA-2 receipts under `evidence/MIXED_ALGEBRA/` and no GPU or MA-6 file anywhere under `evidence/`; no GPU chip receipt exists. `spec/mixed-algebra-ma6-gpu.md` section 8 "Results" is empty. GPU claims are pre-registration only.
 - Digital closure gate, `feat/mixed-algebra-digital-v1`: branch exists, no commits yet beyond main.
 
 ### Research only
@@ -67,7 +67,7 @@ The digital closure gate is being built on omega branch `feat/mixed-algebra-digi
 - `rx_costmodel` covers one operation: `src/runtime/rx_costmodel.h` line 37 `RX_CM_OPS 1u`. MA-2 selection is a test-side nearest-cell lookup; `ma2_select_receipt.json` `not_claimed` lists "integration with rx_costmodel or the resident omega.select reaction" and "multi-core or GPU realizations".
 
 ### Missing evidence fields
-- Correction to the brief's wording: energy IS recorded in the MA-2 bench receipts. `ma3_bench_run1.json` has an `"energy"` block (hwmon meter, whole Cortex-X925 cluster, "indicative only on a shared machine").
+- Note: energy IS recorded in the MA-2 bench receipts. `ma3_bench_run1.json` has an `"energy"` block (hwmon meter, whole Cortex-X925 cluster, "indicative only on a shared machine").
 - What is missing: per-realization attributed energy, energy as a selection input (`ma2_select_receipt.json` `not_claimed` includes "energy-based selection"), any energy in the phase twin receipt (none claimed), and any MA-6 GPU energy (no runs).
 
 ### Missing cost fields
