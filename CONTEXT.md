@@ -27,7 +27,7 @@ The durable memory system.
 _Avoid_: cortex_recall, vector database
 
 **AEGIS**:
-The effect boundary that decides whether an action is permitted.
+The cross-cutting invariant and contract verifier. It checks admissibility and compliance; it does not mint capabilities or execute actions.
 _Avoid_: AIENOS, OpenClaw, inference runtime, Effect Broker
 
 **Effect Broker**:

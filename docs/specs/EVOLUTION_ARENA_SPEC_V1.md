@@ -7,8 +7,8 @@
 | Classification | Frozen contract. Docs only. No runtime change is authorized by this document. |
 | Status | PROPOSED (draft for orchestrator review) |
 | Opened | 2026-09-29 |
-| Authority | ARCH-0016 (resident reaction architecture), ARCH-0015 (Resident Semantic Store), ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0007 (J-Space effect boundary), OS-0012 (self-construction, capability growth, generations), ARCH-0017 (ARGUS defensive plane; aien-architecture branch `docs/adr-0017-argus`, not yet on main) |
-| Lineage | Omega `OMEGA_COGNITIVE_ROUTING_PASS` (#57), `OMEGA_PLAN_REUSE_PASS` (#58), `OMEGA_EMPIRICAL_OPTIMIZER_PASS` (#60, open), R9 generation barrier (`rx_generation`), physics #13 FORGE-0 / FORGE-HWID (open) |
+| Authority | ARCH-0016 (resident reaction architecture), ARCH-0015 (Resident Semantic Store), ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0007 (J-Space effect boundary), OS-0012 (self-construction, capability growth, generations), ARCH-0017 (ARGUS defensive plane, merged on main) |
+| Lineage | Omega `OMEGA_COGNITIVE_ROUTING_PASS` (#57), `OMEGA_PLAN_REUSE_PASS` (#58), `OMEGA_EMPIRICAL_OPTIMIZER_PASS` (#60, merged), R9 generation barrier (`rx_generation`), physics #13 FORGE-0 / FORGE-HWID (open) |
 
 ---
 
@@ -41,7 +41,7 @@ Nothing in this document may become runtime behaviour until all of the following
 | Authority instance identity across restart | after a reboot the permission system can prove it is the same one as before | replay determinism proven; instance identity is an open question for the next version of the binary interface (ABI v2, decision D7; which machine identifier to use is pending) | D7 decided and a receipt recorded for it |
 | ARGUS-0 | the watchdog's first stage is finished within stated limits | ARGUS-0 complete under documented limits 2026-09-29 (R8 +3.87 % with a spare core; runtime findings cleared at aienos d39dd5b), per aienos `feat/argus-0` c30f168 `ARGUS0_GATES.md` | closed as recorded; ARGUS-1 continues in parallel |
 | ARGUS-1 containment live | the watchdog can actually fence off a misbehaving piece | code started (aienos feat/argus-1-l0, spec #162); gates not yet run | `ARGUS1_G1`..`G13` PASS. Until then the Arena is **observe-and-record only**: Candidates may be proposed, verified and measured in draft Worlds, but no Candidate may act with real permissions and no promotion request may be created |
-| Omega empirical optimizer | the existing "try several versions and measure" tool is accepted | omega #60 open, unmerged | #60 merged (its arm / judge / learner vocabulary becomes canonical) |
+| Omega empirical optimizer | the existing "try several versions and measure" tool is accepted | omega #60 merged | #60 merged (its arm / judge / learner vocabulary becomes canonical) |
 | OSC-0B machine semantics freeze | the rules for how numbers and IDs are laid out as bytes are settled | omega #76 draft, 4 owner decisions pending | accepted and identity-break timing decided; Arena schemas re-checked |
 
 OSC-0B is on this list for identity stability, not because the Arena needs the Omega compiler (V1 generates no code): its pending decisions (u64 generations everywhere, and the identity break for canonical payloads, R9 generation-store rows and crumb digests) change the exact bytes the frozen `candidate_id`, `objective_id` and Evidence digests, and the EA-G1 byte-for-byte reconstruction, are computed over.
@@ -402,7 +402,7 @@ These naming and rule collisions were found while aligning this spec with main. 
 2. **World:** single object world; J-Space draft Worlds are speculative branches within it (Ephemeral until promoted).
 3. **Generation:** ARCH-0016 / `rx_generation` generation, committed through ADR 0015. OS-0012 machine Generations are out of scope for V1.
 4. **Pipeline shape:** the research document's arrow diagram is responsibilities, not a loop. Implementation is reactions (R13/R16).
-5. **Independent promotion authority:** the holder of `RX_GEN_RIGHT_PROMOTE` on the native authority (in Flagship 1, the operator-held promotion principal). Not AEGIS (decides, does not mint), not ARGUS (observes), not the proposer, never an Arena principal.
+5. **Independent promotion authority:** the holder of `RX_GEN_RIGHT_PROMOTE` on the native authority (in Flagship 1, the operator-held promotion principal). Not AEGIS (verifies, does not mint), not ARGUS (observes), not the proposer, never an Arena principal.
 6. **RSI:** docs/09's Hypothesis → Candidate → Evaluation Plan → Judge → Canary → Promote/Rollback is the same flow; this spec is its in-band form and keeps its must-not list. V1 omits the Canary step (§6.1).
 7. **"Admission":** three senses kept distinct. OS-0012 deterministic admission gates (verification), Cortex Signed Admission Receipt (knowledge), capability admission (authority). This spec uses "verified", "admitted to Cortex", and "granted" respectively.
 8. **Rollback:** automatic pre-commit fallback vs operator-only post-commit rollback (§5.3).
@@ -415,7 +415,7 @@ These naming and rule collisions were found while aligning this spec with main. 
 15. **PROPOSED / REJECTED:** Candidate statuses (§2.2) vs the ADR 0015 §14 Evidence lifecycle states of the same names. Context names which is meant; Evidence states are only used in §4.4.
 16. **I-numbers:** ADR 0016 invariants I1–I16 (used unqualified in this spec) vs ARGUS-1 spec I1–I5 (always written "ARGUS-1 I…"); ADR 0017 uses finding codes 1–16, not I-numbers.
 17. **oracle:** the Omega semantic oracle (correctness reference for a workload) vs ADR 0016 Part I "legacy orchestrated paths become the reference oracle" (a migration reference). This spec means the former.
-18. **ADR 0006 / ADR 0017:** aien-architecture's ADR 0006 is "Production Secrets Are Vault-Only"; the offline operator authority cited via ADR 0015 §9 is aienos `docs/adr/0006`. Likewise aienos `docs/adr/0017` is the M5 key hierarchy ADR, while ARCH-0017 (ARGUS) is on an aien-architecture branch.
+18. **ADR 0006 / ADR 0017:** aien-architecture's ADR 0006 is "Production Secrets Are Vault-Only"; the offline operator authority cited via ADR 0015 §9 is aienos `docs/adr/0006`. Likewise aienos `docs/adr/0017` is the M5 key hierarchy ADR, while ARCH-0017 (ARGUS) is merged on main.
 
 ---
 
