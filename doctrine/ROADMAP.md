@@ -252,7 +252,7 @@ One nontrivial abstraction not present in the initial library that:
 | :--- | :--- | :--- | :--- |
 | Gate 1 (M19R) | Truthful, immutable evidence; receipts derived from observed gate output | Merged | `aien-dev/omega#30` (`04d80f5`), `aien-dev/omega#33` (merge `49480cd`, 2026-09-27); receipt `evidence/M19R/c4d87451bbde1d8f09442191f735e893fd47916e72a6330c96df84e9e6028404.json`, recorded from clean omega `e5159fa` + physics `29bf6ea` |
 | Gate 2 (M19R-RUNTIME) | GPU memory lifecycle, exactly-once completion, long-run soak | Merged | `aien-dev/omega#31` (`1feb832`), `aien-dev/omega#33` (same receipt as Gate 1: PASS=229, 100,000-cycle soak passed, RM balance/allocations/mappings/registries back to zero) |
-| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | Open, not merged | `aien-dev/physics#13` head `5781222`, mergeable, no review/CI; receipts hand-written, not digest-named |
+| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | PASS | aien-dev/physics#13 merged 5969159; Gates 3 and 4 pass (11/11, 10/10) |
 | Gate 5 (OMEGA-NUMERIC-0) | FP32 Blackwell machine vocabulary | Open, not merged | `aien-dev/omega#32`; needs rebase onto main and digest-named receipts |
 
   The Combined Foundation Admission Gate (Gate 14) has not passed, so M19 stays REOPENED and M20 stays PLANNED.

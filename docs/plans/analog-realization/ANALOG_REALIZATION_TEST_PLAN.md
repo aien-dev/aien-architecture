@@ -1,13 +1,13 @@
 # Analog Realization — Test Plan (AR1–AR4)
 
-**NOT A MASTER PLAN.** This is a finite workstream document for ADR 0018 (ARCH-0018, PROPOSED), substrate-neutral physical realization. `CURRENT_EXECUTION_PLAN.md` still owns cross-project sequencing (§6 C3, Lane 6), and `doctrine/ROADMAP.md` still owns milestone status. The AR-gates are ADR 0018 workstream gates, not M-milestones.
+**NOT A MASTER PLAN.** This is a finite workstream document for ADR 0018 (ARCH-0018, ACCEPTED, merged 641bd3c), substrate-neutral physical realization. `CURRENT_EXECUTION_PLAN.md` still owns cross-project sequencing (§6 C3, Lane 6), and `doctrine/ROADMAP.md` still owns milestone status. The AR-gates are ADR 0018 workstream gates, not M-milestones.
 
 **Written:** 2026-09-29. Code facts come from three read-only audits of the commits below.
 
 | Repository | Commit |
 |---|---|
-| omega | `main` `f308ac7` (live); file:line facts read at `8e7a445` (audit basis); `#60` read at `7d581b2` |
-| physics | `main` `fecbedb`; `#13` read at `5781222`; companion draft `#16` on branch `feat/forge-substrate-v2` |
+| omega | `main` `f308ac7` (live); file:line facts read at `8e7a445` (audit basis); `#60` merged `c0edef0` |
+| physics | `main` `5969159` (live); `#13` merged `5969159`; `#16` merged `1f7c321` |
 | aien-architecture | `main` `f6baa35` |
 
 General rules for every gate: all code in C (plus assembly where measured); no Python; receipts are digest-named (`evidence/<AREA>/<sha256>.json`) and emitted by code, never hand-written; new code stays clean of the R16 loop-inventory patterns (see `ANALOG_REALIZATION_COLLISION_MAP.md` §4); no edits to `omega/src/runtime/` before R16 closes.
@@ -16,12 +16,12 @@ General rules for every gate: all code in C (plus assembly where measured); no P
 
 ## AR1 — FORGE substrate-neutral descriptor contract
 
-Location: physics#16, branch `feat/forge-substrate-v2` (`forge/v2/`, `tests/test_forge_v2_kat.c`), merged only after physics#13.
+Location: physics#16, merged on main (`1f7c321`) following physics#13 (`5969159`) (`forge/v2/`, `tests/test_forge_v2_kat.c`).
 
 | Test | Pass condition |
 |---|---|
 | V2 KAT | V2 descriptor and V2 evidence records serialize to fixed byte streams whose SHA-256 digests equal frozen literals. The stream begins with magic + version so it cannot be confused with the unversioned 208-byte v1 stream. All integers explicit little-endian. |
-| v1 digest reproduction | The 208-byte v1 KAT stream, held as a literal byte array and hashed with physics `main:sha256_clean.c` `sha256_compute`, equals `10d63d05f888eaba4fe473c5f17febe22f462f543ae0c2b005a9a8e5417e09fd`. Hardware-free; no nvrm or NVIDIA headers linked. After #13 merges: add the cross-check `forge_descriptor_run_kat() == 0` and `compute_digest(KAT descriptor)` equals the digest V2 wraps. |
+| v1 digest reproduction | The 208-byte v1 KAT stream, held as a literal byte array and hashed with physics `main:sha256_clean.c` `sha256_compute`, equals `10d63d05f888eaba4fe473c5f17febe22f462f543ae0c2b005a9a8e5417e09fd`. Hardware-free; no nvrm or NVIDIA headers linked. #13 merged (`5969159`): cross-check `forge_descriptor_run_kat() == 0` and `compute_digest(KAT descriptor)` equals the digest V2 wraps. |
 | Wrap, not reserialize | V2 embeds the v1 identity only as an opaque 32-byte digest; `forge/forge_descriptor.c` is not included or linked. |
 | Strict decode | Decoder refuses: wrong magic/version, truncated or over-long input, non-zero reserved bytes, unknown enum values, trailing bytes. Every refusal is a distinct error code. |
 | Stale calibration refusal | A realization record bound to a calibration whose validity has expired, or whose conditions are outside the envelope, is refused as ineligible. |
@@ -73,12 +73,12 @@ Operation: matvec. Two realizations of **one** semantic program with **one** Sem
 ## Dependency graph
 
 ```text
-AR0 (ADR 0018 accepted)
-  └─► AR1 (V2 descriptor contract)      ◄── physics#13 merged
+AR0 (ADR 0018 accepted, merged 641bd3c) - PASS
+  └─► AR1 (V2 descriptor contract)      ◄── physics#13 merged (5969159), physics#16 merged (1f7c321) - PASS
         └─► AR2 (simulated provider)
               └─► AR3 (calibration/uncertainty/evidence)
                     └─► AR4 (physical analog matvec)   ◄── R16 closed (omega#68) + operator device decision
-                          └─► AR5 (multi-substrate selection) ◄── omega#60 landed + R16 closed
+                          └─► AR5 (multi-substrate selection) ◄── omega#60 merged (c0edef0) + R16 closed
                                 └─► AR6 (Fabric analog Machine) ◄── Fabric F5
                                       └─► AR7 (J-Space/RSI optimization) ◄── H3
 Side constraint: any ARGUS telemetry work ◄── ARGUS perf gate decided (aienos#160 vs omega#70) + ABI v2
@@ -86,11 +86,11 @@ Side constraint: any ARGUS telemetry work ◄── ARGUS perf gate decided (aie
 
 ## Blockers
 
-1. **AR0:** ADR 0018 is PROPOSED; needs operator acceptance and merge (`aien-dev/aien-architecture`, `docs/adr/0018-substrate-neutral-physical-realization.md`).
-2. **AR1:** `aien-dev/physics#13` (head `5781222`) unmerged, no review, no CI; receipts `evidence/m19r_gate3_forge_seam_evidence.json`, `evidence/m19r_gate4_forge_hwid_evidence.json` hand-written, not digest-named. The v1 KAT runs only inside the GPU test `tests/test_forge_hwid.c`.
+1. **AR0:** PASS (ADR 0018 accepted, merged 641bd3c; `aien-dev/aien-architecture`, `docs/adr/0018-substrate-neutral-physical-realization.md`).
+2. **AR1:** PASS. `aien-dev/physics#13` merged on main (`5969159`, Gates 3 and 4 pass 11/11, 10/10); companion `aien-dev/physics#16` merged on main (`1f7c321`, 47/47 KAT + 6/6 PASS).
 3. **AR2/AR3:** must not touch `aien-dev/omega` `src/runtime/` while `aien-dev/omega#68` (R16, draft `d73315e`) is open; new C code in physics/aienos/omega must stay clean of R16 inventory patterns.
 4. **AR4:** R16 close (`aien-dev/omega#68` → `evidence/R16/<sha256>.json` on `main`); no physical analog device exists or has been chosen.
-5. **AR5:** `aien-dev/omega#60` (head `7d581b2`) is CONFLICTING and its host-reference check fails; it has no substrate axis (`rx_costmodel.h` `RX_CM_CORE_*` is CPU core class only) and no error field in `RxCmObservation`.
+5. **AR5:** `aien-dev/omega#60` merged on main (`c0edef0`, merged at 2026-09-29T12:56:58Z); substrate axis and error field in `RxCmObservation` to follow post-R16.
 6. **AR6:** Fabric (`CURRENT_EXECUTION_PLAN.md` Phase F5) not started.
 7. **AR7:** RSI optimization loop (`CURRENT_EXECUTION_PLAN.md` Phase H3) not started.
 8. **ARGUS telemetry:** performance gate disputed (`aien-dev/aienos#160` +6.2% vs `aien-dev/omega#70` +3.87%; 5% vs 2% bar undecided); `aien-dev/omega#70` `src/runtime/rx_argus.c` loops collide with R16 G2.
