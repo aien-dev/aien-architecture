@@ -11,7 +11,7 @@
 
 ## In plain words (read this first)
 
-AIEN already has a guard at the door. **AEGIS** decides who is allowed to do what, and the capability authority in AIENOS hands out the permission slips (capabilities) and takes them back. What AIEN does not yet have is a **watchman**: something that keeps an eye on the whole building, notices when something happens that should be impossible (a revoked permission slip that still worked, a forged one, a program that changed after it was approved, a machine that is not who it says it is), writes it down in a tamper-evident log, and raises the alarm.
+AIEN already has a quality-control inspector at the door. **AEGIS** verifies compliance against system law, stamping approval when invariants are satisfied, and the capability authority in AIENOS hands out the permission slips (capabilities) and takes them back. What AIEN does not yet have is a **watchman**: something that keeps an eye on the whole building, notices when something happens that should be impossible (a revoked permission slip that still worked, a forged one, a program that changed after it was approved, a machine that is not who it says it is), writes it down in a tamper-evident log, and raises the alarm.
 
 That watchman is **ARGUS**. The one-line rule is:
 
@@ -22,7 +22,7 @@ ARGUS can see and report. It can *ask* for something to be locked down. It can n
 **What Drake is being asked to ratify:**
 
 1. The boundaries: what ARGUS is responsible for, and the explicit list of things it must never become (section 11).
-2. The chain for locking something down: ARGUS proposes, AEGIS decides, the existing authority carries it out, and evidence is always written (section 4).
+2. The chain for locking something down: ARGUS proposes, AEGIS verifies against policy, the existing authority carries it out, and evidence is always written (section 4).
 3. The shape of a security event (a fixed 128-byte record with no secrets in it), who is allowed to write one, the rules that decide whether an event is believed and applied, and what happens when events arrive faster than ARGUS can read them (section 6, with the gaps that remain in section 16).
 4. The speed and failure promises (sections 7 and 8). **The speed test now passes the 5% limit we set in advance, with one condition.** The first design made AIEN's permission checks about 60% slower. The redesign ("report changes, count routine use") brought a real test suite (R8) down to about 6% slower, which failed. The cause was then found: the watchman's reader was not using up processor time, it was jostling AIEN's own workers for the same processor cores. With the reader given a core of its own that the workload does not use (the shipped default setting does this automatically), the real test suite runs **3.87% slower** (400 measured rounds; we are 95% sure the true figure is between 3.27% and 4.47%), which is inside the 5% limit. Without a spare core it is 5.31% slower and fails. The individual permission check shows no measurable slowdown at all. Section 7.4 has the numbers. **We do not loosen the limit to make it pass; that is still true**: the 5% limit was not changed, and only Drake can change a target. The separate, stricter 2% engineering target is met on the measure the ADR defines but not on the test-suite clock; Drake is asked to decide which reading counts (section 7.5).
 5. That the first milestone, **ARGUS-0**, is only the foundation: the event format, the bounded queues, the watchman's memory, and the "this should be impossible" checks. It can be switched on inside Omega's runtime for testing (off by default), and it does not lock anything down. **ARGUS-0 is finished, under written-down limits:** 9 of its 10 checks pass, counting the hostile review and the speed check, which pass with their limits written down; the "runs inside the real system" check now passes with no open findings (section 13).
@@ -168,7 +168,7 @@ The list of hard invariants is exactly this table. Adding one is an append to th
 Containment means limiting damage: revoking a capability, freezing or restricting a principal, quarantining a machine or provider, revoking a credential lease, rejecting an artifact, requiring re-attestation, raising the effect class a principal needs, or pausing external effects. The chain is fixed:
 
 1. **ARGUS proposes.** It builds an `ArgusContainmentRequest`: incident id, recommended containment class, severity, finding code, principal, target capability reference (`AienosCapRef` layout), machine identity, and the digest of the finding that justifies it.
-2. **AEGIS authorizes.** AEGIS evaluates the request under its policy like any other request. It may grant, deny, or escalate to the operator. AEGIS MAY decline, and declining is itself recorded.
+2. **AEGIS verifies.** AEGIS evaluates the request against immutable system rules and authorization invariants (acting as quality control, deciding no policy of its own). It may confirm compliance, reject compliance, or escalate to the operator. AEGIS MAY decline, and declining is itself recorded.
 3. **The canonical executor acts.** Only the component that already owns the power carries it out: the capability root revokes, AIENOS cancels workers or resets a GPU (ADR 0016 §31), the provider registry quarantines, the effect broker pauses external effects. ARGUS never gets a second, private way to do any of these.
 4. **Evidence always.** The finding, the request, AEGIS's decision (including a refusal), and the executor's result are all recorded and chained. There is no containment without evidence, and no silent refusal.
 
@@ -507,7 +507,7 @@ ARGUS-1 containment has a draft, pre-registered specification (target location `
 ### Consequences
 
 - AIEN gains a system-wide cross-check that no single boundary can provide, without adding a second authority.
-- The authority stays single: AEGIS decides, the root mints and revokes, and ARGUS's worst failure mode is a recorded evidence gap, not a stopped system.
+- The authority stays single: AEGIS verifies against system law, the root mints and revokes, and ARGUS's worst failure mode is a recorded evidence gap, not a stopped system.
 - Every alarm is reproducible: the same events always give the same findings, and the record is tamper-evident.
 - Detectors for vaults, providers, artifacts, and machine identity are proven only against synthetic events until those producers exist in C. Their live value waits on that work.
 - Performance was measured and the first design failed its target (60% slower on a 24 ns check). The redesign reports changes and counts routine use; the first re-measurement cost about 6% on a real test suite and failed. Profiling showed the reader was crowding AIEN's workers off their cores; with the reader on its own core the cost is 3.87%, inside the 5% limit, so ARGUS-0 closes under that documented condition. The stricter 2% target awaits Drake's amendment decision.
