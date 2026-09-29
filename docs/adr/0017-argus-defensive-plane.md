@@ -59,7 +59,7 @@ Everything below is the precise version of those seven points.
 
 ### Context
 
-ADR 0016 made AIEN, Omega, and AEGIS faculties of one resident reaction system. AEGIS became the constitutional authority faculty: it decides capability policy, and only the capability root turns a decision into an enforceable capability. ADR 0016 §31 requires that the system can stop a bad region "even if adaptive cognition is unhealthy", and §20 to §22 require that every consequential transition is causally traceable without logging everything as text.
+ADR 0016 made AIEN, Omega, and AEGIS faculties of one resident reaction system. AEGIS became the constitutional authority faculty: it verifies compliance against capability invariants, and only the capability root turns an authorized request into an enforceable capability. ADR 0016 §31 requires that the system can stop a bad region "even if adaptive cognition is unhealthy", and §20 to §22 require that every consequential transition is causally traceable without logging everything as text.
 
 Nothing today watches the system *as a whole* for violations that no single decision point can see: a capability used after its revocation was recorded, a generation that went backwards, a World commit that skipped a generation, an artifact whose digest changed after admission, a credential lease used by the wrong subject. Each producer checks its own rule at its own boundary. Nobody cross-checks the producers against each other and against history.
 
@@ -103,8 +103,8 @@ ARGUS answers the question "did something happen that the rules say cannot happe
 | | AEGIS | ARGUS |
 |---|---|---|
 | Protects | authority: who may do what | the system: that what happened is consistent with the rules and the record |
-| Decides | policy (GRANT, DENY, ESCALATE, REVOKE in Omega's `rx_aegis`) | nothing; it reports |
-| Holds | the policy; the capability root holds the admin handle | shadow copies of outcomes only |
+| Decides | nothing (verifies compliance: evaluates GRANT, DENY, ESCALATE, REVOKE against system invariants) | nothing; it reports |
+| Holds | verification rules; the capability root holds the admin handle | shadow copies of outcomes only |
 | Acts | through the capability root | never; it proposes to AEGIS |
 | When it is busy | when authority changes | continuously, off the hot path |
 
@@ -112,7 +112,7 @@ Normative rules:
 
 - ARGUS MUST NOT hold the AIENOS capability admin handle (`AienosCapAdmin`) and MUST NOT call the authority's mint, validate, revoke, reclaim, clock, or epoch operations.
 - ARGUS MUST NOT re-validate a capability. The producer copies the authority's own result code (the `AIENOS_CAP_*` code, or `RX_GEN_*` from the generation store) into the event. ARGUS cross-checks that recorded outcome against its shadow state. Example: the shadow says capability 7 was revoked at sequence 40, and at sequence 55 an event reports capability 7 used with outcome OK. That is a finding (revoked capability used), not a new authorization decision.
-- AEGIS MUST treat a containment request as input to its own policy, exactly like any other request. ARGUS findings carry no special power to bypass AEGIS rules or the root's own refusals.
+- AEGIS MUST evaluate a containment request against system authorization invariants, exactly like any other request. ARGUS findings carry no special power to bypass AEGIS rules or the root's own refusals.
 
 #### 2.2 ARGUS and the World
 
