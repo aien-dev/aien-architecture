@@ -44,7 +44,8 @@ Addendum, 2026-09-29 (from live evidence):
 - ADR 0016 R15 (quantitative performance) PASSED: `aien-dev/omega#67`, merge `bba3bd3`, receipt `evidence/R15/065c6884...json`, 16/16 gates.
 - ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` draft, spec and loop inventory pre-registered, no receipt on `main`.
 - Omega effect capabilities now carry 64-bit generations (`aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused.
-- The FORGE v1 realize/verify seam is still open in `aien-dev/physics#13` (M19R Gates 3-4, unmerged, no review/CI).
+- The FORGE v1 realize/verify seam is closed: `aien-dev/physics#13` merged (`5969159`), Gates 3 and 4 pass.
+- AR1 (FORGE substrate-neutral descriptor contract) PASSED: `aien-dev/physics#16` (`1f7c321`) and `aien-dev/physics#13` (`5969159`) merged on main; V1 and V2 combined gates pass.
 - ADR 0018 (substrate-neutral physical realization) is ACCEPTED and merged (641bd3c); AR0 is satisfied; see §6 C3.
 
 ## 3. Program rule
@@ -174,7 +175,7 @@ ADR 0018 (ACCEPTED, merged 641bd3c) extends FORGE from the digital CPU+GPU Machi
 | Gate | Scope | Blocked on |
 |---|---|---|
 | AR0 | ADR 0018 accepted and merged | **PASS:** Accepted by operator Drake Stapleton, merged 641bd3c |
-| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | V2 contract landed early in physics#16 (1f7c321); AR1 does not PASS until the C1/physics#13 foundation is merged and combined gates pass |
+| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | **PASS:** V2 contract in `physics#16` (`1f7c321`), C1 foundation in `physics#13` (`5969159`), combined gates pass |
 | AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | AR1. May proceed as new files; must not touch `omega/src/runtime/` |
 | AR3 | Calibration, uncertainty and evidence qualification | AR2. Same file rule as AR2 |
 | AR4 | First physical analog operation (matvec, digital oracle vs physical analog, same contract) | AR3 + R16 closed (`aien-dev/omega#68`) + an operator decision on a physical device |
