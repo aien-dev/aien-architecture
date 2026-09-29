@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def verify(omega, roadmap):
     row = next(line for line in roadmap.splitlines() if line.startswith("| R16 orchestrator retirement |"))
     status = row.split("|")[2].strip()
-    if status != "PASS":
+    if status == "IN PROGRESS":
         return "R16 overall qualification is not claimed"
     for path in (omega / "evidence/R16").glob("*.json"):
         try:
