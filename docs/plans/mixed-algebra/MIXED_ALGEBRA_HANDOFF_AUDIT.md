@@ -12,7 +12,7 @@ Date: 2026-09-29. Scope: the Omega mixed-algebra program (ADR 0019, MA-0 to MA-8
 | omega | feat/mixed-algebra-digital-v1 (local worktree `~/workspace/omega-ma-digital-v1`, not pushed) | `f7f60dd` (zero commits beyond main at audit time) |
 | Outside artifacts | `~/.claude/jobs/c8884ded/tmp/` | `gemini-priorart.md` (200 lines), `grok-phase-hw.md` (163 lines), `gemini-brief.txt`, `grok-brief.txt` |
 
-The digital closure gate is being built on omega branch `feat/mixed-algebra-digital-v1`. Result pending; nothing in this audit depends on it.
+The digital closure gate (`MIXED_ALGEBRA_DIGITAL_V1`): PASS on omega `feat/mixed-algebra-digital-v1`, receipt `evidence/MIXED_ALGEBRA/digital_v1/04f0f9ab01fc55fcc94391fe5032b18f3ca8c039e00b9f4be66cfb05ec28ddc1.json`, omega PR #87 (https://github.com/aien-dev/omega/pull/87). Nothing in this audit depends on it.
 
 ## 2. Artifact classification
 
