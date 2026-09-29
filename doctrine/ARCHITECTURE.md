@@ -179,7 +179,7 @@ Where:
 * **Ontological Role:** Aegis is the continuous formal verifier spanning the entire transformation path. It does not dictate what Aien can think or propose; it verifies that proposed realizations are safe, internally consistent, and compliant with system invariants.
 * **Core Verification Inquiries:**
   1. Does the Omega program faithfully represent what Aien proposed?
-  2. Does the Physics realization preserve Omega constraints?
+  2. Does the FORGE realization preserve Omega constraints?
   3. Are memory bounds, slot generations, and layouts valid without ABA hazards?
   4. Is a RAM, BRAM, GPU, or peripheral state change internally consistent?
   5. Does the proposed physical transformation have a valid rollback or recovery path where required?
@@ -207,7 +207,7 @@ AIEN, OMEGA, and AEGIS are **faculties of one resident system**, not sequential 
 
 - Work activates when its dependencies become ready in one shared, generation-addressed object world.
 - Physical resources are arbitrated below semantic readiness. The allocator schedules work, not faculties.
-- Authority is unforgeable. The capability root (natively the AIENOS kernel capability authority) alone mints and revokes enforceable capabilities. AEGIS decides policy. The shared world may hold capability references but never invent them.
+- Authority is unforgeable. The capability root (natively the AIENOS kernel capability authority) alone mints and revokes enforceable capabilities. AEGIS verifies compliance against system invariants and decides no policy. The shared world may hold capability references but never invent them.
 - Behavior is continuous. Durable learning is promoted only at verified generation barriers, committed through the ADR 0015 protocol.
 - Every nontrivial transition leaves a structured, content-addressed causal record.
 
@@ -243,7 +243,7 @@ The Sovereign Machine breaks with legacy symmetric computing and traditional cop
 │           AArch64 CPU HOST            │               │      BLACKWELL / HOPPER        │
 │     "Trusted Physical Governor"       │               │      ACCELERATOR ENGINE        │
 │                                       │               │ "Residence of Cognition"       │
-│  - Runs Physics at contract EL        │               │  - Runs Aien Core Mind         │
+│  - Runs FORGE at contract EL          │               │  - Runs Aien Core Mind         │
 │  - Owns Platform MMU & SMMUv3         │               │  - Full HBM Resident Weights   │
 │  - Hardware Watchdogs & Safety        │               │  - Persistent Unified KV Pool  │
 │  - Checks AEGIS Invariants & Bounds   │               │  - Autonomous Tensor Pipeline  │

@@ -276,9 +276,8 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R11 `R11_CONTINUOUS_COGNITION` | PASS | DGX Spark CPU | #47 (`628daf5`, `evidence/R11/6aa6b3b3...json`) |
 | R12 resident GPU seat | PASS | GB10 silicon | #44 (`05b0692`), hardening #45 (`4331bf3`) (`evidence/R12/`) |
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
-| R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
-| R15 quantitative performance | Not qualified: no receipt on `main` | — | — |
-| R16 | Not started | — | — |
+| R15 quantitative performance | PASS | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates) |
+| R16 orchestrator retirement | IN PROGRESS | DGX Spark | #68 draft (spec pre-registered, active inventory) |
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.

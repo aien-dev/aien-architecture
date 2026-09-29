@@ -5,7 +5,8 @@
 ```text
 Model     proposes
 J-Space   compares
-AEGIS     authorizes
+AEGIS     verifies
+Cap Root  authorizes
 Broker    externalizes
 World     commits
 Provenance proves
