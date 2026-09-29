@@ -1,6 +1,8 @@
-# Rust → C Migration Plan
+# Rust → C Migration Plan (decided 2026-09-27)
 
-**PROPOSAL FOR DRAKE, NOT A DECISION.** Nothing here has been agreed yet. It is written so Drake can grill it, cut it, or reorder it. Until he signs it off, nobody should start porting or deleting code because of this document.
+**Decided by Drake 2026-09-27: no Rust anywhere; C (+asm where measured) is the target. Authority ported 2026-09-28 (aienos #156, omega #43).**
+
+**Status:** the direction above is decided. The step order in §3 and the open items in §6 are still proposals awaiting Drake.
 
 **Written:** 2026-09-28.
 
