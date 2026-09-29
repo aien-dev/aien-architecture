@@ -281,7 +281,7 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R15 quantitative performance | PASS | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates) |
 | R16 orchestrator retirement | IN PROGRESS | DGX Spark | #68 merged (`6fdc4c3`): only R16-G1/G2 loop-inventory gate PASS (0 unclassified, 0 question). Not yet evidenced: G3 authority path (`make test-r16-authpath`), G4 negative test (`rx_r16_negative.c`), G5 API/build surface, G6 protected surfaces, G7 full R1-R15 ladder on candidate, G8 receipt `evidence/R16/<sha256>.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`) |
 
-Status corrected 2026-09-29 from live evidence.
+Status corrected 2026-09-29 against committed acceptance evidence. R16 inventory completion does not close the overall milestone.
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
