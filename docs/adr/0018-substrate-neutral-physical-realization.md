@@ -1,7 +1,7 @@
 # ADR 0018: Substrate-Neutral Physical Realization
 
-**Status:** PROPOSED (awaiting operator acceptance). Nothing in this ADR is binding until the operator accepts it and it is merged to `main`.
-**Gate:** `AR0` — satisfied when this ADR is accepted by the operator and merged to `main`.
+**Status:** Accepted by operator Drake Stapleton, 2026-09-29.
+**Gate:** `AR0` satisfied when this ADR is accepted by the operator and merged to `main`.
 **Supersedes:** nothing. **Amends:** the FORGE responsibility text in `doctrine/ARCHITECTURE.md` §2.4, one AEGIS inquiry in §2.5, and one framing paragraph in §3 (see "Doctrine reconciliation").
 **Related:** ARCH-0002 (hardware-neutral Machine identities), ARCH-0005 (irreversible effects require a broker), ARCH-0013 / ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0015 (Resident Semantic Store), ARCH-0016 (resident reaction architecture, R0–R16), ARCH-0017 (ARGUS; number reserved, not yet on `main`).
 **Workstream:** AR0–AR7, sequenced in `CURRENT_EXECUTION_PLAN.md` §6 C3 and Lane 6; supporting documents in [`docs/plans/analog-realization/`](../plans/analog-realization/) (NOT A MASTER PLAN).
