@@ -42,7 +42,7 @@ As of 2026-09-27:
 Addendum, 2026-09-29 (from live evidence):
 
 - ADR 0016 R15 (quantitative performance) PASSED: `aien-dev/omega#67`, merge `bba3bd3`, receipt `evidence/R15/065c6884...json`, 16/16 gates.
-- ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` draft, spec and loop inventory pre-registered, no receipt on `main`.
+- ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` merged, G1/G2 inventory PASS, but the required G3-G8 qualification and final receipt are absent from `main`.
 - Omega effect capabilities now carry 64-bit generations (`aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused.
 - The FORGE v1 realize/verify seam is closed: `aien-dev/physics#13` merged (`5969159`), Gates 3 and 4 pass.
 - AR1 (FORGE substrate-neutral descriptor contract) PASSED: `aien-dev/physics#16` (`1f7c321`) and `aien-dev/physics#13` (`5969159`) merged on main; V1 and V2 combined gates pass.
