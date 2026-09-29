@@ -2,6 +2,15 @@
 
 Resolved architectural decisions are recorded here so implementation agents do not repeatedly reopen settled boundaries.
 
+## Naming ADRs across repositories
+
+`aien-architecture` and `aien-dev/aienos` number their ADRs independently, so the same number (for example 0012 or 0016) names two different decisions. In prose — docs, plans, issues, PRs, commit messages — cite an ADR with its repository prefix:
+
+- `ARCH-00nn` — an ADR in this repository (`aien-architecture/docs/adr/`), e.g. ARCH-0016 is the resident reaction architecture.
+- `OS-00nn` — an ADR in `aien-dev/aienos` (`docs/adr/`), e.g. OS-0012 is self-construction, capability growth and generations.
+
+A bare "ADR 00nn" is acceptable only inside the repository that owns it. Files are not renamed: the prefix is a citation convention, and existing file names and historical references stay as they are.
+
 Current ADRs:
 
 - [0001 - Canonical composition root](0001-canonical-composition-root.md)

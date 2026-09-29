@@ -17,7 +17,9 @@ This file is the **single authoritative source** for Sovereign Machine milestone
 - Milestone status is changed **only** here. A status change must cite the qualifying evidence (issue, PR, or receipt).
 - `scripts/check_doctrine.sh` enforces this: it fails if another doctrine page duplicates the roadmap table, carries its own milestone status tags, or cites a milestone code identifier under a milestone number different from the one below.
 
-> **Historical naming rule:** ADR 0014 renames the current machine-realization subsystem to **FORGE**. Existing milestone identifiers such as `PHYSICS_BOOT`, `PHYSICS_EFFECTS`, and `PHYSICS_ACCELERATOR_LINK` remain unchanged because milestone/evidence identity is historical provenance.\n\nStatus vocabulary:
+> **Historical naming rule:** ADR 0014 renames the current machine-realization subsystem to **FORGE**. Existing milestone identifiers such as `PHYSICS_BOOT`, `PHYSICS_EFFECTS`, and `PHYSICS_ACCELERATOR_LINK` remain unchanged because milestone/evidence identity is historical provenance.
+
+Status vocabulary:
 
 | Status | Meaning |
 | :--- | :--- |
@@ -243,6 +245,40 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: `docs/m19r-recovery-program.md`.
 - Objective: repair the M19 qualification substrate (truthful evidence, GPU memory lifecycle, FORGE-realize/AEGIS-verify seam, observed hardware identity, FP32 machine vocabulary) before any Sovereign Training Runtime milestone (M20 onward) is qualified on top of it.
 - Gate: the Combined Foundation Admission Gate in `docs/m19r-recovery-program.md` covers only the foundation (evidence, runtime lifecycle, realize/verify seam, hardware identity, FP32 substrate). M19 re-closes, and M20 (`OMEGA_TENSOR`) opens, only after that foundation admission gate passes; M20-M24 remain separately qualified milestones, each with its own gate and receipt.
+- Gate progress (as of 2026-09-28):
+
+| Gate | Scope | State | Evidence |
+| :--- | :--- | :--- | :--- |
+| Gate 1 (M19R) | Truthful, immutable evidence; receipts derived from observed gate output | Merged | `aien-dev/omega#30` (`04d80f5`), `aien-dev/omega#33` (merge `49480cd`, 2026-09-27); receipt `evidence/M19R/c4d87451bbde1d8f09442191f735e893fd47916e72a6330c96df84e9e6028404.json`, recorded from clean omega `e5159fa` + physics `29bf6ea` |
+| Gate 2 (M19R-RUNTIME) | GPU memory lifecycle, exactly-once completion, long-run soak | Merged | `aien-dev/omega#31` (`1feb832`), `aien-dev/omega#33` (same receipt as Gate 1: PASS=229, 100,000-cycle soak passed, RM balance/allocations/mappings/registries back to zero) |
+| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | Open, not merged | `aien-dev/physics#13`; receipts must be regenerated in the digest-named schema (`evidence/<AREA>/<digest>.json`) |
+| Gate 5 (OMEGA-NUMERIC-0) | FP32 Blackwell machine vocabulary | Open, not merged | `aien-dev/omega#32`; needs rebase onto main and digest-named receipts |
+
+  The Combined Foundation Admission Gate (Gate 14) has not passed, so M19 stays REOPENED and M20 stays PLANNED.
+
+### ADR 0016 (ARCH-0016) resident reaction stages R0-R16
+
+These are the implementation stages of ADR 0016, not roadmap milestones; they carry no M-number and do not change the table in §2. Each row cites the `aien-dev/omega` receipt on `main` (`evidence/<stage>/<digest>.json`) and the verdict it records.
+
+| Stage | Verdict recorded in receipt | Where it ran | Merged via (`aien-dev/omega`) |
+| :--- | :--- | :--- | :--- |
+| R0 | Satisfied by ADR 0016 itself (`aien-architecture#42`, `4790423`) | — | — |
+| R1 `R1_CANONICAL_WORLD` | PASS | host CPU, not silicon | #39, #40 (`evidence/R1/`) |
+| R2 `R2_CROSS_ENGINE_ABI` | PASS | host CPU, not silicon | #39, #40 (`evidence/R2/`) |
+| R3 `R3_REACTION_CORE` | PASS | host reference | #35 (`e2667c2`, `evidence/R3/ef3e5565...json`) |
+| R4 `R4_CAUSAL_TRACE` | PASS | host reference | #35 (same R3 receipt; no separate `evidence/R4/`) |
+| R5 `R5_RESOURCE_ARBITRATION` | PASS | host reference, not silicon | #36-#38 (`evidence/R5/`) |
+| R6 `R6_REACTION_STABILITY` | PASS | host reference, not silicon | #36-#38 (`evidence/R6/`) |
+| R7 `R7_NATIVE_AUTHORITY` | PASS | host, against the native C authority (Linux oracle retained) | #41, #43 (`evidence/R7/3165ff4c...json`) |
+| R8 `R8_CONSTITUTIONAL_AEGIS` | PASS | host | #48 (`fe4924a`, `evidence/R8/a666db9f...json`) |
+| R9 `R9_GENERATION_BARRIER` | PASS | host | #42 (`00be7ae`, `evidence/R9/642cf1bf...json`) |
+| R10 `R10_CONTINUOUS_OMEGA` | PASS | DGX Spark CPU | #46 (`0a787ee`, `evidence/R10/1ea7acfe...json`) |
+| R11 `R11_CONTINUOUS_COGNITION` | PASS | DGX Spark CPU | #47 (`628daf5`, `evidence/R11/6aa6b3b3...json`) |
+| R12 resident GPU seat | PASS | GB10 silicon | #44 (`05b0692`), hardening #45 (`4331bf3`) (`evidence/R12/`) |
+| R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
+| R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
+| R15 quantitative performance | Not qualified: no receipt on `main` | — | — |
+| R16 | Not started | — | — |
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
