@@ -174,7 +174,7 @@ ADR 0018 (PROPOSED) extends FORGE from the digital CPU+GPU Machine to any physic
 | Gate | Scope | Blocked on |
 |---|---|---|
 | AR0 | ADR 0018 accepted and merged | **Open:** ADR proposed, not accepted by the operator |
-| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | `aien-dev/physics#13` merge (C1 seam); companion draft on physics branch `feat/forge-substrate-v2` |
+| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | `aien-dev/physics#13` merge (C1 seam); companion draft `aien-dev/physics#16` (branch `feat/forge-substrate-v2`) |
 | AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | AR1. May proceed as new files; must not touch `omega/src/runtime/` |
 | AR3 | Calibration, uncertainty and evidence qualification | AR2. Same file rule as AR2 |
 | AR4 | First physical analog operation (matvec, digital oracle vs physical analog, same contract) | AR3 + R16 closed (`aien-dev/omega#68`) + an operator decision on a physical device |

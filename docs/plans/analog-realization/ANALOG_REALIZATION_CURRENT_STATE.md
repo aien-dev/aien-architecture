@@ -25,7 +25,7 @@
 | omega | #66 | M18 receipt prints measured values | OPEN, DRAFT | head `3512af3` | 17/18 on Spark; only the pre-existing Gate 16 clean-clone env failure |
 | omega | #60 | Empirical cost model | OPEN | head `7d581b2` | CONFLICTING with `main`; host-reference check failing; CPU matvec only; no substrate axis |
 | physics | #13 | FORGE-0 / FORGE-HWID (M19R Gates 3-4) | OPEN | head `5781222` | Mergeable; no review; no CI; receipts hand-written, not digest-named |
-| physics | — | FORGE substrate V2 (companion draft) | being opened | branch `feat/forge-substrate-v2` | `docs/FORGE_SUBSTRATE_V2_SPEC.md`, `forge/v2/`, `tests/test_forge_v2_kat.c` |
+| physics | #16 | FORGE substrate V2 (companion draft) | OPEN DRAFT, host gates 47/47 KAT + 6/6 PASS | branch `feat/forge-substrate-v2`, V2 frozen digest `89cb5ba6…06c0` | `docs/FORGE_SUBSTRATE_V2_SPEC.md`, `forge/v2/`, `tests/test_forge_v2_kat.c` |
 | aienos | #160 | ARGUS-0 C defensive plane | OPEN, DRAFT | head `a64bc55` | 8/10 gates; PERFORMANCE FAIL (+6.2% vs 5%) |
 | aienos | #161 | Capability observer | MERGED | — | Observer hook pinned by omega#72 |
 | aienos | #162 | ARGUS-1 spec + plan (I1–I5), no code | OPEN, DRAFT | head `1f5fc23` | Stacked on #160 |

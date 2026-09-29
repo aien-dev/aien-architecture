@@ -190,7 +190,7 @@ These facts come from read-only audits. Omega file:line references are at `aien-
 - The v1 descriptor is a fixed 208-byte stream hashed with SHA-256. **The only frozen, reproducible v1 identity is the KAT digest** `10d63d05f888eaba4fe473c5f17febe22f462f543ae0c2b005a9a8e5417e09fd` (`forge_descriptor.c:486`), independently reproduced. The live GB10 descriptor digest is boot-volatile (it includes total memory, driver/firmware versions and PCI BDF).
 - `ir_payload`'s pointer value is never hashed (§5.3).
 - SHA-256 comes from `physics` `main:sha256_clean.c`, which is pinned into firmware builds: reuse, never modify or duplicate its exported symbols.
-- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion draft "FORGE substrate V2" is on physics branch `feat/forge-substrate-v2`.
+- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion draft "FORGE substrate V2" is `aien-dev/physics#16` (branch `feat/forge-substrate-v2`, host-only KAT: 47 checks and 6 gates PASS; frozen V2 machine digest `89cb5ba6…06c0`).
 
 ## 12. Workstream gates AR0–AR7
 

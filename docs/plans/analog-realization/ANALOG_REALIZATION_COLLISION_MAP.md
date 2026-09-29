@@ -33,7 +33,7 @@
 | aienos other code | none | new files outside the above | Yes, pattern-clean only | — |
 | physics mapped files | R16 map (read-only) + omega M17 gate | `m15/tools/m15tool.c`, `m16/m16_native.{c,h}`, `m3/tools/m3tool.c`, `nvrm/nvrm.c` | No | R16 merge |
 | physics FORGE v1 | physics#13 | `forge/forge_descriptor.{c,h}`, `forge/forge_realize.{c,h}`, `forge/forge_types.h`, `tests/test_forge_{hwid,seam}.c`, `tests/run_forge_gates.sh`, `evidence/m19r_gate{3,4}_*.json`, `.gitignore` tail | No (owned by #13) | #13 merge |
-| physics FORGE V2 | companion draft, branch `feat/forge-substrate-v2` | `docs/FORGE_SUBSTRATE_V2_SPEC.md`, `forge/v2/**`, `tests/test_forge_v2_kat.c` | Yes, on that branch; pattern-clean | AR1 needs #13 merged first |
+| physics FORGE V2 | `aien-dev/physics#16` (draft, branch `feat/forge-substrate-v2`) | `docs/FORGE_SUBSTRATE_V2_SPEC.md`, `forge/v2/**`, `tests/test_forge_v2_kat.c` | Yes, on that branch; pattern-clean | AR1 needs #13 merged first |
 | physics `sha256_clean.c` | pinned into firmware builds | `sha256_clean.c` | Never modify; link and reuse only | — |
 | aien-sovereign-core, aegis-runtime | R16 Q2=A (labels only) | whole repos | No | R16 merge; C rewrite plan |
 | aien-architecture migration map / ADR 0016 | omega#68 W11 | `docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`, ADR 0016 | No | R16 W11 |

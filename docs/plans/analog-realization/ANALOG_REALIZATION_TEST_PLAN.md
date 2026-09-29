@@ -7,7 +7,7 @@
 | Repository | Commit |
 |---|---|
 | omega | `main` `f308ac7` (live); file:line facts read at `8e7a445` (audit basis); `#60` read at `7d581b2` |
-| physics | `main` `fecbedb`; `#13` read at `5781222`; companion draft on branch `feat/forge-substrate-v2` |
+| physics | `main` `fecbedb`; `#13` read at `5781222`; companion draft `#16` on branch `feat/forge-substrate-v2` |
 | aien-architecture | `main` `f6baa35` |
 
 General rules for every gate: all code in C (plus assembly where measured); no Python; receipts are digest-named (`evidence/<AREA>/<sha256>.json`) and emitted by code, never hand-written; new code stays clean of the R16 loop-inventory patterns (see `ANALOG_REALIZATION_COLLISION_MAP.md` §4); no edits to `omega/src/runtime/` before R16 closes.
@@ -16,7 +16,7 @@ General rules for every gate: all code in C (plus assembly where measured); no P
 
 ## AR1 — FORGE substrate-neutral descriptor contract
 
-Location: physics branch `feat/forge-substrate-v2` (`forge/v2/`, `tests/test_forge_v2_kat.c`), merged only after physics#13.
+Location: physics#16, branch `feat/forge-substrate-v2` (`forge/v2/`, `tests/test_forge_v2_kat.c`), merged only after physics#13.
 
 | Test | Pass condition |
 |---|---|
