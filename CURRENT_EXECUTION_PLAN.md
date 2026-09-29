@@ -45,7 +45,7 @@ Addendum, 2026-09-29 (from live evidence):
 - ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` draft, spec and loop inventory pre-registered, no receipt on `main`.
 - Omega effect capabilities now carry 64-bit generations (`aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused.
 - The FORGE v1 realize/verify seam is still open in `aien-dev/physics#13` (M19R Gates 3-4, unmerged, no review/CI).
-- ADR 0018 (substrate-neutral physical realization) is PROPOSED; see §6 C3.
+- ADR 0018 (substrate-neutral physical realization) is ACCEPTED and merged (641bd3c); AR0 is satisfied; see §6 C3.
 
 ## 3. Program rule
 
@@ -169,12 +169,12 @@ FORGE does not own human intent, semantic truth, capability policy, or learned p
 
 ### C3. Substrate-neutral realization (ADR 0018, workstream AR0–AR7)
 
-ADR 0018 (PROPOSED) extends FORGE from the digital CPU+GPU Machine to any physical substrate (analog, neuromorphic, FPGA/CGRA, optical/photonic, future) attached as a capability provider. AR0–AR7 are **workstream gates, not roadmap milestones**; they carry no M-number and do not reorder §17. Supporting documents: `docs/plans/analog-realization/` (NOT A MASTER PLAN).
+ADR 0018 (ACCEPTED, merged 641bd3c) extends FORGE from the digital CPU+GPU Machine to any physical substrate (analog, neuromorphic, FPGA/CGRA, optical/photonic, future) attached as a capability provider. AR0–AR7 are **workstream gates, not roadmap milestones**; they carry no M-number and do not reorder §17. Supporting documents: `docs/plans/analog-realization/` (NOT A MASTER PLAN).
 
 | Gate | Scope | Blocked on |
 |---|---|---|
-| AR0 | ADR 0018 accepted and merged | **Open:** ADR proposed, not accepted by the operator |
-| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | `aien-dev/physics#13` merge (C1 seam); companion draft `aien-dev/physics#16` (branch `feat/forge-substrate-v2`) |
+| AR0 | ADR 0018 accepted and merged | **PASS:** Accepted by operator Drake Stapleton, merged 641bd3c |
+| AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | V2 contract landed early in physics#16 (1f7c321); AR1 does not PASS until the C1/physics#13 foundation is merged and combined gates pass |
 | AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | AR1. May proceed as new files; must not touch `omega/src/runtime/` |
 | AR3 | Calibration, uncertainty and evidence qualification | AR2. Same file rule as AR2 |
 | AR4 | First physical analog operation (matvec, digital oracle vs physical analog, same contract) | AR3 + R16 closed (`aien-dev/omega#68`) + an operator decision on a physical device |
@@ -182,7 +182,7 @@ ADR 0018 (PROPOSED) extends FORGE from the digital CPU+GPU Machine to any physic
 | AR6 | Fabric-connected analog Machine | Phase F5 (Fabric) |
 | AR7 | J-Space / RSI multi-substrate optimization | Phase H3 (RSI optimization loop) |
 
-Order inside the existing sequence: AR1 follows the C1 FORGE boundary; AR2–AR3 run beside Phase C/E without touching Omega runtime code; AR4–AR5 follow R16; AR6 follows F5; AR7 follows H3.
+Order inside the existing sequence: V2 contract landed early in physics#16, but AR1 completion follows the C1 FORGE boundary (physics#13); AR2-AR3 run beside Phase C/E without touching Omega runtime code; AR4-AR5 follow R16; AR6 follows F5; AR7 follows H3.
 
 **Exit gate (AR4):** one matvec realized on a physical analog substrate satisfies the same SemanticResultContract as its digital oracle, with bounded error, repeatability, a fresh bound calibration, complete evidence, no authority bypass, no vendor identity in the semantic program, clean digital fallback, and no way for a faulted device to corrupt the World.
 

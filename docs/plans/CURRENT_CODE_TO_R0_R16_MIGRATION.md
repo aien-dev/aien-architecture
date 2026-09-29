@@ -57,7 +57,18 @@ The pieces worth keeping are primitives, not runtimes:
 | R2 `R2_CROSS_ENGINE_ABI_PASS` | NOT CLAIMED | The ABI exists on unmerged branch `m20-shared-world` (58/58 host checks). There is no silicon run. |
 | R3 `R3_REACTION_CORE_PASS` | **PASS (host reference, CPU only)** | omega `tests/runtime/rx_heartbeat_test.c` (`make test-r3`). Receipt `omega/evidence/R3/ef3e5565b9deda5226b58caf00c3e05f467cf03f6ae91984c10898d98e28c321.json`: candidate `9dd9594`, clean tree, 15/15 tests, 8,948 checks, 0 failures. |
 | R4 `R4_CAUSAL_TRACE_PASS` | **PASS (host reference, CPU only)** | Same receipt. Every reaction crumb in every test is audited for trigger, inputs, authority, outputs, and ancestry: 1,727 audited, 7,016 digests re-verified. |
-| R5–R16 | NOT STARTED | — |
+| R5 `R5_RESOURCE_ARBITRATION` | PASS | host reference, not silicon (#36-#38) |
+| R6 `R6_REACTION_STABILITY` | PASS | host reference, not silicon (#36-#38) |
+| R7 `R7_NATIVE_AUTHORITY` | PASS | host, against the native C authority (#41, #43) |
+| R8 `R8_CONSTITUTIONAL_AEGIS` | PASS | host (#48, `fe4924a`) |
+| R9 `R9_GENERATION_BARRIER` | PASS | host (#42, `00be7ae`) |
+| R10 `R10_CONTINUOUS_OMEGA` | PASS | DGX Spark CPU (#46, `0a787ee`) |
+| R11 `R11_CONTINUOUS_COGNITION` | PASS | DGX Spark CPU (#47, `628daf5`) |
+| R12 resident GPU seat | PASS | GB10 silicon (#44, `05b0692`; hardening #45, `4331bf3`) |
+| R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon (#49, `fcb5793`) |
+| R14 living recovery | PASS | GB10 silicon (#50, `f70ae10`) |
+| R15 quantitative performance | PASS | DGX Spark (#67, `bba3bd3`, 16/16 gates) |
+| R16 orchestrator retirement | IN PROGRESS | DGX Spark (#68 draft, spec pre-registered, active inventory) |
 
 The R3/R4 claims are scoped to the host reference runtime. They say nothing about GPU execution (R12) or about the native AIENOS capability root (R7).
 
