@@ -29,3 +29,4 @@ Current ADRs:
 - [0014 - Rename Machine Physics to FORGE](0014-rename-machine-physics-to-forge.md)
 - [0015 - Resident Semantic Store Boundary, Object Identity, and Reconstruction Contract](0015-resident-semantic-store.md)
 - [0016 - AIEN, Omega, and AEGIS are faculties of one resident reaction system](0016-resident-reaction-architecture.md)
+- [0017 - ARGUS is the defensive plane; it observes, detects, and proposes, but never authorizes](0017-argus-defensive-plane.md) — Proposed, awaiting ratification (amended 2026-09-29: hostile-review rules, measured performance, event ABI v1.1)
