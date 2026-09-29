@@ -213,26 +213,25 @@ These are **workstream gates, not roadmap milestones.** They carry no M-number. 
 - `doctrine/ARCHITECTURE.md` §2.5: AEGIS inquiry 8 — does a bounded or stochastic numerical result satisfy the semantic result contract, with calibration and measurement conditions in evidence?
 - `doctrine/ARCHITECTURE.md` §3: the CPU+GPU dual topology is the first qualified Machine, not the definition of a Machine.
 - `doctrine/FORGE.md` is unchanged: its OMEGA → FORGE → AEGIS → HARDWARE → EVIDENCE chain already holds for every substrate.
+## 14. Final review questions (answered at proposal time)
 
-## 14. Acceptance checklist (review questions, answered at proposal time)
-
-These thirteen checks restate this ADR's own invariants as yes/no questions. Answers are as of 2026-09-29.
+These are the thirteen questions the workstream brief requires before any implementation PR. A YES to any of the last three is a design failure. Answers are as of 2026-09-29, from the audits in §11.
 
 | # | Question | Answer |
 |---|---|---|
-| 1 | Is the GB10 v1 FORGE identity still reproducible? | **Yes**, via the frozen v1 KAT digest `10d63d05…09fd`. |
-| 2 | Was any historical identity, receipt or milestone name changed? | **No.** |
-| 3 | Does any canonical API gain a vendor or product name? | **No.** |
-| 4 | Is analog uncertainty explicit data rather than implicit? | **Yes** (§3.3). |
-| 5 | Is calibration content-addressed and bound into realization identity, with staleness ⇒ ineligible? | **Yes** (§4). |
-| 6 | Are measurement conditions and provenance class (`PHYSICAL` / `SIMULATED_DEVELOPMENT`) recorded as evidence? | **Yes** (§5). |
-| 7 | Is a hardware result accepted only by the semantic result contract? | **Yes** (§3.1). |
-| 8 | Can an `EXACT` computation be silently realized on a weaker substrate? | **No** (§3.2). |
-| 9 | Do cross-machine references carry process pointers? | **No** (§5.3). |
-| 10 | Does this introduce a new central orchestrator, loop, scheduler, service, callback path or second World? | **No.** |
-| 11 | Does this disturb R16 (`omega#68`) or its owned files? | **No.** No Omega runtime edits until R16 closes. |
-| 12 | Does this expand ARGUS or change its ABI? | **No.** Requirements are documentation only. |
-| 13 | Does this create another master plan? | **No.** Sequencing lives in `CURRENT_EXECUTION_PLAN.md`; the workstream documents are marked NOT A MASTER PLAN. |
+| 1 | Does GB10 v1 remain reproducible? | **Yes.** The frozen v1 KAT digest `10d63d05…09fd` is embedded as a literal 208-byte stream in `physics#16` and re-hashed on every run. The live GB10 digest is boot-volatile and is not used as identity. |
+| 2 | Did any historical realization identity change? | **No.** No v1 file, receipt, milestone name or evidence was edited; V2 wraps the v1 digest and never re-serializes v1 bytes. |
+| 3 | Can Omega express the same semantic operation without naming CPU/GPU/analog? | **Partly.** At the capability-query layer yes: `CqNeed` / `CqCandidate` carry no device field. At the cognitive-routing layer not yet: `RxCogDeclaration.hardware_requirements` uses the `RX_COG_HW_CPU_P/CPU_E/GPU` bitmask (`rx_route.h:61`) and that bitmask is hashed into the registry digest. Closed by AR5, after R16. |
+| 4 | Can FORGE describe an analog substrate without making analog a special architectural layer? | **Yes.** `ForgeSubstrateDescriptor` is one typed record per attached substrate; `ANALOG_IN_MEMORY` is one class value beside `DIGITAL_CPU`, `DIGITAL_GPU`, `NEUROMORPHIC_SPIKING`, `FPGA_CGRA_DATAFLOW`, `OPTICAL_PHOTONIC`. No new layer, service or authority. |
+| 5 | Can AEGIS verify a bounded stochastic result without pretending it is exact? | **Yes by contract (§3.1–3.3), not yet in code.** `SemanticResultContract` carries `BOUNDED_STOCHASTIC` and `MEASURED_DISTRIBUTION` kinds with confidence and sample requirements; omega's `rx_contract` is exact-only today and gains these kinds in AR3. |
+| 6 | Can calibration become stale without silently remaining authoritative? | **Yes.** Calibration epoch + validity window is checked against execution conditions; stale ⇒ not eligible, refused by the V2 validator (KAT `stale_calibration_refused`). Calibration is evidence, never authority. |
+| 7 | Can the digital implementation always remain a known-good fallback? | **Yes, as an eligible-set rule.** Admission of a realization plan requires a digital realization for the same contract somewhere in the eligible set (it may live on another Machine). A Machine whose only substrate is analog is a valid descriptor. |
+| 8 | Can an unavailable analog device be excluded without changing semantic code? | **Yes.** Availability and fault state are substrate evidence; an unavailable or faulted substrate leaves the eligible set. The semantic program and its digest are untouched. |
+| 9 | Can this later become a remote Fabric Machine? | **Yes.** Transport (PCIe, USB, Ethernet, RoCE, board-to-board, remote Machine) is cost metadata in the machine descriptor and evidence, not semantic identity; cross-machine references carry digests, offsets, generation and rights, never pointers. Placement is Fabric's decision (AR6, after F5). |
+| 10 | Did we add any new central orchestrator? | **NO.** No loop, scheduler, service, callback path or second World. |
+| 11 | Did we disturb R16? | **NO.** No omega `src/runtime/` edit; no R16-owned file touched; new physics C code passes the R16 loop-inventory heuristics as a gate in `physics#16`. |
+| 12 | Did we expand ARGUS before its current performance gate passed? | **NO.** ARGUS ABI v1.1 untouched; future observations are documentation only. |
+| 13 | Did we create another master plan? | **NO.** Sequencing lives in `CURRENT_EXECUTION_PLAN.md`; the workstream documents are marked NOT A MASTER PLAN. |
 
 ## 15. Consequences
 
