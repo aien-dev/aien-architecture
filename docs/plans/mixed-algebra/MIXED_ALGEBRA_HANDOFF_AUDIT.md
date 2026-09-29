@@ -95,7 +95,7 @@ The digital closure gate is being built on omega branch `feat/mixed-algebra-digi
 | Incumbent / digital-reference tie rule failed the pre-registered TURING kill test: 3.58% mean, 25.51% max regret vs 0.01% / 0.07% for min-cost, 8 decisions, in sample | ADR 0019 section 9.1 and Amendment 1; omega `docs/turing/TURING_W0_PROPOSAL.md` K.4, K.6, K.7 |
 | Z3 x Z3 multiply with two unknown operands is not realizable as a phasor operation ("Two unknown operands: **not realizable in this model.**" `w^(ab)` is exponentiation, not bilinear). Multiply by a known constant is realized. | omega `spec/mixed-algebra-phase-twin.md` lines 151 to 161 |
 | 7 of 15 Gemini citations had wrong details, 1 did not exist | arch PRIOR_ART.md line 8 |
-| A 5 GSPS converter does not change `(1+2) mod 3`: expensive RF boards add nothing to the group-law claim | arch PHASE_EXPERIMENT_AND_HARDWARE.md line 162 |
+| A 5 GSPS converter does not change `(1+2) mod 3`: expensive RF boards add nothing to the group-law claim | arch PHASE_EXPERIMENT_AND_HARDWARE.md line 145 |
 
 ## 5. Physical and analog blockers remaining
 
