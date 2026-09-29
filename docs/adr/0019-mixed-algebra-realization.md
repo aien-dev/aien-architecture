@@ -2,11 +2,11 @@
 
 **Status:** Accepted by operator Drake Stapleton, 2026-09-29.
 **Gate:** `MA-0` satisfied when this ADR is accepted by the operator and merged to `main`.
-**Supersedes:** nothing. **Amends:** nothing (section 9.1 is amended by this ADR's own Amendment 1, PROPOSED). **Extends:** ARCH-0018 (substrate-neutral physical realization) with the algebraic axis that ARCH-0018 left open.
+**Supersedes:** nothing. **Amends:** nothing (section 9.1 is amended by this ADR's own Amendment 1, ACCEPTED 2026-09-29). **Extends:** ARCH-0018 (substrate-neutral physical realization) with the algebraic axis that ARCH-0018 left open.
 **Related:** ARCH-0002 (hardware-neutral Machine identities), ARCH-0013 / ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0015 (Resident Semantic Store), ARCH-0016 (resident reaction architecture, R0 to R16), ARCH-0017 (ARGUS), ARCH-0018 (substrate-neutral physical realization).
 **Workstream:** MA-0 to MA-8 (section 10); supporting documents in [`docs/plans/mixed-algebra/`](../plans/mixed-algebra/) (NOT A MASTER PLAN). Sequencing stays in `CURRENT_EXECUTION_PLAN.md`.
 
-**Amendment 1 (PROPOSED, 2026-09-29):** section 9.1 selection rule. The lowest measured cost wins; a tie is recorded and never changes the choice; the incumbent / digital-reference tie rule is retired and kept as negative evidence (it failed the pre-registered TURING Wave 1 kill test, omega `docs/turing/TURING_W0_PROPOSAL.md` K.6 / K.7); any incumbent or hysteresis policy must be pre-registered and beat minimum-cost selection first; selection records are `turing.decision.v1`. This amendment awaits acceptance by operator Drake Stapleton. The **Accepted** status above stands for the rest of this ADR; section 9.1 below carries the amended wording, and this change merges only once the operator accepts it.
+**Amendment 1 (ACCEPTED 2026-09-29 by operator Drake Stapleton, under his standing instruction to proceed with the recommendation):** section 9.1 selection rule. The lowest measured cost wins; a tie is recorded and never changes the choice; the incumbent / digital-reference tie rule is retired and kept as negative evidence (it failed the pre-registered TURING Wave 1 kill test, omega `docs/turing/TURING_W0_PROPOSAL.md` K.6 / K.7); any incumbent or hysteresis policy must be pre-registered and beat minimum-cost selection first; selection records are `turing.decision.v1`. Section 9.1 below carries the amended wording.
 
 Citation note: in this repository "ADR 0019" and ARCH-0019 name the same decision. In other repositories cite it as ARCH-0019.
 
