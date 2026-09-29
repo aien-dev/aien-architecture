@@ -1,6 +1,6 @@
 # ADR 0017: ARGUS Is the Defensive Plane; It Observes, Detects, and Proposes, but Never Authorizes
 
-**Status:** Proposed, awaiting operator ratification (Drake). Amended 2026-09-29 after the hostile review and the first live performance measurement (event ABI v1.1).
+**Status:** Proposed, awaiting operator ratification (Drake). Amended 2026-09-29 after the hostile review and the first live performance measurement (event ABI v1.1); amended again 2026-09-29 with the final ARGUS-0 gate results (performance gate FAIL, ARGUS-0 not complete), the authority observer hook, the reconciled milestone ladder, and the ARGUS-1 pre-registration pointer.
 **Date:** 2026-09-28 (amended 2026-09-29)
 **Related:** ADR 0005 (effect broker), ADR 0006 (vault-only secrets), ADR 0013/0014 (FORGE realizes, AEGIS verifies, AIENOS owns capabilities), ADR 0015 (resident semantic store), ADR 0016 (resident reaction architecture; §31 failure containment), [`docs/07-security-effects-secrets.md`](../07-security-effects-secrets.md).
 **Implementation home:** `aien-dev/aienos`, directory `native/argus/`, beside `native/capability/` (the C capability authority). Shared contract: `native/argus/argus_abi.h` (event ABI version 1, revision 1.1: same 128-byte layout, new rules).
@@ -23,11 +23,12 @@ ARGUS can see and report. It can *ask* for something to be locked down. It can n
 1. The boundaries: what ARGUS is responsible for, and the explicit list of things it must never become (section 11).
 2. The chain for locking something down: ARGUS proposes, AEGIS decides, the existing authority carries it out, and evidence is always written (section 4).
 3. The shape of a security event (a fixed 128-byte record with no secrets in it), who is allowed to write one, the rules that decide whether an event is believed and applied, and what happens when events arrive faster than ARGUS can read them (section 6, with the gaps that remain in section 16).
-4. The speed and failure promises (sections 7 and 8). The first design was measured on the Spark and was far too slow; section 7 now carries the measured numbers and the redesign ("report changes, count routine use"), which must be measured again before the speed promise counts as met.
-5. That the first milestone, **ARGUS-0**, is only the foundation: the event format, the bounded queues, the watchman's memory, and the "this should be impossible" checks. It can be switched on inside Omega's runtime for testing (off by default), and it does not lock anything down (sections 13 and 15).
-6. The six known gaps between the original brief and the code, and how each is handled: four standing, one resolved, and one new (the speed target could not be met by the first design) (section 14).
+4. The speed and failure promises (sections 7 and 8). **The speed test has not passed yet.** The first design made AIEN's permission checks about 60% slower. The redesign ("report changes, count routine use") brought that down a lot, but on a real test suite AIEN still ran about 6% slower with the watchman switched on, and the limit we set in advance was 5%. So the speed promise is not met. Section 7.4 has the numbers and the next things to try. We do not loosen the limit to make it pass; only Drake can change the target.
+5. That the first milestone, **ARGUS-0**, is only the foundation: the event format, the bounded queues, the watchman's memory, and the "this should be impossible" checks. It can be switched on inside Omega's runtime for testing (off by default), and it does not lock anything down. **ARGUS-0 is not finished:** 8 of its 10 checks passed (one of them with known, written-down limits), the "runs inside the real system" check passed with two open findings, and the speed check failed (section 13).
+6. The six known gaps between the original brief and the code, and how each is handled: four standing, one resolved, and one new (the speed target was not met by the first design, and the redesign has not met it yet either) (section 14).
+7. That the next milestone, **ARGUS-1** (the watchman may *ask* AEGIS to take back one kind of permission slip), stays a written plan with its tests fixed in advance, and no code is built for it until the speed check passes (section 17).
 
-Everything below is the precise version of those six points.
+Everything below is the precise version of those seven points.
 
 ---
 
@@ -172,7 +173,7 @@ Containment means limiting damage: revoking a capability, freezing or restrictin
 
 The containment class ARGUS attaches to a finding is a *recommendation*. It MUST NOT be read as a decision.
 
-ARGUS-0 defines the request type only. ARGUS-1 wires it to AEGIS.
+ARGUS-0 defines the request type only. ARGUS-1 wires it to AEGIS; its draft specification (section 17) makes the chain above concrete for one containment class, capability revocation, and keeps the other nine typed but not executed.
 
 ### 5. Synchronous and asynchronous defensive action
 
@@ -332,6 +333,29 @@ The 2% and 5% targets MUST be re-measured on revision 1.1, twice:
 
 If the micro-operation still cannot meet 2%, the evidence is documented and the target is revised by ADR amendment. The benchmark is never tuned to make a number pass.
 
+#### 7.4 Result of the re-measurement: FAIL (2026-09-29)
+
+Revision 1.1 was re-measured by the Omega producer lane (branch `feat/argus-producer`, draft omega#70, evidence commit `20e84b8`) on the Spark's fast cores, in interleaved off/on rounds run under a file lock. The criterion stated before measuring was **at most 5%** on the micro-operation and **at most 5%** on R8 wall clock. That is looser than the 2% engineering target above, and R8 misses both.
+
+| Measurement | ARGUS off | ARGUS on | Change |
+|---|---|---|---|
+| Micro-op, emit only, no reader (`RX_ARGUS=1`) | 41.57 M checks/s | 43.75 M | +5.2% (faster; noise) |
+| Micro-op, reader ingests and seals (`RX_ARGUS=2`) | 41.57 M | 40.34 M | **-3.0%** (median) |
+| Micro-op, reader drains and discards (`RX_ARGUS=2`) | 41.57 M | 38.92 M | -6.4% (median; -3.1% mean) |
+| Micro-op p50 / p99 per check | 48 / 64 ns | 48 / 64 ns | unchanged in every mode |
+| Producer emit cost alone | | 2.25 ns p50 | |
+| **R8 host suite wall clock** (30 interleaved rounds) | 36.00 ms | 38.23 ms | **+6.2%** (95% CI about +4% to +8%) |
+
+- **Verdict: ARGUS_PERFORMANCE_GATE FAIL.** R8 is above 5% with its whole confidence interval above 4%. The micro-operation ingest median (-3.0%) is inside 5% but not inside 2%, and run-to-run spread is about ±7%, so the micro sub-criterion is not cleanly resolved either way. The p99 latency target is met.
+- **The redesign worked, but not enough.** The first design cost 60% (section 7.1); revision 1.1 costs about 3% on the micro-operation and about 6% on R8. Use representation is complete: in R8, 205,082 uses became 1,463 summaries with 0 refused (the first design refused 184,000 of 204,000).
+- **Where the remaining cost is (unprofiled).** It appears only while a reader is running in the same process. Suspected, not proven: the idle-time flush runs while the World mutex is held, and the reader seals every event with SHA-256 in-process (about 1 µs per event, section 7.1). Isolated ARGUS numbers at `aienos` `270c6f8`: push p50/p99 4.0 / 8.5 ns single producer; ingest p50 1072 ns, bound by SHA-256.
+- **Next iteration** (each step re-measured the same way; no target change without an ADR amendment decided by the operator):
+  1. flush the use table after releasing the World mutex, not under it;
+  2. move ingest and sealing out of the producer's process (planned with ARGUS-1's consumer-side work);
+  3. profile the difference; this needs operator permission to lower the kernel's `perf_event_paranoid` setting on the Spark;
+  4. add a steady-state R8 variant so start-up flushes do not dominate a 36 ms run;
+  5. re-measure against the same pre-stated 5% / 5% criterion.
+
 ### 8. Failure behavior
 
 | ARGUS condition | Effect on AIEN |
@@ -374,60 +398,85 @@ Confidence has three levels. **Deterministic** is the only level permitted in AR
 
 Only the ARGUS-0 scope is binding in this ADR. Later rungs are a proposed order, set by what must exist first; each is ratified separately before it starts.
 
+**Reconciliation (2026-09-29).** Earlier documents numbered the rungs differently: the originating brief put containment at ARGUS-2 in its §4 and at ARGUS-1 in its §9; a handoff note put producer attestation at ARGUS-3; the ARGUS-1 plan called Fabric quarantine ARGUS-2; and this section's own earlier draft put a "measured performance gate" at ARGUS-2 although that gate is an ARGUS-0 exit gate. **This table governs and replaces all of those.** ARGUS-1 is containment. Producer attestation joins ARGUS-3 (evidence). Fabric and machine identity stay at ARGUS-7. The performance gate belongs to ARGUS-0. Nothing in the ARGUS-1 specification depends on a rung number; it depends only on the capability authority's observer (section 15) and on the facts that producer attestation and Fabric identity do not exist yet.
+
 | Rung | Scope |
 |---|---|
-| **ARGUS-0** | **Substrate only.** Event ABI (revision 1.1), bounded queues (one per producer thread, each single-producer/single-consumer) with class drop policy, resident deterministic shadow state, the sixteen hard-invariant detectors, findings, digest chain, benchmarks, hostile tests. Test-wired into Omega's runtime behind a switch that is off by default; takes no containment action. |
-| ARGUS-1 | Wire containment requests to AEGIS; ratify the synchronous-eligible policy; first live producers (capability authority, generation store). |
-| ARGUS-2 | Live producers in Omega's reaction runtime; measured performance gate on the Spark. |
-| ARGUS-3 | Evidence: epoch roots persisted, ARGUS restart and reconstruction from its own chain. |
-| ARGUS-4 | Live producers for credential leases, providers, and artifact admission as those exist in C (detectors 4 to 8 and 10 go live). |
+| **ARGUS-0** | **Substrate only.** Event ABI (revision 1.1), bounded queues (one per producer thread, each single-producer/single-consumer) with class drop policy, resident deterministic shadow state, the sixteen hard-invariant detectors, findings, digest chain, benchmarks, hostile tests, test wiring into Omega's runtime behind a switch that is off by default, and the performance gate. Takes no containment action. **Not complete** (gate table below). |
+| ARGUS-1 | **Containment**, pre-registered in the ARGUS-1 specification (section 17): containment requests wired to AEGIS through a containment authorizer; ESCALATE and decision records (kinds 90 to 93, closing section 16 item 4); synchronous-eligible policy ratified (section 5). Only RevokeCapability is live, executed by the capability authority and confirmed only by the authority's own observer announcement. The other nine types are typed and decided but executed only by a labelled synthetic test executor. Findings 11, 12, 13, and 16 never propose containment, because they describe producers inside the trusted boundary and producer attestation (ARGUS-3) does not exist. **Specification only until the ARGUS-0 performance gate passes.** |
+| ARGUS-2 | Live producers in Omega's reaction runtime beyond test wiring (switch on in normal runs), with the ARGUS-0 performance criterion held as a regression gate. |
+| ARGUS-3 | Evidence and producer identity: epoch roots persisted, ARGUS restart and reconstruction from its own chain, and **cryptographic producer attestation** (closes section 16 item 1, hostile G-5). |
+| ARGUS-4 | Live producers for credential leases, providers (stable provider identity from a provider registry; closes section 16 item 2, hostile G-9), and artifact admission as those exist in C (detectors 4 to 8 and 10 go live). |
 | ARGUS-5 | Statistical detectors, asynchronous only, never synchronous. |
 | ARGUS-6 | Hardware-rooted checkpoints (after TRUST-1 owner-key chain). |
-| ARGUS-7 | Fabric: cross-machine evidence correlation (after cryptographic machine identity). |
-| ARGUS-8 | Operator surface: plain-language incident reports and review of containment decisions. |
+| ARGUS-7 | Fabric: cross-machine evidence correlation, after cryptographic machine identity (section 14 item 3; an operator decision). Until this rung, ARGUS-1's QuarantineMachine and RequireReattestation remain synthetic. |
+| ARGUS-8 | Operator surface: plain-language incident reports and review of containment decisions (ARGUS-1's ESCALATE is resolved by a test stub until then). |
 | ARGUS-9 | ARGUS Hunt: hypothesis-driven investigation, off the hot path, findings as hypotheses only. |
 
-ARGUS-0 exit gates: event ABI, secret-negative, transport, saturation, core determinism, hard invariants, and false-positive rate on a synthetic corpus. The three gates that were blocked have now run:
+**ARGUS-0 exit-gate status (2026-09-29).** Eight of ten gates pass; ARGUS-0 is **not claimed complete**. Gate definitions and full numbers: `native/argus/docs/ARGUS0_GATES.md` in `aien-dev/aienos` (branch `feat/argus-0`).
+
+| Gate | Result | Commit | Where |
+|---|---|---|---|
+| ARGUS_EVENT_ABI_PASS | PASS | aienos `b375dca` | Spark + Mac |
+| ARGUS_EVENT_SECRET_NEGATIVE_PASS | PASS (residual: hostile G-12, WEAK) | aienos `b375dca` | Spark + Mac |
+| ARGUS_EVENT_TRANSPORT_PASS | PASS | aienos `b375dca` | Spark + Mac |
+| ARGUS_TRANSPORT_SATURATION_PASS | PASS | aienos `b375dca` | Spark + Mac |
+| ARGUS_CORE_DETERMINISM_PASS | PASS | aienos `b375dca` | Spark + Mac |
+| ARGUS_HARD_INVARIANTS_PASS | PASS | aienos `b375dca` | Spark + Mac |
+| ARGUS_FALSE_POSITIVE_BASELINE_PASS | PASS (synthetic corpus) | aienos `b375dca` | Spark + Mac |
+| ARGUS_HOSTILE_REVIEW_PASS | **PASS-WITH-DOCUMENTED-LIMITS**: 63 tests = 58 defended, 3 expected-fail (G-5, G-9, G-21), 2 N/A-v1 (G-6, G-7); review sections = 20 DEFENDED, 4 WEAK (G-9, G-12, G-17, G-21), 1 OPEN (G-5), 1 N/A-v1 (G-6) | aienos `b375dca` | Spark (+ASan/UBSan) + Mac |
+| ARGUS_RUNTIME_INTEGRATION_PASS | **PASS-WITH-OPEN-FINDINGS**: R8 0, R9 0, R7 2 findings (code 13, the authority-instance gap, section 16 item 6); streams replay deterministically | omega `20e84b8` (draft omega#70), detectors aienos `b375dca` | Spark |
+| ARGUS_PERFORMANCE_GATE_PASS | **FAIL**: R8 +6.2% against a 5% limit (section 7.4) | omega `20e84b8` | Spark, X925 cores |
 
 - **Hostile review:** done. Most findings were fixed in the code (validate, apply, and machine lifecycle rules, section 6); what remains is listed in section 16.
-- **Runtime integration:** works. Events flow from Omega's runtime and replay deterministically. Findings are not yet zero on every test because of producer coverage (section 15).
-- **Performance:** the first design failed (section 7.1). Revision 1.1 (section 7.2) must be re-measured (section 7.3) before this gate can pass.
+- **Runtime integration:** works, with the authority's observer as the source of grants (section 15). The earlier nonzero findings caused by producer coverage are gone; the two that remain in R7 are an identity gap in the event format, not a coverage gap or a detector bug.
+- **Performance:** the first design failed (section 7.1); revision 1.1 (section 7.2) also failed its re-measurement (section 7.4). This gate is what keeps ARGUS-0 open and ARGUS-1 on paper.
 
 ### 14. Deviations and discrepancies
 
 These are places where the originating brief and the code disagree. Each records what governs.
 
 1. **Language and home.** The originating brief assumed Rust crates in `aien-sovereign-core`. Drake's decision of 2026-09-27 (no Rust anywhere; target C, with assembly only where measured) governs. ARGUS therefore lives in `aien-dev/aienos` under `native/argus/`, in C, next to the C capability authority it observes. The existing Rust security crates are slated for removal and are not a base for ARGUS.
-2. **Capability generation width.** The C authority (`AienosCapRef`) uses a 64-bit generation. Omega's `rx_caproot` Linux stand-in uses a 32-bit generation, and so do Omega's generation-store promotion types (`RxPromotionRequest.cap_generation` and its authorization callback). ARGUS follows the authority: 64-bit, layout-identical to `AienosCapRef`. The Omega stand-in is not an event source. When Omega becomes a live producer it must widen, or convert explicitly, before emitting ARGUS events.
+2. **Capability generation width.** The C authority (`AienosCapRef`) uses a 64-bit generation. Omega's `rx_caproot` Linux stand-in uses a 32-bit generation, and so do Omega's generation-store promotion types (`RxPromotionRequest.cap_generation` and its authorization callback). ARGUS follows the authority: 64-bit, layout-identical to `AienosCapRef`. The Omega stand-in is not an event source. Omega is now a test-wired producer through the 32-bit authority it pins (`c8ab65e`) with the observer hook backported onto it (section 15); it must convert the 32-bit generation into the event's 64-bit field. The authority's own observer (`12add16`) is 64-bit. Before Omega is a live producer (ARGUS-2) it must move to the 64-bit authority or keep converting explicitly.
 3. **Machine identity.** No `MachineId` or Fabric identity exists in C. (Omega's `omega_machine` names an accelerator, not a Fabric member.) The 32-byte machine identity slot in the event is **provisional and opaque**. Cryptographic machine identity is on the operator's escalation list and is not designed here. Detector 7 checks consistency against whatever was recorded at join; it is not proof of identity.
 4. **Producers that do not exist yet.** Credential leases, the provider registry, and artifact admission have no C producers (artifact admission exists only in the Rust crate slated for removal). In ARGUS-0, detectors 4, 5, 6, 7, 8, and 10 are exercised by synthetic events, marked with the synthetic flag. Detectors 1 to 3 have live C producers (test-wired in Omega behind a switch; connected for real in ARGUS-1), and detector 9 via the generation store.
 5. **World generation width (resolved).** The first draft of the event used a 32-bit World generation, matching `RxGenObject`'s object generation, while Omega's generation store identifies whole World generations with 64-bit ids (the active and candidate generation ids). Resolved before ARGUS-0 merged, within event ABI version 1: the event's World generation is 64 bits, the separate object-generation field was dropped, and an object's generation travels in the resource field when a kind needs it. The event stays exactly 128 bytes. No deviation remains.
-6. **Performance target not met by the first design.** The brief's 2% throughput target could not be met with one full event per capability check: on a ~24 ns check it cost 60% of throughput (section 7.1). The design changed (section 7.2) rather than the target; the target stands until re-measurement on revision 1.1 shows whether the micro-operation can meet it (section 7.3).
+6. **Performance target not met by the first design.** The brief's 2% throughput target could not be met with one full event per capability check: on a ~24 ns check it cost 60% of throughput (section 7.1). The design changed (section 7.2) rather than the target. Re-measured on revision 1.1 (section 7.4), the cost fell to about 3% on the micro-operation and about 6% on R8 wall clock, which still fails both the 2% target and the pre-stated 5% gate criterion. The target stands; changing it needs an ADR amendment decided by the operator.
 
 ### 15. Producer coverage
 
 ARGUS can only cross-check what it is told. Grants and revocations are the facts every capability check is compared against, so they must be reported by the one component that actually issues and revokes: the capability authority itself.
 
-- **Today** the grant and revocation events come from Omega's AEGIS faculty, when it asks the authority to issue or revoke. Anything that issues a capability by calling the authority directly, without going through AEGIS, is invisible to ARGUS.
-- **Consequence:** ARGUS then sees a capability used that it never saw issued, and reports it as forged (code 1). That is why lane H's first runs showed findings on healthy tests: the test harnesses issue capabilities directly. With the harnesses' direct calls wrapped for the test, two of three test groups showed zero findings; the remaining two findings came from several World stores in one process which the per-store World records of revision 1.1 address (section 3, row 9); that fix is still to be re-run.
-- **Required change:** the authority gains an optional **observer callback**, a hook that announces "issued" and "revoked" as they happen. This is a separate change in AIENOS's `native/capability`, and it MUST be:
+- **Before the hook,** grant and revocation events came from Omega's AEGIS faculty, when it asked the authority to issue or revoke. Anything that issued a capability by calling the authority directly was invisible to ARGUS and showed up as forged (code 1). That is why lane H's first runs showed findings on healthy tests: the test harnesses issue capabilities directly.
+- **The authority now has an optional observer hook.** It announces "issued" and "revoked" as they happen. It lives in AIENOS's `native/capability` (commit `12add16`, branch `feat/capability-observer`, 64-bit generations; not yet on `aienos` main, and the ARGUS-1 specification requires it to be merged or pinned before that specification is committed). It was designed to these rules, which remain requirements:
   - ARGUS-agnostic: the authority knows it has a listener, not what the listener is;
   - zero cost when no observer is set;
   - settable only with the authority's admin handle, never from the read-only view or from cognition;
   - blind to secrets: it passes identifiers, generations, subjects, and rights, never the capability token or the office secret.
-- ARGUS itself still never holds the admin handle (section 2.1); trusted runtime code holding the handle installs the observer and forwards what it hears into ARGUS's queue.
-
-Until the observer lands, any issuance made outside the Omega AEGIS faculty is reported as forged. That is correct behaviour for ARGUS (it really did not see the grant), and it is why the runtime-integration findings above are not a detector bug.
+- **Omega uses a backport.** Omega pins the 32-bit authority `c8ab65e`, so `12add16` could not be adopted directly; the hook was backported onto `c8ab65e` as a patch that applies cleanly. The Omega producer's `ARGUS_AUTH=observer` setting (successor of the harness-wrapping `ARGUS_WRAP=1`) makes the observer the only source of grants and revocations.
+- **Result:** with the observer as the grant source, R8 and R9 show 0 findings and R7 shows 2 (code 13). Those two are not a coverage gap: R7 starts a second authority instance in one process, which restarts slot generations at 2, so a capability ARGUS already saw is granted again under the same identity. The event format cannot tell two authority instances apart (section 16 item 6).
+- ARGUS itself still never holds the admin handle (section 2.1); trusted runtime code holding the handle installs the observer and forwards what it hears into ARGUS's queue. The observer runs outside the authority's table lock, so ordering across several admin callers in one process is not guaranteed; the forwarding side serialises on one thread.
 
 ### 16. Remaining open in ARGUS-0
 
-These are limits of event ABI version 1 that the fixes in section 6 do not close. Each is known, tested as an expected failure or documented as an accepted risk, and assigned to a later rung.
+Items 1 to 7 are limits of event ABI version 1 (or of its producers) that the fixes in section 6 do not close; item 8 is the failed performance gate. Each is known, tested as an expected failure or documented as an accepted risk, and assigned to a later rung.
 
-1. **No producer identity.** An event does not say, and cannot prove, which producer wrote it. Any code inside the trusted boundary can write a believable event, for example a grant that makes its own later uses look legitimate. Closed by cryptographic producer attestation (ARGUS-3).
-2. **No provider identity continuity.** A provider is identified by its digest, so a quarantined provider that reappears under a new digest looks new. Needs a stable provider id from a provider registry (ARGUS-4).
+1. **No producer identity (hostile G-5, OPEN).** An event does not say, and cannot prove, which producer wrote it. Any code inside the trusted boundary can write a believable event, for example a grant that makes its own later uses look legitimate, or a trigger that frames a principal. Closed by cryptographic producer attestation (ARGUS-3). Until then ARGUS-1 bounds it: every containment type except RevokeCapability needs an operator decision, execution is budgeted, and findings 11, 12, 13, and 16 never propose.
+2. **No provider identity continuity (hostile G-9, WEAK).** A provider is identified by its digest, so a quarantined provider that reappears under a new digest looks new. Needs a stable provider id from a provider registry (ARGUS-4).
 3. **Class strengthening by trusted producers.** A producer may label an event more urgent than its kind requires (section 6.8). A misbehaving trusted producer could label junk CRITICAL and crowd out SECURITY events in its own queue. Accepted in v1 because producers are inside the trusted boundary and each thread has its own queue.
-4. **No ESCALATE kind.** AEGIS can decide GRANT, DENY, ESCALATE, or REVOKE, but the event format has no "escalated to the operator" kind, so escalations are not yet part of the record. To be appended with ARGUS-1, when containment requests are wired to AEGIS.
+4. **No ESCALATE kind.** AEGIS can decide GRANT, DENY, ESCALATE, or REVOKE, but the event format has no "escalated to the operator" kind, so escalations are not yet part of the record. The ARGUS-1 specification assigns kinds 91 (CONTAINMENT_DECIDED) and 93 (AUTHORITY_ESCALATED) to close this; open until ARGUS-1 is built.
 5. **Uses carry no rights.** A use event (and a use summary) does not say which rights were exercised, so ARGUS cannot tell a read from a write on the same capability. The effect-class check (code 8) relies on the effect class the producer reports. Needs a rights field in a later ABI revision.
+6. **No authority-instance identity (runtime finding, R7 code 13).** A capability is identified by slot and generation only. A second authority instance in the same process, or an authority restart through `aienos_cap_restart`, starts slot generations again at 2, so a legitimate new grant looks like a replayed one (code 13). Fix: an authority-instance component in capability identity (event ABI version 2), or a separate producer namespace per authority start. Code 13 never proposes containment, so this does not affect ARGUS-1's false-positive containment gate, but it keeps runtime integration from an unqualified PASS.
+7. **Other hostile-review limits (WEAK).** G-12: the two opaque 32-byte slots (machine identity and evidence digest) could carry a secret if a producer misuses them; the guard is on the producer side. G-17: the queues are single-producer by contract and nothing stops a caller breaking that contract; the threaded tests run clean under TSan with one producer per queue. G-21: a producer can re-key its machine identity to reset sequence tracking (same root as G-5), and ARGUS restart handling is not in ARGUS-0. G-6 (event omission) is out of scope for ABI v1.
+8. **Performance gate failed.** Revision 1.1 costs about 6% on R8 wall clock against a 5% limit (section 7.4). Open until the next iteration listed there passes a re-measurement; ARGUS-1 is not implemented until then.
+
+### 17. ARGUS-1 pre-registration (pointer)
+
+ARGUS-1 containment has a draft, pre-registered specification (target location `native/argus/docs/ARGUS1_SPEC.md` in `aien-dev/aienos`, with an implementation plan). Pre-registered means its gates are written and fixed before any ARGUS-1 production code exists; changing a gate criterion needs a new specification commit and a full rerun of every gate.
+
+- **Twelve gates, G1 to G12:** ABI v1.2 round trip; proposal determinism; accepted path (live); denied path; refusal tolerance without retry storms; evidence completeness; bounded memory; hot-path non-regression; hostile review of containment; zero false-positive containment (benign corpus plus the recorded R7, R8, and R9 runtime streams); synchronous policy ratified; ARGUS-0 regression.
+- **LIVE = RevokeCapability only.** One of the ten containment types has a real C executor: the capability authority's revoke, called through a revoke-only executor capability, confirmed only when the authority's observer announces the revocation. The other nine are typed and decided for real but executed only by a labelled synthetic test executor. No machine, provider, lease, artifact, policy, or effect-pause containment exists, and no principal freeze exists.
+- **Preconditions:** the ARGUS-0 closing commit (all ARGUS-0 gates recorded) and the observer hook merged or pinned. While the ARGUS-0 performance gate is failing, ARGUS-1 remains a specification only.
 
 ### Consequences
 
@@ -435,5 +484,5 @@ These are limits of event ABI version 1 that the fixes in section 6 do not close
 - The authority stays single: AEGIS decides, the root mints and revokes, and ARGUS's worst failure mode is a recorded evidence gap, not a stopped system.
 - Every alarm is reproducible: the same events always give the same findings, and the record is tamper-evident.
 - Detectors for vaults, providers, artifacts, and machine identity are proven only against synthetic events until those producers exist in C. Their live value waits on that work.
-- Performance was measured and the first design failed its target (60% slower on a 24 ns check). The redesign reports changes and counts routine use; whether it meets the target is decided by re-measurement, not by argument.
-- Until the authority's observer callback lands, capabilities issued outside AEGIS show up as forged. That is expected, and it is the reason the observer is required.
+- Performance was measured and the first design failed its target (60% slower on a 24 ns check). The redesign reports changes and counts routine use; re-measured, it costs about 6% on a real test suite against a 5% limit, so the performance gate has failed and ARGUS-0 stays open until a further iteration passes.
+- With the authority's observer hook as the source of grants, the producer-coverage false alarms are gone; what remains in runtime integration is an identity gap in the event format (two authority instances in one process), assigned to a later ABI revision.
