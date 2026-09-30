@@ -1,5 +1,7 @@
 # J-Space
 
+> **Implementation status (2026-09-30).** A host reference exists in omega `src/runtime/rx_jspace.{c,h}`, built only into the `rx_branch_reuse` test target (evidence `evidence/BRANCH_REUSE`). It is not on the production reaction path. aienos `crates/aienos-aegis/src/world.rs` `JSpaceWorld` is a separate legacy Rust sandbox. Details: `02-implementation-status.md`; ownership: `doctrine/ARCHITECTURE.md` §2.8.
+
 ## Definition
 
 J-Space is the typed search/evaluation space over possible World transitions.

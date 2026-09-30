@@ -36,7 +36,7 @@ As of 2026-09-27:
 - An independent M19 review found evidence-integrity and runtime-correctness issues that require corrective qualification before M20 is trusted.
 - The old PHYSICS architectural role has been superseded by FORGE: machine realization/lowering, not a security gatekeeper.
 - AEGIS is the cross-cutting invariant/contract verifier.
-- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components.
+- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. J-Space and a Cortex exist only as omega host references in single test targets, and the capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`, 2026-09-30).
 - RSI exists as an evaluation/promotion substrate but should not be placed on the critical path until the execution boundaries below are stable.
 
 Addendum, 2026-09-29 (from live evidence):
@@ -51,6 +51,13 @@ Addendum, 2026-09-29 (from live evidence):
 Addendum, 2026-09-30 (course correction, ADR 0020):
 
 - A belief / estimation foundation (ADR 0020, stages EST-0 to EST-10) is inserted after R16 closure and before any stage that depends materially on predicted state (TURING predictive evaluation, J-Space uncertainty-aware reasoning, Cortex predictive abstraction, information-gain experiments, Evolution Arena, Physics Zero). R16 is not interrupted. See Lane 7.
+
+Addendum, 2026-09-30 (reconciliation of docs against code):
+
+- Roadmap M6 `OMEGA_SELF_HOST` stays COMPLETE with its ID, commit and receipt unchanged, but it proved a fixed-output self-copy check, not compiler self-hosting. It is not evidence of a general Omega compiler (`doctrine/ROADMAP.md` §3, M6 correction note; omega `docs/adr/OMEGA-SYSTEMS-CORE-0000.md` item C8). The compiler slice is OSC-1 work.
+- J-Space, Cortex and capability status was re-checked against omega, aienos, physics and aien-sovereign-core `main` (`docs/02-implementation-status.md`). J-Space and the omega Cortex are host references in single test targets; three Cortex implementations exist with no recorded owner; the capability authority root is the aienos C library, hosted only; the runtime Capability Graph (F1) is missing.
+- Concept ownership (World state, semantic scheduling, authority root, generations, queues, evidence, Cortex, J-Space) is recorded in `doctrine/ARCHITECTURE.md` §2.8, classified with the R16 retirement map.
+- M19 remains REOPENED / IN PROGRESS (M19R Gate 5, `aien-dev/omega#32`, is still open). Native AIENOS boot of the resident system and the persistent-agent proof (§7 D4) are not done. No document may claim otherwise.
 
 ## 3. Program rule
 
