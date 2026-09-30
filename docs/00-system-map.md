@@ -77,6 +77,8 @@ flowchart TB
 | Provenance | evidence of what occurred | policy decisions |
 | RSI | out-of-band optimization | direct hot-path mutation |
 
+This table defines responsibilities. Which code currently implements each one, and which alternates are legacy, reference oracle, maintenance or recovery, is recorded in `doctrine/ARCHITECTURE.md` §2.8 (Concept ownership).
+
 ## Core invariant
 
 The system can speculate freely inside reversible state. External reality changes only after selection, authorization, and effect execution.

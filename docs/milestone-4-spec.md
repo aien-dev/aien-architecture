@@ -111,7 +111,7 @@ Milestone 4 is the foundation of the sovereign semantic universe. It is **not** 
 
 The following components are **strictly excluded** from Milestone 4:
 - Direct AArch64 machine byte realization generator (strictly reserved for M5 `OMEGA_AARCH64`)
-- Self-hosting realization compiler (strictly reserved for M6 `OMEGA_SELF_HOST`)
+- Self-hosting realization compiler (strictly reserved for M6 `OMEGA_SELF_HOST`; as qualified, M6 proved only a self-copy check, see `doctrine/ROADMAP.md` §3 M6 correction note)
 - V3-V5 proof engines and proof-carrying code generators (reserved for M7 `OMEGA_VERIFY`)
 - Program synthesis solvers, synthesis task schemas, and cost models (reserved for M8/M9)
 - Equality saturation, e-graphs, rewriting optimizers, and JIT compilers

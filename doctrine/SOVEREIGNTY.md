@@ -225,7 +225,7 @@ The architecture requires the following **Closure Proofs**. Each is a target unt
 `SOVEREIGN_MACHINE_CLOSURE` is a **stable named architectural gate**, not a roadmap milestone number. Earlier drafts placed it at "Milestone 27"; in the canonical M0-M40 roadmap, M27 is `PHYSICS_ZERO_PROTOCOL`, and closure has no milestone number of its own.
 <!-- HISTORICAL-PROVENANCE:END -->
 
-* **ROADMAP POSITION:** Cross-cutting. It cannot be evaluated until its prerequisites exist: native qualification of M1-M3, Omega self-hosting (M6) and verification (M7), native accelerator execution (M15-M19), and the sovereign training runtime through M24 `AIEN_0`. Its earliest possible evaluation is therefore after M24. Reaching any roadmap milestone, including M27-M35 (Physics Zero) or M36-M40, does not imply closure; any claim that a lineage (including `AIEN-P0`) is *sovereign* additionally requires this gate.
+* **ROADMAP POSITION:** Cross-cutting. It cannot be evaluated until its prerequisites exist: native qualification of M1-M3, Omega self-hosting (M6 as specified; the qualified M6 result is a fixed-output self-copy check and does not meet this prerequisite, see `ROADMAP.md` §3 M6 correction note) and verification (M7), native accelerator execution (M15-M19), and the sovereign training runtime through M24 `AIEN_0`. Its earliest possible evaluation is therefore after M24. Reaching any roadmap milestone, including M27-M35 (Physics Zero) or M36-M40, does not imply closure; any claim that a lineage (including `AIEN-P0`) is *sovereign* additionally requires this gate.
 * **TARGET / THEOREM:** The permanent lineage (§1.1) reproduces itself:
 
   $$\mathcal{S}_{t+1} = \text{Omega}_{\text{sov}}\Big(\text{Physics}_{\text{sov}}\big(\text{Atlas}_{\text{sov}}(\text{Silicon})\big)\Big), \qquad \mathcal{S}_{t+1} \equiv \mathcal{S}_t$$
@@ -360,7 +360,7 @@ Roadmap progression is governed by four sequential **Verification Gates**, align
 
 ### 6.3 Gate 2: Autonomous Realization, Accelerator Sovereignty & Sovereign Training (M4-M26)
 * **TARGET / INVARIANTS:**
-  1. Omega synthesizes and self-hosts its realization layer without LLVM, GCC, or NVCC (M4-M7).
+  1. Omega synthesizes and self-hosts its realization layer without LLVM, GCC, or NVCC (M4-M7). Correction 2026-09-30: M6 COMPLETE is a self-copy check and is not evidence for this invariant; no general Omega compiler exists yet (`ROADMAP.md` §3 M6 correction note).
   2. Omega program synthesis, library learning, and living realization selection operate with verified parity (M8-M12).
   3. The MachineGraph describes the substrate's memory and interconnect, and realizations are synthesized against it (M13-M14).
   4. Native accelerator execution runs Omega-synthesized vector and tensor workloads without the CUDA runtime or driver, through PHYSICS-authorized interfaces (M15-M19).

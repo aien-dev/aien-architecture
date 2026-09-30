@@ -27,7 +27,7 @@
 
 ## Missing as first-class subsystems
 
-1. Capability Graph
+1. Capability Graph (2026-09-30: authority root exists as aienos `native/capability/aienos_capability.c`, hosted only; the runtime graph is still missing, see `02-implementation-status.md`)
 2. Skill Router
 3. canonical `aien-mcp`
 4. production `VaultOnly`
@@ -37,7 +37,7 @@
 8. portable accelerator contract
 9. AIEN Fabric
 10. Machine identity/placement
-11. J-Space
+11. J-Space (2026-09-30: host reference omega `src/runtime/rx_jspace.{c,h}` exists in one test target; not on the production path, see `02-implementation-status.md`)
 12. distributed branch execution
 13. content-addressed model distribution
 14. Relational Path Engine

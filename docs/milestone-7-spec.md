@@ -13,7 +13,7 @@ Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4/M5/M6/M7)
 
 ## 1. Executive Summary & Foundational Invariants
 
-Milestone 6 established the closed-loop reproduction of the realization compiler (`OMEGA_SELF_HOST`).
+Milestone 6 (`OMEGA_SELF_HOST`) established a closed-loop reproduction check of a fixed realization emitter. Correction 2026-09-30: that check holds by self-copy, not by compilation, and is not evidence of a self-hosting compiler (see `doctrine/ROADMAP.md` §3, M6 correction note).
 Milestone 7 establishes the **sovereign verification authority** of OMEGA:
 
 > **AIEN MAY PROPOSE. OMEGA MUST VERIFY. PHYSICS MUST AUTHORIZE. EVIDENCE DECIDES WHAT SURVIVES.**

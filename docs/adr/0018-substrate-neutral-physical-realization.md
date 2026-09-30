@@ -52,7 +52,7 @@ This ADR covers every physical realization substrate, present or future. The lis
 | Substrate family | Typical numerical model | Notes |
 |---|---|---|
 | Digital CPU | exact integer; IEEE float with a declared rounding model | The current reference/oracle substrate |
-| Digital GPU | exact integer; IEEE / reduced-precision float with declared accumulation order | Qualified on GB10 (M16–M19, R12–R14) |
+| Digital GPU | exact integer; IEEE / reduced-precision float with declared accumulation order | Qualified on GB10 (M16–M18, R12–R14); M19 is reopened (`doctrine/ROADMAP.md`) |
 | Analog compute (e.g. in-memory crossbar) | bounded stochastic: quantization, noise, bias, drift, saturation, temperature dependence | First non-digital target (AR2 simulated, AR4 physical) |
 | Neuromorphic | event/spike-based; bounded stochastic or measured distribution | Same contract model as analog |
 | FPGA / CGRA | exact or bounded deterministic, per synthesized design | The synthesized bitstream is part of realization identity |

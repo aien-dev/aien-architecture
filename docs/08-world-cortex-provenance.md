@@ -1,5 +1,7 @@
 # World, Cortex, and Provenance
 
+> **Implementation status (2026-09-30).** World state is owned by omega `src/runtime/rx_world.c`. Cortex has three implementations and no recorded authoritative owner: sovereign-core `crates/cortex-rs` (live Linux LLM stack), omega `src/runtime/rx_cortex.{c,h}` (host reference, one in-memory tier) and aienos `crates/aienos-cortex` (Rust). Evidence is written by omega `src/omega_evidence.{h,c}`; no shared cross-repo evidence schema exists. Ownership: `doctrine/ARCHITECTURE.md` §2.8.
+
 ## World
 
 World is branchable execution state.
