@@ -283,6 +283,24 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 
 Status corrected 2026-09-29 against committed acceptance evidence. R16 inventory completion does not close the overall milestone.
 
+### ADR 0020 (ARCH-0020) belief / estimation stages EST-0-EST-10
+
+These are the implementation stages of ADR 0020, not roadmap milestones; they carry no M-number and do not change the table in §2. EST-4 and later wait for R16 closure.
+
+| Stage | Exit token | Status |
+| :--- | :--- | :--- |
+| EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module) |
+| EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module) |
+| EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | PLANNED |
+| EST-3 calibration | `ESTIMATION_CALIBRATION` | PLANNED |
+| EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (after R16) |
+| EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (after R16) |
+| EST-6 TURING evidence | `TURING_ESTIMATION_EVIDENCE` | PLANNED |
+| EST-7 J-Space | `JSPACE_BELIEF_INTEGRATION` | PLANNED |
+| EST-8 Cortex | `CORTEX_PREDICTIVE_MEMORY` | PLANNED |
+| EST-9 innovation curiosity signal | `INNOVATION_CURIOSITY_SIGNAL` | PLANNED |
+| EST-10 active information gain | `ACTIVE_INFORMATION_GAIN` | PLANNED |
+
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
 

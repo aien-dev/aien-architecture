@@ -32,3 +32,4 @@ Current ADRs:
 - [0017 - ARGUS is the defensive plane; it observes, detects, and proposes, but never authorizes](0017-argus-defensive-plane.md) - Accepted by operator Drake Stapleton, 2026-09-29
 - [0018 - Substrate-neutral physical realization](0018-substrate-neutral-physical-realization.md) - Accepted by operator Drake Stapleton, 2026-09-29
 - [0019 - Mixed-algebra realization](0019-mixed-algebra-realization.md) - Accepted 2026-09-29
+- [0020 - Belief / estimation layer](0020-belief-estimation-layer.md) - Accepted by operator Drake Stapleton, 2026-09-30
