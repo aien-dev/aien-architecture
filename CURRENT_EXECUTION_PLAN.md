@@ -48,6 +48,10 @@ Addendum, 2026-09-29 (from live evidence):
 - AR1 (FORGE substrate-neutral descriptor contract) PASSED: `aien-dev/physics#16` (`1f7c321`) and `aien-dev/physics#13` (`5969159`) merged on main; V1 and V2 combined gates pass.
 - ADR 0018 (substrate-neutral physical realization) is ACCEPTED and merged (641bd3c); AR0 is satisfied; see §6 C3.
 
+Addendum, 2026-09-30 (course correction, ADR 0020):
+
+- A belief / estimation foundation (ADR 0020, stages EST-0 to EST-10) is inserted after R16 closure and before any stage that depends materially on predicted state (TURING predictive evaluation, J-Space uncertainty-aware reasoning, Cortex predictive abstraction, information-gain experiments, Evolution Arena, Physics Zero). R16 is not interrupted. See Lane 7.
+
 ## 3. Program rule
 
 Do not build higher layers on a lower layer whose qualification is known to be misleading.
@@ -66,6 +70,8 @@ AIENOS TRUST + IDENTITY
 OMEGA NUMERICS / TENSORS / AUTODIFF / OPTIMIZER
     ↓
 AIENOS NETWORKING + NATIVE INFERENCE + PERSISTENT AGENT
+    ↓
+BELIEF / ESTIMATION FOUNDATION (ADR 0020: EST-0..EST-3 calibrated, then EST-4..EST-5 into World and the cost model after R16)
     ↓
 CAPABILITY GRAPH + WORLD + J-SPACE + FABRIC
     ↓
@@ -541,6 +547,13 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 - The ARGUS event ABI is untouched; analog telemetry needs are documentation only.
 - New code in R16-scanned repositories (omega, aienos, physics) must stay clean of the R16 loop-inventory patterns.
 
+**Lane 7 - Belief / estimation layer (ADR 0020):** EST-0 to EST-10; current state in [`docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md`](docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md).
+
+- EST-0 to EST-3 (contract, linear Kalman reference, one real signal, calibration) may run before R16 closes only as a standalone module: new files under `omega/src/estimation/` and `omega/tests/estimation/`, own `mk/estimation.mk` targets, not in `all` or `test`, not included by `omega/src/runtime/`.
+- EST-4 onward (World, cost model, TURING, J-Space, Cortex, curiosity, information gain) waits for R16 closure and the `omega/src/runtime/` hold to lift.
+- Estimator output never becomes an authority input and never replaces raw evidence. An estimator that fails EST-3 calibration is not promoted.
+- New estimation code stays clean of the R16 loop-inventory patterns.
+
 These lanes converge before AIEN_0 is promoted into the live runtime.
 
 ## 17. Immediate next gates
@@ -555,3 +568,5 @@ Do not start another master plan. Execute these:
 6. Proceed to AIENOS M6 and Omega M20 in parallel.
 
 The ADR 0018 workstream runs as Lane 6 and does not reorder these gates.
+
+The ADR 0020 workstream runs as Lane 7 and does not reorder these gates; its EST-4 and later stages follow R16 closure.
