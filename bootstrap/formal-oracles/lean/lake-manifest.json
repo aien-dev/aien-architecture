@@ -1,0 +1,6 @@
+{"version": "1.2.0",
+ "packagesDir": ".lake/packages",
+ "packages": [],
+ "name": "aien_formal_oracle",
+ "lakeDir": ".lake",
+ "fixedToolchain": false}

@@ -1,0 +1,38 @@
+# Lean bootstrap oracle declaration (ARCH-0027, FORMAL-2). Disposable. Not part of permanent AIEN lineage.
+schema_version = 0
+name            = "aien-formal-oracle-lean"
+classification  = "DEVELOPMENT_ORACLE"
+permanent_lineage = false
+deprecation_target = "OMEGA_FORMAL_CLOSURE"
+governing_adr   = "docs/adr/0027-formal-oracle-lean-bootstrap.md"
+severance_gate  = "LEAN_SEVERANCE"
+
+[toolchain]
+lean_toolchain_file = "lean-toolchain"
+lean_version        = "4.34.1"
+lean_release_tag    = "v4.34.1"
+lean_release_published = "2026-09-24"   # GitHub release leanprover/lean4 v4.34.1 (latest stable, non-prerelease)
+lean_commit         = "5045d0056413266e57c625dcd7c365b10e377c52"
+lake_version        = "5.0.0-src+5045d00"
+platform_verified   = "aarch64-unknown-linux-gnu"
+elan_version        = "4.2.4"
+elan_release_published = "2026-08-25"   # GitHub release leanprover/elan v4.2.4
+elan_archive        = "elan-aarch64-unknown-linux-gnu.tar.gz"
+elan_archive_sha256 = "05febd124d84ebf994b2e7479922a5650b1e950c17ae3bd1ddd776b65bb72bf9"
+verified_on         = "2026-10-01"
+install             = "elan installed in the user home (~/.elan), no sudo, no system packages"
+mathlib             = false
+external_dependencies = []
+
+[[covers]]
+invariant = "AIEN.INV.CAP.ATTENUATION.V1"
+manifest  = "formal/invariants/capability-attenuation-v1.toml"
+
+[[covers]]
+invariant = "AIEN.INV.CAP.REVOCATION_CLOSURE.V1"
+manifest  = "formal/invariants/capability-revocation-v1.toml"
+
+[run]
+script = "run-cap-formal.sh"
+result_line = "CAP_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
+note = "A PASS is one evidence input bound to a source and model revision. It is not authority (ARCH-0027 point 6)."
