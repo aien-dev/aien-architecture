@@ -1,0 +1,25 @@
+name = "aien_formal_oracle"
+defaultTargets = ["AienCap"]
+
+# Core Lean only. No Mathlib, no Batteries, no other dependency: builds offline.
+
+[[lean_lib]]
+name = "AienCap"
+
+[[lean_lib]]
+name = "MutantModels"
+globs = ["MutantModels"]
+
+# Each claim file states a real-model theorem against a mutant model.
+# It must FAIL to build. The runner checks that.
+[[lean_lib]]
+name = "MutantScopeClaim"
+globs = ["MutantScopeClaim"]
+
+[[lean_lib]]
+name = "MutantExpiryClaim"
+globs = ["MutantExpiryClaim"]
+
+[[lean_lib]]
+name = "MutantDepthClaim"
+globs = ["MutantDepthClaim"]
