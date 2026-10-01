@@ -51,7 +51,7 @@ Each claim below is from the PREFILL-SCOUT report, which read source with `git s
 
 **Why tests did not catch it.** Every swarm test uses `MockInferenceBackend`, which ignores prompt content (`crates/aien-inference-abi/src/lib.rs:264-300`). No runtime test asserts that a swarm branch processed any prefill tokens.
 
-**Fix in flight.** A fix is being written on sovereign-core branch `hive/PREFILL-GATE-prefill`. PR number: TBD (no PR for that branch existed when this file was written, checked with `gh pr list --head hive/PREFILL-GATE-prefill --state all` on 2026-10-01). This spec does not describe the fix; it states the gates the fix must pass (G1, G2).
+**Fix in flight.** A fix is being written on aien-sovereign-core PR #145 (branch hive/PREFILL-GATE-prefill, commit d6455da; host tests queued, NOT_RUN until forge receipt). This spec does not describe the fix; it states the gates the fix must pass (G1, G2). Open follow-up: the transformer backend still starts each branch from an empty internal state (transformer_backend.rs:939-948 at cfd9982), so branches do not yet consume the shared root prefill; #145 closes the scheduling gate only (source: /home/drakestapleton/handoffs/2026-10-01-PREFILL-GATE-builder.md, line 40).
 
 ### 2.3 Related open questions (not part of the defect claim)
 
@@ -178,7 +178,7 @@ ABI-visible types named by the scout: `#[repr(C, align(64))] SequenceRecord` (`c
 
 ## 10. Prerequisites
 
-1. The section 2.2 fix (sovereign-core branch `hive/PREFILL-GATE-prefill`, PR TBD) merged with a test that fails on `cfd9982` and passes after (G1, G2 on host).
+1. The section 2.2 fix (aien-sovereign-core PR #145 (branch hive/PREFILL-GATE-prefill, commit d6455da; host tests queued, NOT_RUN until forge receipt)) merged with a test that fails on `cfd9982` and passes after (G1, G2 on host).
 2. A swarm test that runs a real backend (CPU reference `NativeTransformerBackend`), since mock-backend tests cannot detect the defect (section 2.2).
 3. A forge receipt for every host leg before any host cell leaves NOT_RUN.
 4. A GB10 chip-run slot under the shared test queue for hardware legs; GPU package energy measurement path available. Chip runs are never killed or timed out.
