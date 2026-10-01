@@ -14,7 +14,7 @@ Snapshot-oriented map of the AIEN GitHub ecosystem, checked against `gh repo lis
 | `aien-dev/aien-architecture` | public | This repository. |
 | `aien-dev/aien-sealed` | private | Name only. Holds evaluator-only material; never given to a candidate under test. |
 
-Other live public repositories: `aien-dev/aien-edge`, `aien-dev/aienos.com`, `aien-dev/drakestapleton.com`, `aien-dev/aien-dev` (profile), `aien-dev/.github`, `aien-dev/aegis-runtime`, `aien-dev/spark-rsi`, `aien-dev/benchmarks`, `aien-dev/open-humanity`. The other private repositories in the organization are legacy application archives (per their GitHub descriptions),, except `encounter` and `MojoLlama`, which the GitHub descriptions show as non-legacy private projects.
+Other live public repositories: `aien-dev/aien-edge`, `aien-dev/aienos.com`, `aien-dev/drakestapleton.com`, `aien-dev/aien-dev` (profile), `aien-dev/.github`, `aien-dev/aegis-runtime`, `aien-dev/spark-rsi`, `aien-dev/benchmarks`, `aien-dev/open-humanity`.
 
 ## Canonical composition root
 
