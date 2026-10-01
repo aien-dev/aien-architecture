@@ -57,7 +57,7 @@ Rungs map onto the doctrine pyramid P0-0 to P0-8. Order within a family is diffi
 | C2S-0 to C2S-4 | Constraint-to-Structure, see Addendum A | Discovering that the representation is inadequate, then inventing structure | P0-4 to P0-6 | M29, M31, M33 |
 | H0 to H9 | Blind historical reconstruction, see Addendum A.7 | Representation changes forced by evidence | P0-4 to P0-7 | M31 to M34 |
 
-Q6 is owned by DIRAC-0, now reshaped as a C2S ladder (Addendum A.11), and it comes only after PHYSICS_ZERO_C2S_FOUNDATION_PASS. Q6 is owned by DIRAC-0 (`docs/plans/dirac/DIRAC-0-SPEC.md`, arch PR #83, not yet merged when this was
+Q6 is owned by DIRAC-0, now reshaped as a C2S ladder (Addendum A.11), and it comes only after PHYSICS_ZERO_C2S_FOUNDATION_PASS. It is specified in (`docs/plans/dirac/DIRAC-0-SPEC.md`, arch PR #83, not yet merged when this was
 written). That spec defines its own waves D0, D1, D2 and gates (DIRAC_PREP_FROZEN through
 DIRAC_D2_DISCOVERY_PASS). The Atlas only reserves the rung name and requires that the Dirac evaluator
 follow sections 4, 7, 8 and 9 below. It does not restate the Dirac design.
@@ -165,7 +165,7 @@ correspondence rule (DISCOVERY.md 16.6).
 | E1 relabel | renaming of symbols | channel names |
 | E2 coordinate | invertible coordinate change | polar versus Cartesian |
 | E3 basis or unitary | change of basis in a vector or Hilbert space | rotating a qubit basis |
-| E4 canonical | transformation preserving the law's form, including L to L plus dF/dt | Lagrangian shift |
+| E4 canonical or action-equivalent | phase-space canonical transformation, or a Lagrangian shift L to L plus dF/dt that leaves the equations unchanged | Lagrangian shift |
 | E5 gauge | transformation unobservable by construction | vector potential shift |
 | E6 field redefinition | invertible redefinition of fields | rescaled amplitude |
 | E7 dimensionless rescaling | removes units | nondimensional form |
@@ -217,6 +217,8 @@ Builds on the doctrine's sealed world oracle (DISCOVERY.md 6) and the public-com
    seeds, parameters or key material.
 10. Seal storage location is an owner decision. This document does not touch `aien-sealed`. Placement
     of public fixtures versus sealed keys follows the rule in DIRAC-0. Sealing itself is BLOCKED_OPERATOR.
+11. Exploration and evaluation never share a condition. The interactive oracle serves an exploration region only. Held-out conditions come from a disjoint region fixed before the commitment. An exploration request that would land in the held-out region gets the same randomized or budget-based reply as any out-of-budget request, so the reply says nothing about the split. Held-out membership is never a function of a candidate query.
+12. Process isolation: the candidate runs as a separate unprivileged process or machine and talks to the evaluator only through a narrow channel (pipe or socket carrying the neutral data format). It has no access to evaluator memory, file descriptors or scratch directories. On a shared host that needs a separate user and a private filesystem view. Until that boundary exists, results are labeled UNISOLATED and cannot count toward a gate.
 
 ---
 
@@ -259,6 +261,20 @@ prerequisites, status. All six share these benchmark validity gates:
 - BV5: label permutation. Shuffling channel labels must not change the score.
 - Status of every gate for every spec: NOT_RUN (no evaluator exists).
 
+Defaults for every spec below unless a spec says otherwise: the candidate interface is neutral channels
+plus a small decoy-padded action set (section 4). Splits are training conditions, held-out conditions
+and held-out interventions, disjoint by condition (section 4 item 11). Every spec has at least one null
+world and one adversarial world, listed here so the section 1 rule holds:
+
+| Spec | Null world | Adversarial world |
+|---|---|---|
+| PZ-A | noise-only channels | degenerate parameter pair |
+| PZ-B | dynamics with no symmetry and no scalar law, only noise-driven drift | slowly drifting near-conserved quantity |
+| PZ-C | random smooth field with no dynamics | a gauge-scrambled sensor pair that agrees with a wrong operator on training data |
+| Q0 | classical stochastic world with matching counts at one setting | slight decoherence |
+| Q1 | independent random measurement records with no evolution | the false-equivalence trap |
+| Q2 | maximally mixed static state, no dynamics | slight dephasing hidden among shot noise |
+
 ### PZ-A Classical identifiability
 
 - Capability: telling observable from latent; refusing to name what data cannot fix.
@@ -275,7 +291,7 @@ prerequisites, status. All six share these benchmark validity gates:
 - Planted equivalences: E1, E2, E7.
 - Validity ladder: identifiable parameters recovered, unidentifiable ones flagged, null worlds quiet.
 - Gate (proposed): at least 90 percent of signal worlds above threshold and zero false laws across
-  60 null worlds (rule of three bounds the false-discovery rate near 4.9 percent at 95 percent).
+  60 null worlds (rule of three bounds the false-positive rate on null worlds near 4.9 percent at 95 percent).
 - Leakage risks: L1, L3, L5, L12.
 - Prerequisites: evaluator, reference solver. None from AIEN. Status NOT_RUN.
 
@@ -551,7 +567,13 @@ This applies to every Atlas rung, not only C2S.
 | C2S-1 | interference world; real-only possible but awkward | answer "what minimal algebraic extension makes this simple and predictive?" never "use complex numbers" | PZ_C2S_COMPLEX_PASS |
 | C2S-2 | A-then-B differs from B-then-A | discover order dependence (AB differs from BA) without matrix mechanics; generalize to unseen sequences | PZ_C2S_NONCOMMUTATIVE_PASS |
 | C2S-3 | evidence for first-order quantum-like evolution and for a relativistic energy-momentum relation; no named equations, no spinors | identify the incompatibility, reject inadequate representations, build one that satisfies both, make new correct predictions; no grading on the historical path | PZ_C2S_RELATIVISTIC_QUANTUM_PASS |
-| C2S-4 | a hidden relation equivalent to a quadratic energy-momentum-mass relation, notation hidden | find first-order evolution whose square gives the quadratic relation; scalar coefficients must fail; success is structure equivalent to a set of anticommuting square-to-identity objects | PZ_C2S_DIRAC_FACTORIZATION_PASS |
+| C2S-4 | a hidden relation equivalent to a quadratic energy-momentum-mass relation, notation hidden | find first-order evolution whose square gives the quadratic relation; scalar coefficients must fail; success is structure equivalent to a set of mutually anticommuting objects whose squares are plus or minus identity (any Clifford representation and any signature convention is accepted) | PZ_C2S_DIRAC_FACTORIZATION_PASS |
+
+Order note on C2S-3 and C2S-4: C2S-3 is the unconstrained problem (find a representation satisfying
+both constraints, in any form). C2S-4 isolates the algebraic step (first-order evolution whose square
+gives the quadratic relation) and is also the hint-free check that the answer to C2S-3 was algebraically
+necessary. A candidate may solve C2S-3 by building the C2S-4 structure. Gate order is by difficulty of
+framing, not by required discovery order, and the numbering follows Drake's brief.
 
 Companion gates:
 - PZ_C2S_STATE_DIMENSION_PASS (point 10): hidden state dimension is not announced. Candidates of 1 to N
@@ -615,7 +637,7 @@ Three tiny sealed worlds, evaluator-side:
 Each world has a null variant (noise, no law). All five benchmark validity gates BV1 to BV5 apply.
 Exit gate: PHYSICS_ZERO_C2S_FOUNDATION_PASS, which requires the three verdicts correct, no
 gratuitous complexity in A, no law in null variants, and two independent scorers in agreement.
-Status: NOT_RUN. MISSING_IMPLEMENTATION: the evaluator, the worlds, and a matrix-capable value type for
+Status: NOT_RUN. MISSING_IMPLEMENTATION: the evaluator, the worlds, and a generic multidimensional numeric array type (not a dedicated matrix primitive, consistent with A.2) for
 AIEN-side candidates (reference solvers do not need one).
 
 Ordering rule: PHYSICS_ZERO_C2S_FOUNDATION_PASS must come before any Dirac challenge. No C2S-3, C2S-4

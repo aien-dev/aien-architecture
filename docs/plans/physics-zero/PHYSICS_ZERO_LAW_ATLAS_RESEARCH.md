@@ -34,7 +34,7 @@ A family that tests no new capability is marked REDUNDANT, even when it is famou
 - The lead also checked by hand: the CHSH maximum 2 root 2 at the standard angles, the sampling cost
   (about 73 pairs per setting pair for a five-sigma gap between 2 root 2 and 2), the dephasing decay
   exp(-gamma t) for a sigma-z jump operator with rate gamma over 2, and the rule of three (60 null worlds
-  with zero false discoveries bounds the false-discovery rate near 4.9 percent at 95 percent confidence).
+  with zero false discoveries bounds the false-positive rate on null worlds near 4.9 percent at 95 percent confidence).
 - Repository statements were read from the live repositories on 2026-10-01 (arch main 921797b, omega
   main 07004a8). Where a plan and the code disagree, the code wins and the gap is stated.
 
@@ -193,6 +193,11 @@ All of this was read from the repositories on 2026-10-01.
    is theories that change with scale and the same physics in different forms.
 4. Q3 (Bell), Q4 (open systems and Hamiltonian learning), Q5 (Klein-Gordon, Berry), then Q6 (Dirac).
 
+8. Addendum A (Constraint-to-Structure, Drake's 2026-10-01 brief) changes the order. The first build is
+   the C2S-0 Representational Adequacy Lab (see V1 Addendum A.10), before any quantum rung beyond Q0
+   and before every Dirac challenge. Where this section and V1 Addendum A differ, V1 Addendum A wins.
+   Note on table order in V1: rows group rungs by family, not by milestone. Milestone order follows
+   `doctrine/ROADMAP.md`.
 ## 8. Open items
 
 - Spot-check every `(unsure)` citation before external use.
