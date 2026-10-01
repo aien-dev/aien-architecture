@@ -146,15 +146,21 @@ Type numbers 17 to 20 are proposals for TRN1 0.2.0 (table and arch#96 coordinati
 |---|---|---|
 | cause | 32 | the cause id |
 | mode | u32 | 1 MINT, 2 ADOPT, 3 REF; else SHAPE |
-| local_kind | u32 | table 2.2; 0 only with mode REF |
-| local | u64 | table 2.2; 0 only with mode REF |
+| local_kind | u32 | table 2.2 (1 to 4) for MINT and ADOPT. For REF it is **0 exactly**; any other value is SHAPE. Decided here (Q3): PR #12 left it open and its verifier accepts 0 to 4 for REF (`trn1_verify.c` l.281 to 282 at e0dccc7); the REF cause field already names the cause, so a second copy of its source would let two correct writers emit different REF bytes for the same cause and DIVERGE. This follows the root-digest rule in the last row. |
+| local | u64 | table 2.2, nonzero, for MINT and ADOPT. For REF it is **0 exactly**; nonzero is SHAPE (Q3, decided here, same reason). |
 | root digest | 32 | MINT: the digest the cause was minted over; ADOPT and REF: zero (NONCANONICAL otherwise) |
+
+Rulings on the TRN1 0.2.0 open questions (aien-protocols PR #12 body, items 2 to 5 and 7; judged in the HD-08 S1 inspector report). Each says whether PR #12 or this note decides it. Q1 (schema number) is recorded in section 3.5, rule "Wire schema".
+
+- **Q3, REF fields.** Decided here: REF local_kind and local are zero, see the table above. PR #12 must tighten its verifier to match (today it accepts 0 to 4 and any local for REF).
+- **Q5, cause recompute subsystem.** Decided here: the join recomputes a cause id with the **subsystem of the CAUSE record itself** (the record header subsystem field, TRN1 section 5.2), not the file header producer. The record names the admission point that minted the cause; the header names only the file writer, and the two can differ (for example a sovereign-core file holding a cause minted by an omega admission). PR #12 left this open; its goldens use equal values, so it already satisfies this rule.
+- **Q7, reorder.** Decided here: for local_kind 2 and 3 the placement check (step 4) also requires that no earlier record in the same file names the cause (an earlier REF, RESOURCE cause field or RECEIPT_BIND). A MINT or ADOPT written after the record that uses its cause is `CAUSE_PLACEMENT` at the late CAUSE record, because step 4 runs before step 7 and the first failing step decides. `REF_UNKNOWN` stays for a REF or RESOURCE whose cause has no MINT or ADOPT at all in the run (omission, or a flipped cause byte). So reorder vector f008 refuses with `CAUSE_PLACEMENT` at event 2 (its CAUSE MINT).
 
 Annotation (never compared): ADOPT carries origin run id (32) and origin seq (u64), naming the CAUSE record that minted or adopted it upstream.
 
 Placement rules (adjacency, as omega#176 `RXL_FLAG_INPUTS` does for inputs):
 - MINT and ADOPT with local_kind 1 (omega episode) immediately follow the `RX_CRUMB` whose crumb id equals `local` and whose kind is EXTERNAL.
-- MINT and ADOPT with local_kind 2 or 3 immediately precede the first record that does work for that admission.
+- MINT and ADOPT with local_kind 2 or 3 immediately precede the first record that does work for that admission, and no earlier record in the file may name that cause (Q7 above).
 - REF immediately precedes exactly one `EFFECT_INTENT`, `BRANCH_CREATE` or `BRANCH_DESTROY`.
 
 ### 3.2 Type 18 RECEIPT_BIND (ident 40)
@@ -180,7 +186,7 @@ Annotation: parent run id (32), parent seq (u64). Allowed only as record 1.
 
 ### 3.4 M22 dispatch.log
 
-TRN1 v0 has no record type for an M22 dispatch record, and omega#176 verifies `dispatch.log` only in its own form (`rx_replay.c` l.294 onward). A dispatch record needs a TRN1 type before it can join the chain. Proposed for the same spec revision: type 20 TRAIN_DISPATCH, identity = the 160 hashed bytes of the record (`rx_replay.c` `D_HASHED`) minus its own chain field, so op_id, seq, step, base_gen, args and refs are compared. A training run then opens one cause (local_kind 4, train run, root digest = generation 0 digest) and every dispatch serves it. **UNVERIFIED**: whether `base_digest` is replay-stable across two correct training runs.
+TRN1 v0 has no record type for an M22 dispatch record, and omega#176 verifies `dispatch.log` only in its own form (`rx_replay.c` l.294 onward). A dispatch record needs a TRN1 type before it can join the chain. Proposed for the same spec revision: type 20 TRAIN_DISPATCH, identity = candidate: the 160 hashed bytes of the record (`D_SIZE` 192, `D_HASHED` 160, `rx_replay.c` l.765 to 766 at omega#176 head 9112e2b). The chain field is not subtracted: it sits at bytes 160 to 191 (`rx_replay.c` l.841), outside the 160 hashed bytes (`sha256_update(&c, rec, D_HASHED)`, l.817). An earlier draft said "160 hashed bytes minus the chain field", which was self-inconsistent. **Decided here (Q2):** TRN1 0.2.0 reserves the number 20 and defines no layout, as PR #12 implemented (type 20 is refused UNKNOWN under every schema, vector m071). The candidate identity above, which would compare op_id, seq, step, base_gen, args, refs and (only if replay-stable) base_digest, is fixed only in a later TRN1 version after omega#176 merges and the base_digest stability below is checked. A training run then opens one cause (local_kind 4, train run, root digest = generation 0 digest) and every dispatch serves it. **UNVERIFIED**: whether `base_digest` is replay-stable across two correct training runs.
 
 ### 3.5 Coordination with resource-contract-v0 (arch#96)
 
@@ -191,13 +197,14 @@ arch#96 (`docs/hardening/resource-contract-v0.md`, branch `hive/HD-09-resource-c
 | 17 | CAUSE | 80 | this note, section 3.1 |
 | 18 | RECEIPT_BIND | 40 | this note, section 3.2 |
 | 19 | RUN_LINK | 48 | this note, section 3.3 |
-| 20 | TRAIN_DISPATCH | 160 minus the chain field (exact length set by S1) | this note, section 3.4 |
+| 20 | TRAIN_DISPATCH | none in 0.2.0: number reserved, refused UNKNOWN (Q2, section 3.4) | this note, section 3.4 |
 | 21 | RESOURCE | 96 | arch#96 section 4 |
 
 Rules for the shared bump:
 
 - `RESOURCE.cause` is the **32-byte cause id** of section 2.1, not a u64. With that change the arch#96 identity is op u8, reason u8, field u16, reserved u32, unit u64, cause (32), contract (32), declared u64, used u64 = 96 bytes. The arch#96 builder is aligning its side to match.
 - A `RESOURCE` record's cause must be open in the same run (minted or adopted earlier, section 3.1), checked as step 7 of the join rule checks a CAUSE REF: `REF_UNKNOWN` otherwise. A cancel of a descendant carries the descendant's cause (section 2.4).
+- **Wire schema.** TRN1 0.2.0 files use header schema number **3**. Schema 2 is never assigned, because a 0.2 file under schema 2 would flip the verdict of existing 0.1 vector m020, which pins schema 2 as refused (aien-protocols PR #12, TRN1 spec section 10). The contract version (0.2.0) and the wire schema number are separate fields; this note names only the contract version.
 - Neither proposal takes a number outside this table. If aien-protocols renumbers, both notes follow its numbers.
 - Corpus vectors for types 17 to 21 ship in the same aien-protocols change (cut S1).
 
@@ -216,7 +223,7 @@ Steps, in this order. The first failing step decides the outcome.
 
 1. **Verify each file** with the TRN1 verifier (omega `tools/replay/trn1.c` once omega#176 merges, or sovereign-core `aien-replay`). A refused file refuses the join: `TRANSCRIPT`.
 2. **Index by run id.** Two files with the same run id: `DUP_RUN`.
-3. **Check every CAUSE MINT:** recompute the cause id from (producer subsystem, local_kind, local, root digest); mismatch: `CAUSE_DIGEST`. The same cause minted twice anywhere in the set: `DOUBLE_MINT`.
+3. **Check every CAUSE MINT:** recompute the cause id from (the CAUSE record's own subsystem, local_kind, local, root digest; Q5); mismatch: `CAUSE_DIGEST`. The same cause minted twice anywhere in the set: `DOUBLE_MINT`.
 4. **Check placement** (section 3.1): `CAUSE_PLACEMENT`.
 5. **Check every ADOPT:** the origin run named in its annotation must be in the set, and the record at origin seq must be a CAUSE MINT or ADOPT with the same cause. Origin run not supplied: the join is not refused but reports that cause as `NOT_RUN reason=origin_missing` and does not count it as joined. Origin present but record wrong: `ADOPT_ORIGIN`.
 6. **Check every RX_CRUMB:** its episode (re-derived by the omega rule, as omega#176 `rx_replay.c` l.143 checks) must be 0 or name a crumb that has a CAUSE MINT or ADOPT right after it: `EPISODE_UNCAUSED`. Episode 0 crumbs (no outside publication) are allowed and counted as uncaused.
@@ -281,7 +288,7 @@ Each cut is about one file. "After 176" means it edits files omega#176 adds and 
 
 | Cut | Repo, file | Change | Waits for |
 |---|---|---|---|
-| S1 | aien-protocols `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md` + `vectors/` | TRN1 0.2.0 (one bump shared with arch#96): types 17 CAUSE, 18 RECEIPT_BIND, 19 RUN_LINK, 20 TRAIN_DISPATCH, 21 RESOURCE with a 32-byte cause; corpus goldens and one broken vector per refusal code in section 4.1 | nothing (spec owner) |
+| S1 | aien-protocols `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md` + `vectors/` | TRN1 0.2.0 (one bump shared with arch#96): types 17 CAUSE, 18 RECEIPT_BIND, 19 RUN_LINK, 21 RESOURCE with a 32-byte cause, and number 20 TRAIN_DISPATCH reserved without a layout (Q2), under header schema 3; corpus goldens and one broken vector per refusal code in section 4.1 | nothing (spec owner) |
 | O1 | omega `tools/replay/trn1.c` | `trn1_from_rxlog` takes the run id from its caller (minted per section 2.1) instead of the END head | 176 |
 | O2 | omega `tools/replay/trn1.c` (or new `tools/replay/trn1_cause.c`) | emit CAUSE MINT after each EXTERNAL `RX_CRUMB`, root digest over the relative-generation input | 176, S1 |
 | O3 | omega new `tools/replay/trn1_join.c` | the join rule of section 4, one output line, wired as `rx_replay join` | 176, S1 |
