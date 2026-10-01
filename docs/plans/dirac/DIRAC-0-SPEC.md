@@ -11,7 +11,7 @@ Snapshots used for every fact below: omega `origin/main` `07004a8` (includes `ai
 
 ## 1. Purpose
 
-DIRAC-0 asks three questions, in order, and keeps them apart:
+DIRAC-0 asks three questions, in order, and keeps them apart (reframed by section 16: the AIEN-facing test is mathematical invention under constraint, not equation rediscovery; read section 16 together with this one):
 
 1. **D0:** can Omega represent the algebra needed for the Dirac equation exactly, using only generic capabilities?
 2. **D1:** can Omega and FORGE realize and verify the computation, first on CPU, then on the GB10 (Blackwell)?
@@ -291,7 +291,7 @@ Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the
 | D3 | Does the frozen theory predict a sealed, novel consequence that was never requested? | New. Gate cited: `PZ_NOVEL_PREDICTION_PASS` (and `PZ_C2S_NOVEL_CONSEQUENCE_PASS`), both from the Atlas section. |
 
 **Hard rules added by the addendum (they tighten, never loosen, the ten rules):**
-1. AIEN is never handed complex numbers, matrices, spinors, tensors, gamma matrices, Clifford or Lie structure, or the notation of the hidden relation. AIEN receives only generic machinery earned by earlier gates and composes new abstractions itself. This reinforces rules 1, 2 and 6, and the evaluator/AIEN boundary in section 7.
+1. AIEN is never handed complex numbers, matrices, noncommutativity, spinors, tensors, connections, curvature, Hilbert spaces, density matrices, groups, Lie or Clifford algebras, distributions, latent dimensions, gamma matrices, or the notation of the hidden relation. Sections 4 and 11 (complex scalar, matrix product, Clifford relations, gamma-representation equivalence) describe EVALUATOR-SIDE conformance fixtures and generic Omega capability only; none of them is ever shown to AIEN as a hint, and no AIEN-facing world, prompt or dataset uses them. AIEN receives only generic machinery earned by earlier gates and composes new abstractions itself. This reinforces rules 1, 2 and 6, and the evaluator/AIEN boundary in section 7.
 2. The hidden state dimension is not announced. Candidate dimensions are each charged for complexity and must be earned by held-out gain (`PZ_C2S_STATE_DIMENSION_PASS`).
 3. Success is judged by equivalence of structure (for example objects with the required squares and anticommutation), never by matching historical notation or path (rule 10).
 4. Worlds where the current representation is already sufficient are included. Gratuitous complexity is penalized; "existing representation adequate" can be the right answer.
@@ -299,7 +299,7 @@ Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the
 6. Prediction-before-observation: the prediction (timestamp, theory digest, distribution) is committed before the evaluator reveals the observation, using the existing G3 commitment scheme (section 7). Post-hoc retrofit earns no credit.
 7. Discovered mathematics is promoted to an Omega abstraction only on multiple independent uses, held-out compression gain, semantic preservation and verification, and never because humans have a name for it.
 
-**Effect on this spec's gates.** `DIRAC_D2_DISCOVERY_PASS` (section 12) is unchanged. Two additions are proposed, defined only by reference: `DIRAC_D3_NOVEL_PREDICTION_PASS` is NOT defined here; it is the Atlas `PZ_NOVEL_PREDICTION_PASS` applied to the DIRAC world, and D-1 passes when the Atlas C2S adequacy lab passes. Neither is claimed. Both are NOT_RUN.
+**Effect on this spec's gates.** `DIRAC_D2_DISCOVERY_PASS` (section 12) is unchanged. DIRAC-0 adds NO new gate. D-1 is governed by the Atlas `PHYSICS_ZERO_C2S_FOUNDATION_PASS` and D3 by the Atlas `PZ_NOVEL_PREDICTION_PASS` and `PZ_C2S_NOVEL_CONSEQUENCE_PASS`, applied to the DIRAC world. All are NOT_RUN. The first implementation is the Atlas C2S-0 adequacy lab (three tiny sealed worlds: scalar sufficient, two components required, noncommuting structure required); no Dirac-flavoured world runs before it passes. The Atlas also owns the UnexpectedSolutionPolicy classes, the prediction-before-observation record fields, and the Omega promotion criteria for discovered mathematics.
 
 **Scorecard.** Reported separately, with no single score: constraint satisfaction, predictive accuracy, held-out Turings, representation complexity, failed representations count, time until inadequacy recognized, cost of expansion, new-prediction accuracy, transfer, cross-domain reuse, false-complexification rate, uncertainty, falsification quality (addendum section 17).
 
