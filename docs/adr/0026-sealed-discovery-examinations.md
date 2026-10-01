@@ -193,7 +193,7 @@ Shared prerequisites, current state per the scout:
 
 | Prerequisite | Current state | Pointer |
 |---|---|---|
-| EST-3 calibrated estimation | FAILED on main (v1, v2, v3 at Phase A). v4 is open omega#153, no verdict. EST-4 and EST-5 blocked | `CURRENT_EXECUTION_PLAN.md:96`; omega#129 `d78fd11`; arch#80 `ac83f0d` (scout item 5) |
+| EST-3 calibrated estimation | FAILED on main (v1, v2, v3 at Phase A). v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). EST-4 and EST-5 blocked | `CURRENT_EXECUTION_PLAN.md:96` at f81e4ce; omega#129 `d78fd11`; arch#80 `ac83f0d` (scout item 5) |
 | G3 sealed evaluation | Format and code PASS with TEST keys only; owner signing and sealing BLOCKED_OPERATOR | `CURRENT_EXECUTION_PLAN.md:93`, G3 definition lines 491 to 505; `spec/searchtrace/G3_SEALED_HOLDOUT_COMMITMENT_V1.md` lines 3, 162 to 168 (scout item 1) |
 | M20 OMEGA_TENSOR | omega#136 merged, `src/tensor/` on main; GB10 NOT_RUN; M20 not qualified; roadmap row not rechecked | plan section E2 line 338 (scout item 5) |
 | M21 OMEGA_AUTODIFF | Plan only (E3 line 347); no code in omega | scout item 5 |
