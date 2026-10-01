@@ -265,7 +265,7 @@ D-03 to D-06 each state, in their PR, the generic Omega capability they add and 
 | EXP and LOG not correctly rounded | CPU only, frozen and bounded (EXP 40 ulp, LOG 4 ulp). Transcendentals on GB10 missing. |
 | No FP32 in program IR | The Omega program IR has no FP32 value type (E1 gap table row 12). |
 | Omega contracts exact-only | `RcKind` and `rc_check` have no tolerance kinds. Kinds 2 to 4 live in FORGE. |
-| ESTIMATION v4 has no verdict | `aien-dev/omega#153` is open. Its body says PASS for attempt 2, but the branch head `f5a3036` voided attempt 2 and says attempt 3 is pending. **Never cite v4 as PASS.** |
+| ESTIMATION v4 is INCONCLUSIVE | v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). **Never cite v4 as PASS.** |
 | G3 sealing BLOCKED_OPERATOR | No real sealed set exists. |
 | No Physics Zero loop document | See section 10. |
 | T/J not started | H5 NOT STARTED. |

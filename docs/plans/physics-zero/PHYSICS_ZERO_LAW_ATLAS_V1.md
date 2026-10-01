@@ -466,7 +466,7 @@ All paths are real and were read on 2026-10-01 from arch main 921797b and omega 
 | Numerics | E1 PRs #124, #127, #134, #147, #152 (07004a8) | F32 scalar tier only; transcendentals bounded, CPU only; exactness decision arch #76 |
 | Tensors | omega M20 PR #136 (draft) | CPU only, no complex, no GB10 path, NOT QUALIFIED |
 | Differential operators | none | MISSING_IMPLEMENTATION |
-| Estimation | omega `src/estimation/est_types.h`; v4 omega #153 | EST-3 v1 to v3 FAIL; v4 no verdict; EST-4 to EST-10 blocked |
+| Estimation | omega `src/estimation/est_types.h`; v4 omega #153 | EST-3 v1 to v3 FAIL; v4 INCONCLUSIVE (omega#153 merged 2026-10-01), v5 in progress (omega#170, open); EST-4 to EST-10 blocked |
 | Description-length score | omega `src/turing/ty_*`; `docs/turing/TURING_SCIENTIFIC_QUALIFICATION_STATE.md` | TY-2 PASS; T/J not started; selector kill test FAILED |
 | Independent scorer precedent | EXP-001R | 312 values, 0 mismatches |
 | Sealed commitment precedent | `docs/brownian/PROFILE_COMMITMENT*.txt` (omega #100 to #104); `spec/searchtrace/G3_SEALED_HOLDOUT_COMMITMENT_V1.md`, `src/searchtrace/st_holdout.{h,c}` | sealing BLOCKED_OPERATOR |
