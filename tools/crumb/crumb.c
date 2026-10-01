@@ -640,10 +640,234 @@ static void walk_list(const char *path, const char *rel, int depth, int validate
     }
 }
 
+
+/* ---------- backfill: reconstruct history that crumbs would have recorded ---------- */
+#include <ctype.h>
+#include <glob.h>
+#define LEDGER_CAP 20      /* entries (commits) kept in the committed .crumb extensions.provenance */
+#define DOC_CAP 200        /* commits per directory in docs/crumbs/BACKFILL.md */
+
+typedef struct { char hash[41]; char *date, *author, *subj; long pr; } Commit;
+typedef struct { char *rel; int *c; size_t n, cap; } DirAcc;
+typedef struct { char *lane, *note, *ref; long pr; char *repo, *sha; int id; } LaneRef;
+
+static Commit *g_commits; static size_t g_nc, g_ncap;
+static DirAcc **g_dirs; static size_t g_ndirs, g_dcap;
+static LaneRef *g_lr; static size_t g_nlr, g_lrcap;
+
+static DirAcc *dir_acc(const char *rel) {
+    for (size_t i = 0; i < g_ndirs; i++) if (!strcmp(g_dirs[i]->rel, rel)) return g_dirs[i];
+    if (g_ndirs == g_dcap) { g_dcap = g_dcap ? g_dcap * 2 : 256; g_dirs = xrealloc(g_dirs, g_dcap * sizeof *g_dirs); }
+    DirAcc *d = xmalloc(sizeof *d); memset(d, 0, sizeof *d); d->rel = xstrdup(rel);
+    return g_dirs[g_ndirs++] = d;
+}
+static void dir_add(const char *rel, size_t ci) {
+    DirAcc *d = dir_acc(rel);
+    if (d->n && d->c[d->n - 1] == (int)ci) return;
+    if (d->n == d->cap) { d->cap = d->cap ? d->cap * 2 : 8; d->c = xrealloc(d->c, d->cap * sizeof *d->c); }
+    d->c[d->n++] = (int)ci;
+}
+static long pr_of(const char *subj) {
+    const char *p = NULL, *q = subj;
+    while ((q = strstr(q, "(#"))) { p = q; q += 2; }
+    if (p && isdigit((unsigned char)p[2])) return atol(p + 2);
+    if (!strncmp(subj, "Merge pull request #", 20)) return atol(subj + 20);
+    return 0;
+}
+static void load_commits(const char *root, const char *since) {
+    Buf q = {0}; bstr(&q, "'");
+    for (const char *p = root; *p; p++) { if (*p == '\'') bstr(&q, "'\\''"); else bput(&q, p, 1); }
+    bstr(&q, "'");
+    Buf cmd = {0}; bstr(&cmd, "git -c core.quotepath=false -C "); bstr(&cmd, q.p);
+    bstr(&cmd, " log --first-parent -m --name-only --format=%x01%H%x1f%cI%x1f%an%x1f%s");
+    if (since) { bstr(&cmd, " --since='"); bstr(&cmd, since); bstr(&cmd, "'"); }
+    bstr(&cmd, " 2>/dev/null");
+    FILE *f = popen(cmd.p, "r"); if (!f) return;
+    char *line = NULL; size_t lc = 0; ssize_t len; long cur = -1;
+    while ((len = getline(&line, &lc, f)) > 0) {
+        while (len && (line[len - 1] == '\n' || line[len - 1] == '\r')) line[--len] = 0;
+        if (line[0] == 1) {
+            if (g_nc == g_ncap) { g_ncap = g_ncap ? g_ncap * 2 : 256; g_commits = xrealloc(g_commits, g_ncap * sizeof *g_commits); }
+            Commit *c = &g_commits[g_nc]; memset(c, 0, sizeof *c);
+            char *h = line + 1, *d = strchr(h, 31); if (!d) continue; *d++ = 0;
+            char *a = strchr(d, 31); if (!a) continue; *a++ = 0;
+            char *s = strchr(a, 31); if (!s) continue; *s++ = 0;
+            snprintf(c->hash, sizeof c->hash, "%s", h);
+            c->date = xstrdup(d); c->author = xstrdup(a); c->subj = xstrdup(s); c->pr = pr_of(s);
+            cur = (long)g_nc++;
+        } else if (len && cur >= 0) {
+            char *dir = xstrdup(line);
+            for (;;) {   /* every ancestor directory of the file, root last */
+                char *sl = strrchr(dir, '/');
+                if (!sl) { dir_add(".", (size_t)cur); break; }
+                *sl = 0; dir_add(dir, (size_t)cur);
+            }
+            free(dir);
+        }
+    }
+    pclose(f); free(line);
+}
+static const char *repo_alias(const char *tok, size_t n) {
+    static const struct { const char *a, *full; } al[] = { {"omega","omega"}, {"aienos","aienos"}, {"arch","aien-architecture"}, {"aien-architecture","aien-architecture"}, {"physics","physics"}, {NULL,NULL} };
+    for (int i = 0; al[i].a; i++) if (strlen(al[i].a) == n && !strncmp(tok, al[i].a, n)) return al[i].full;
+    return NULL;
+}
+static void lr_add(const char *lane, const char *note, const char *ref, long pr, const char *repo, const char *sha, int id) {
+    if (g_nlr == g_lrcap) { g_lrcap = g_lrcap ? g_lrcap * 2 : 128; g_lr = xrealloc(g_lr, g_lrcap * sizeof *g_lr); }
+    LaneRef *r = &g_lr[g_nlr++]; r->lane = xstrdup(lane); r->note = xstrdup(note); r->ref = xstrdup(ref); r->pr = pr; r->repo = repo ? xstrdup(repo) : NULL; r->sha = sha ? xstrdup(sha) : NULL; r->id = id;
+}
+static void parse_lane_file(const char *path) {
+    FILE *f = fopen(path, "r"); if (!f) return;
+    const char *bn = base_of(path), *fl = strstr(bn, "lane"); char filelane[24] = "";
+    if (fl && isdigit((unsigned char)fl[4])) { int k = 0; fl += 4; while (isdigit((unsigned char)*fl) && k < 8) { filelane[k++] = *fl++; } filelane[k] = 0; }
+    char *line = NULL; size_t lc = 0; ssize_t len; int id = (int)g_nlr * 1000;
+    while ((len = getline(&line, &lc, f)) > 0) {
+        while (len && (line[len - 1] == '\n' || line[len - 1] == '\r')) line[--len] = 0;
+        char lane[24] = ""; const char *L = strstr(line, "Lane ");
+        if (L && isdigit((unsigned char)L[5])) { int k = 0; const char *p = L + 5; while (isdigit((unsigned char)*p) && k < 8) lane[k++] = *p++; lane[k] = 0; }
+        if (!lane[0]) snprintf(lane, sizeof lane, "%s", filelane);
+        if (!lane[0]) continue;
+        char lname[32]; snprintf(lname, sizeof lname, "lane%s", lane);
+        char note[200]; const char *s = line; while (*s == '-' || *s == ' ' || *s == '*') s++;
+        snprintf(note, sizeof note, "%s", s);
+        id++;
+        for (const char *p = line; *p; p++) {
+            if (*p == '#' && isdigit((unsigned char)p[1]) && p > line) {   /* explicit repo#N only; bare #N is ambiguous */
+                const char *e = p; while (e > line && (isalnum((unsigned char)e[-1]) || e[-1] == '-')) e--;
+                const char *full = repo_alias(e, (size_t)(p - e));
+                if (full) lr_add(lname, note, bn, atol(p + 1), full, NULL, id);
+            }
+            if (isxdigit((unsigned char)*p) && (p == line || !isalnum((unsigned char)p[-1]))) {
+                const char *e = p; int dig = 0, let = 0;
+                while (isxdigit((unsigned char)*e) && !isupper((unsigned char)*e)) { if (isdigit((unsigned char)*e)) dig = 1; else let = 1; e++; }
+                if (e == p) e = p + 1;
+                size_t n = (size_t)(e - p);
+                if (!isalnum((unsigned char)*e) && n >= 7 && n <= 40 && dig && let) { char sh[41]; memcpy(sh, p, n); sh[n] = 0; lr_add(lname, note, bn, 0, NULL, sh, id); }
+                p = e - 1;
+            }
+        }
+    }
+    fclose(f); free(line);
+}
+static void load_lane_reports(const char *home) {
+    char pat[PATH_MAX]; glob_t g;
+    snprintf(pat, sizeof pat, "%s/handoffs/2026-10-01-push-lane*-report.md", home);
+    if (!glob(pat, 0, NULL, &g)) { for (size_t i = 0; i < g.gl_pathc; i++) parse_lane_file(g.gl_pathv[i]); globfree(&g); }
+    snprintf(pat, sizeof pat, "%s/handoffs/2026-10-01-next-major-push-orchestrator.md", home);
+    parse_lane_file(pat);
+}
+static int lr_matches(const LaneRef *r, const Commit *c, const char *repo) {
+    if (r->sha) return !strncmp(c->hash, r->sha, strlen(r->sha));
+    return r->pr && c->pr == r->pr && r->repo && !strcmp(r->repo, repo);
+}
+static J *git_entry(const Commit *c) {
+    J *e = jnew(JOBJ); char sh[8]; memcpy(sh, c->hash, 7); sh[7] = 0;
+    jset(e, "source", jstr("backfill-git")); jset(e, "sha", jstr(sh)); jset(e, "timestamp", jstr(c->date));
+    jset(e, "author", jstr(c->author)); jset(e, "subject", jstr(c->subj));
+    if (c->pr) jset(e, "pr", jnum(c->pr));
+    return e;
+}
+static J *lane_entry(const LaneRef *r, const Commit *c) {
+    J *e = jnew(JOBJ); char sh[8]; memcpy(sh, c->hash, 7); sh[7] = 0;
+    jset(e, "source", jstr("backfill-lane-report")); jset(e, "lane", jstr(r->lane)); jset(e, "sha", jstr(sh));
+    if (c->pr) jset(e, "pr", jnum(c->pr));
+    jset(e, "note", jstr(r->note)); jset(e, "ref", jstr(r->ref));
+    return e;
+}
+static void mkdir_p(const char *path) {
+    char *p = xstrdup(path);
+    for (char *s = p + 1; *s; s++) if (*s == '/') { *s = 0; mkdir(p, 0777); *s = '/'; }
+    mkdir(p, 0777); free(p);
+}
+typedef struct { Buf doc; int dirs, updated, unchanged, git_entries, lane_entries, truncated_dirs; } BfStats;
+
+static void backfill_node(const Node *n, int depth, const char *repo, BfStats *st, int dry) {
+    if (qualifies(n, depth)) {
+        char *cp = pjoin(n->path, ".crumb"), *txt = slurp(cp);
+        J *c = txt ? jparse(txt) : NULL;
+        if (c && c->t == JOBJ && jget(c, "schema_version")) {
+            DirAcc *d = NULL;
+            for (size_t i = 0; i < g_ndirs; i++) if (!strcmp(g_dirs[i]->rel, n->rel)) d = g_dirs[i];
+            char *before = jdump(c);
+            J *ext = jobj_of(c, "extensions"), *led = jnew(JARR), *prov = jnew(JOBJ);
+            size_t total = d ? d->n : 0; int doc_lines = 0;
+            Buf sec = {0}; bstr(&sec, "");
+            for (size_t k = 0; d && k < d->n && k < DOC_CAP; k++) {
+                const Commit *cm = &g_commits[d->c[k]];
+                if (k < LEDGER_CAP) { jpush(led, git_entry(cm)); st->git_entries++; }
+                char ln[700]; snprintf(ln, sizeof ln, "- %.10s %.7s%s%s %s: %s [backfill-git]\n", cm->date, cm->hash, cm->pr ? " #" : "", "", cm->author, cm->subj);
+                if (cm->pr) snprintf(ln, sizeof ln, "- %.10s %.7s #%ld %s: %s [backfill-git]\n", cm->date, cm->hash, cm->pr, cm->author, cm->subj);
+                bstr(&sec, ln); doc_lines++;
+                for (size_t r = 0; r < g_nlr; r++) {
+                    if (!lr_matches(&g_lr[r], cm, repo)) continue;
+                    int dup = 0; for (size_t r2 = 0; r2 < r; r2++) if (g_lr[r2].id == g_lr[r].id && lr_matches(&g_lr[r2], cm, repo)) dup = 1;
+                    if (dup) continue;
+                    if (k < LEDGER_CAP) { jpush(led, lane_entry(&g_lr[r], cm)); st->lane_entries++; }
+                    snprintf(ln, sizeof ln, "  - %s (%s): %.160s [backfill-lane-report]\n", g_lr[r].lane, g_lr[r].ref, g_lr[r].note);
+                    bstr(&sec, ln);
+                }
+            }
+            jset(prov, "source", jstr("backfill"));
+            jset(prov, "total_commits", jnum((long)total));
+            jset(prov, "ledger_cap", jnum(LEDGER_CAP));
+            jset(prov, "entries", led);
+            if (total > DOC_CAP) st->truncated_dirs++;
+            if (total) jset(ext, "provenance", prov); else jdel(ext, "provenance");
+            if (doc_lines) {
+                char hd[PATH_MAX + 64]; snprintf(hd, sizeof hd, "\n## %s\n\n%zu commit(s) touched this tree%s\n\n", n->rel, total, total > DOC_CAP ? "; showing newest 200 (older truncated)" : "");
+                bstr(&st->doc, hd); bstr(&st->doc, sec.p);
+            }
+            st->dirs++;
+            char *after = jdump(c);
+            if (strcmp(before, after)) { st->updated++; if (!dry) spit(cp, after); } else st->unchanged++;
+        }
+    }
+    for (size_t i = 0; i < n->ns; i++) backfill_node(n->sub[i], depth + 1, repo, st, dry);
+}
+static int cmd_backfill(const char *root, const char *since, int dry) {
+    char *r = absdir(root);
+    char *home = getenv("HOME"); if (!home) home = "";
+    Node *tree = scan(r, ".", 1);
+    char *remote = run_git(r, "remote get-url origin"), *repo = xstrdup(base_of(remote));
+    size_t rl = strlen(repo); if (rl > 4 && !strcmp(repo + rl - 4, ".git")) repo[rl - 4] = 0;
+    if (!nested_repo(r)) {   /* not a repo: only lane reports, recorded on the root directory */
+        load_lane_reports(home);
+        char *cp = pjoin(r, ".crumb"), *txt = slurp(cp); J *c = txt ? jparse(txt) : NULL;
+        if (!c || !jget(c, "schema_version")) { printf("backfill %s: no spec-format .crumb at root (run seed or create first)\n", r); return 1; }
+        char *before = jdump(c); J *ext = jobj_of(c, "extensions"), *prov = jnew(JOBJ), *led = jnew(JARR);
+        glob_t g; char pat[PATH_MAX]; snprintf(pat, sizeof pat, "%s/2026-10-01-push-lane*-report.md", r);
+        int cnt = 0;
+        if (!glob(pat, 0, NULL, &g)) for (size_t i = 0; i < g.gl_pathc; i++) {
+            struct stat s; if (stat(g.gl_pathv[i], &s)) continue;
+            const char *bn = base_of(g.gl_pathv[i]), *l = strstr(bn, "lane"); char lane[32]; snprintf(lane, sizeof lane, "lane%d", l ? atoi(l + 4) : 0);
+            char ts[21]; struct tm tm; gmtime_r(&s.st_mtime, &tm); strftime(ts, sizeof ts, "%Y-%m-%dT%H:%M:%SZ", &tm);
+            J *e = jnew(JOBJ); jset(e, "source", jstr("backfill-lane-report")); jset(e, "lane", jstr(lane)); jset(e, "ref", jstr(bn)); jset(e, "timestamp", jstr(ts));
+            jpush(led, e); cnt++;
+        }
+        jset(prov, "source", jstr("backfill")); jset(prov, "entries", led); jset(ext, "provenance", prov);
+        char *after = jdump(c);
+        if (strcmp(before, after) && !dry) spit(cp, after);
+        printf("backfill %s (not a git repo): %d lane report(s) recorded, %s\n", r, cnt, strcmp(before, after) ? "changed" : "unchanged");
+        return 0;
+    }
+    load_commits(r, since);
+    load_lane_reports(home);
+    BfStats st; memset(&st, 0, sizeof st);
+    Buf hd = {0}; bstr(&hd, "# Crumb backfill (generated by `crumb backfill`, do not edit by hand)\n\nHistory that crumbs would have recorded, reconstructed from git first-parent history and from the 2026-10-01 lane reports. Every entry is marked `backfill-git` or `backfill-lane-report`: none of it is a live whisper. A commit is listed under every directory it touched, newest first, up to 200 per directory. Lane entries are report lines that mention a commit or PR (mentions, not verified authorship); they attach only where a report names `<repo>#<PR>` or a commit SHA that exists here.\n");
+    st.doc = hd;
+    backfill_node(tree, 0, repo, &st, dry);
+    char *docp = pjoin(r, "docs/crumbs/BACKFILL.md");
+    char *old = slurp(docp);
+    if (!old || strcmp(old, st.doc.p)) { if (!dry) { char *dd = pjoin(r, "docs/crumbs"); mkdir_p(dd); spit(docp, st.doc.p); } printf("BACKFILL.md: %s (%zu bytes)\n", old ? "updated" : "created", st.doc.n); }
+    else printf("BACKFILL.md: unchanged\n");
+    printf("backfill %s (%s, %zu commits%s): %d crumb dirs, updated %d, unchanged %d, ledger git entries %d, lane entries %d, dirs truncated in doc %d\n", r, repo, g_nc, since ? ", since given" : "", st.dirs, st.updated, st.unchanged, st.git_entries, st.lane_entries, st.truncated_dirs);
+    return 0;
+}
 static long ttl_arg(const char *s, long dflt) { if (!s) return dflt; char *e; long v = strtol(s, &e, 10); if (*e || v < 0) die("bad ttl: %s", s); return v; }
 static void usage(void) {
     fputs("usage: crumb <command> ...\n"
           "  seed <root> [-n] [-v]                       write/refresh .crumb files (idempotent; -n dry run)\n"
+          "  backfill <root> [--since <date>] [-n]       reconstruct history from git + lane reports (run after seed)\n"
           "  create <dir> <name> <purpose> [layer]       new .crumb for one directory\n"
           "  claim <agent> <dir> <target> <intent> [ttl] scent + advisory lock (exit 2 if held by another)\n"
           "  update <agent> <dir> <focus> [ttl]          refresh scent\n"
@@ -661,6 +885,11 @@ int main(int argc, char **argv) {
         int dry = 0, verb = 0;
         for (int i = 1; i < a; i++) { if (!strcmp(v[i], "-n")) dry = 1; else if (!strcmp(v[i], "-v")) verb = 1; else usage(); }
         return cmd_seed(v[0], dry, verb);
+    }
+    if (!strcmp(c, "backfill") && a >= 1) {
+        const char *since = NULL; int dry = 0;
+        for (int i = 1; i < a; i++) { if (!strcmp(v[i], "--since") && i + 1 < a) since = v[++i]; else if (!strcmp(v[i], "-n")) dry = 1; else usage(); }
+        return cmd_backfill(v[0], since, dry);
     }
     if (!strcmp(c, "create") && a >= 3) return cmd_create(v[0], v[1], v[2], a > 3 ? v[3] : NULL);
     if (!strcmp(c, "claim") && a >= 4) return cmd_claim(v[0], v[1], v[2], v[3], ttl_arg(a > 4 ? v[4] : NULL, LOCK_TTL));

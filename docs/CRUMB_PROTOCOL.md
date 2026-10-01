@@ -44,3 +44,13 @@ crumb seed <repo-root>     # writes .crumb in the root, top-level dirs, and ever
 
 `seed` never overwrites a hand-written `purpose`, `invariants`, `exports`, or existing `below`/`above` entry. It owns only `extensions.seed`.
 Seeded purposes are placeholders ("Purpose not yet described by a human") for humans or agents to replace.
+
+## Backfill (retroactive history)
+
+`crumb backfill <repo-root> [--since <date>]` reconstructs the history crumbs would have recorded.
+RFC-0001 puts `history` only in the git-ignored `.crumb.local` and says it SHOULD stay near 20 entries, but it allows `extensions` in `.crumb`. So:
+
+- Committed: `extensions.provenance` in each `.crumb` (source, total_commits, ledger_cap, entries). The newest 20 commits per directory, from git first-parent history, each marked `source: backfill-git`, plus report lines marked `source: backfill-lane-report`.
+- Committed: `docs/crumbs/BACKFILL.md`, up to 200 commits per directory (older ones are listed as truncated).
+- A commit is listed under every directory it touched. Lane entries are report lines that name `<repo>#<PR>` or a commit SHA that exists in the repo (mentions, not verified authorship).
+- Nothing backfilled is a live whisper. Run it after `seed`; it is idempotent for a fixed git HEAD and fixed reports.
