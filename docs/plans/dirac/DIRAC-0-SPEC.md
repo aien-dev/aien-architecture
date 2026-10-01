@@ -274,6 +274,37 @@ D-03 to D-06 each state, in their PR, the generic Omega capability they add and 
 
 Omega #152 (GB10 DIV/SQRT) is MERGED at `07004a8`.
 
-## 16. Immediate next action
+## 17. C2S ladder (Drake addendum, 2026-10-01): mathematical invention under physical constraint
+
+Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the addendum wins on any difference). The C2S benchmark family (Constraint-to-Structure) itself, its concepts (RepresentationAdequacy, RepresentationalCrisis, UnexpectedSolutionPolicy) and its gates (`PZ_C2S_*`, `PZ_NOVEL_PREDICTION_PASS`, `PHYSICS_ZERO_C2S_FOUNDATION_PASS`) are defined by the Physics Zero Atlas V1 section (Lane 36), not here. DIRAC-0 cites them by name only and defines none of them.
+
+**What changes.** DIRAC-0 is no longer a test of equation rediscovery. It tests whether AIEN can find that its current mathematics cannot describe reality, invent a richer algebra because the evidence demands it, and use that invention to predict something it has not seen. Credit goes to algebraic necessity, never to symbols.
+
+**The AIEN-facing ladder:**
+
+| Step | Question | Relation to the waves in section 11 |
+|---|---|---|
+| D-1 | Can AIEN prove that simpler representation classes (scalar, real-only, commuting) are inadequate for the sealed constraints? "My language cannot represent this" is progress, not failure. | New first step. Needs the C2S adequacy lab (`PHYSICS_ZERO_C2S_FOUNDATION_PASS`) before any Dirac-flavoured world. |
+| D0 | Can AIEN discover and represent the richer algebra (objects whose relations make a first-order evolution square to the quadratic energy-momentum relation, with the needed state dimension earned by held-out gain)? | AIEN-facing meaning. Not to be confused with wave 1 (section 11 row 1), which is the evaluator-side generic Omega capability (complex, operator relations, constraint-defined algebras) that makes D0 representable at all. Wave 1 stays as written and remains a prerequisite. |
+| D1 | Can the discovered structure be realized physically (CPU, then Blackwell) and verified? | Waves 2 and 3 (D1A, D1B). |
+| D2 | Can a predictive theory be discovered from observations only? | Wave 5 (D2.0 to D2.6). |
+| D3 | Does the frozen theory predict a sealed, novel consequence that was never requested? | New. Gate cited: `PZ_NOVEL_PREDICTION_PASS` (and `PZ_C2S_NOVEL_CONSEQUENCE_PASS`), both from the Atlas section. |
+
+**Hard rules added by the addendum (they tighten, never loosen, the ten rules):**
+1. AIEN is never handed complex numbers, matrices, spinors, tensors, gamma matrices, Clifford or Lie structure, or the notation of the hidden relation. AIEN receives only generic machinery earned by earlier gates and composes new abstractions itself. This reinforces rules 1, 2 and 6, and the evaluator/AIEN boundary in section 7.
+2. The hidden state dimension is not announced. Candidate dimensions are each charged for complexity and must be earned by held-out gain (`PZ_C2S_STATE_DIMENSION_PASS`).
+3. Success is judged by equivalence of structure (for example objects with the required squares and anticommutation), never by matching historical notation or path (rule 10).
+4. Worlds where the current representation is already sufficient are included. Gratuitous complexity is penalized; "existing representation adequate" can be the right answer.
+5. Strange solution branches are classified, never silently discarded, under the Atlas UnexpectedSolutionPolicy.
+6. Prediction-before-observation: the prediction (timestamp, theory digest, distribution) is committed before the evaluator reveals the observation, using the existing G3 commitment scheme (section 7). Post-hoc retrofit earns no credit.
+7. Discovered mathematics is promoted to an Omega abstraction only on multiple independent uses, held-out compression gain, semantic preservation and verification, and never because humans have a name for it.
+
+**Effect on this spec's gates.** `DIRAC_D2_DISCOVERY_PASS` (section 12) is unchanged. Two additions are proposed, defined only by reference: `DIRAC_D3_NOVEL_PREDICTION_PASS` is NOT defined here; it is the Atlas `PZ_NOVEL_PREDICTION_PASS` applied to the DIRAC world, and D-1 passes when the Atlas C2S adequacy lab passes. Neither is claimed. Both are NOT_RUN.
+
+**Scorecard.** Reported separately, with no single score: constraint satisfaction, predictive accuracy, held-out Turings, representation complexity, failed representations count, time until inadequacy recognized, cost of expansion, new-prediction accuracy, transfer, cross-domain reuse, false-complexification rate, uncertainty, falsification quality (addendum section 17).
+
+**Effect on the oracle (D-02).** The oracle and its public conformance corpus (omega `458c57f`) are unchanged: they check the evaluator-side fixtures only. The C2S worlds are sealed evaluator material and follow the placement rule in section 6.
+
+## 18. Immediate next action
 
 Refresh interfaces, accept this spec, freeze requirements, specify the oracle, specify the leakage boundary, define receipts and gates. Touch no production runtime. Wait for OSC-2 and E1 to settle before production algebra or tensor work. The first real milestone after PREP: Omega represents and independently verifies a generic Clifford relation without a Dirac primitive.

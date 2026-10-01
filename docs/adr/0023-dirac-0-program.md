@@ -52,3 +52,7 @@ The ten rules, the three gates (D0 generic algebra, D1 realization on CPU then B
 ## 6. Placement of the oracle and sealed material
 
 Omega is readable by AIEN. The omega `research/dirac-oracle/` directory therefore holds only the public conformance corpus (textbook algebra fixtures for D0). Sealed experiment parameters, answer keys and the sealed generator stay in private evaluator storage and never enter an AIEN-readable repository. The operator confirms this placement before D-11 (BLOCKED_OPERATOR). Source: external review finding, 2026-10-01.
+
+## 7. C2S reframing (Drake addendum, 2026-10-01)
+
+DIRAC-0 is reframed as mathematical invention under physical constraint, not equation rediscovery. The AIEN-facing ladder becomes D-1 (prove simpler representation classes inadequate), D0 (discover and represent the richer algebra), D1 (realize physically), D2 (discover a predictive theory from observations), D3 (sealed novel prediction). The evaluator-side generic Omega capability work (spec wave 1) stays and is a prerequisite. AIEN is never handed complex numbers, matrices, spinors or gamma matrices. The C2S benchmark family and its gates are owned by the Physics Zero Atlas V1 section (Lane 36); DIRAC-0 cites them by name and defines none. Details: spec section 17. Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md`.
