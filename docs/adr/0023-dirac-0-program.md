@@ -48,3 +48,7 @@ The ten rules, the three gates (D0 generic algebra, D1 realization on CPU then B
 - A Dirac module or Dirac builtins in Omega: rejected by rule 1.
 - A separate DIRAC tensor or evidence format: rejected; M20, TURING and FORGE records are used.
 - Letting the candidate choose its holdout or score itself: rejected by rule 8.
+
+## 6. Placement of the oracle and sealed material
+
+Omega is readable by AIEN. The omega `research/dirac-oracle/` directory therefore holds only the public conformance corpus (textbook algebra fixtures for D0). Sealed experiment parameters, answer keys and the sealed generator stay in private evaluator storage and never enter an AIEN-readable repository. The operator confirms this placement before D-11 (BLOCKED_OPERATOR). Source: external review finding, 2026-10-01.

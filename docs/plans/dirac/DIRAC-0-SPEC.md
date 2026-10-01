@@ -77,6 +77,7 @@ DIRAC-0 reuses E1 and does not define a second numeric contract.
 - It is held on the evaluator side (section 7). Its answer-key mappings are sealed.
 - **Future home:** omega `research/dirac-oracle/` will hold the oracle specification. That directory does not exist at omega `07004a8`; it is created by PR D-02, not before.
 - Lane B (oracle) is independent of lane A (algebra). Two lanes agreeing is the evidence; one lane checking itself is not.
+- **Placement rule (public fixtures versus sealed keys).** Omega is a repository AIEN could read, so `research/dirac-oracle/` holds only the PUBLIC conformance corpus: textbook algebra (gamma representations, Clifford relations, basis changes) that D0 needs as generic known-answer fixtures and that reveals nothing about any sealed experiment. The sealed side (which equation and parameters a sealed dataset uses, its answer-key mappings, the sealed oracle values, the dataset generator D-11) never enters Omega or any AIEN-readable repository; it lives in private evaluator storage owned by the operator (BLOCKED_OPERATOR until set up). Before any sealed experiment, the operator must confirm this placement; D-11 does not start without it. Public fixture filenames in Omega are D0 test names, and no AIEN-facing artifact ever references them.
 
 ## 7. P3 first: secrecy boundary (read before P2)
 
