@@ -99,3 +99,18 @@ These are recorded here, not edited, because `doctrine/` changes need their own 
 | `mk/turing_qcont.mk` standalone pattern, `-ffp-contract=off` | confirmed |
 | digest rule SHA-256(domain, 0x00, bytes) at `ty_qrecord.h:10` | confirmed |
 | No kalman / covariance / innovation / BeliefState hits in omega, aien-architecture, aienos | confirmed |
+
+## 8. Calibration record (update 2026-10-01, omega `d78fd11`)
+
+Three frozen calibration attempts exist. All three FAILED. Each record is kept as evidence; none is overwritten.
+
+| Attempt | omega record | Verdict | Fault, from forensics |
+|---|---|---|---|
+| v1 (EST-3) | #105, `docs/estimation/receipts/est23-v1/` | FAIL | Estimator: heavy tails and volatility clustering (excess kurtosis 5.4). Not bias or overall variance (mean NIS 1.02). |
+| v2 | #118 (`8a56ace`), `receipts/est23-v2/` | FAIL at C1 pre-check | Experiment: 100 mC quantization, 80 % exact-zero changes on a quiet machine. |
+| v3 (EST-3c) | #129 (`d78fd11`), `receipts/est3c-v3/` | FAIL at Phase A; sealed run NOT_RUN | Best family (adaptive-scale Student-t, quantization-aware) met every one-step rule in sample but failed ten-step 95 % coverage (0.809, band 0.90-0.99). D1 multi-step changes are persistent (variance ratio at 10 steps 2.14); the independent-increment horizon rule cannot represent it. |
+
+- v3 protocol: `docs/estimation/EST3C_PROTOCOL_V3.md`, sha256 `2f6393320eb632214afa4db7b6a79f3c14ceec4a2b570c459e115c3f5634eade`, frozen at omega `4b079ed`. Binding params `docs/estimation/receipts/est3c-v3/params.txt` (sha256 `6be9c829...174026`, tool commit `93b3579`, clean tree). Forensics: `docs/estimation/EST3C_FORENSICS.md`.
+- The held-out set D2 was never collected, so no held-out outcome has been seen. A successor is a new protocol version with fresh fit and sealed data, and needs a model of change persistence. No v3 refit or rescore is allowed.
+- Implemented in omega: `src/estimation/est_pred.{h,c}` (discrete quantization-aware predictive layer, five candidate families behind one contract) with hostile tests; fit/eval tools in `tools/estimation/est3c_*`.
+- **EST-4 (World belief state) and EST-5 (uncertainty-aware cost model): NOT_RUN, blocked on a PASSING calibration.** No estimator output may be treated as calibrated.
