@@ -14,7 +14,7 @@
 
 - No complex type in Omega. M20 (`aien-dev/omega#136`, draft, not qualified) has F32, F16 and BF16 only.
 - No GB10 tensor realization. D1B cannot start.
-- ESTIMATION v4 (`aien-dev/omega#153`) has no verdict: attempt 2 was voided at `f5a3036` and attempt 3 is pending.
+- ESTIMATION v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open).
 - G3 sealing is BLOCKED_OPERATOR, so no real sealed dataset can exist yet.
 - No Physics Zero loop document and no T/J (TURING H5). D2 cannot start.
 - No oracle exists. omega `research/dirac-oracle/` is created by PR D-02.
