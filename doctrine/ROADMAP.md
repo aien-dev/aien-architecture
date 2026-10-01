@@ -294,22 +294,31 @@ Status updated 2026-09-30 upon candidate-bound silicon qualification receipt and
 
 These are the implementation stages of ADR 0020, not roadmap milestones; they carry no M-number and do not change the table in §2. EST-4 and later wait for R16 closure.
 
+Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). A v4 attempt is in progress on omega branch `feat/est-v4` (no PR at this writing).
+
 | Stage | Exit token | Status |
 | :--- | :--- | :--- |
-| EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module) |
-| EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module) |
-| EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | PLANNED |
-| EST-3 calibration | `ESTIMATION_CALIBRATION` | PLANNED |
-| EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (after R16) |
-| EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (after R16) |
+| EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
+| EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
+| EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | IN PROGRESS (signal tools merged `aien-dev/omega#105` `6d1ff1d`; exit not claimed) |
+| EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4 in progress |
+| EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (blocked on a passing EST-3) |
+| EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (blocked on a passing EST-3) |
 | EST-6 TURING evidence | `TURING_ESTIMATION_EVIDENCE` | PLANNED |
 | EST-7 J-Space | `JSPACE_BELIEF_INTEGRATION` | PLANNED |
 | EST-8 Cortex | `CORTEX_PREDICTIVE_MEMORY` | PLANNED |
 | EST-9 innovation curiosity signal | `INNOVATION_CURIOSITY_SIGNAL` | PLANNED |
 | EST-10 active information gain | `ACTIVE_INFORMATION_GAIN` | PLANNED |
 
+### M20: `OMEGA_TENSOR`
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-dev/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-dev/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` and GB10 DIV/SQRT `#141` OPEN at this writing (see `CURRENT_EXECUTION_PLAN.md` §2 addenda).
+
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met. Discrepancy recorded: substrate work has started although the vocabulary row reads "Not started". `aien-dev/omega#140` (`54826a3`) merged a shadow-state optimizer substrate with one atomic generation switch, E5 two-tier provenance and a float32 SGD path; receipt omega `evidence/M22/receipts/eaa0cdeae9f348b19b80377baaeb5e5dea6a6577e9385e7a2a3c15caab24c5c8.json` records substrate tests PASS and "M22 NOT QUALIFIED: optimizer substrate + SGD path only; no tensor/autodiff integration (waits M20/M21)". Adam/AdamW are not implemented.
+
+### M23: `OMEGA_SEARCH_GUIDE_TRAINING`
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met (training NOT_RUN, waits on M22). Discrepancy recorded: the corpus prerequisite exists. G1 search-trace corpus capture PASS (`aien-dev/omega#122` `ce7821d`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`); G3 sealed-holdout commitment format PASS, format only, nothing sealed (`#122`), commitment owner signature with TEST keys (`#130` `7fb59d3`). Sealing and real owner signing are BLOCKED_OPERATOR.
 
 ### M40 — `AIEN_SUCCESSION`
 Closed-loop self-improvement: AIEN-N designs AIEN-N+1 under Physics canary control.
