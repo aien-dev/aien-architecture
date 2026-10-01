@@ -36,3 +36,4 @@ Current ADRs:
 - [0021 - Four operating decisions of 2026-09-30: Physics pin, SSD block layout, admission receipts, R16 status](0021-four-operating-decisions-2026-09-30.md) - Recorded 2026-09-30 from the orchestrator brief
 - [0022 - The canonical Cortex owner is omega `rx_cortex`](0022-canonical-cortex-owner.md) - Accepted 2026-09-30 (orchestrator engineering call under the operator's standing rule)
 - [0024 - Rust is scaffolding, Omega is destination, C where hardware-justified](0024-rust-scaffolding-omega-destination.md) - Accepted by operator Drake Stapleton, 2026-10-01 (supersedes the Rust-to-C migration plan)
+- [0026 - Sealed Discovery Examinations](0026-sealed-discovery-examinations.md) - PROPOSED 2026-10-01
