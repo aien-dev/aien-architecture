@@ -326,10 +326,10 @@ Before tensor training:
 - comparison/select/conversion;
 - reductions;
 - defined division/sqrt behavior;
-- Omega-owned exact sequences for transcendental semantics where needed;
+- Omega-owned frozen transcendental sequences where needed, each with a declared error bound (ADR 0018 `BOUNDED_DETERMINISTIC`, not `EXACT`) and bit-identical CPU/GB10 parity; DIV and SQRT stay correctly rounded;
 - CPU/GB10 parity under frozen numeric contracts.
 
-Status 2026-09-30: not closed. omega `docs/numeric/E1_GAP_TABLE.md` (`aien-dev/omega#117`, `c2160f5`) maps these items to merged Gate 5 evidence: 1 covered, 7 partial, 4 missing; largest gaps are division/sqrt on GB10, the transcendental set with GB10 kernels, and reductions beyond one warp. Discrepancy: EXP/LOG are frozen and error-bounded (EXP within 40 ulp), not exact; the "exact sequences" bullet above is open until reworded or met.
+Status 2026-09-30: not closed. omega `docs/numeric/E1_GAP_TABLE.md` (`aien-dev/omega#117`, `c2160f5`) maps these items to merged Gate 5 evidence: 1 covered, 7 partial, 4 missing; largest gaps are division/sqrt on GB10, the transcendental set with GB10 kernels, and reductions beyond one warp. EXP/LOG are frozen and error-bounded (EXP within 40 ulp), not exact. 2026-10-01: the transcendental bullet above was changed from "exact sequences" to declared bounds by explicit owner decision (merge of this change); ADR 0018 keeps `EXACT` as the default for every other operation.
 
 Status 2026-10-01, Lane 33: still not closed (PARTIAL). 2 of 6 exit requirements met (2 comparison/select/conversion; 4 division/sqrt on the GB10 main path, `aien-dev/omega#152` `07004a8`, chip receipt at candidate `7852570`); 1, 3 and 5 not met; 6 partial. Wording of the transcendental bullet: owner decision pending in `aien-dev/aien-architecture#76`. Details in §2 Lane 33 addendum.
 
