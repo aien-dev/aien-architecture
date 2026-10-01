@@ -298,14 +298,14 @@ Scope note (2026-10-01, Lane 33): every candidate-bound R13 to R16 receipt above
 
 These are the implementation stages of ADR 0020, not roadmap milestones; they carry no M-number and do not change the table in §2. EST-4 and later wait for R16 closure.
 
-Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). A v4 attempt is in progress: open omega PR `#153` (branch `feat/est-v4`), not merged; attempts 1 and 2 VOID, attempt 3 running, no verdict (Lane 33 correction).
+Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). All three attempts VOID, no verdict.
 
 | Stage | Exit token | Status |
 | :--- | :--- | :--- |
 | EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
 | EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
 | EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | IN PROGRESS (signal tools merged `aien-dev/omega#105` `6d1ff1d`; exit not claimed) |
-| EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4 in progress (open PR `omega#153`, no verdict) |
+| EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open) |
 | EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (blocked on a passing EST-3) |
 | EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (blocked on a passing EST-3) |
 | EST-6 TURING evidence | `TURING_ESTIMATION_EVIDENCE` | PLANNED |
