@@ -274,7 +274,7 @@ D-03 to D-06 each state, in their PR, the generic Omega capability they add and 
 
 Omega #152 (GB10 DIV/SQRT) is MERGED at `07004a8`.
 
-## 17. C2S ladder (Drake addendum, 2026-10-01): mathematical invention under physical constraint
+## 16. C2S ladder (Drake addendum, 2026-10-01): mathematical invention under physical constraint
 
 Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the addendum wins on any difference). The C2S benchmark family (Constraint-to-Structure) itself, its concepts (RepresentationAdequacy, RepresentationalCrisis, UnexpectedSolutionPolicy) and its gates (`PZ_C2S_*`, `PZ_NOVEL_PREDICTION_PASS`, `PHYSICS_ZERO_C2S_FOUNDATION_PASS`) are defined by the Physics Zero Atlas V1 section (Lane 36), not here. DIRAC-0 cites them by name only and defines none of them.
 
@@ -305,6 +305,6 @@ Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the
 
 **Effect on the oracle (D-02).** The oracle and its public conformance corpus (omega `458c57f`) are unchanged: they check the evaluator-side fixtures only. The C2S worlds are sealed evaluator material and follow the placement rule in section 6.
 
-## 18. Immediate next action
+## 17. Immediate next action
 
 Refresh interfaces, accept this spec, freeze requirements, specify the oracle, specify the leakage boundary, define receipts and gates. Touch no production runtime. Wait for OSC-2 and E1 to settle before production algebra or tensor work. The first real milestone after PREP: Omega represents and independently verifies a generic Clifford relation without a Dirac primitive.

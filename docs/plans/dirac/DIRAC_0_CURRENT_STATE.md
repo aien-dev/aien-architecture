@@ -28,4 +28,4 @@
 Operator review of the spec (D-01). On acceptance, D-02 (independent oracle and known-answer corpus, evaluator side only). No production runtime is touched until OSC-2 and E1 interfaces settle.
 
 ## C2S reframing (2026-10-01)
-The AIEN-facing ladder is now D-1 to D3 (spec section 17). D-1 waits on the Atlas C2S adequacy lab (Lane 36). D3 waits on a frozen theory and sealed novel-consequence data. All NOT_RUN.
+The AIEN-facing ladder is now D-1 to D3 (spec section 16). D-1 waits on the Atlas C2S adequacy lab (Lane 36). D3 waits on a frozen theory and sealed novel-consequence data. All NOT_RUN.
