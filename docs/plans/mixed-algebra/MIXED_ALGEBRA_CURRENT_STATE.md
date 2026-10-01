@@ -159,7 +159,7 @@ Branch `experiment/ternary-semantics` `ae1e2a3`, spec says PARKED 2026-09-26. 18
 
 ## 13. Conflicts
 
-1. **R16 status.** `CURRENT_EXECUTION_PLAN.md:45` says R16 IN PROGRESS and `:540` forbids `omega/src/runtime/` edits until R16 closes; `doctrine/ROADMAP.md:282` says R16 PASS (`6fdc4c3`). The runtime-edit freeze must be lifted explicitly before any `rx_*` change is planned.
+1. **R16 status.** R16 is COMPLETE and CLOSED (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `22d7a79a...`). The runtime-edit freeze on `omega/src/runtime/` is LIFTED.
 2. **Three machine-identity shapes.** `CqCandidate.machine_id` is `uint32_t` (`src/runtime/rx_capq.h:107`); FORGE V2 `machine_identity` is 32 bytes; OS-0010 `MachineId` is opaque. Not reconciled (FORGE V2 spec §14 Q4).
 3. **`rx_contract` is exact-only** (`rx_contract.h:75-99`); ADR 0018 §3.1 requires ULP, relative and distributional bounds.
 4. **Program id v2 is scalar-u64-unary only** (`omega_program.h:43-53`); cannot name any tensor, float or residue op.

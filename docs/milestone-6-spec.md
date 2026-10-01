@@ -18,11 +18,11 @@ Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4/M5/M6) ->
 Milestone 4 established abstract semantic meaning (`OMEGA_SEMANTICS`) with content-addressed identity (`SEMANTIC_ID`).
 Milestone 5 established direct lowering from pure semantics into native physical machine code (`OMEGA_AARCH64`) without LLVM or GNU `as`.
 
-Milestone 6 establishes the closed-loop reproduction of the realization compiler itself:
+Milestone 6 specifies the closed-loop reproduction of the realization compiler itself (intended target; as qualified, the implementation proved a self-copy check, see correction note above):
 
 > **OMEGA REPRODUCES ITS MINIMAL REALIZATION COMPILER THROUGH ITS OWN SEMANTIC GRAPH.**
 
-The system reaches self-hosting closure when the compiler is an explicit semantic object $G_C \in \text{OmegaGraph}$ that compiles itself into native machine code, achieving an exact fixed point:
+The target architecture reaches self-hosting closure when the compiler is an explicit semantic object $G_C \in \text{OmegaGraph}$ that compiles itself into native machine code, achieving an exact fixed point:
 
 ```text
 C0 = temporary reference C implementation
