@@ -34,3 +34,4 @@ Current ADRs:
 - [0019 - Mixed-algebra realization](0019-mixed-algebra-realization.md) - Accepted 2026-09-29
 - [0020 - Belief / estimation layer](0020-belief-estimation-layer.md) - Accepted by operator Drake Stapleton, 2026-09-30
 - [0021 - Four operating decisions of 2026-09-30: Physics pin, SSD block layout, admission receipts, R16 status](0021-four-operating-decisions-2026-09-30.md) - Recorded 2026-09-30 from the orchestrator brief
+- [0022 - The canonical Cortex owner is omega `rx_cortex`](0022-canonical-cortex-owner.md) - Accepted 2026-09-30 (orchestrator engineering call under the operator's standing rule)
