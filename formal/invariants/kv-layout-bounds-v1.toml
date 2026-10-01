@@ -1,0 +1,105 @@
+schema_version = 0
+id = "AIEN.INV.KV.LAYOUT_BOUNDS.V1"
+version = 1
+status = "SEEDED"
+
+statement = """
+The pooled KV tensor is one allocation of total = numBlocks * block bytes, where block = numLayers * 2 * blockSize * numKvHeads * \
+headDim * elemBytes, laid out block, then layer, then K plane and V plane, then token, then head, then dim. For every valid block, \
+layer, K/V selector (0 or 1), token, head and dim, the element's bytes [offset, offset + elemBytes) lie within [0, total). The same \
+holds for a whole token row and for a whole block region. Regions of different blocks are disjoint, regions of different layers of \
+one block are disjoint and inside the block, the K plane and the V plane of one layer are disjoint, and rows of different tokens \
+of one plane are disjoint. If the host buffer is at least total bytes, every valid element lies inside the host buffer. These \
+statements are about unbounded arithmetic; they equal the machine statements exactly when the config's total is below 2^64."""
+
+assumptions = [
+  "Arithmetic is unbounded in the model. The Rust code uses usize without checked arithmetic; a config with total >= 2^64 wraps silently and is not covered (stated as a theorem and shown by a witness).",
+  "Indices are valid. The Rust element_offset and token_plane_offset assert this (assert!, active in release builds).",
+  "Dtype width elemBytes is Fp8 1, Bf16 or Fp16 2, Fp32 4. Fp4 is refused by the code and is not modelled.",
+  "Alignment and the buffer's base address are not modelled.",
+  "Distinct valid element tuples map to distinct offsets (full injectivity) is NOT claimed here; only bounds and the region disjointness listed.",
+]
+
+semantic_types = ["KvPoolConfig", "KvLayout", "BlockRegion", "ElementOffset"]
+
+oracle_models = ["lean"]
+
+evidence_requirements = [
+  "positive corpus: TinyLlama config, first and last element, block and V plane starts, block bytes equal to the PREFILL-E2E-0 receipt kv_block_bytes",
+  "negative corpus: block index past the end, invalid K/V selector aliasing the next layer",
+  "deliberate mutants that must not survive: planes overlap, total one block short, token stride forgets element size, validity off by one, block stride short",
+  "wrap witness reproduced against the real crate in a release build",
+  "existing Miri, property and mutation tests of aien-kv-cache keep passing; Lean does not replace them",
+]
+
+required_counterexamples = [
+  "kv_planes_overlap",
+  "total_one_block_short",
+  "token_stride_forgets_element_size",
+  "validity_off_by_one",
+  "block_stride_short",
+]
+
+omega_takeover_condition = """
+Omega expresses the layout rules as native propositions over the stride chain and offset formula, accepts the positive corpus, \
+rejects the negative corpus, kills the required counterexample mutants, carries the 2^64 bound as an explicit hypothesis, and emits a \
+canonical proof/evidence identity that the gates consume, with Lean absent."""
+
+[[positive_examples]]
+name = "tinyllama_block"
+description = "22 layers, 4 KV heads, head dim 64, block size 16, 4 byte elements: block stride 720896 bytes."
+
+[[positive_examples]]
+name = "last_element_exact"
+description = "The last element of the last block ends exactly at total."
+
+[[negative_examples]]
+name = "block_past_end"
+description = "Block index equal to numBlocks is not inside the allocation."
+
+[[negative_examples]]
+name = "v_selector_2"
+description = "K/V selector 2 aliases the first plane of the next layer."
+
+[[counterexamples]]
+name = "kv_planes_overlap"
+description = "Layer stride equals one plane, so V overlaps the next layer's K."
+
+[[counterexamples]]
+name = "total_one_block_short"
+description = "The allocation is one block smaller than the layout needs."
+
+[[counterexamples]]
+name = "token_stride_forgets_element_size"
+description = "Token stride omits the element width, so heads overlap."
+
+[[counterexamples]]
+name = "validity_off_by_one"
+description = "The K/V selector check admits 2, which indexes past the layer."
+
+[[counterexamples]]
+name = "block_stride_short"
+description = "Blocks are placed one byte too close together and overlap."
+
+[[implementation_surfaces]]
+repo = "aien-dev/sovereign-core"
+path = "crates/aien-kv-cache/src/lib.rs"
+kind = "production"
+observed_at = "dd1fe323d5fc774ff0fe6faaadebfea6450563c0"
+note = "KvLayout::from_config (169 to 184), element_offset (203), token_plane_offset (227), block_offset (245), UnifiedKvTensorPool::new buffer check (335 to 337)."
+
+[[observations]]
+surface = "crates/aien-kv-cache/src/lib.rs"
+text = """
+from_config multiplies usize values with plain operators (no checked_mul) and never refuses a zero dimension or an oversized config. \
+Reproduced on a release build of the real crate at dd1fe32: num_blocks = 2^45 with the TinyLlama dimensions and Fp32 returns Ok with \
+total_bytes = 6917529027641081856 while the true product is 25364273101350633472 (>= 2^64). The pool constructor then compares the \
+buffer length with the wrapped total. No such config is reachable from current callers (arena capacity and block counts are small); the \
+risk is latent. Recorded, not fixed (formal verification does not edit the PREFILL surfaces)."""
+
+[[observations]]
+surface = "crates/aien-kv-cache/src/lib.rs"
+text = """
+bytes_per_block (line 107) is computed separately as ceil(elements * bytes_per_element as f32); for the integer dtypes it equals the \
+layout block stride (theorem block_eq_bytes_per_block). It goes through f32, which is exact only below 2^24 elements per block; larger \
+configs would round. Not modelled."""

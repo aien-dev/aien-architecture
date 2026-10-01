@@ -45,3 +45,21 @@ note = "A PASS is one evidence input bound to a source and model revision. It is
 script = "run-receipt-formal.sh"
 result_line = "RECEIPT_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
 note = "FORMAL-4. Same rule: PASS is one evidence input, not authority."
+
+[[covers]]
+invariant = "AIEN.INV.SEQUENCE.STALE_ID.V1"
+manifest  = "formal/invariants/sequence-stale-id-v1.toml"
+
+[[covers]]
+invariant = "AIEN.INV.KV.LAYOUT_BOUNDS.V1"
+manifest  = "formal/invariants/kv-layout-bounds-v1.toml"
+
+[[run_extra]]
+script = "run-seq-formal.sh"
+result_line = "SEQ_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
+note = "FORMAL-6. Models aien-dev/sovereign-core dd1fe32 (PREFILL-E2E settled). PASS is one evidence input, not authority."
+
+[[run_extra]]
+script = "run-kv-formal.sh"
+result_line = "KV_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
+note = "FORMAL-6. Same rule: PASS is one evidence input, not authority."
