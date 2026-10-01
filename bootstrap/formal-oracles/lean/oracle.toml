@@ -32,7 +32,16 @@ manifest  = "formal/invariants/capability-attenuation-v1.toml"
 invariant = "AIEN.INV.CAP.REVOCATION_CLOSURE.V1"
 manifest  = "formal/invariants/capability-revocation-v1.toml"
 
+[[covers]]
+invariant = "AIEN.INV.RECEIPT.REJECTION_CONSISTENCY.V1"
+manifest  = "formal/invariants/artifact-receipt-v1.toml"
+
 [run]
 script = "run-cap-formal.sh"
 result_line = "CAP_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
 note = "A PASS is one evidence input bound to a source and model revision. It is not authority (ARCH-0027 point 6)."
+
+[[run_extra]]
+script = "run-receipt-formal.sh"
+result_line = "RECEIPT_FORMAL_BOOTSTRAP: PASS|FAIL|NOT_RUN"
+note = "FORMAL-4. Same rule: PASS is one evidence input, not authority."

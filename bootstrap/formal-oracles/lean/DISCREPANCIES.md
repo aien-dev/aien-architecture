@@ -14,3 +14,24 @@ Observed on aien-dev/aienos main 2ee61b4. Read only. This note records what each
 | Holder | `new_holder` is not checked against the parent holder | Authority must equal parent reference (lines 244 to 246) |
 
 Consequence for the Lean model: the Rust "child expiry <= parent" and "child depth < parent depth" hold by construction (equality, and minus one). The C rules differ in kind. They are separate takeover items, not assumed equal. The overwrite behaviour affects identity uniqueness, not attenuation, and is not modelled (the model lets a newer token shadow an older one with the same id).
+
+# Receipt consistency (FORMAL-4)
+
+Observed on aien-dev/aienos main 2ee61b4, `crates/aienos-artifact/src/receipt.rs`. Read only. The Lean model is `AienReceipt/`; it models `validate`, `decode` and `encode` (field level, offsets in `AienReceipt/Layout.lean`).
+
+## Finding: CanaryFailed decision is not tied to the CanaryFailed execution status
+
+- `validate` (lines 320 to 365) matches on the decision at lines 336 to 355. The `Rejected` arm (337 to 349) is strict. The `_` arm (350 to 354) checks only `rejection_stage == 0` and `rejection_reason == 0`.
+- No line of `validate` mentions `ExecutionStatusCode::CanaryFailed` (the only places the name appears in this file are the enum variants at lines 45 and 66 and the code tables at 195 and 228). `decode` (244 to 317) adds only layout and enum range checks, then calls `validate`.
+- So the code ALLOWS a mismatch in both directions: decision `CanaryFailed` with execution status `Exited` (or anything else), and decision `Admitted` or `Destroyed` with execution status `CanaryFailed`. `decode` accepts such bytes. Lean statements: `validate_decision_irrelevant_when_not_rejected`, `canary_decision_status_unconstrained` (Theorems.lean) and `finding_*` in Corpus.lean.
+- The tests do not cover it: `receipt_tests.rs` never names `CanaryFailed`.
+- Producer side: `build_receipt` (`crates/aienos-kernel/src/artifact_loader.rs` lines 1460 to 1530) emits only decisions `Admitted` and `Rejected`, and its status mapping (1472 to 1477) never yields `ExecutionStatusCode::CanaryFailed`. So the mismatch is unreachable from this producer today. It is reachable for any other producer, or for hand-built or externally supplied bytes, because validation does not refuse it.
+- Not asserted either way whether the missing linkage is intended. Recorded, not fixed (aienos is read only here).
+
+## Code is stronger than the plan
+
+As the manifest notes: `Rejected` also forces exit status 0, zero syscalls, zero object reads, zero denials, and result flags limited to RECLAIMED (lines 338 to 345). The Lean theorems prove the code's rules. `rejected_arm` is the full Rejected arm.
+
+## Abstractions (assumptions, not proofs)
+
+SHA-256 nonce derivation is an arbitrary function `nf` (every theorem holds for all `nf`). Ed25519 is not modelled (`verify` is out of scope; `validate` does not check signatures). Digests are naturals, zero meaning all zero. Little-endian byte packing is assumed to be a per-field bijection. Integer width overflow is not modelled. Unknown flag bits are unrepresentable in the model; `decode` checks them on the raw word (`flags < 8`, `rflags < 256`). `exit_status` is an `Int`. Opaque digests that no rule reads are kept as one list.
