@@ -114,3 +114,19 @@ Three frozen calibration attempts exist. All three FAILED. Each record is kept a
 - The held-out set D2 was never collected, so no held-out outcome has been seen. A successor is a new protocol version with fresh fit and sealed data, and needs a model of change persistence. No v3 refit or rescore is allowed.
 - Implemented in omega: `src/estimation/est_pred.{h,c}` (discrete quantization-aware predictive layer, five candidate families behind one contract) with hostile tests; fit/eval tools in `tools/estimation/est3c_*`.
 - **EST-4 (World belief state) and EST-5 (uncertainty-aware cost model): NOT_RUN, blocked on a PASSING calibration.** No estimator output may be treated as calibrated.
+
+## 9. Calibration record v4 (update 2026-10-01, omega `6ff7c30`)
+
+v4 ends **INCONCLUSIVE**. All three data collections the frozen protocol allows were voided because other work ran on the Spark inside the measurement windows, so v4 gives no calibration verdict. EST-3 stays FAILED (v1-v3 above). Record: omega #153 (`6ff7c30`), `docs/estimation/receipts/est-v4/RESULT.md`.
+
+- Protocol `docs/estimation/protocols/est-v4.md`, sha256 `7baff66f1baf13f648b38ea04516b423e34e4c4b4d7528701f15272ca441f116`, frozen at omega `1a147e4`, unchanged. Three families with a persistence-aware horizon law: G1 first-order lag, G2 AR change, G3 two-tank. Tool `tools/estimation/est4*` (C), bound at build time to commit, protocol and data hashes.
+
+| Attempt | Seeds D1 / D2 | Phase A | Sealed run | Why void |
+|---|---|---|---|---|
+| 1 | 0xE5C4D1 / 0xD2E5C4 | PASS (G1) | PASS | Another lane's multi-core host builds/tests and a QEMU run in both windows; host tests at ~10:05Z in D2 |
+| 2 | 0xE5C4D2 / 0xD2E5C5 | PASS (G1) | PASS | A ~2-min host build in D2; foreign builds and single-core tests seen in both windows |
+| 3 | 0xE5C4D3 / not collected | not run | NOT_RUN | A foreign host test suite started 4 s after the quiet flag was taken; fails the validity standard fixed before attempt 3 |
+
+- The PASS numbers of attempts 1 and 2 (G1 held-out cov95 0.9476 and 0.9570, ten-step cov95 0.9321 and 0.9534) are on record only and are **not** evidence of calibration. Each void was decided on machine load alone, and voiding never moved a result toward PASS.
+- Finding for a v5 (from the contamination record, not tuning): the blocker is measurement isolation, not the model. Keep the v4 families and rules; change only the collection to a machine-enforced exclusive window (host builds and tests refuse while the flag is held, or an operator-reserved slot), with the "no foreign build or test" rule written into the frozen protocol.
+- **EST-4 and EST-5: still NOT_RUN, blocked** (v4 section 10 unblocks them only on a v4 PASS). No estimator output may be treated as calibrated.
