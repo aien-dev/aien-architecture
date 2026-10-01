@@ -35,3 +35,26 @@ As the manifest notes: `Rejected` also forces exit status 0, zero syscalls, zero
 ## Abstractions (assumptions, not proofs)
 
 SHA-256 nonce derivation is an arbitrary function `nf` (every theorem holds for all `nf`). Ed25519 is not modelled (`verify` is out of scope; `validate` does not check signatures). Digests are naturals, zero meaning all zero. Little-endian byte packing is assumed to be a per-field bijection. Integer width overflow is not modelled. Unknown flag bits are unrepresentable in the model; `decode` checks them on the raw word (`flags < 8`, `rflags < 256`). `exit_status` is an `Int`. Opaque digests that no rule reads are kept as one list.
+
+# Sequence identity and KV layout (FORMAL-6)
+
+Observed on aien-dev/sovereign-core main dd1fe32 (PREFILL-E2E C8 merged, #154). Read only. Models: `AienSeq/` (runtime `SequenceArena`) and `AienKv/` (`KvLayout`).
+
+## Finding: two sequence arenas, different wrap policy
+
+- `crates/aien-runtime/src/sequence.rs` `free` (lines 197 to 209) sets the generation to `wrapping_add(1).max(1)`. After exactly 2^32 - 1 frees of one slot the generation repeats and a stale id resolves again. Lean: `aba_after_exactly_one_cycle`; below the cycle `no_aba_before_wrap`.
+- `crates/aien-scheduler/src/sequence.rs` `free_sequence` (512 to 531) retires the slot at `u32::MAX` and never reuses it. Lean: `retire_strictly_increases`, `retire_at_max`. No ABA window, but capacity shrinks by one slot per exhausted slot.
+- Not asserted which policy is intended. The invariant states the wrapping limitation explicitly and does not claim eternal ABA freedom.
+
+## Finding: KV layout arithmetic is unchecked
+
+- `KvLayout::from_config` (aien-kv-cache/src/lib.rs 169 to 184) multiplies `usize` values with plain operators and does not refuse overflow or zero dimensions.
+- Reproduced with a throwaway example run in a release build of the real crate (scratch worktree, deleted afterwards, nothing committed): `KvPoolConfig { num_blocks: 1<<45, block_size: 16, num_layers: 22, num_kv_heads: 4, head_dim: 64, dtype: Fp32 }.layout()` returns `Ok` with `total_bytes = 6917529027641081856`; the true value is `25364273101350633472`. Lean: `wrap_witness_real`, `wrap_witness_machine`, `wrap_total_smaller`.
+- The Lean bounds theorems hold for unbounded arithmetic. `machine_exact_when_total_fits` and `offset_fits_u64` say they transfer to the Rust code exactly when `total < 2^64` with nonzero dimensions.
+- No current caller can reach this (block counts are small). Latent. Recorded, not fixed.
+
+## Not covered (stated so nobody reads more into the proofs)
+
+- Injectivity of the offset map (distinct valid tuples never share a byte) is not proven. Only the bounds and the disjointness listed in the manifest.
+- Scheduler `insert_with_id` (explicit caller generation) is not modelled.
+- Block table, copy-on-write and PrefillState are not modelled here. PREFILL gating is the PREFILL-GATE campaign's evidence.

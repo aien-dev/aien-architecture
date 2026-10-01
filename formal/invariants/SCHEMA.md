@@ -38,3 +38,5 @@ One TOML file per invariant, named `<area>-<name>-v<N>.toml`. The invariant ID s
 - `capability-attenuation-v1.toml`: AIEN.INV.CAP.ATTENUATION.V1
 - `capability-revocation-v1.toml`: AIEN.INV.CAP.REVOCATION_CLOSURE.V1
 - `artifact-receipt-v1.toml`: AIEN.INV.RECEIPT.REJECTION_CONSISTENCY.V1
+- `sequence-stale-id-v1.toml`: AIEN.INV.SEQUENCE.STALE_ID.V1
+- `kv-layout-bounds-v1.toml`: AIEN.INV.KV.LAYOUT_BOUNDS.V1

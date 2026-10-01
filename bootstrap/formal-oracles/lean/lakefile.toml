@@ -1,5 +1,5 @@
 name = "aien_formal_oracle"
-defaultTargets = ["AienCap", "AienReceipt"]
+defaultTargets = ["AienCap", "AienReceipt", "AienSeq", "AienKv"]
 
 # Core Lean only. No Mathlib, no Batteries, no other dependency: builds offline.
 
@@ -52,3 +52,58 @@ globs = ["MutantCanaryClaim"]
 [[lean_lib]]
 name = "MutantAbsentFlagClaim"
 globs = ["MutantAbsentFlagClaim"]
+
+# FORMAL-6: sequence identity (AIEN.INV.SEQUENCE.STALE_ID.V1) and KV layout bounds (AIEN.INV.KV.LAYOUT_BOUNDS.V1).
+[[lean_lib]]
+name = "AienSeq"
+
+[[lean_lib]]
+name = "AienKv"
+
+[[lean_lib]]
+name = "MutantSeqModels"
+globs = ["MutantSeqModels"]
+
+[[lean_lib]]
+name = "MutantSeqNoBumpClaim"
+globs = ["MutantSeqNoBumpClaim"]
+
+[[lean_lib]]
+name = "MutantSeqIgnoreGenClaim"
+globs = ["MutantSeqIgnoreGenClaim"]
+
+[[lean_lib]]
+name = "MutantSeqZeroWrapClaim"
+globs = ["MutantSeqZeroWrapClaim"]
+
+[[lean_lib]]
+name = "MutantSeqActiveClaim"
+globs = ["MutantSeqActiveClaim"]
+
+[[lean_lib]]
+name = "MutantSeqForkClaim"
+globs = ["MutantSeqForkClaim"]
+
+[[lean_lib]]
+name = "MutantKvModels"
+globs = ["MutantKvModels"]
+
+[[lean_lib]]
+name = "MutantKvPlanesClaim"
+globs = ["MutantKvPlanesClaim"]
+
+[[lean_lib]]
+name = "MutantKvTotalClaim"
+globs = ["MutantKvTotalClaim"]
+
+[[lean_lib]]
+name = "MutantKvTokenClaim"
+globs = ["MutantKvTokenClaim"]
+
+[[lean_lib]]
+name = "MutantKvValidClaim"
+globs = ["MutantKvValidClaim"]
+
+[[lean_lib]]
+name = "MutantKvBlockClaim"
+globs = ["MutantKvBlockClaim"]

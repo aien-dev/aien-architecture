@@ -1,0 +1,116 @@
+schema_version = 0
+id = "AIEN.INV.SEQUENCE.STALE_ID.V1"
+version = 1
+status = "SEEDED"
+
+statement = """
+A sequence id is a pair (slot, generation). An id resolves to a live record only when its slot exists, the slot's current \
+generation equals the id's generation, and the slot holds a record. Freeing a live id removes the record and changes the \
+slot's generation, so the freed id and every copy of it stop resolving; freeing a stale, unknown or already freed id changes \
+nothing and reports failure. Generation 0 is never issued. Allocation is refused exactly when every slot is occupied, so the \
+active count never exceeds the capacity, rises by one on a successful allocation or fork and falls by one on a successful free. \
+Fork from an id that does not resolve is refused. Re-allocating a just freed slot never returns the freed id. The generation field \
+is finite (u32): after exactly 2^32 - 1 frees of one slot the generation repeats, so a stale id from before the cycle would resolve \
+again. This limitation is part of the invariant and is NOT eternal ABA freedom."""
+
+assumptions = [
+  "Single scheduler thread owns the arena (no concurrency model; the Rust arena has no locks).",
+  "Generation arithmetic is the u32 rule next = max((g + 1) mod 2^32, 1); the model carries it exactly.",
+  "Record contents are not modelled, only whether a record is present.",
+  "Callers do not keep an id across 2^32 - 1 frees of its slot; the code does not enforce this, and the runtime arena has no retire path (the scheduler arena retires the slot at u32::MAX instead).",
+]
+
+semantic_types = ["SequenceId", "SequenceArena", "SlotGeneration", "ActiveCount", "Capacity"]
+
+oracle_models = ["lean"]
+
+evidence_requirements = [
+  "positive corpus: first allocation, free then reuse with a new generation, live fork",
+  "negative corpus: never allocated, stale after free, stale free refused, wrong generation, generation zero, slot out of range, stale fork, capacity exhausted",
+  "deliberate mutants that must not survive: free keeps generation, resolution ignores generation, wrap yields generation 0, free keeps active count, fork skips the parent check",
+  "the generation wrap limitation stated as a theorem (iterGen genMax g = g) next to the no-reuse-before-wrap theorem",
+  "existing implementation unit tests and the PREFILL-E2E runtime tests keep passing",
+]
+
+required_counterexamples = [
+  "free_keeps_generation",
+  "resolution_ignores_generation",
+  "wrap_to_generation_zero",
+  "free_keeps_active_count",
+  "fork_from_stale_parent",
+]
+
+omega_takeover_condition = """
+Omega expresses the arena rules as native propositions over (slot, generation) records, accepts the positive corpus, rejects the \
+negative corpus, kills the required counterexample mutants, states the finite-generation limitation as an explicit assumption, and \
+emits a canonical proof/evidence identity that the gates consume, with Lean absent."""
+
+[[positive_examples]]
+name = "free_then_reuse"
+description = "Allocate (0,1), free it, allocate again: the slot comes back as (0,2). The old id (0,1) does not resolve."
+
+[[positive_examples]]
+name = "live_fork"
+description = "Fork from a live parent id succeeds and returns a new live id."
+
+[[negative_examples]]
+name = "stale_id_after_free"
+description = "An id used after its record was freed does not resolve, and freeing it again is refused."
+
+[[negative_examples]]
+name = "wrong_generation"
+description = "Right slot, generation that is not the slot's current one: does not resolve."
+
+[[negative_examples]]
+name = "capacity_exhausted"
+description = "Allocation when every slot is occupied is refused."
+
+[[counterexamples]]
+name = "free_keeps_generation"
+description = "Free leaves the generation unchanged, so a reallocated slot reissues the freed id."
+
+[[counterexamples]]
+name = "resolution_ignores_generation"
+description = "get resolves any id whose slot holds a record, whatever generation it carries."
+
+[[counterexamples]]
+name = "wrap_to_generation_zero"
+description = "The generation wrap produces 0, which the scheduler arena treats as invalid."
+
+[[counterexamples]]
+name = "free_keeps_active_count"
+description = "Free forgets to lower the active count, so capacity accounting drifts."
+
+[[counterexamples]]
+name = "fork_from_stale_parent"
+description = "Fork allocates a child even though the parent id does not resolve."
+
+[[implementation_surfaces]]
+repo = "aien-dev/sovereign-core"
+path = "crates/aien-runtime/src/sequence.rs"
+kind = "production"
+observed_at = "dd1fe323d5fc774ff0fe6faaadebfea6450563c0"
+note = "SequenceArena: new (line 76 onward), allocate (98), fork (131), get (178), free (197, wrapping_add(1).max(1) at 202), active_count."
+
+[[implementation_surfaces]]
+repo = "aien-dev/sovereign-core"
+path = "crates/aien-scheduler/src/sequence.rs"
+kind = "production"
+observed_at = "dd1fe323d5fc774ff0fe6faaadebfea6450563c0"
+note = "Second SequenceArena: free_sequence (512) retires the slot at u32::MAX (523) instead of wrapping. Modelled only as the pure rule retireNext."
+
+[[observations]]
+surface = "crates/aien-runtime/src/sequence.rs"
+text = """
+free (197 to 209) bumps the generation with wrapping_add(1).max(1), so the runtime arena has no retire path: a slot freed 2^32 - 1 times \
+reissues an old id. get (178) resolves on slot-in-range, equal generation and a present record. allocate and fork pop a free slot and \
+hand out its current generation. active_count is incremented on both and decremented with saturating_sub on free; the model proves the \
+subtraction never saturates for a well formed arena."""
+
+[[observations]]
+surface = "crates/aien-scheduler/src/sequence.rs"
+text = """
+divergence between the two arenas: the scheduler arena retires a slot when its generation reaches u32::MAX (free_sequence, 512 to 523) \
+and never reuses it, so it has no ABA window at the cost of capacity; the runtime arena wraps. Both are in production code in the same \
+workspace. Recorded, not asserted either way. insert_with_id in the scheduler arena also accepts a caller supplied generation and sets the \
+slot generation to it, which the model does not cover."""
