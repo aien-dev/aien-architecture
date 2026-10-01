@@ -17,7 +17,7 @@ Status words: IMPLEMENTED, PARTIAL, EXPERIMENTAL, PLANNED, MISSING, CONFLICTING,
 
 - No belief state, state estimate, covariance, innovation or Kalman code exists in any of the four repositories (grep for `kalman`, `covariance`, `innovation`, `BeliefState`: zero hits). The layer is **MISSING** and must be built.
 - Three existing pieces already do part of the job and must be reused, not shadowed: the Omega cost model (a Bayesian predictor with calibrated intervals), the TURING PRD1 prediction file plus qint.v1 scorer (a predicted Gaussian per held-out point, scored in bits), and the TURING CAL-0 freeze and blinding machinery.
-- R16 is at W4 of W11. W1 spec, W2 retirement map and W4 loop inventory are merged (omega `6fdc4c3`, PR #68); the W3 fix PRs #62-#65 are merged; W5-W11 are not started (no `rx_r16` tests, `evidence/R16/` holds only `inventory.json`). The `src/runtime/` edit hold stays in force.
+- R16 is CLOSED: all gates G1-G8 passed, PR #112 merged (`3dd5eaa`), receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` recorded. The `src/runtime/` edit hold is lifted; EST-4 onward is unblocked.
 
 ## 2. Concept inventory
 
@@ -94,7 +94,7 @@ These are recorded here, not edited, because `doctrine/` changes need their own 
 | PRD1 header and record layout (`ty_prd.h:1-4`) | confirmed |
 | `rx_cm_calibrate` at `rx_costmodel.c:385` | confirmed |
 | machine-state.ndjson line counts 1953 / 2009 and field names | confirmed |
-| `evidence/R16/` holds only `inventory.json`; last R16 commit is the spec `6fdc4c3` | confirmed |
+| `evidence/R16/` holds final receipt `22d7a79a...` and full qualification logs | confirmed |
 | cost-model `nm -u` check at `Makefile:716-720` | confirmed |
 | `mk/turing_qcont.mk` standalone pattern, `-ffp-contract=off` | confirmed |
 | digest rule SHA-256(domain, 0x00, bytes) at `ty_qrecord.h:10` | confirmed |

@@ -36,13 +36,13 @@ As of 2026-09-27:
 - An independent M19 review found evidence-integrity and runtime-correctness issues that require corrective qualification before M20 is trusted.
 - The old PHYSICS architectural role has been superseded by FORGE: machine realization/lowering, not a security gatekeeper.
 - AEGIS is the cross-cutting invariant/contract verifier.
-- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. J-Space and a Cortex exist only as omega host references in single test targets, and the capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`, 2026-09-30).
+- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. J-Space and the omega Cortex reference exist only as host references in single test targets, and the capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`, 2026-09-30).
 - RSI exists as an evaluation/promotion substrate but should not be placed on the critical path until the execution boundaries below are stable.
 
 Addendum, 2026-09-29 (from live evidence):
 
 - ADR 0016 R15 (quantitative performance) PASSED: `aien-dev/omega#67`, merge `bba3bd3`, receipt `evidence/R15/065c6884...json`, 16/16 gates.
-- ADR 0016 R16 (orchestrator retirement) is IN PROGRESS: `aien-dev/omega#68` merged, G1/G2 inventory PASS, but the required G3-G8 qualification and final receipt are absent from `main`.
+- ADR 0016 R16 (orchestrator retirement) PASSED / CLOSED: `aien-dev/omega#112` merged (`3dd5eaa`), candidate `850fc54`, canonical receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`). All gates G1–G8 PASS on DGX Spark GB10 hardware; 281 sites classified (0 unclassified); 36/36 negative mutants killed; R1–R15 full candidate ladder passed. The runtime edit freeze on `omega/src/runtime/` is LIFTED.
 - Omega effect capabilities now carry 64-bit generations (`aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused.
 - The FORGE v1 realize/verify seam is closed: `aien-dev/physics#13` merged (`5969159`), Gates 3 and 4 pass.
 - AR1 (FORGE substrate-neutral descriptor contract) PASSED: `aien-dev/physics#16` (`1f7c321`) and `aien-dev/physics#13` (`5969159`) merged on main; V1 and V2 combined gates pass.
@@ -57,7 +57,7 @@ Addendum, 2026-09-30 (reconciliation of docs against code):
 - Roadmap M6 `OMEGA_SELF_HOST` stays COMPLETE with its ID, commit and receipt unchanged, but it proved a fixed-output self-copy check, not compiler self-hosting. It is not evidence of a general Omega compiler (`doctrine/ROADMAP.md` §3, M6 correction note; omega `docs/adr/OMEGA-SYSTEMS-CORE-0000.md` item C8). The compiler slice is OSC-1 work.
 - J-Space, Cortex and capability status was re-checked against omega, aienos, physics and aien-sovereign-core `main` (`docs/02-implementation-status.md`). J-Space and the omega Cortex are host references in single test targets; three Cortex implementations exist with no recorded owner; the capability authority root is the aienos C library, hosted only; the runtime Capability Graph (F1) is missing.
 - Concept ownership (World state, semantic scheduling, authority root, generations, queues, evidence, Cortex, J-Space) is recorded in `doctrine/ARCHITECTURE.md` §2.8, classified with the R16 retirement map.
-- M19 remains REOPENED / IN PROGRESS (M19R Gate 5, `aien-dev/omega#32`, is still open). Native AIENOS boot of the resident system and the persistent-agent proof (§7 D4) are not done. No document may claim otherwise.
+- M19R Foundation Repair PASSED / CLOSED: `aien-dev/omega#111` merged (`5517d22`), canonical receipt `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json` on pinned candidate pair Omega `8024e9a` + Physics `e95e3ed` (8/8 criteria satisfied). M19 resident foundation is requalified and closed.
 
 ## 3. Program rule
 
@@ -550,14 +550,14 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 **Lane 6 — Substrate-neutral realization (ADR 0018):** AR0–AR7, sequenced in §6 C3; collision rules in `docs/plans/analog-realization/ANALOG_REALIZATION_COLLISION_MAP.md`.
 
 - Must not add a new central loop, scheduler, service or callback path, and must not create a second World.
-- No edits to `omega/src/runtime/` (or other R16-mapped files) until R16 (`aien-dev/omega#68`) closes.
+- The runtime edit freeze on `omega/src/runtime/` is LIFTED following R16 closure (`aien-dev/omega#112`).
 - The ARGUS event ABI is untouched; analog telemetry needs are documentation only.
 - New code in R16-scanned repositories (omega, aienos, physics) must stay clean of the R16 loop-inventory patterns.
 
 **Lane 7 - Belief / estimation layer (ADR 0020):** EST-0 to EST-10; current state in [`docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md`](docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md).
 
 - EST-0 to EST-3 (contract, linear Kalman reference, one real signal, calibration) may run before R16 closes only as a standalone module: new files under `omega/src/estimation/` and `omega/tests/estimation/`, own `mk/estimation.mk` targets, not in `all` or `test`, not included by `omega/src/runtime/`.
-- EST-4 onward (World, cost model, TURING, J-Space, Cortex, curiosity, information gain) waits for R16 closure and the `omega/src/runtime/` hold to lift.
+- EST-4 onward (World, cost model, TURING, J-Space, Cortex, curiosity, information gain) is unblocked following R16 closure and the lifting of the `omega/src/runtime/` hold.
 - Estimator output never becomes an authority input and never replaces raw evidence. An estimator that fails EST-3 calibration is not promoted.
 - New estimation code stays clean of the R16 loop-inventory patterns.
 
