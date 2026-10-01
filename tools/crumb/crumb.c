@@ -140,6 +140,7 @@ static char *jdump(const J *j) { Buf b = {0}; jprint(j, &b, 0); bstr(&b, "\n"); 
 typedef struct { const char *p; int depth; int err; } P;
 static void pws(P *p) { while (*p->p == ' ' || *p->p == '\t' || *p->p == '\n' || *p->p == '\r') p->p++; }
 static void putf8(Buf *b, unsigned c) {
+    if (c >= 0xD800 && c < 0xE000) c = 0xFFFD;
     char t[4]; int n;
     if (c < 0x80) { t[0] = (char)c; n = 1; }
     else if (c < 0x800) { t[0] = (char)(0xC0 | c >> 6); t[1] = (char)(0x80 | (c & 63)); n = 2; }
@@ -226,6 +227,7 @@ static J *pvalue(P *p) {
         const char *s = p->p;
         while (*p->p == '-' || *p->p == '+' || *p->p == '.' || *p->p == 'e' || *p->p == 'E' || (*p->p >= '0' && *p->p <= '9')) p->p++;
         r = jnew(JNUM); r->s = xmalloc((size_t)(p->p - s) + 1); memcpy(r->s, s, (size_t)(p->p - s)); r->s[p->p - s] = 0;
+        { char *end; (void)strtod(r->s, &end); if (end == r->s || *end) p->err = 1; }
     } else p->err = 1;
     p->depth--;
     return p->err ? NULL : r;
@@ -249,8 +251,8 @@ static char *slurp(const char *path) {
     return b.p;
 }
 static void spit(const char *path, const char *data) {
-    char tmp[PATH_MAX + 32];
-    snprintf(tmp, sizeof tmp, "%s.tmp%ld", path, (long)getpid());
+    size_t tn = strlen(path) + 32; char *tmp = xmalloc(tn);
+    snprintf(tmp, tn, "%s.tmp%ld", path, (long)getpid());
     FILE *f = fopen(tmp, "wb");
     if (!f) die("cannot write %s: %s", tmp, strerror(errno));
     if (fputs(data, f) < 0 || fclose(f) != 0) die("write failed: %s", tmp);
@@ -287,12 +289,12 @@ static void sweep(J *root) {  /* SPEC 5.4 */
     J *sc = jget(root, "active_scents");
     if (sc && sc->t == JOBJ) for (size_t i = sc->n; i-- > 0;) {
         long u = parse_iso(jstrval(sc->v[i], "updated_at"));
-        if (u >= 0 && now - u > jlong(sc->v[i], "ttl_seconds", SCENT_TTL)) jdel(sc, sc->k[i]);
+        if (u < 0 || now - u > jlong(sc->v[i], "ttl_seconds", SCENT_TTL)) jdel(sc, sc->k[i]);
     }
     J *lk = jget(root, "locks");
     if (lk && lk->t == JOBJ) for (size_t i = lk->n; i-- > 0;) {
         long u = parse_iso(jstrval(lk->v[i], "acquired_at"));
-        if (u >= 0 && now - u > jlong(lk->v[i], "ttl_seconds", LOCK_TTL)) jdel(lk, lk->k[i]);
+        if (u < 0 || now - u > jlong(lk->v[i], "ttl_seconds", LOCK_TTL)) jdel(lk, lk->k[i]);
     }
     J *wh = jget(root, "whispers");
     if (wh && wh->t == JARR) {
@@ -346,9 +348,9 @@ static void whisper_add(J *root, const char *from, const char *to, const char *m
 }
 static void scent_set(J *root, const char *agent, const char *focus, long ttl) {
     char ts[21]; now_iso(ts);
-    J *s = jobj_of(root, "active_scents"), *e = jnew(JOBJ);
+    J *s = jobj_of(root, "active_scents"), *e = jget(s, agent);
+    if (!e || e->t != JOBJ) { e = jnew(JOBJ); jset(s, agent, e); }
     jset(e, "focus", jstr(focus)); jset(e, "updated_at", jstr(ts)); jset(e, "ttl_seconds", jnum(ttl));
-    jset(s, agent, e);
 }
 static int has_lock_by(J *root, const char *agent) {
     J *lk = jget(root, "locks");
@@ -370,7 +372,7 @@ static int cmd_claim(const char *agent, const char *dir, const char *target, con
         }
     }
     char ts[21]; now_iso(ts);
-    J *e = jnew(JOBJ);
+    J *e = cur && cur->t == JOBJ ? cur : jnew(JOBJ);
     jset(e, "holder", jstr(agent)); jset(e, "intent", jstr(intent)); jset(e, "acquired_at", jstr(ts)); jset(e, "ttl_seconds", jnum(ttl));
     jset(jobj_of(l.root, "locks"), target, e);
     scent_set(l.root, agent, intent, SCENT_TTL > ttl ? SCENT_TTL : ttl);
@@ -491,10 +493,11 @@ static Node *scan(const char *path, const char *rel, int isroot) {
 static int qualifies(const Node *n, int depth) { return depth <= 1 || n->nf > 0; }
 
 static char *run_git(const char *root, const char *args) {
-    char cmd[PATH_MAX * 2 + 64]; Buf q = {0}; bstr(&q, "'");
+    Buf q = {0}; bstr(&q, "'");
     for (const char *p = root; *p; p++) { if (*p == '\'') bstr(&q, "'\\''"); else bput(&q, p, 1); }
     bstr(&q, "'");
-    snprintf(cmd, sizeof cmd, "git -C %s %s 2>/dev/null", q.p, args);
+    size_t cn = q.n + strlen(args) + 32; char *cmd = xmalloc(cn);
+    snprintf(cmd, cn, "git -C %s %s 2>/dev/null", q.p, args);
     FILE *f = popen(cmd, "r"); if (!f) return xstrdup("");
     char t[512]; size_t n = fread(t, 1, sizeof t - 1, f); t[n] = 0; pclose(f);
     while (n && (t[n - 1] == '\n' || t[n - 1] == '\r')) t[--n] = 0;
@@ -535,7 +538,7 @@ static void seed_node(const Node *n, int depth, const char *anc_name, const char
             J *b = jarr_of(c, "below");
             for (size_t i = 0; i < n->ns; i++) {
                 int have = 0;
-                for (size_t k = 0; k < b->n; k++) { const char *nm = jstrval(b->v[k], "name"); if (nm && !strcmp(nm, n->sub[i]->name)) have = 1; }
+                for (size_t k = 0; k < b->n; k++) { const char *nm = b->v[k]->t == JSTR ? b->v[k]->s : jstrval(b->v[k], "name"); if (nm && !strcmp(nm, n->sub[i]->name)) have = 1; }
                 if (!have) { J *e = jnew(JOBJ); jset(e, "name", jstr(n->sub[i]->name)); jset(e, "role", jstr("")); jpush(b, e); }
             }
         }
