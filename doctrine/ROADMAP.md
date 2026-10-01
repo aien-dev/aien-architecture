@@ -324,6 +324,9 @@ Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference rea
 ### M23: `OMEGA_SEARCH_GUIDE_TRAINING`
 - Status 2026-10-01: table status stays PLANNED; no exit gate is met (training NOT_RUN, waits on M22). Discrepancy recorded: the corpus prerequisite exists. G1 search-trace corpus capture PASS (`aien-dev/omega#122` `ce7821d`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`); G3 sealed-holdout commitment format PASS, format only, nothing sealed (`#122`), commitment owner signature with TEST keys (`#130` `7fb59d3`). Sealing and real owner signing are BLOCKED_OPERATOR.
 
+### DIRAC-0 (ARCH-0023, PROPOSED; downstream consumer, not a milestone)
+- Status 2026-10-01: no table row. DIRAC-0 (`docs/plans/dirac/DIRAC-0-SPEC.md`) consumes OSC-2, E1, M20 `OMEGA_TENSOR`, ESTIMATION and TURING and creates no new tensor, measurement, GPU-runtime or evidence system. `DIRAC_PREP_FROZEN` is proposed, not passed; no roadmap milestone changes.
+
 ### M40 — `AIEN_SUCCESSION`
 Closed-loop self-improvement: AIEN-N designs AIEN-N+1 under Physics canary control.
 

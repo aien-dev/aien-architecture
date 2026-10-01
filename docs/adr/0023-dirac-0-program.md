@@ -1,0 +1,50 @@
+# ADR 0023: DIRAC-0 Program (Integration Workstream)
+
+**Status:** PROPOSED, 2026-10-01. Source: operator brief of that date (Drake Stapleton). Not accepted until the operator accepts it.
+**Gate:** `DIRAC_PREP_FROZEN` (proposed by `docs/plans/dirac/DIRAC-0-SPEC.md`). No sealed experiment may run before it passes.
+**Supersedes:** nothing. **Amends:** nothing. **Extends:** ARCH-0020 (belief and estimation) and the TURING, FORGE and Physics Zero lines by adding one test subject that exercises them together.
+**Related:** ARCH-0016 (resident reaction architecture), ARCH-0017 (ARGUS observes, never authorizes), ARCH-0019 (mixed algebra realization), ARCH-0020 (belief estimation layer), ARCH-0021 (decision 3: append-only receipts bound to clean commits), ARCH-0022 (canonical Cortex owner).
+**Workstream:** DIRAC-0, PRs D-01 to D-14 (spec section 14); supporting documents in [`docs/plans/dirac/`](../plans/dirac/) (NOT A MASTER PLAN). Sequencing stays in `CURRENT_EXECUTION_PLAN.md`.
+
+Citation note: in this repository "ADR 0023" and ARCH-0023 name the same decision. In other repositories cite it as ARCH-0023.
+
+---
+
+## 1. Context
+
+AIEN needs a hard, checkable test of two claims: that Omega can represent non-trivial physical algebra from generic parts, and that the Physics Zero machinery can find structure from numbers alone. The Dirac equation is a good subject because it has exact algebraic structure (a Clifford relation), analytic solutions, and a known answer held by humans, not by AIEN.
+
+The risk is in how it would be built. Adding Dirac-specific types would prove nothing, and a new tensor, measurement, GPU or evidence system would fork work already in flight (OSC-2, E1, M20, ESTIMATION, TURING, FORGE).
+
+## 2. Decision
+
+```text
+DIRAC-0 IS AN INTEGRATION WORKSTREAM. IT CONSUMES OSC-2, E1, M20, ESTIMATION,
+TURING AND FORGE. IT CREATES NO NEW TENSOR SYSTEM, MEASUREMENT SYSTEM,
+GPU RUNTIME OR EVIDENCE SYSTEM. DIRAC IS A CONFORMANCE FIXTURE AND HIDDEN
+EVALUATOR KNOWLEDGE, NEVER AN OMEGA PRIMITIVE.
+```
+
+The ten rules, the three gates (D0 generic algebra, D1 realization on CPU then Blackwell, D2 blind discovery), the secrecy boundary, the measurement profile and the receipt shape are in the spec. This ADR does not restate them and does not weaken them.
+
+## 3. Consequences
+
+- Work that would stop OSC-2 or fork E1 is out of scope.
+- D0.1 (complex values) is new generic Omega work, because M20 has no complex element type. It must be justified as a generic capability, not as Dirac support.
+- Evaluator material (equation, gamma matrices, oracle, answer keys) lives outside everything AIEN can read. The oracle shares no code with the Omega candidate.
+- D2 sealing depends on the operator completing G3 sealing (BLOCKED_OPERATOR today).
+- The spec defines "net Turing gain" as T minus declared search and compute cost. That term does not exist elsewhere yet and is a new DIRAC-0 definition pending TURING owner review.
+- The spec adds BLOCKED_HARDWARE to the verdict vocabulary.
+
+## 4. Evidence checked on 2026-10-01
+
+- No complex type: grep for `_Complex`, `complex64`, `OMEGA_DT_C` over omega `src/` and `docs/` finds nothing; M20 `OmegaDType` is F32, F16, BF16 (`aien-dev/omega#136`, draft).
+- No Physics Zero loop document exists in omega or aien-architecture.
+- ESTIMATION v4 (`aien-dev/omega#153`) has no verdict: its branch head `f5a3036` voided attempt 2 and attempt 3 is pending. It is not cited as PASS anywhere in DIRAC-0.
+- `aien-dev/omega#152` (GB10 DIV/SQRT) is merged at `07004a8`.
+
+## 5. Status of alternatives not taken
+
+- A Dirac module or Dirac builtins in Omega: rejected by rule 1.
+- A separate DIRAC tensor or evidence format: rejected; M20, TURING and FORGE records are used.
+- Letting the candidate choose its holdout or score itself: rejected by rule 8.
