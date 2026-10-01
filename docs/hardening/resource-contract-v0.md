@@ -126,7 +126,7 @@ The TRN1 0.2 bump is shared with aien-architecture#98 (HD-08); the joint record-
 |---|---|---|
 | op | u8 | 1 CHARGE, 2 REFUND, 3 REFUSE, 4 CANCEL, 5 OVERRUN, 6 OVER_OBSERVED |
 | reason | u8 | for REFUSE: 1 BUSY, 2 OVER_BUDGET, 3 UNKNOWN, 4 QUOTA; for CANCEL: 1 DEADLINE, 2 PARENT, 3 EXPLICIT; else 0 |
-| field | u16 | contract field number from section 1.2 (0 for a whole-need charge or refund) |
+| field | u16 | contract field number from section 1.2, 1 to 10; 0 means the need as a whole and is allowed for every op (decided in the TRN1 0.2.0 amendments, Q4: PR #12 implemented 0 to 10 for all ops; the 0 to 10 range is the only field check). A whole-need CHARGE or REFUND uses 0; a REFUSE for the whole declared need may also use 0; an OVERRUN or OVER_OBSERVED names the field it concerns, but a 0 is not refused by TRN1 and is left to the producer to avoid |
 | reserved | u32 | zero |
 | unit | u64 | the reaction or task id the outcome applies to |
 | cause | 32 bytes | the cause id, a 32-byte digest as defined in [causal-id-join-v0.md](causal-id-join-v0.md) section 2.1 (HD-08, aien-architecture#98) |
