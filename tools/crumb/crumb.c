@@ -323,9 +323,19 @@ static Local local_open(const char *dir) {
     sweep(l.root);
     return l;
 }
+static char *run_git(const char *root, const char *args);
+static void git_exclude_local(const char *dir) {   /* keep .crumb.local out of `git status` even before .gitignore lands */
+    char *gp = run_git(dir, "rev-parse --git-path info/exclude");
+    if (!*gp) return;
+    char *full = gp[0] == '/' ? xstrdup(gp) : pjoin(dir, gp);
+    char *txt = slurp(full);
+    if (txt) { char *c = xstrdup(txt); for (char *l = strtok(c, "\n"); l; l = strtok(NULL, "\n")) if (!strcmp(l, ".crumb.local")) return; }
+    FILE *f = fopen(full, "a"); if (!f) return;
+    fputs(txt && *txt && txt[strlen(txt) - 1] != '\n' ? "\n.crumb.local\n" : ".crumb.local\n", f); fclose(f);
+}
 static void local_save(Local *l) {
     char *now = jdump(l->root);
-    if (strcmp(now, l->before)) spit(l->path, now);
+    if (strcmp(now, l->before)) { spit(l->path, now); git_exclude_local(l->dir); }
 }
 static void history_add(J *root, const char *agent, const char *action, const char *target, const char *intent) {
     char ts[21]; now_iso(ts);
@@ -457,6 +467,20 @@ static int cmpp(const void *a, const void *b) { return strcmp(*(char *const *)a,
 static int nested_repo(const char *path) { char *g = pjoin(path, ".git"); struct stat st; int r = lstat(g, &st) == 0; free(g); return r; }
 
 typedef struct Node { char *path, *rel, *name; char **files; size_t nf; struct Node **sub; size_t ns; int src; } Node;
+static char **g_ign; static size_t g_nign;
+static void load_ignore(const char *root) {   /* <root>/.crumbignore: one relative directory per line, '#' comments */
+    char *p = pjoin(root, ".crumbignore"), *txt = slurp(p);
+    if (!txt) return;
+    for (char *l = strtok(txt, "\n"); l; l = strtok(NULL, "\n")) {
+        size_t n = strlen(l); while (n && (l[n - 1] == '/' || l[n - 1] == '\r' || l[n - 1] == ' ')) l[--n] = 0;
+        if (!n || l[0] == '#') continue;
+        g_ign = xrealloc(g_ign, (g_nign + 1) * sizeof *g_ign); g_ign[g_nign++] = xstrdup(l);
+    }
+}
+static int ignored_rel(const char *rel) {
+    for (size_t i = 0; i < g_nign; i++) if (!strcmp(rel, g_ign[i])) return 1;
+    return 0;
+}
 static Node *scan(const char *path, const char *rel, int isroot) {
     Node *n = xmalloc(sizeof *n); memset(n, 0, sizeof *n);
     n->path = xstrdup(path); n->rel = xstrdup(rel); n->name = xstrdup(base_of(path));
@@ -477,8 +501,10 @@ static Node *scan(const char *path, const char *rel, int isroot) {
             if (S_ISDIR(st.st_mode)) {
                 if (!skip_name(names[i]) && !nested_repo(full)) {
                     char *r = !strcmp(rel, ".") ? xstrdup(names[i]) : pjoin(rel, names[i]);
-                    n->sub = xrealloc(n->sub, (n->ns + 1) * sizeof *n->sub);
-                    n->sub[n->ns++] = scan(full, r, 0);
+                    if (!ignored_rel(r)) {
+                        n->sub = xrealloc(n->sub, (n->ns + 1) * sizeof *n->sub);
+                        n->sub[n->ns++] = scan(full, r, 0);
+                    }
                 }
             } else if (S_ISREG(st.st_mode) && strcmp(names[i], ".crumb") && strcmp(names[i], ".crumb.local") && names[i][0] != '.') {
                 n->files = xrealloc(n->files, (n->nf + 1) * sizeof *n->files);
@@ -584,6 +610,7 @@ static int cmd_seed(const char *root, int dry, int verbose) {
         jset(g, "head", jstr(run_git(r, "rev-parse --short HEAD")));
         st.git = g;
     }
+    load_ignore(r);
     Node *tree = scan(r, ".", 1);
     seed_node(tree, 0, tree->name, "..", &st);
     ensure_gitignore(r, &st);
@@ -831,6 +858,7 @@ static void backfill_node(const Node *n, int depth, const char *repo, BfStats *s
 static int cmd_backfill(const char *root, const char *since, int dry) {
     char *r = absdir(root);
     char *home = getenv("HOME"); if (!home) home = "";
+    load_ignore(r);
     Node *tree = scan(r, ".", 1);
     char *remote = run_git(r, "remote get-url origin"), *repo = xstrdup(base_of(remote));
     size_t rl = strlen(repo); if (rl > 4 && !strcmp(repo + rl - 4, ".git")) repo[rl - 4] = 0;

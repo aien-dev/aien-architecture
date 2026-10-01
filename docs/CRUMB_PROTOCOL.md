@@ -54,3 +54,8 @@ RFC-0001 puts `history` only in the git-ignored `.crumb.local` and says it SHOUL
 - Committed: `docs/crumbs/BACKFILL.md`, up to 200 commits per directory (older ones are listed as truncated).
 - A commit is listed under every directory it touched. Lane entries are report lines that name `<repo>#<PR>` or a commit SHA that exists in the repo (mentions, not verified authorship).
 - Nothing backfilled is a live whisper. Run it after `seed`; it is idempotent for a fixed git HEAD and fixed reports.
+
+## Frozen directories and the dirty-tree rule
+
+- A repo can list directories that must not carry crumbs in `<root>/.crumbignore` (one relative directory per line). Use it for trees guarded by "unchanged since base" tests (physics lists `nvrm` and `m16`).
+- When `crumb` creates a `.crumb.local` inside a git repo it also adds `.crumb.local` to that clone's `.git/info/exclude`, so `git status` stays clean (receipt scripts refuse a dirty tree) even before the repo's `.gitignore` carries the entry.
