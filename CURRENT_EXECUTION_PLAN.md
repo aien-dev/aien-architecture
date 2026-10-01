@@ -36,7 +36,7 @@ As of 2026-09-27:
 - An independent M19 review found evidence-integrity and runtime-correctness issues that require corrective qualification before M20 is trusted.
 - The old PHYSICS architectural role has been superseded by FORGE: machine realization/lowering, not a security gatekeeper.
 - AEGIS is the cross-cutting invariant/contract verifier.
-- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. J-Space and the omega Cortex reference exist only as host references in single test targets, and the capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`, 2026-09-30).
+- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. As of the COMPOSITION-1 merges (2026-09-30 addendum below): host-level implementations of the Capability Graph and Skill Router (advancing F1/F2), a production local-only J-Space branch store (advancing F4), a canonical omega Cortex with World recording, and canonical machine identity (`AienMachineId`) exist in omega `src/runtime/`, each built and tested in its own CI test target, none yet in the R13 living-system build. Fabric (F5) and remote J-Space do not exist. The capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`).
 - RSI exists as an evaluation/promotion substrate but should not be placed on the critical path until the execution boundaries below are stable.
 
 Addendum, 2026-09-29 (from live evidence):
@@ -55,9 +55,20 @@ Addendum, 2026-09-30 (course correction, ADR 0020):
 Addendum, 2026-09-30 (reconciliation of docs against code):
 
 - Roadmap M6 `OMEGA_SELF_HOST` stays COMPLETE with its ID, commit and receipt unchanged, but it proved a fixed-output self-copy check, not compiler self-hosting. It is not evidence of a general Omega compiler (`doctrine/ROADMAP.md` §3, M6 correction note; omega `docs/adr/OMEGA-SYSTEMS-CORE-0000.md` item C8). The compiler slice is OSC-1 work.
-- J-Space, Cortex and capability status was re-checked against omega, aienos, physics and aien-sovereign-core `main` (`docs/02-implementation-status.md`). J-Space and the omega Cortex are host references in single test targets; three Cortex implementations exist with no recorded owner; the capability authority root is the aienos C library, hosted only; the runtime Capability Graph (F1) is missing.
+- J-Space, Cortex and capability status was re-checked against omega, aienos, physics and aien-sovereign-core `main` (`docs/02-implementation-status.md`). J-Space and the omega Cortex are host references in single test targets; three Cortex implementations exist with no recorded owner; the capability authority root is the aienos C library, hosted only; the runtime Capability Graph (F1) is missing. (Superseded in part by the composition-merges addendum below: a host-level F1 graph now exists and omega `rx_cortex` and `rx_jspace` are no longer single-test references.)
 - Concept ownership (World state, semantic scheduling, authority root, generations, queues, evidence, Cortex, J-Space) is recorded in `doctrine/ARCHITECTURE.md` §2.8, classified with the R16 retirement map.
 - M19R Foundation Repair PASSED / CLOSED: `aien-dev/omega#111` merged (`5517d22`), canonical receipt `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json` on pinned candidate pair Omega `8024e9a` + Physics `e95e3ed` (8/8 criteria satisfied). M19 resident foundation is requalified and closed.
+
+Addendum, 2026-09-30 (composition merges; merge times below are UTC and fall on 2026-10-01):
+
+- Naming: the 8-agent runtime composition program that produced these merges is **COMPOSITION-1 (formerly misnamed 'M20 program' in agent briefs, 2026-09-30)**. Omega PR titles and branches `m20/identity-convergence`, `m20/cortex-canonical`, `m20-capgraph` and `m20-jspace` belong to COMPOSITION-1, not to roadmap M20. Roadmap M20 remains `OMEGA_TENSOR` (`doctrine/ROADMAP.md`, unchanged). COMPOSITION-1 is Lane 4 work (§16) against Phase F (§9).
+- `aien-dev/omega#113` "M20: canonical AIEN machine identity (AienMachineId)", merge `16f8518` (01:33Z). Canonical `AienMachineId` in `src/runtime/aien_machine_id.{c,h}`, byte-identical to AIENOS ADR 0014 `machine_id_digest`; `rx_argus` stamps it when configured. Satisfies the F5 "stable Machine identities" bullet only. Test `test-machine-identity` in rx-host CI.
+- `aien-dev/omega#114` "M20 A7: canonical Cortex, World execution recording", merge `43dcb04` (01:37Z). omega `rx_cortex` gains an append-only journal with verified replay, a single writer and typed recall; `rx_cortex_record` records every World crumb through one optional recorder hook in `rx_world.c`. Advances F3 and H2. The PR declares `rx_cortex` canonical and documents sovereign-core `cortex-rs` and `aienos-cortex` as non-authoritative; under `doctrine/ARCHITECTURE.md` §2.8 an ownership move still needs an accepted ADR or R16 gate result, so the Cortex owner remains formally unrecorded.
+- `aien-dev/omega#115` "M20: canonical Capability Graph and Skill Router", merge `135d1c2` (01:52Z). `rx_capq` promoted to the canonical runtime Capability Graph (stable keys, upsert, availability/withdraw, 188-byte wire record, machines keyed by `AienMachineId`); new `rx_skillroute` binds one real `AG_SKILL` node. Advances F1 and F2 at host level (F1 credentials/references and Fabric-fed availability not implemented). Entries marked FABRIC-sourced are a record type only; no Fabric feeds them.
+- `aien-dev/omega#116` "M20 production J-Space: stable ids, limits, durable checkpoints, World-safe staging", merge `529ebfa` (02:04Z). Generation-checked ids, limits, durable checkpoint, staged branches. Advances F4 as a local branch store only; World-level candidate forking and selected-branch externalization are not wired. Machine placement `JsHome` is a 32-byte placeholder, every remote operation returns `JS_ERR_REMOTE`, and there is no remote transport. World commit does not yet call `js_branch_seal` / `js_space_reclaim_staged` (open interface request from the PR; the test drives it from outside World code).
+- `aien-dev/omega#117` "docs: E1 numeric closure gap table", merge `c2160f5` (02:30Z). omega `docs/numeric/E1_GAP_TABLE.md`: of the E1 items, 1 covered, 7 partial, 4 missing. E1 (§8) is not closed; see the E1 note.
+- Architecture docs: `aien-dev/aien-architecture#70` (runtime freeze lifted, `e89ba94`) and `#72` (M19 accepted status word, `74f666b`) merged before these.
+- Not changed by these merges: no Fabric (F5 membership, leases, placement, failure recovery); no remote J-Space; none of the new modules is in the R13 living-system build; no roadmap milestone closes.
 
 ## 3. Program rule
 
@@ -269,6 +280,8 @@ Before tensor training:
 - Omega-owned exact sequences for transcendental semantics where needed;
 - CPU/GB10 parity under frozen numeric contracts.
 
+Status 2026-09-30: not closed. omega `docs/numeric/E1_GAP_TABLE.md` (`aien-dev/omega#117`, `c2160f5`) maps these items to merged Gate 5 evidence: 1 covered, 7 partial, 4 missing; largest gaps are division/sqrt on GB10, the transcendental set with GB10 kernels, and reductions beyond one warp. Discrepancy: EXP/LOG are frozen and error-bounded (EXP within 40 ulp), not exact; the "exact sequences" bullet above is open until reworded or met.
+
 ### E2. M20 OMEGA_TENSOR
 
 - immutable semantic tensors;
@@ -324,9 +337,13 @@ One runtime graph of:
 
 MCP is one provider adapter, not the system ontology.
 
+Status 2026-09-30: implemented at host level as omega `rx_capq` (`aien-dev/omega#115`, `135d1c2`), machines keyed by `AienMachineId` (`#113`). Credentials and live provider advertisement over Fabric are not implemented; not yet in the living-system build.
+
 ### F2. Skill Router
 
 Skills are signed/versioned reusable procedures. Tools are atomic operations. The router selects procedures/capabilities without exposing raw provider sprawl to the model.
+
+Status 2026-09-30: implemented at host level as omega `rx_skillroute` (`aien-dev/omega#115`, `135d1c2`): routes a requirement to a digest-pinned local skill or a remote provider record and binds one `AG_SKILL` action-graph node. Remote provider execution depends on Fabric, which does not exist.
 
 ### F3. World and effects
 
@@ -338,6 +355,8 @@ Skills are signed/versioned reusable procedures. Tools are atomic operations. Th
 - Effect Broker is a narrow protocol adapter.
 - World commit binds selected branch, effect receipts, evidence roots, and identities.
 
+Status 2026-09-30: World execution is recorded into omega `rx_cortex` through one optional recorder hook (`aien-dev/omega#114`, `43dcb04`). World commit does not yet bind J-Space branches (`js_branch_seal` / `js_space_reclaim_staged` are not called from World code), and the Cortex owner is not yet recorded under `doctrine/ARCHITECTURE.md` §2.8.
+
 ### F4. J-Space
 
 - fork candidate Worlds;
@@ -345,6 +364,8 @@ Skills are signed/versioned reusable procedures. Tools are atomic operations. Th
 - keep score dimensions explicit;
 - prune dominated candidates;
 - externalize only the selected verified branch.
+
+Status 2026-09-30: production J-Space for local branches merged (`aien-dev/omega#116`, `529ebfa`): generation-checked ids, limits, durable checkpoints, staged branches. Remote operations return `JS_ERR_REMOTE`; machine placement is a placeholder; not yet in the living-system build.
 
 ### F5. Fabric
 
@@ -359,6 +380,8 @@ After native networking:
 - failure recovery.
 
 Start with coarse work units, not per-layer distributed inference.
+
+Status 2026-09-30: not started. Only stable Machine identities exist (`AienMachineId`, `aien-dev/omega#113`, `16f8518`).
 
 **Exit gate:** one objective can be decomposed, explored across branches/machines, realized, verified, committed, and remembered through canonical typed interfaces.
 
@@ -538,7 +561,10 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 **Lane 3 — Omega training:** FP32 numerics -> M20 tensor -> M21 autodiff -> M22 optimizer.
 
-**Lane 4 — Composition:** Capability Graph, Skill Router, World/effects, J-Space, Fabric interface design.
+**Lane 4 — Composition (COMPOSITION-1):** Capability Graph, Skill Router, World/effects, J-Space, Fabric interface design.
+
+- Alias: COMPOSITION-1 (formerly misnamed 'M20 program' in agent briefs, 2026-09-30). Any "M20" in omega PRs #113 to #116 or `m20*` branch names means COMPOSITION-1; roadmap M20 is `OMEGA_TENSOR` (Lane 3).
+- Merged so far: `aien-dev/omega#113`, `#114`, `#115`, `#116` (see §2 composition-merges addendum). Open: World commit binding of J-Space, Cortex ownership ADR, living-system integration, Fabric.
 
 **Lane 5 — Resident reaction runtime (ADR 0016):** R0–R16, sequenced in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
 
@@ -572,7 +598,7 @@ Do not start another master plan. Execute these:
 3. Establish the typed Omega/Forge boundary.
 4. Finish and qualify AIENOS M5 trust/encryption.
 5. Finish Omega general FP32 numerical support.
-6. Proceed to AIENOS M6 and Omega M20 in parallel.
+6. Proceed to AIENOS M6 and Omega M20 (`OMEGA_TENSOR`) in parallel.
 
 The ADR 0018 workstream runs as Lane 6 and does not reorder these gates.
 
