@@ -39,6 +39,7 @@ Spec-faithful mapping for a lane: a lane is an agent id; "I am working here" is 
 ```
 cd tools/crumb && make && make test
 crumb seed <repo-root>     # writes .crumb in the root, top-level dirs, and every dir that holds files; idempotent
+# skips dot-dirs, vendor, evidence (immutable records), target, node_modules, build, dist, nested git roots
 ```
 
 `seed` never overwrites a hand-written `purpose`, `invariants`, `exports`, or existing `below`/`above` entry. It owns only `extensions.seed`.

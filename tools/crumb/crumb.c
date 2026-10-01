@@ -444,7 +444,7 @@ static int cmd_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 */
 
 /* ---------- tree walk ---------- */
 static int skip_name(const char *n) {
-    return n[0] == '.' || !strcmp(n, "target") || !strcmp(n, "node_modules") || !strcmp(n, "build") || !strcmp(n, "dist") || !strcmp(n, "__pycache__");
+    return n[0] == '.' || !strcmp(n, "target") || !strcmp(n, "node_modules") || !strcmp(n, "build") || !strcmp(n, "dist") || !strcmp(n, "vendor") || !strcmp(n, "evidence") || !strcmp(n, "__pycache__");
 }
 static int is_src(const char *n) {
     static const char *ext[] = { "c", "h", "cc", "cpp", "hpp", "S", "s", "rs", "mojo", "sh", NULL };
