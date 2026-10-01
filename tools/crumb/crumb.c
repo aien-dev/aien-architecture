@@ -680,6 +680,7 @@ static void load_commits(const char *root, const char *since) {
     bstr(&q, "'");
     Buf cmd = {0}; bstr(&cmd, "git -c core.quotepath=false -C "); bstr(&cmd, q.p);
     bstr(&cmd, " log --first-parent -m --name-only --format=%x01%H%x1f%cI%x1f%an%x1f%s");
+    if (since && strchr(since, '\'')) die("--since must not contain a quote");
     if (since) { bstr(&cmd, " --since='"); bstr(&cmd, since); bstr(&cmd, "'"); }
     bstr(&cmd, " 2>/dev/null");
     FILE *f = popen(cmd.p, "r"); if (!f) return;
@@ -687,6 +688,7 @@ static void load_commits(const char *root, const char *since) {
     while ((len = getline(&line, &lc, f)) > 0) {
         while (len && (line[len - 1] == '\n' || line[len - 1] == '\r')) line[--len] = 0;
         if (line[0] == 1) {
+            cur = -1;
             if (g_nc == g_ncap) { g_ncap = g_ncap ? g_ncap * 2 : 256; g_commits = xrealloc(g_commits, g_ncap * sizeof *g_commits); }
             Commit *c = &g_commits[g_nc]; memset(c, 0, sizeof *c);
             char *h = line + 1, *d = strchr(h, 31); if (!d) continue; *d++ = 0;
@@ -720,7 +722,7 @@ static void parse_lane_file(const char *path) {
     FILE *f = fopen(path, "r"); if (!f) return;
     const char *bn = base_of(path), *fl = strstr(bn, "lane"); char filelane[24] = "";
     if (fl && isdigit((unsigned char)fl[4])) { int k = 0; fl += 4; while (isdigit((unsigned char)*fl) && k < 8) { filelane[k++] = *fl++; } filelane[k] = 0; }
-    char *line = NULL; size_t lc = 0; ssize_t len; int id = (int)g_nlr * 1000;
+    char *line = NULL; size_t lc = 0; ssize_t len; static int idc = 0; int id;
     while ((len = getline(&line, &lc, f)) > 0) {
         while (len && (line[len - 1] == '\n' || line[len - 1] == '\r')) line[--len] = 0;
         char lane[24] = ""; const char *L = strstr(line, "Lane ");
@@ -730,11 +732,12 @@ static void parse_lane_file(const char *path) {
         char lname[32]; snprintf(lname, sizeof lname, "lane%s", lane);
         char note[200]; const char *s = line; while (*s == '-' || *s == ' ' || *s == '*') s++;
         snprintf(note, sizeof note, "%s", s);
-        id++;
+        id = ++idc;
         for (const char *p = line; *p; p++) {
             if (*p == '#' && isdigit((unsigned char)p[1]) && p > line) {   /* explicit repo#N only; bare #N is ambiguous */
-                const char *e = p; while (e > line && (isalnum((unsigned char)e[-1]) || e[-1] == '-')) e--;
-                const char *full = repo_alias(e, (size_t)(p - e));
+                const char *e = p; if (e > line + 1 && e[-1] == ' ') e--; const char *rp = e;
+                while (e > line && (isalnum((unsigned char)e[-1]) || e[-1] == '-')) e--;
+                const char *full = repo_alias(e, (size_t)(rp - e));
                 if (full) lr_add(lname, note, bn, atol(p + 1), full, NULL, id);
             }
             if (isxdigit((unsigned char)*p) && (p == line || !isalnum((unsigned char)p[-1]))) {
@@ -789,7 +792,8 @@ static void backfill_node(const Node *n, int depth, const char *repo, BfStats *s
             DirAcc *d = NULL;
             for (size_t i = 0; i < g_ndirs; i++) if (!strcmp(g_dirs[i]->rel, n->rel)) d = g_dirs[i];
             char *before = jdump(c);
-            J *ext = jobj_of(c, "extensions"), *led = jnew(JARR), *prov = jnew(JOBJ);
+            J *ext = jget(c, "extensions"), *led = jnew(JARR), *prov = jnew(JOBJ);
+            if (!ext || ext->t != JOBJ) ext = jobj_of(c, "extensions");
             size_t total = d ? d->n : 0; int doc_lines = 0;
             Buf sec = {0}; bstr(&sec, "");
             for (size_t k = 0; d && k < d->n && k < DOC_CAP; k++) {
