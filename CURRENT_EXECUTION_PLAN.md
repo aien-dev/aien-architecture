@@ -36,7 +36,7 @@ As of 2026-09-27:
 - An independent M19 review found evidence-integrity and runtime-correctness issues that require corrective qualification before M20 is trusted.
 - The old PHYSICS architectural role has been superseded by FORGE: machine realization/lowering, not a security gatekeeper.
 - AEGIS is the cross-cutting invariant/contract verifier.
-- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. As of the COMPOSITION-1 merges (2026-09-30 addendum below): host-level implementations of the Capability Graph and Skill Router (advancing F1/F2), a production local-only J-Space branch store (advancing F4), a canonical omega Cortex with World recording, and canonical machine identity (`AienMachineId`) exist in omega `src/runtime/`, each built and tested in its own CI test target, none yet in the R13 living-system build. Fabric (F5) and remote J-Space do not exist. The capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`).
+- J-Space, Fabric, the canonical runtime Capability Graph, and full Skill routing remain incomplete as system-wide first-class components. As of the COMPOSITION-1 merges (2026-09-30 addendum below): host-level implementations of the Capability Graph and Skill Router (advancing F1/F2), a production local-only J-Space branch store (advancing F4), a canonical omega Cortex with World recording, and canonical machine identity (`AienMachineId`) exist in omega `src/runtime/`, each built and tested in its own CI test target, none yet in the R13 living-system build. Fabric (F5) and remote J-Space do not exist. (Update 2026-10-01: COMPOSITION-2 runs these modules inside the R13 living World, host only, and a host-only Fabric F5-0 loopback interface exists outside the living build; see the 2026-10-01 push addendum.) The capability authority root (aienos C library) runs hosted only (`docs/02-implementation-status.md`).
 - RSI exists as an evaluation/promotion substrate but should not be placed on the critical path until the execution boundaries below are stable.
 
 Addendum, 2026-09-29 (from live evidence):
@@ -68,7 +68,20 @@ Addendum, 2026-09-30 (composition merges; merge times below are UTC and fall on 
 - `aien-dev/omega#116` "M20 production J-Space: stable ids, limits, durable checkpoints, World-safe staging", merge `529ebfa` (02:04Z). Generation-checked ids, limits, durable checkpoint, staged branches. Advances F4 as a local branch store only; World-level candidate forking and selected-branch externalization are not wired. Machine placement `JsHome` is a 32-byte placeholder, every remote operation returns `JS_ERR_REMOTE`, and there is no remote transport. World commit does not yet call `js_branch_seal` / `js_space_reclaim_staged` (open interface request from the PR; the test drives it from outside World code).
 - `aien-dev/omega#117` "docs: E1 numeric closure gap table", merge `c2160f5` (02:30Z). omega `docs/numeric/E1_GAP_TABLE.md`: of the E1 items, 1 covered, 7 partial, 4 missing. E1 (§8) is not closed; see the E1 note.
 - Architecture docs: `aien-dev/aien-architecture#70` (runtime freeze lifted, `e89ba94`) and `#72` (M19 accepted status word, `74f666b`) merged before these.
-- Not changed by these merges: no Fabric (F5 membership, leases, placement, failure recovery); no remote J-Space; none of the new modules is in the R13 living-system build; no roadmap milestone closes.
+- Not changed by these merges: no Fabric (F5 membership, leases, placement, failure recovery); no remote J-Space; none of the new modules is in the R13 living-system build; no roadmap milestone closes. (Superseded in part by the 2026-10-01 push addendum below: COMPOSITION-2 brings the composition modules into the R13 living build, host only.)
+
+Addendum, 2026-10-01 push (merge times UTC; each merge checked with `gh pr view`; status words are the receipts' own):
+
+- COMPOSITION-2 (successor to COMPOSITION-1; not roadmap M20): `aien-dev/omega#121` merge `5c403f0` (Skill Router end to end, fail-closed routing modes, World commit binder `rx_world_set_binder`), `#125` merge `f099141` (causal path World -> J-Space -> AEGIS -> commit -> Cortex, OLD-or-NEW crash recovery, 14-step gate), `#126` merge `4f8485b` (composition modules in the R13 living build; `rx_compose_attach` runs the composition inside the living World). Verdict: host PASS (`test-r13-host` HOST_PASS_NON_SILICON including "composition inside the living World: PASS"; `test-composition` 471/0; `test-skillroute-compose` 118/0; 14/14 steps over two runs with equal digests). Authoritative receipt omega `evidence/COMPOSITION-2/ca74b119bbb9008306638b68ae0e82f31d05c4c9ee35ba2b5bb0991f787778f6.json` (commit `b4199ab`). GPU tier NOT_RUN (silicon variant of the composition phase not built or run; a GPU-tier lane is in progress). Known limits: one composition per World (fixed subjects 200..204), reactions cannot be unregistered, Fabric not wired in.
+- Cortex ownership: ADR 0022 (`aien-dev/aien-architecture#75`, `6c06e50`) records omega `rx_cortex` as the canonical Cortex owner under `doctrine/ARCHITECTURE.md` §2.8.
+- Fabric F5-0 interface: `aien-dev/omega#123` merge `a18ec6b`; spec `aien-dev/aien-architecture#78` merge `40c17de` (`docs/plans/fabric/F5_0_FABRIC_INTERFACE.md`, not a master plan). Verdict: PASS, host-only loopback (`make test-fabric` 318 checks, 0 failures; receipt omega `evidence/F5-0/e419a00b54d52b7307cada39d29e501d8a776a100471e0c2a2c41dfd84753858.json`). Not in omega `all`/`test`/R13 and not yet in the living system; no network transport, no AEGIS send gate, HMAC stand-in for the TRUST-1 owner-key signature. BLOCKED_OPERATOR: aienos ADR 0010 (Fabric identity/advertisement) is still Proposed.
+- M23 G1 search-trace corpus + G3 sealed-holdout format: `aien-dev/omega#122` merge `ce7821d`. G1 corpus capture PASS (12 tasks, 3072 steps, corpus digest `c2700f22...`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`, commit `12b4d6e`). G3 commitment format PASS (format, tests and spec only; nothing sealed). M23 training NOT_RUN (waits on M22). G3 sealing BLOCKED_OPERATOR (secret salt, storage place for the sealed set, owner-key signature of the public commitment).
+- E1 WP-A scalar contract, CPU tier: `aien-dev/omega#124` merge `d3194f6`. 23 E1 scalar ops (predicates/select, F2I/F2U, I2FP_U32, F16 and BF16 conversions, FFMA_V) with reference, CPU-tier and second-oracle derivations; `make test-numeric-cpu` PASS_EXCEPT_DECLARED_CHIP_ONLY; exhaustive 2^32 sweep of 9 unary ops, 0 mismatches. GB10 tier: the 23 ops are not encoded and are refused before submission; GB10 gate NOT_RUN. E1 stays not closed; roadmap M20 `OMEGA_TENSOR` remains PLANNED.
+- AIENOS TRUST-1 Phase B + M5: `aien-dev/aienos#182` merge `2d9a368` (one qualification entrypoint), `#183` merge `84de088` (native C AES-256-GCM-SIV/POLYVAL/HMAC), `#185` merge `513d653` (Gate 5 swTPM policy simulation; simulation PASS, gate BLOCKED_OPERATOR), `#186` merge `4492ca9` (native C envelope, anchors, identity separation, recovery), `#187` merge `929a720` (gate matrix + first receipt). Receipt aienos `evidence/trust1_m5_qualification_5a5de9c1b256ea54f35c78697ae3b88c010729eca7ca7ac2ac622820184e5efd.json` (recorded at commit `ddf549f`): verdict NOT_QUALIFIED, pass 10 / blocked 10 / missing 6 / not_run 2 / fail 0 of 28. TRUST-1 and M5 are NOT_QUALIFIED. Operator steps are listed in aienos `docs/TRUST-1-OPERATOR-STEPS.md`.
+- Ed25519 in C: `aien-dev/aienos#188` merge `913b962` (`native/sig/`, RFC 8032 vectors, own SHA-512). PASS as a host-tested software primitive; not yet wired into M5 migration authorization or M23 G3 records, so the receipt row `m5_migration_owner_signature` stays MISSING_IMPLEMENTATION until it is.
+- AIENOS M6-A hosted C network stack: `aien-dev/aienos#184` merge `999b5aa`. M6A_NET_HOST: PASS (host only; no QEMU, no hardware, TEST identity only); receipt aienos `native/net/receipts/m6a_net_host_30de56f02d33bc346309173c67638a581c6cf1442a121f6f0f47fa42027de14d.txt`. Native NIC binding, production identity/secure transport and physical NIC qualification are not done.
+- Roadmap: `aien-dev/aien-architecture#77` merge `68b3dbb` aligned the `doctrine/ROADMAP.md` §3 M19 note with the table (COMPLETE / CORRECTIVELY REQUALIFIED).
+- Not changed by these merges: no roadmap milestone row changes; AIENOS M5 and M6 and roadmap M20 and M23 are not closed; nothing is qualified on silicon or Machine 1.
 
 ## 3. Program rule
 
@@ -230,6 +243,8 @@ Finish and qualify:
 
 Resolve hardware qualification blocks instead of bypassing them.
 
+Status 2026-10-01: NOT_QUALIFIED. Native C crypto, envelope, anchors, identity separation and recovery are merged and host-tested (`aien-dev/aienos#183` `84de088`, `#186` `4492ca9`); first receipt `evidence/trust1_m5_qualification_5a5de9c1...json` (`#187` `929a720`): pass 10 / blocked 10 / missing 6 / not_run 2. Key hierarchy is BLOCKED_OPERATOR (TRUST-1 Gate 3 owner key ceremony); sealed volume keys, Store-wired envelopes and the owner-signed chain on Machine 1 are MISSING_IMPLEMENTATION. In-house Ed25519 exists (`#188` `913b962`) but is not yet wired into migration authorization.
+
 ### D2. M6 minimal networking
 
 Build the minimum native networking needed by the system:
@@ -240,6 +255,8 @@ Build the minimum native networking needed by the system:
 - secure transport;
 - service discovery sufficient for Fabric later;
 - deterministic failure/recovery.
+
+Status 2026-10-01: M6-A hosted C network stack merged (`aien-dev/aienos#184`, `999b5aa`): Ethernet/ARP/IPv4/UDP, virtio capability parsing and a TEST-identity control transport; M6A_NET_HOST: PASS (host only; no QEMU, no hardware). Native NIC binding needs a C kernel; secure transport needs the M5 key hierarchy; physical NIC qualification follows TRUST-1 Gate 7.
 
 ### D3. M7 native CPU inference
 
@@ -339,11 +356,15 @@ MCP is one provider adapter, not the system ontology.
 
 Status 2026-09-30: implemented at host level as omega `rx_capq` (`aien-dev/omega#115`, `135d1c2`), machines keyed by `AienMachineId` (`#113`). Credentials and live provider advertisement over Fabric are not implemented; not yet in the living-system build.
 
+Status 2026-10-01: in the R13 living build through COMPOSITION-2 (`aien-dev/omega#126`, `4f8485b`), host only. A host-only Fabric F5-0 interface (`#123`, `a18ec6b`) can land remote entries as `CQ_SRC_FABRIC` records, but it is not wired into the living system; credentials are still not implemented.
+
 ### F2. Skill Router
 
 Skills are signed/versioned reusable procedures. Tools are atomic operations. The router selects procedures/capabilities without exposing raw provider sprawl to the model.
 
 Status 2026-09-30: implemented at host level as omega `rx_skillroute` (`aien-dev/omega#115`, `135d1c2`): routes a requirement to a digest-pinned local skill or a remote provider record and binds one `AG_SKILL` action-graph node. Remote provider execution depends on Fabric, which does not exist.
+
+Status 2026-10-01: end to end with fail-closed routing modes (withdrawn, stale generation, unavailable, machine mismatch, ended lease, digest pin, authority) in `aien-dev/omega#121` (`5c403f0`); runs inside the R13 living World via `#126` (`4f8485b`), host only. Remote provider execution still has no live Fabric.
 
 ### F3. World and effects
 
@@ -357,6 +378,8 @@ Status 2026-09-30: implemented at host level as omega `rx_skillroute` (`aien-dev
 
 Status 2026-09-30: World execution is recorded into omega `rx_cortex` through one optional recorder hook (`aien-dev/omega#114`, `43dcb04`). World commit does not yet bind J-Space branches (`js_branch_seal` / `js_space_reclaim_staged` are not called from World code), and the Cortex owner is not yet recorded under `doctrine/ARCHITECTURE.md` §2.8.
 
+Status 2026-10-01: World commit binder (`rx_world_set_binder`, `aien-dev/omega#121`, `5c403f0`) binds the selected J-Space branch at commit; the causal path World -> J-Space -> AEGIS -> commit -> Cortex with OLD-or-NEW crash recovery is `#125` (`f099141`). Cortex owner recorded: ADR 0022 (`aien-dev/aien-architecture#75`, `6c06e50`) names omega `rx_cortex` canonical. Host PASS; receipt omega `evidence/COMPOSITION-2/ca74b119bbb9008306638b68ae0e82f31d05c4c9ee35ba2b5bb0991f787778f6.json`. GPU tier NOT_RUN.
+
 ### F4. J-Space
 
 - fork candidate Worlds;
@@ -366,6 +389,8 @@ Status 2026-09-30: World execution is recorded into omega `rx_cortex` through on
 - externalize only the selected verified branch.
 
 Status 2026-09-30: production J-Space for local branches merged (`aien-dev/omega#116`, `529ebfa`): generation-checked ids, limits, durable checkpoints, staged branches. Remote operations return `JS_ERR_REMOTE`; machine placement is a placeholder; not yet in the living-system build.
+
+Status 2026-10-01: COMPOSITION-2 explores two alternatives in J-Space, commits one verified branch and discards the other, inside the R13 living World (`aien-dev/omega#125` `f099141`, `#126` `4f8485b`), host only. Remote J-Space still returns `JS_ERR_REMOTE`.
 
 ### F5. Fabric
 
@@ -382,6 +407,8 @@ After native networking:
 Start with coarse work units, not per-layer distributed inference.
 
 Status 2026-09-30: not started. Only stable Machine identities exist (`AienMachineId`, `aien-dev/omega#113`, `16f8518`).
+
+Status 2026-10-01: F5-0 interface PASS, host-only loopback (`aien-dev/omega#123`, `a18ec6b`; spec `aien-dev/aien-architecture#78`, `40c17de`; receipt omega `evidence/F5-0/e419a00b54d52b7307cada39d29e501d8a776a100471e0c2a2c41dfd84753858.json`): authenticated membership, capability advertisement, leases and loss withdrawal across three loopback machines. Not yet in the living system; no network transport (needs AIENOS M6), no AEGIS send gate, HMAC stand-in for the owner-key signature, no topology measurement or placement. BLOCKED_OPERATOR: aienos ADR 0010 is still Proposed.
 
 **Exit gate:** one objective can be decomposed, explored across branches/machines, realized, verified, committed, and remembered through canonical typed interfaces.
 
@@ -400,6 +427,8 @@ Instrument synthesis deeply:
 - prune/failure/success reason.
 
 Learned guidance prioritizes search; verification still decides validity.
+
+Status 2026-10-01: corpus capture PASS (`aien-dev/omega#122`, `ce7821d`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`, 12 frozen tasks, 3072 steps, byte-identical reruns). Realization cost is a model estimate, not a measured time. M23 training NOT_RUN (waits on M22).
 
 ### G2. M24 AIEN_0
 
@@ -425,6 +454,8 @@ Before final training, commit:
 - training budget.
 
 Train, freeze model digest, reveal holdout, evaluate once, write immutable receipt.
+
+Status 2026-10-01: the sealed-holdout commitment format, reveal-and-check procedure and receipt format are merged and tested (`aien-dev/omega#122`, `ce7821d`); nothing is sealed yet. Sealing is BLOCKED_OPERATOR: secret salt generation, choice of storage for the sealed set, and owner-key signature of the public commitment.
 
 ### G4. M25 guided synthesis
 
@@ -565,6 +596,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 - Alias: COMPOSITION-1 (formerly misnamed 'M20 program' in agent briefs, 2026-09-30). Any "M20" in omega PRs #113 to #116 or `m20*` branch names means COMPOSITION-1; roadmap M20 is `OMEGA_TENSOR` (Lane 3).
 - Merged so far: `aien-dev/omega#113`, `#114`, `#115`, `#116` (see §2 composition-merges addendum). Open: World commit binding of J-Space, Cortex ownership ADR, living-system integration, Fabric.
+- COMPOSITION-2 (2026-10-01): merged `aien-dev/omega#121` (`5c403f0`), `#125` (`f099141`), `#126` (`4f8485b`); host PASS, receipt omega `evidence/COMPOSITION-2/ca74b119...json`. This closes, at host level, World commit binding of J-Space and living-system integration; the Cortex ownership ADR is ADR 0022 (`aien-dev/aien-architecture#75`). Fabric F5-0 interface merged host-only (`aien-dev/omega#123`). Open: GPU tier NOT_RUN, Fabric in the living system, more than one composition per World.
 
 **Lane 5 — Resident reaction runtime (ADR 0016):** R0–R16, sequenced in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
 
