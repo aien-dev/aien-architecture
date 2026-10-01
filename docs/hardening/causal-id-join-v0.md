@@ -72,7 +72,7 @@ This note fixes three things:
 | Item | Where | Notes |
 |---|---|---|
 | receipt | `native/kernel/artifact/ck_artifact.h` l.166 to 180 (`struct cka_receipt`: seq, nonce, time, id[32] and other digests, generation, context) | `id` is the artifact identity digest, not a request id |
-| receipt seq | `native/kernel/core/artifact_loader.c` l.825 (`static uint64_t receipt_seq = 1`), l.990 to 998 (`print_receipt`) | minted **when the receipt is printed, after the run**, from a per-boot counter. `rc.generation` and `rc.context` are not set in `print_receipt` (zero from `memset`, l.992). |
+| receipt seq | `native/kernel/core/artifact_loader.c` l.825 (`static uint64_t receipt_seq = 1`), l.990 to 998 (`print_receipt`) | minted **when the receipt is printed, after the run**, from a per-boot counter. `rc.generation` and `rc.context` are not set in `print_receipt` (zero from `memset`, l.993). |
 | ARGUS event | `native/argus/argus_abi.h` l.219 to 237 | 128 bytes: sequence (producer-local), tick, principal, cap_id, cap_generation, world_generation, machine_id, `evidence_digest` (off 96) |
 | kernel ARGUS emission | `native/kernel/svc/security.c` l.178 (`argus_check`) | builds synthetic events for a self-test; no other kernel `.c` outside `native/argus/` emits ARGUS events (grep, 2026-10-01) |
 | task id | `native/kernel/core/sched.h` l.25 to 30 (`struct ck_task {uint32_t id; ...}`) | a slot; ADR 0025 section 2 says it is never the cause id |
@@ -138,7 +138,7 @@ Raw omega crumb digests must not be used as a root digest: the capability genera
 
 ## 3. Proposed TRN1 records (for aien-protocols, not yet valid)
 
-Type numbers 17 to 19 are proposals for TRN1 0.2.0. Until that spec version exists, these records are refused as UNKNOWN by every conforming reader (TRN1 refusal -5), which is correct.
+Type numbers 17 to 20 are proposals for TRN1 0.2.0 (table and arch#96 coordination in section 3.5). Until that spec version exists, these records are refused as UNKNOWN by every conforming reader (TRN1 refusal -5), which is correct.
 
 ### 3.1 Type 17 CAUSE (ident 80)
 
@@ -182,6 +182,25 @@ Annotation: parent run id (32), parent seq (u64). Allowed only as record 1.
 
 TRN1 v0 has no record type for an M22 dispatch record, and omega#176 verifies `dispatch.log` only in its own form (`rx_replay.c` l.294 onward). A dispatch record needs a TRN1 type before it can join the chain. Proposed for the same spec revision: type 20 TRAIN_DISPATCH, identity = the 160 hashed bytes of the record (`rx_replay.c` `D_HASHED`) minus its own chain field, so op_id, seq, step, base_gen, args and refs are compared. A training run then opens one cause (local_kind 4, train run, root digest = generation 0 digest) and every dispatch serves it. **UNVERIFIED**: whether `base_digest` is replay-stable across two correct training runs.
 
+### 3.5 Coordination with resource-contract-v0 (arch#96)
+
+arch#96 (`docs/hardening/resource-contract-v0.md`, branch `hive/HD-09-resource-contract-spec`) proposes a `RESOURCE` record for TRN1 0.2 without a type number ("number assigned there") and with an 8-byte `cause` field. The two proposals go to aien-protocols as **one** TRN1 0.2.0 version bump, with this single number table:
+
+| Type | Name | ident_len | Proposed by |
+|---|---|---|---|
+| 17 | CAUSE | 80 | this note, section 3.1 |
+| 18 | RECEIPT_BIND | 40 | this note, section 3.2 |
+| 19 | RUN_LINK | 48 | this note, section 3.3 |
+| 20 | TRAIN_DISPATCH | 160 minus the chain field (exact length set by S1) | this note, section 3.4 |
+| 21 | RESOURCE | 96 | arch#96 section 4 |
+
+Rules for the shared bump:
+
+- `RESOURCE.cause` is the **32-byte cause id** of section 2.1, not a u64. With that change the arch#96 identity is op u8, reason u8, field u16, reserved u32, unit u64, cause (32), contract (32), declared u64, used u64 = 96 bytes. The arch#96 builder is aligning its side to match.
+- A `RESOURCE` record's cause must be open in the same run (minted or adopted earlier, section 3.1), checked as step 7 of the join rule checks a CAUSE REF: `REF_UNKNOWN` otherwise. A cancel of a descendant carries the descendant's cause (section 2.4).
+- Neither proposal takes a number outside this table. If aien-protocols renumbers, both notes follow its numbers.
+- Corpus vectors for types 17 to 21 ship in the same aien-protocols change (cut S1).
+
 ---
 
 ## 4. The join rule
@@ -201,7 +220,7 @@ Steps, in this order. The first failing step decides the outcome.
 4. **Check placement** (section 3.1): `CAUSE_PLACEMENT`.
 5. **Check every ADOPT:** the origin run named in its annotation must be in the set, and the record at origin seq must be a CAUSE MINT or ADOPT with the same cause. Origin run not supplied: the join is not refused but reports that cause as `NOT_RUN reason=origin_missing` and does not count it as joined. Origin present but record wrong: `ADOPT_ORIGIN`.
 6. **Check every RX_CRUMB:** its episode (re-derived by the omega rule, as omega#176 `rx_replay.c` l.143 checks) must be 0 or name a crumb that has a CAUSE MINT or ADOPT right after it: `EPISODE_UNCAUSED`. Episode 0 crumbs (no outside publication) are allowed and counted as uncaused.
-7. **Check every EFFECT_INTENT, BRANCH_CREATE, BRANCH_DESTROY:** it must be preceded by a CAUSE REF whose cause is open in this run (minted or adopted earlier, or, for a child run, adopted from its parent): `REF_MISSING` or `REF_UNKNOWN`. Each EFFECT_COMMIT must match an earlier intent with the same effect id in the same run: `COMMIT_ORPHAN` (TRN1 v0 leaves this to replayers, section 11).
+7. **Check every EFFECT_INTENT, BRANCH_CREATE, BRANCH_DESTROY:** it must be preceded by a CAUSE REF (a RESOURCE record instead names its cause in its own 32-byte field, which must be open in this run) whose cause is open in this run (minted or adopted earlier, or, for a child run, adopted from its parent): `REF_MISSING` or `REF_UNKNOWN`. Each EFFECT_COMMIT must match an earlier intent with the same effect id in the same run: `COMMIT_ORPHAN` (TRN1 v0 leaves this to replayers, section 11).
 8. **Check every RUN_LINK:** the parent run must be in the set, and the parent's record at the annotated seq must be a BRANCH_CREATE whose compared digest and branch match: `RUN_LINK`. Parent not supplied: `NOT_RUN reason=parent_missing` for that child, as in step 5.
 9. **Check every RECEIPT_BIND:** the cause must be open in this run: `RECEIPT_CAUSE`. A receipt file whose SHA-256 equals the annotated digest must be supplied, else `NOT_RUN reason=receipt_missing`. Once receipt formats carry cause and run (cut A2), the receipt's own cause id and run id must equal the bind's cause and the transcript's run id: `RECEIPT_MISMATCH`. Before cut A2 lands, that last check is reported NOT_RUN with reason `receipt_format_v0`, never as a pass.
 10. **ARGUS:** an `ARGUS_EVENT` whose `evidence_digest` equals a bound receipt digest is joined to that receipt's cause. Others are counted as `argus_unjoined`, which is allowed (ADR 0025 section 2 keeps ARGUS separate from World state).
@@ -262,7 +281,7 @@ Each cut is about one file. "After 176" means it edits files omega#176 adds and 
 
 | Cut | Repo, file | Change | Waits for |
 |---|---|---|---|
-| S1 | aien-protocols `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md` + `vectors/` | TRN1 0.2.0: types 17 CAUSE, 18 RECEIPT_BIND, 19 RUN_LINK, 20 TRAIN_DISPATCH; corpus goldens and one broken vector per refusal code in section 4.1 | nothing (spec owner) |
+| S1 | aien-protocols `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md` + `vectors/` | TRN1 0.2.0 (one bump shared with arch#96): types 17 CAUSE, 18 RECEIPT_BIND, 19 RUN_LINK, 20 TRAIN_DISPATCH, 21 RESOURCE with a 32-byte cause; corpus goldens and one broken vector per refusal code in section 4.1 | nothing (spec owner) |
 | O1 | omega `tools/replay/trn1.c` | `trn1_from_rxlog` takes the run id from its caller (minted per section 2.1) instead of the END head | 176 |
 | O2 | omega `tools/replay/trn1.c` (or new `tools/replay/trn1_cause.c`) | emit CAUSE MINT after each EXTERNAL `RX_CRUMB`, root digest over the relative-generation input | 176, S1 |
 | O3 | omega new `tools/replay/trn1_join.c` | the join rule of section 4, one output line, wired as `rx_replay join` | 176, S1 |
