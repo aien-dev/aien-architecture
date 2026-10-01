@@ -1,6 +1,20 @@
 # GitHub Repository Map
 
-Snapshot-oriented map of the AIEN GitHub ecosystem. Code remains authoritative.
+Snapshot-oriented map of the AIEN GitHub ecosystem, checked against `gh repo list aien-dev` on 2026-10-01. Code remains authoritative. "Archived" means the GitHub repository is read-only. Whether each archived component now lives as a crate in `aien-sovereign-core` is UNVERIFIED here (confirmed only for `spark-crumbs`, per docs/CRUMB_PROTOCOL.md).
+
+## Core program repositories
+
+| Repository | Visibility | Role |
+|---|---|---|
+| `aien-dev/aienos` | public | AIENOS, the sovereign operating system (pre-alpha). |
+| `aien-dev/omega` | public | Omega, the C reaction runtime and compiler. |
+| `aien-dev/physics` | public | FORGE machine realization plus historical Atlas/PHYSICS boot evidence. The subsystem was renamed FORGE by [ADR 0014](adr/0014-rename-machine-physics-to-forge.md), which keeps the existing `aien-dev/physics` repository name and history. The GitHub description is empty. |
+| `aien-dev/atlas` | public | Atlas, the bare-metal boot layer. The GitHub description is empty. |
+| `aien-dev/aien-protocols` | public | Protocol authority (see below). |
+| `aien-dev/aien-architecture` | public | This repository. |
+| `aien-dev/aien-sealed` | private | Name only. Holds evaluator-only material; never given to a candidate under test. |
+
+Other live public repositories: `aien-dev/aien-edge`, `aien-dev/aienos.com`, `aien-dev/drakestapleton.com`, `aien-dev/aien-dev` (profile), `aien-dev/.github`, `aien-dev/aegis-runtime`, `aien-dev/spark-rsi`, `aien-dev/benchmarks`, `aien-dev/open-humanity`.
 
 ## Canonical composition root
 
@@ -61,7 +75,7 @@ Target: AEGIS owns authorization; Capability Graph owns discovery/routing.
 
 ## Memory
 
-### `aien-dev/cortex-rs`
+### `aien-dev/cortex-rs` (ARCHIVED, read-only)
 https://github.com/aien-dev/cortex-rs
 
 Durable memory and knowledge engine.
@@ -96,19 +110,19 @@ Canonical performance/provenance benchmark work should be linked from this repo 
 
 ## Local composition
 
-### `aien-dev/aien-local-stack`
+### `aien-dev/aien-local-stack` (ARCHIVED, read-only)
 https://github.com/aien-dev/aien-local-stack
 
 Useful integration proof combining protocol crates, AEGIS, and sovereign-core components.
 
 ## Existing MCP compatibility fixtures
 
-### `aien-dev/spark-debugger`
+### `aien-dev/spark-debugger` (ARCHIVED, read-only)
 https://github.com/aien-dev/spark-debugger
 
 Contains a hand-written Rust stdio JSON-RPC MCP server.
 
-### `aien-dev/aien-harness`
+### `aien-dev/aien-harness` (ARCHIVED, read-only)
 https://github.com/aien-dev/aien-harness
 
 Contains another hand-written Rust stdio MCP server around evaluation/validation capabilities.
@@ -117,16 +131,16 @@ Target: migrate protocol ownership into `aien-sovereign-core/crates/aien-mcp`; r
 
 ## Distributed / coordination / experimentation satellites
 
-- `aien-dev/spark-hive`
-- `aien-dev/spark-supervisor`
-- `aien-dev/spark-dream`
-- `aien-dev/spark-debugger`
-- `aien-dev/spark-inquisitor`
-- `aien-dev/spark-adapters`
-- `aien-dev/harvester`
+- `aien-dev/spark-hive` (archived, read-only)
+- `aien-dev/spark-supervisor` (archived, read-only)
+- `aien-dev/spark-dream` (archived, read-only)
+- `aien-dev/spark-debugger` (archived, read-only)
+- `aien-dev/spark-inquisitor` (archived, read-only)
+- `aien-dev/spark-adapters` (archived, read-only)
+- `aien-dev/harvester` (archived, read-only)
 - `aien-dev/open-humanity`
-- `aien-dev/crumb-spec`
-- `aien-dev/spark-crumbs`
+- `aien-dev/crumb-spec` (archived, read-only)
+- `aien-dev/spark-crumbs` (archived, read-only)
 
 These should link to this repo for system-wide architecture while retaining component-specific documentation locally.
 
