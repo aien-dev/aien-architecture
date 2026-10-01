@@ -374,6 +374,8 @@ Status 2026-10-01: two-tier provenance (chained per-dispatch records, full diges
 
 **Exit gate:** a complete training step is deterministic enough to reproduce/verify and transactionally recoverable.
 
+DIRAC-0 (PROPOSED, 2026-10-01; ADR 0023, `docs/plans/dirac/DIRAC-0-SPEC.md`) is a downstream consumer of OSC-2, E1, M20, ESTIMATION and TURING, not a milestone and not a new tensor, measurement, GPU-runtime or evidence system. It does not reorder E1 or M20. Its gate `DIRAC_PREP_FROZEN` is proposed, not passed; D0 waits on stable OSC-2 and E1 interfaces; D1B waits on a qualified M20 GB10 tier.
+
 ## 9. Phase F — Agency and composition
 
 ### F1. Canonical Capability Graph
