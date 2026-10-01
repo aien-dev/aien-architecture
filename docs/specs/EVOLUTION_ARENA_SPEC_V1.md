@@ -28,7 +28,7 @@ Everything else in the research document (Cortex epistemics, the machine self-mo
 
 Changing any frozen item after a candidate has been generated against it requires a new spec commit and a full rerun of the affected experiment (same rule as every pre-registered gate in this project).
 
-Language and platform rules for any eventual implementation (project rules 2026-09-27/29): C (+asm where measured), shell tooling; no Rust, no Python, no systemd; no GPU/NVIDIA work until the owner decides the NVIDIA/GB10 direction.
+Language and platform rules for any eventual implementation (project rules 2026-09-27/29): C (+asm where measured), shell tooling; no Rust, no Python, no systemd; no GPU/NVIDIA work until the owner decides the NVIDIA/GB10 direction. **[Superseded 2026-10-01 by [ADR 0024](../adr/0024-rust-scaffolding-omega-destination.md): Rust is scaffolding, Omega is the destination, C and asm only where hardware, boot, ABI or measurement justifies them. The no-Python, no-systemd and no-NVIDIA-work rules in this sentence are unchanged by that ADR.]**
 
 ### 0.1 Activation hold
 

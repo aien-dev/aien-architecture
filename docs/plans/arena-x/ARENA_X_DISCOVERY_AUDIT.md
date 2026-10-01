@@ -131,7 +131,7 @@ profile, no goalpost moves, a departures log.
 | Evaluator-private (Brownian-sealed-style private repo) | evaluator | codename map, family definitions, data generators, answer keys, sealed seeds, evaluator notes |
 
 Rule: nothing the discoverer can read may explain what the sealed data was built to contain.
-Language rules: C plus shell, no Rust, no Python, no systemd.
+Language rules: C plus shell, no Rust, no Python, no systemd. **[Language rule superseded 2026-10-01 by [ADR 0024](../../adr/0024-rust-scaffolding-omega-destination.md): Rust is scaffolding, Omega is the destination, C only where hardware-justified. No Python and no systemd still hold.]**
 
 ## 7. Dependency graph
 
