@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/errata",
+  "layer": "docs/errata",
+  "purpose": "Directory docs/errata. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/errata. Purpose not yet described by a human.",
+      "files": [
+        "m19-errata.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 1,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "1f98d0a",
+          "timestamp": "2026-09-27T07:16:12-05:00",
+          "author": "aien-dev",
+          "subject": "docs(m19r): adopt M19R foundation recovery program; M19 errata (#40)",
+          "pr": 40
+        }
+      ]
+    }
+  }
+}

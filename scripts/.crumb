@@ -1,0 +1,51 @@
+{
+  "schema_version": "1.0.0",
+  "name": "scripts",
+  "layer": "scripts",
+  "purpose": "Directory scripts. Purpose not yet described by a human.",
+  "above": {
+    "name": "cs-aien-architecture",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory scripts. Purpose not yet described by a human.",
+      "files": [
+        "check_doctrine.sh",
+        "verify-r16-status.sh"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 3,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "550872e",
+          "timestamp": "2026-09-29T15:02:52-05:00",
+          "author": "dhgmonkey",
+          "subject": "Require qualification evidence before claiming R16 PASS (#61)",
+          "pr": 61
+        },
+        {
+          "source": "backfill-git",
+          "sha": "bf3c519",
+          "timestamp": "2026-09-26T09:41:43-05:00",
+          "author": "aien-dev",
+          "subject": "docs(roadmap): calibrate M17 realization boundary and declare M18 code generation mandate (#30)",
+          "pr": 30
+        },
+        {
+          "source": "backfill-git",
+          "sha": "31cf388",
+          "timestamp": "2026-09-26T01:12:19-05:00",
+          "author": "aien-dev",
+          "subject": "docs(doctrine): consistency sweep — single M0-M40 roadmap, Atlas canonical, contract-driven EL (#10)",
+          "pr": 10
+        }
+      ]
+    }
+  }
+}

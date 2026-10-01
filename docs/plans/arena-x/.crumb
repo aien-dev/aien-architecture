@@ -1,0 +1,34 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/plans/arena-x",
+  "layer": "docs/plans/arena-x",
+  "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs/plans",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/plans/arena-x. Purpose not yet described by a human.",
+      "files": [
+        "ARENA_X_DISCOVERY_AUDIT.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 1,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "e004417",
+          "timestamp": "2026-09-30T07:20:41-05:00",
+          "author": "aien-dev",
+          "subject": "Merge pull request #66 from aien-dev/docs/arena-x-audit",
+          "pr": 66
+        }
+      ]
+    }
+  }
+}

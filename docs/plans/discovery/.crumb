@@ -1,0 +1,37 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/plans/discovery",
+  "layer": "docs/plans/discovery",
+  "purpose": "Directory docs/plans/discovery. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs/plans",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/plans/discovery. Purpose not yet described by a human.",
+      "files": [
+        "CEXP2_ABSTRACTION_EXPERIMENT.md",
+        "DEXP1_DISCOVERABILITY_MAP.md",
+        "DISCOVERY_CURRENT_STATE.md",
+        "README.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 1,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "b9aa9a2",
+          "timestamp": "2026-09-30T21:47:47-05:00",
+          "author": "aien-dev",
+          "subject": "docs(discovery): CEXP-2 abstraction and DEXP-1 discoverability frozen specs (#73)",
+          "pr": 73
+        }
+      ]
+    }
+  }
+}

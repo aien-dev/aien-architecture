@@ -1,0 +1,43 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/archive/plans",
+  "layer": "docs/archive/plans",
+  "purpose": "Directory docs/archive/plans. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs",
+    "path": "../.."
+  },
+  "below": [
+    {
+      "name": "2026-09-22",
+      "role": ""
+    },
+    {
+      "name": "2026-09-25",
+      "role": ""
+    }
+  ],
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/archive/plans. Purpose not yet described by a human.",
+      "files": [
+        "README.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 1,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "38c7cc2",
+          "timestamp": "2026-09-27T06:49:25-05:00",
+          "author": "aien-dev",
+          "subject": "docs: consolidate whole-system plan authority"
+        }
+      ]
+    }
+  }
+}

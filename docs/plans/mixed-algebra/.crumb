@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/plans/mixed-algebra",
+  "layer": "docs/plans/mixed-algebra",
+  "purpose": "Directory docs/plans/mixed-algebra. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs/plans",
+    "path": ".."
+  },
+  "below": [
+    {
+      "name": "research",
+      "role": ""
+    }
+  ],
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/plans/mixed-algebra. Purpose not yet described by a human.",
+      "files": [
+        "MIXED_ALGEBRA_CURRENT_STATE.md",
+        "MIXED_ALGEBRA_HANDOFF_AUDIT.md",
+        "MIXED_ALGEBRA_THEORY.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 3,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "e89ba94",
+          "timestamp": "2026-09-30T20:13:35-05:00",
+          "author": "aien-dev",
+          "subject": "docs: reconcile M19R Gate 14 and R16 closure, lift runtime freeze (#70)",
+          "pr": 70
+        },
+        {
+          "source": "backfill-git",
+          "sha": "33acd89",
+          "timestamp": "2026-09-29T17:07:51-05:00",
+          "author": "aien-dev",
+          "subject": "Merge pull request #63 from aien-dev/docs/mixed-algebra-handoff-audit",
+          "pr": 63
+        },
+        {
+          "source": "backfill-git",
+          "sha": "e2bb8a8",
+          "timestamp": "2026-09-29T14:17:53-05:00",
+          "author": "aien-dev",
+          "subject": "Merge pull request #58 from aien-dev/docs/mixed-algebra",
+          "pr": 58
+        }
+      ]
+    }
+  }
+}

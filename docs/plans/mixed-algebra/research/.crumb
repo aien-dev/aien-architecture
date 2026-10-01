@@ -1,0 +1,35 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/plans/mixed-algebra/research",
+  "layer": "docs/plans/mixed-algebra/research",
+  "purpose": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs/plans/mixed-algebra",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human.",
+      "files": [
+        "PHASE_EXPERIMENT_AND_HARDWARE.md",
+        "PRIOR_ART.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 1,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "e2bb8a8",
+          "timestamp": "2026-09-29T14:17:53-05:00",
+          "author": "aien-dev",
+          "subject": "Merge pull request #58 from aien-dev/docs/mixed-algebra",
+          "pr": 58
+        }
+      ]
+    }
+  }
+}
