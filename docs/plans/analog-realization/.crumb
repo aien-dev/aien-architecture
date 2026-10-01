@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0.0",
+  "name": "docs/plans/analog-realization",
+  "layer": "docs/plans/analog-realization",
+  "purpose": "Directory docs/plans/analog-realization. Purpose not yet described by a human.",
+  "above": {
+    "name": "docs/plans",
+    "path": ".."
+  },
+  "extensions": {
+    "seed": {
+      "purpose_auto": "Directory docs/plans/analog-realization. Purpose not yet described by a human.",
+      "files": [
+        "ANALOG_ARGUS_TELEMETRY_REQUIREMENTS.md",
+        "ANALOG_REALIZATION_COLLISION_MAP.md",
+        "ANALOG_REALIZATION_CURRENT_STATE.md",
+        "ANALOG_REALIZATION_TEST_PLAN.md"
+      ]
+    },
+    "owner_lane": "",
+    "provenance": {
+      "source": "backfill",
+      "total_commits": 5,
+      "ledger_cap": 20,
+      "entries": [
+        {
+          "source": "backfill-git",
+          "sha": "1438799",
+          "timestamp": "2026-09-29T14:28:29-05:00",
+          "author": "aien-dev",
+          "subject": "doctrine: R16 roadmap status PASS -> IN PROGRESS (only G1/G2 evidenced) (#59)",
+          "pr": 59
+        },
+        {
+          "source": "backfill-git",
+          "sha": "8ec9b1d",
+          "timestamp": "2026-09-29T11:52:22-05:00",
+          "author": "aien-dev",
+          "subject": "docs(governance): record R16 orchestrator retirement closure (#57)",
+          "pr": 57
+        },
+        {
+          "source": "backfill-git",
+          "sha": "bbd2579",
+          "timestamp": "2026-09-29T11:08:41-05:00",
+          "author": "aien-dev",
+          "subject": "docs(governance): synchronize analog current state audit and ADR 0018 drafting basis (#56)",
+          "pr": 56
+        },
+        {
+          "source": "backfill-git",
+          "sha": "91c0f65",
+          "timestamp": "2026-09-29T10:50:42-05:00",
+          "author": "aien-dev",
+          "subject": "docs(governance): synchronize status across roadmap, architecture doctrine, ADR index, and arena spec (#55)",
+          "pr": 55
+        },
+        {
+          "source": "backfill-git",
+          "sha": "641bd3c",
+          "timestamp": "2026-09-29T09:57:59-05:00",
+          "author": "aien-dev",
+          "subject": "Merge pull request #46 from aien-dev/docs/analog-realization-adr0018",
+          "pr": 46
+        }
+      ]
+    }
+  }
+}
