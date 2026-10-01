@@ -16,8 +16,9 @@ Results are `EvidenceReceiptV1` receipts from `aien-sovereign-core/crates/aien-p
 A candidate is a TOML file `qualification/candidates/CAND-<n>.toml`, schema `CandidateManifestV1`, with:
 
 - `schema`, `id`, `status`, `created`.
-- `[commits]`: one full 40-hex commit per repo: `omega`, `aienos`, `aien-sovereign-core` (FORGE and `aien-proof`), `aien-protocols`, `aien-architecture`. The contracts and wire schemas live in `aien-protocols`, so its pin is the contracts pin. UNVERIFIED: no separate contracts repo appears in `gh repo list aien-dev`.
+- `[commits]`: one full 40-hex commit per repo: `omega`, `aienos`, `aien-sovereign-core` (FORGE and `aien-proof`), `aien-protocols`, `aien-architecture`. The contracts and wire schemas live in `aien-protocols`, so its pin is the contracts pin. The crumb contracts are pinned separately in `[contracts]`.
 - `[executables]`: a content digest for every built binary or image under test. `UNBUILT` is allowed only while status begins with `draft`.
+- `[contracts]`: one full 40-hex commit for each contract repo: `crumb-spec` (the Crumb Protocol specification) and `spark-crumbs` (its event ledger implementation). Orchestrator decision 2026-10-01: both are contracts and are pinned in every candidate. Both repos are archived on GitHub, so the pins are stable.
 
 `status` is one of: `draft, not frozen`, `frozen`, `superseded`. Only a `frozen` candidate may be qualified.
 
@@ -34,16 +35,16 @@ Each result (a receipt, or the campaign table row pointing to one) carries:
 
 | Field | Meaning | EvidenceReceiptV1 home |
 |---|---|---|
-| source commits | the candidate id and each pinned commit used | `repo`, `commit`, `dirty` (must be false), `external_refs` carries the candidate id |
-| executable digest | digest of the binary or image run | `input_artifacts` |
+| source commits | the candidate id and each pinned commit used (including `[contracts]`) | `repo`, `commit`, `dirty` (must be false); `external_refs` carries the candidate id as `cand:<id>` |
+| executable digest | digest of the binary or image run; must equal the manifest `[executables]` entry | `external_refs`, one entry `exe:<name>=<digest>` per executable (kept apart from inputs; `input_artifacts` is a digest list with no role tag) |
 | execution environment | host, QEMU, or physical GB10 | `env_class`, `machine` |
-| inputs | data, models, seeds | `input_artifacts` |
+| inputs | data, models, seeds (never the executable) | `input_artifacts` |
 | commands | exact procedure | `procedure`, `toolchain` |
 | raw output location | where the full output is stored | `output_artifacts`, `output_digest` |
 | acceptance criteria | the pass condition, written before the run | `assertions` |
 | status | `PASS`, `FAIL`, `SKIPPED`, or `BLOCKED` | `result` |
 
-A result with a missing field, a dirty tree, or a commit not in the manifest is not a PASS. `SKIPPED` and `BLOCKED` are never reported as PASS. Note: `Verdict` in `evidence.rs` also has `INCOMPLETE`; for campaign tables treat it as not-PASS and report it as `BLOCKED`.
+A result with a missing field, a dirty tree, or a commit not in the manifest is not a PASS. `SKIPPED` and `BLOCKED` are never reported as PASS. `Verdict` in `evidence.rs` also has `INCOMPLETE` (the run did not finish or lacked a required field). Campaign tables report it as `INCOMPLETE`, never as `BLOCKED`: `BLOCKED` means something outside the run (hardware, access, a dependency) stopped it, `INCOMPLETE` means the result itself is missing evidence. Both are not-PASS.
 
 ## Old receipts
 
@@ -55,4 +56,4 @@ Promotion checks (for example `evidence-immutable`) are mandatory. A bypass need
 
 ## Checker
 
-`scripts/check_candidate.sh <manifest.toml>` verifies that all required fields are present, that each pinned commit is 40 hex digits and exists in its repo, and that a non-draft manifest has real executable digests. Test: `scripts/test_check_candidate.sh`. Wiring into CI is not done and needs Drake's approval.
+`scripts/check_candidate.sh <manifest.toml>` verifies that all required fields are present, that each pinned commit (`[commits]` and `[contracts]`) is 40 hex digits and exists in its repo (checked with `gh api`), that executable digests are 64 hex and not all zero, that a `#` inside a quoted value is kept (only a trailing comment is dropped), and that a non-draft manifest has real executable digests. Test: `scripts/test_check_candidate.sh` (offline: a fake `gh` on PATH exercises the real `gh` code path, and mutant copies of the checker prove each check bites). Wiring into CI is not done and needs Drake's approval.
