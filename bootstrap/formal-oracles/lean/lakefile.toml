@@ -1,5 +1,5 @@
 name = "aien_formal_oracle"
-defaultTargets = ["AienCap"]
+defaultTargets = ["AienCap", "AienReceipt"]
 
 # Core Lean only. No Mathlib, no Batteries, no other dependency: builds offline.
 
@@ -23,3 +23,32 @@ globs = ["MutantExpiryClaim"]
 [[lean_lib]]
 name = "MutantDepthClaim"
 globs = ["MutantDepthClaim"]
+
+# FORMAL-4: receipt consistency model (AIEN.INV.RECEIPT.REJECTION_CONSISTENCY.V1).
+[[lean_lib]]
+name = "AienReceipt"
+
+# FORMAL-4 mutants: models compile, each claim file must FAIL to build.
+[[lean_lib]]
+name = "MutantReceiptModels"
+globs = ["MutantReceiptModels"]
+
+[[lean_lib]]
+name = "MutantRejectedRanClaim"
+globs = ["MutantRejectedRanClaim"]
+
+[[lean_lib]]
+name = "MutantNoReasonClaim"
+globs = ["MutantNoReasonClaim"]
+
+[[lean_lib]]
+name = "MutantNonRejectedFieldsClaim"
+globs = ["MutantNonRejectedFieldsClaim"]
+
+[[lean_lib]]
+name = "MutantCanaryClaim"
+globs = ["MutantCanaryClaim"]
+
+[[lean_lib]]
+name = "MutantAbsentFlagClaim"
+globs = ["MutantAbsentFlagClaim"]
