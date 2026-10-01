@@ -195,7 +195,82 @@ Only VERIFIED items are quoted. Fetched by the PREFILL-REFS lane on 2026-10-01.
 - DeepSeek V4.1-Flash Causal Encoder-Decoder (CED), about 8B active parameters for prefill vs 16B for decode, as a DeepSeek paper: UNVERIFIED, confidence 60%. Only a third-party source was found (Baseten blog, https://www.baseten.co/blog/deepseek-v41-flash-more-efficient-prefill-for-coding-agents/); the primary paper was not fetched.
 - MiMo-V2.5 prefill throughput falloff near 1M cached prefix: UNVERIFIED, confidence 25% (not found in model card or search).
 
+### 11.1 Pass 2 reference check (fetched 2026-10-01)
+
+Numbers are quoted only where found in the fetched source. The pass 2 handoff (`~/handoffs/2026-10-01-prefill-program-pass2.md`) named all of these as unverified; where the source differs from the handoff, the source wins and the difference is stated.
+
+| Reference | Status | What the source says | URL |
+|---|---|---|---|
+| Lost in the Middle (Liu et al.) | VERIFIED | "performance is often highest when relevant information occurs at the beginning or end of the input context, and significantly degrades when models must access relevant information in the middle of long contexts." | https://arxiv.org/abs/2307.03172 |
+| RULER | VERIFIED | "almost all models exhibit large performance drops as the context length increases"; 17 models tested, 13 tasks; only about half kept acceptable performance at 32K (fetch-tool paraphrase). | https://arxiv.org/abs/2404.06654 |
+| NoLiMa | VERIFIED, differs from handoff | "At 32K, for instance, 11 models drop below 50% of their strong short-length baselines." 13 models evaluated. The handoff's "10/12" is not what the abstract says. | https://arxiv.org/abs/2502.05167 |
+| CacheBlend | VERIFIED | "2.2-3.3x" TTFT reduction and "2.8-5x" throughput versus full KV recompute. | https://arxiv.org/abs/2405.16444 |
+| EPIC | VERIFIED | "up to 8x improvements in Time-To-First-Token (TTFT)"; also "7x throughput gains" with negligible or no accuracy loss. | https://arxiv.org/abs/2410.15332 |
+| Prompt Cache | VERIFIED, differs from handoff | Latency reductions "8x for GPU-based inference to 60x for CPU-based inference". The handoff's "~8x" is the GPU figure only. | https://arxiv.org/abs/2311.04934 |
+| Tessera | UNVERIFIED (confidence 15%) | A search for the name and the 3.6x TTFT claim found no paper called Tessera. Not found, so no number is quoted. | none found |
+| LMCache | VERIFIED | "up to 15x improvement in throughput" with vLLM on multi-round QA and document analysis (search result text); supports offloading and prefill/decode disaggregation. | https://arxiv.org/abs/2510.09665 |
+| DistServe | VERIFIED | Separates prefill and decoding onto different GPUs; "serve 7.4x more requests or 12.6x tighter SLO" (fetch-tool wording); OSDI 2024. | https://arxiv.org/abs/2401.09670 |
+| NVIDIA Dynamo | VERIFIED (description only) | README describes "The open-source, datacenter-scale inference stack"; orchestration layer for disaggregated prefill/decode. No performance number quoted. | https://github.com/ai-dynamo/dynamo |
+| Hydragen ("up to 32x" claim), MiMo cache-aware routing numbers | UNVERIFIED (confidence 50%) | Not fetched in this pass. | none |
+| GB10 / DGX Spark memory | VERIFIED | "128 GB LPDDR5x unified system memory, 256-bit interface, 4266 MHz" and "273 GB/s bandwidth". | https://docs.nvidia.com/dgx/dgx-spark/hardware.html |
+
 ## 12. PARKED
 
 - Model-level YOCO / Causal Encoder-Decoder architecture lane: parked until an AIEN-native model is trained; runtime stays model-agnostic, ABI preserved.
-- Turing connection: shared prefill lowers the physical cost of acquiring context; it does not raise Turing gain; same gain at lower energy = better Turing yield; keep quantities separate.
+- Mamba, Titans, Native Sparse Attention, and KV pruning/quantization (KIVI, SnapKV, H2O, Quest): parked to the AIEN-native model lane / later. KV pruning and quantization attack decode memory, not read-once prefill (pass 2 source). Not runtime patches.
+- Turing connection: shared prefill lowers the physical cost of acquiring context; it does not raise Turing gain; same gain at lower energy = better Turing yield (higher T/J); keep quantities separate.
+
+
+## 13. Program roadmap (pass 2, operator material of 2026-10-01)
+
+Source: `~/handoffs/2026-10-01-prefill-program-pass2.md`. Seven steps, each a separate cut, in this order unless independent. This list does not change the gates in section 8. It is a roadmap, not a milestone; `CURRENT_EXECUTION_PLAN.md` owns sequencing.
+
+1. **PREFILL-CORRECTNESS.** First-class PrefillArtifact. Allocated is not Ready. The scheduler must require state PREFILL_READY, a completed fence, a model digest equal to the active model, and a context digest equal to the requested one. This is aien-sovereign-core PR #145, in flight (section 2.2).
+2. **EXACT PREFIX REUSE.** A context revision digest maps to a reusable artifact. An appended revision computes only the new suffix (gates G3, G4).
+3. **BRANCH-AWARE ATTENTION (leads to PREFILL-3-SPEC).** Hydragen-style exact decomposition: attention over the shared prefix is batched across branches, per-branch suffix attention is computed separately, and the two are combined exactly. It generalizes to tree-shaped sharing and needs a native Blackwell attention kernel path. The source judges it likely more valuable than YOCO for 32, 128 and 500 branch workloads.
+4. **CACHE-AWARE SCHEDULING (leads to PREFILL-4-SPEC).** Cost is uncached prefill tokens times prefill cost, plus shared-prefix attention cost, plus artifact movement cost, plus branch-local suffix cost, not raw input tokens. It enters the scheduler and the Omega physical cost model. Precedent named in the source: Xiaomi MiMo-V2.5 length bucketing and cache-aware routing (numbers UNVERIFIED).
+5. **CORTEX-AWARE PREFETCH.** Cortex recall returns context-computation locality hints (which artifacts, and where: GPU resident, unified RAM, NVMe, or missing) so that move, recompute or compose can run while planning continues. Precedent: Tessera, which the source calls very new; treat its numbers as promising only (section 11.1: not found).
+6. **TIERED PREFILL ARTIFACTS.** Unified-memory hot tier, cooler pages, then NVMe, with explicit identity and provenance. The LMCache control-plane idea is borrowed, not its implementation.
+7. **COMPOSABLE NON-PREFIX REUSE.** Only after the exact path is proven. EPIC and CacheBlend style selective recompute, under separate correctness and quality contracts.
+
+## 14. exactness_class rule and target field set
+
+Every artifact carries an `exactness_class`: **EXACT** (lineage-preserving shared prefix) or **COMPOSABLE/APPROXIMATE** (content reused at a different position). The classes are never silently mixed. Reuse requires matching class.
+
+Target PrefillArtifact field set from the source (supersedes nothing in section 4; section 4 stays as the binding list of the first cut): `context_revision_digest`, `token_digest`, `model_digest`, `tokenizer_digest`, `model_architecture_id`, `weight_generation`, `rope_config`, `absolute_position_range`, `kv_dtype`, `kv_layout`, `block_size`, `attention_layout`, `prefix_length`, `storage_handles`, `generation`, `completion_fence`, `exactness_class`, `provenance`, `state`.
+
+Target `state` names are Allocated | Computing | Ready | FrozenShared | Retired. Mapping to the names in section 5: Allocated = Allocated; Computing = PrefillPending; Ready = PrefillReady; FrozenShared = SharedFrozen; Retired = Reclaimed. Section 5 names stay authoritative in this spec until a cut renames them.
+
+Reuse precondition precedent (LMCache cross-engine, per the source): model revision, TP arrangement, KV dtype, page size and chunk size must all agree.
+
+## 15. QUALITY dimension (speed alone is not enough)
+
+Cases at increasing context, in addition to section 6:
+
+1. exact token retrieval
+2. multi-hop
+3. middle-position retrieval
+4. distractor resistance
+5. repository cross-file reasoning
+6. memory + tool-result interaction
+7. branch-specific fact isolation
+8. shared-prefix parity
+
+Three failures are measured separately: (a) not cached correctly; (b) cached but attention did not retrieve; (c) retrieved but reasoning failed.
+
+Results (every cell NOT_RUN; no quality case has run on any tier):
+
+| Case | (a) not cached correctly | (b) cached, not retrieved | (c) retrieved, reasoning failed |
+|---|---|---|---|
+| exact token retrieval | NOT_RUN | NOT_RUN | NOT_RUN |
+| multi-hop | NOT_RUN | NOT_RUN | NOT_RUN |
+| middle-position retrieval | NOT_RUN | NOT_RUN | NOT_RUN |
+| distractor resistance | NOT_RUN | NOT_RUN | NOT_RUN |
+| repository cross-file reasoning | NOT_RUN | NOT_RUN | NOT_RUN |
+| memory + tool-result interaction | NOT_RUN | NOT_RUN | NOT_RUN |
+| branch-specific fact isolation | NOT_RUN | NOT_RUN | NOT_RUN |
+| shared-prefix parity | NOT_RUN | NOT_RUN | NOT_RUN |
+
+## 16. Topology rule
+
+Single DGX Spark box first. Avoid redundant work inside the unified-memory box before any prefill/decode disaggregation across boxes. No hyperscaler-style prefill/decode split now. GB10 memory figures, 128 GB LPDDR5x unified and 273 GB/s, are VERIFIED against https://docs.nvidia.com/dgx/dgx-spark/hardware.html (fetched 2026-10-01).
