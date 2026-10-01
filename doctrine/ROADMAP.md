@@ -332,6 +332,8 @@ Closed-loop self-improvement: AIEN-N designs AIEN-N+1 under Physics canary contr
 
 ---
 
+**Addendum 2026-10-01 (language course correction):** [ADR 0024](../docs/adr/0024-rust-scaffolding-omega-destination.md) supersedes the Rust-to-C migration plan. Rust is scaffolding, Omega is the destination, and C stays only where hardware-justified. No milestone, gate or order in this roadmap changes.
+
 <!-- HISTORICAL-PROVENANCE:BEGIN -->
 ## 4. Historical Provenance: Superseded Roadmap Generations
 

@@ -692,3 +692,7 @@ Do not start another master plan. Execute these:
 The ADR 0018 workstream runs as Lane 6 and does not reorder these gates.
 
 The ADR 0020 workstream runs as Lane 7 and does not reorder these gates; its EST-4 and later stages follow R16 closure.
+
+## Addendum 2026-10-01: language course correction (ADR 0024)
+
+By operator decision of 2026-10-01, [ADR 0024](docs/adr/0024-rust-scaffolding-omega-destination.md) supersedes the Rust-to-C migration plan. Rust is scaffolding, Omega is the destination, and C stays only where hardware, boot, ABI or freestanding-kernel reasons justify it. Wherever this plan says the "Rust-to-C port" or "no new Rust", read it as superseded by that ADR. No merged work is reverted; the C kernel and its gates stay. This addendum changes no gate order.

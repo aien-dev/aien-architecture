@@ -41,7 +41,7 @@ Historical `PHYSICS_*` milestone names stay unchanged in old milestones and evid
 
 ## Standing rules
 
-- Target language is C, with assembly only where a measurement shows it is faster. No new Rust; existing Rust is legacy ([migration plan](docs/plans/RUST_TO_C_MIGRATION.md)).
+- Language rule: Rust is scaffolding, Omega is the destination, C only where hardware-justified ([ADR 0024](docs/adr/0024-rust-scaffolding-omega-destination.md), which supersedes the old [Rust-to-C plan](docs/plans/RUST_TO_C_MIGRATION.md)).
 - No Python, no CUDA toolkit, no systemd, no outside dependencies in the trusted base, offline builds.
 - Verdict words: PASS, FAIL, NOT_RUN, BLOCKED_HARDWARE, BLOCKED_OPERATOR, MISSING_IMPLEMENTATION. Emulator, host simulation and documents never count as hardware qualification.
 
