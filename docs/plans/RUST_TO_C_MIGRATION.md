@@ -1,5 +1,7 @@
 # Rust → C Migration Plan (decided 2026-09-27)
 
+> **SUPERSEDED 2026-10-01 by [ADR 0024](../adr/0024-rust-scaffolding-omega-destination.md).** The decision "no Rust anywhere; C is the target" and the step order below no longer apply. Rust is scaffolding, Omega is the destination, and C stays only where hardware-justified. Kept unchanged as history.
+
 **Decided by Drake 2026-09-27: no Rust anywhere; C (+asm where measured) is the target. Authority ported 2026-09-28 (aienos #156, omega #43).**
 
 **Status:** the direction above is decided. The step order in §3 and the open items in §6 are still proposals awaiting Drake.

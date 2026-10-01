@@ -61,6 +61,8 @@ This snapshot is the only place in this document that reports status. It must be
 > **The Sovereignty Law:**
 > *The permanent lineage of the Sovereign Machine must not require, depend upon, link against, or incorporate Rust, Cargo, LLVM, GCC, Clang, Python, Linux, POSIX runtimes, CUDA, PyTorch, TensorFlow, JAX, Triton, CuDNN, external virtual machines, foreign runtime schedulers, or foreign pretrained neural weights.*
 
+Rust, C, and external compiler toolchains may be used as temporary bootstrap and implementation scaffolding during construction; they are not dependencies of the permanent sovereign lineage, which must ultimately be realizable and maintainable by AIEN's own trusted toolchain.
+
 ### 1.1 The Meaning of Complete Sovereignty
 Sovereignty is not an aesthetic preference or an open-source license; it is an existential computational boundary. A system is sovereign if and only if its operational continuity, cognitive validity, and physical transformations are completely decoupled from external technological civilizations, corporate software stacks, and cloud ecosystems.
 
