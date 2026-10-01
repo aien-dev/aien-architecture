@@ -278,6 +278,8 @@ Omega #152 (GB10 DIV/SQRT) is MERGED at `07004a8`.
 
 Source: `~/handoffs/physics-zero/PZ-C2S-ADDENDUM-DRAKE-BRIEF.md` section 18 (the addendum wins on any difference). The C2S benchmark family (Constraint-to-Structure) itself, its concepts (RepresentationAdequacy, RepresentationalCrisis, UnexpectedSolutionPolicy) and its gates (`PZ_C2S_*`, `PZ_NOVEL_PREDICTION_PASS`, `PHYSICS_ZERO_C2S_FOUNDATION_PASS`) are defined by the Physics Zero Atlas V1 section (Lane 36), not here. DIRAC-0 cites them by name only and defines none of them.
 
+Atlas location: Addendum A of `docs/plans/physics-zero/PHYSICS_ZERO_LAW_ATLAS_V1.md` (Lane 36, branch `lane36-pz-atlas`, not yet on main; its A.11 maps D-1..D3 to C2S rungs).
+
 **What changes.** DIRAC-0 is no longer a test of equation rediscovery. It tests whether AIEN can find that its current mathematics cannot describe reality, invent a richer algebra because the evidence demands it, and use that invention to predict something it has not seen. Credit goes to algebraic necessity, never to symbols.
 
 **The AIEN-facing ladder:**
