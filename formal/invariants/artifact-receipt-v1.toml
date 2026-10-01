@@ -1,0 +1,124 @@
+schema_version = 0
+id = "AIEN.INV.RECEIPT.REJECTION_CONSISTENCY.V1"
+version = 1
+status = "SEEDED"
+
+statement = """
+An admission receipt is internally consistent. A receipt whose decision is Rejected records that nothing ran \
+(execution status NotRun, no exit status, no syscalls, no object reads, no denials, no success-type result flags) \
+and records a rejection stage and a rejection reason. A receipt whose decision is not Rejected records no \
+rejection stage and no rejection reason. A receipt that claims the canary passed also records that execution \
+exited with status zero. An optional field whose presence flag is absent carries only its zero value and so \
+cannot be read as present."""
+
+assumptions = [
+  "Cryptographic identity: digests, nonce derivation, and the Ed25519 signature are sound. Crypto correctness is not proven here.",
+  "The receipt byte layout (512 bytes, magic AIENRCP, version 0) is the contract; the in-memory struct is a view.",
+  "Kernel-emitted receipts are unsigned; host tooling signs them.",
+]
+
+semantic_types = ["Receipt", "Decision", "ExecutionStatus", "PresenceFlags", "ResultFlags", "RejectionStage", "RejectionReason"]
+
+oracle_models = ["lean"]
+
+evidence_requirements = [
+  "positive corpus of valid receipts for each decision",
+  "negative corpus: one receipt per violated rule, each refused",
+  "deliberate mutant that accepts a Rejected receipt with a non-NotRun status, which must not survive",
+  "encode then decode preserves the abstract receipt where practical",
+  "existing implementation unit tests and existing admission receipts keep passing",
+]
+
+required_counterexamples = [
+  "rejected_but_ran",
+  "rejected_without_reason",
+  "non_rejected_with_rejection_fields",
+  "canary_passed_without_clean_exit",
+  "absent_flag_with_nonzero_value",
+]
+
+omega_takeover_condition = """
+Omega expresses the receipt consistency rules as native propositions over the canonical receipt layout, accepts the \
+positive corpus, rejects the negative corpus, kills the required counterexample mutants, and emits a canonical \
+proof/evidence identity that the gates consume, with Lean absent."""
+
+[[positive_examples]]
+name = "admitted_clean"
+description = "Decision Admitted, no rejection stage or reason, execution Exited with status 0, nonce matches verifier identity and sequence."
+
+[[positive_examples]]
+name = "rejected_at_stage"
+description = "Decision Rejected, stage 1..9, a valid reason code, status NotRun, all counters zero, result flags empty or only RECLAIMED."
+
+[[negative_examples]]
+name = "rejected_with_exit_status"
+description = "Decision Rejected but exit_status is nonzero or execution status is Exited."
+
+[[negative_examples]]
+name = "admitted_with_reason"
+description = "Decision Admitted but a rejection reason is present."
+
+[[negative_examples]]
+name = "canary_flag_after_fault"
+description = "CANARY_PASSED set while execution status is Fault."
+
+[[counterexamples]]
+name = "rejected_but_ran"
+description = "A Rejected receipt with status other than NotRun, or nonzero exit status, syscalls, object reads, or denials, is accepted."
+
+[[counterexamples]]
+name = "rejected_without_reason"
+description = "A Rejected receipt with stage 0 or reason 0 is accepted."
+
+[[counterexamples]]
+name = "non_rejected_with_rejection_fields"
+description = "A receipt whose decision is not Rejected, with a nonzero rejection stage or reason, is accepted."
+
+[[counterexamples]]
+name = "canary_passed_without_clean_exit"
+description = "CANARY_PASSED set without execution status Exited and exit status 0 is accepted."
+
+[[counterexamples]]
+name = "absent_flag_with_nonzero_value"
+description = "Machine id digest, generation, context id, or observed time is nonzero while its presence flag is clear, and the receipt is accepted."
+
+[[implementation_surfaces]]
+repo = "aien-dev/aienos"
+path = "crates/aienos-artifact/src/receipt.rs"
+kind = "production"
+observed_at = "2ee61b4b158a385c5fcf2c925a625ac043babb21"
+note = "Rust: receipt::validate (semantic rules) and receipt::decode / encode (strict byte layout)."
+
+[[observations]]
+surface = "crates/aienos-artifact/src/receipt.rs"
+text = """
+validate(r) returns MalformedReceipt when any of these hold. Presence flags: machine_id flag clear and machine_id_digest nonzero; \
+context_id flag clear and generation or context_id nonzero; timestamp flag clear and observed_time_ns nonzero. \
+Codes: rejection_stage > 9, or rejection_reason nonzero and not in 1..=19 or 0x101..=0x10a. \
+Decision Rejected: stage == 0, or reason == 0, or execution_status != NotRun, or exit_status != 0, or syscalls != 0, \
+or object_reads_ok != 0, or denials != 0, or result_flags has any bit other than RECLAIMED. \
+Any other decision: stage != 0 or reason != 0. \
+CANARY_PASSED set and (execution_status != Exited or exit_status != 0). \
+Nonce != receipt_nonce(verifier_identity, sequence)."""
+
+[[observations]]
+surface = "crates/aienos-artifact/src/receipt.rs"
+text = """
+decode applies strict layout checks first (length, magic, version, header size, unknown flag bits, nonzero reserved bytes, \
+signature algorithm) then calls validate, so every decoded receipt satisfies validate. encode is field by field and does not itself call validate."""
+
+[[observations]]
+surface = "crates/aienos-artifact/src/receipt.rs"
+text = """
+The decision enum is Admitted, Rejected, CanaryFailed, Destroyed. validate ties nothing between CanaryFailed or Destroyed decisions and the \
+execution status code CanaryFailed beyond the rules above (for example a CanaryFailed decision with execution status Exited is not refused by validate). \
+That linkage may be intended or a gap; it is recorded, not asserted."""
+
+[[observations]]
+surface = "PLAN.md section 10 versus code"
+text = """
+divergence in strength, not direction: the plan lists 'rejected => NotRun', 'rejected => no successful execution evidence', and 'rejected => stage/reason present'. \
+The code is stronger: Rejected also forces zero exit status, zero syscalls, zero object reads, zero denials, and result flags limited to RECLAIMED. \
+The plan's 'CANARY_PASSED => execution succeeded' maps to execution_status == Exited and exit_status == 0. \
+The plan's 'absent optional-field flag => value cannot be interpreted as present' maps to the three presence-flag rules above (values must be zero). \
+The plan's 'not rejected => rejection-only fields absent' maps to stage and reason both zero; the code treats only those two fields as rejection-only."""

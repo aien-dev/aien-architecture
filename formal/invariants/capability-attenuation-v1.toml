@@ -1,0 +1,150 @@
+schema_version = 0
+id = "AIEN.INV.CAP.ATTENUATION.V1"
+version = 1
+status = "SEEDED"
+
+statement = """
+A valid delegated child capability never possesses authority that its valid parent does not possess. \
+Concretely: the child's scope is contained in the parent's scope; the child's expiry is no later than \
+the parent's expiry; the child's remaining delegation depth is strictly less than the parent's; and a \
+capability with zero remaining delegation depth cannot delegate. Delegation from an invalid parent \
+(expired or revoked) is refused."""
+
+assumptions = [
+  "Cryptographic identity: the signature or MAC binding a capability to its fields is sound and the signing secret is not leaked. Crypto correctness is not proven here.",
+  "The capability graph has no cycles (parents are created before children).",
+  "A scope containment relation exists per scope kind and is the single definition of 'authority subset'.",
+]
+
+semantic_types = ["Capability", "Scope", "Expiry", "DelegationDepth", "Holder", "CapabilityGraph"]
+
+oracle_models = ["lean"]
+
+evidence_requirements = [
+  "positive corpus of accepted delegations",
+  "negative corpus of refused delegations",
+  "deliberate privilege-expansion mutant that must not survive",
+  "differential agreement between Rust and C implementations on the shared corpus where their models overlap",
+  "existing implementation unit tests keep passing",
+]
+
+required_counterexamples = ["scope_expansion", "expiration_extension", "delegation_depth_increase"]
+
+omega_takeover_condition = """
+Omega expresses the containment, expiry, and depth relations as native propositions, accepts the positive \
+corpus, rejects the negative corpus, kills the required counterexample mutants, and emits a canonical \
+proof/evidence identity that the gates consume, with Lean absent."""
+
+[[positive_examples]]
+name = "narrower_filesystem_prefix"
+description = "Parent holds a filesystem scope for /a; child asks for /a/b with depth one lower and the same expiry. Accepted."
+
+[[positive_examples]]
+name = "read_only_from_read_write"
+description = "Parent holds read-write filesystem scope; child asks for read-only on the same prefix. Accepted."
+
+[[positive_examples]]
+name = "equal_scope"
+description = "Child scope equals parent scope. Accepted (containment is non-strict)."
+
+[[negative_examples]]
+name = "write_from_read_only"
+description = "Parent filesystem scope is read-only; child asks for read-write. Refused."
+
+[[negative_examples]]
+name = "delegate_at_depth_zero"
+description = "Parent has delegation depth zero. Any child derivation is refused."
+
+[[negative_examples]]
+name = "different_scope_kind"
+description = "Parent is a Network scope, child asks for a Filesystem scope. Refused (only a system-admin parent contains every kind)."
+
+[[counterexamples]]
+name = "scope_expansion"
+description = "A child whose scope is not contained in the parent's is accepted (wider path, wider host, higher token or depth limit, write from read-only)."
+
+[[counterexamples]]
+name = "expiration_extension"
+description = "A child that outlives its parent is accepted."
+
+[[counterexamples]]
+name = "delegation_depth_increase"
+description = "A child with remaining delegation depth greater than or equal to the parent's is accepted, or a depth-zero parent delegates."
+
+[[counterexamples]]
+name = "invalid_parent_delegates"
+description = "An expired or revoked parent successfully derives a child."
+
+[[implementation_surfaces]]
+repo = "aien-dev/aienos"
+path = "crates/aienos-aegis/src/capability.rs"
+kind = "production"
+observed_at = "2ee61b4b158a385c5fcf2c925a625ac043babb21"
+note = "Rust AEGIS capability graph: CapabilityScope::contains, CapabilityGraph::derive_child_token."
+
+[[implementation_surfaces]]
+repo = "aien-dev/aienos"
+path = "native/capability/aienos_capability.c"
+kind = "reference"
+observed_at = "2ee61b4b158a385c5fcf2c925a625ac043babb21"
+note = "C capability authority (rights bitmask, generation slots). A different model from the Rust one; read only by grep for this manifest, not audited. Needs its own review before FORMAL-3."
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+CapabilityToken fields: id, parent_id (optional), issuer, holder, scope, delegation_depth (u32), \
+valid_until_utc (u64), signature (32 bytes, HMAC-SHA256 over the other fields under a graph master secret)."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+derive_child_token takes no expiry or depth argument. The child always gets valid_until_utc equal to the \
+parent's and delegation_depth equal to parent depth minus one. So 'child expiry <= parent expiry' holds by \
+construction as equality, and 'child depth < parent depth' holds by construction as exactly one less."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+derive_child_token order: look up parent (TokenNotFound), validate parent (revoked, ancestor revoked, \
+expired, bad signature), refuse if parent depth is 0 (DelegationDepthExceeded), refuse if \
+parent.scope.contains(child_scope) is false (ScopeExceeded). The holder argument is not checked against \
+the parent's holder; AegisError::UnauthorizedAgent exists but derive_child_token does not return it."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+CapabilityScope::contains (the subset relation), per kind: SystemAdmin contains everything. Filesystem: \
+child path_within parent prefix (lexical, absolute, no '..' components) and (read_only equal, or child is \
+read_only). Network: host equal or parent '*', and port equal or parent port 0. Model: model_name equal or \
+parent '*', and child max_tokens <= parent. World: child max_depth <= parent. StandingFetch: host equal or \
+parent '*'. Custom: namespace equal and (action equal or parent '*'). Any other pair is false. In particular \
+Device scope has no arm, so a Device parent contains no Device child (only a SystemAdmin parent does), and \
+a SystemAdmin child is contained only by a SystemAdmin parent."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+Expiry is inclusive of the boundary: a token is expired when now_utc > valid_until_utc, so now == valid_until_utc is still valid."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+derive_child_token does not reject a child_id that already exists; the new token replaces the old one in the \
+tokens map and the child id is appended to the parent's child list again. Whether this matters for the invariant \
+is open (it affects identity uniqueness, not attenuation)."""
+
+[[observations]]
+surface = "native/capability/aienos_capability.c"
+text = """
+Grep-level only. The C authority uses a rights bitmask (a child may not set rights its authority lacks: AIENOS_CAP_ERR_AMPLIFY), \
+a fixed maximum chain depth AIENOS_CAP_MAX_DEPTH = 8 counted from the root (not a per-token decreasing counter), \
+and lease_expiry where 0 means no expiry; a child lease may not exceed the authority's lease. Expiry is '>=' there \
+(clock >= lease_expiry is expired), unlike the Rust '>' boundary."""
+
+[[observations]]
+surface = "PLAN.md section 9 versus code"
+text = """
+divergence: the plan states 'child expiration <= parent expiration' and 'child delegation depth < parent delegation depth' as properties to prove. \
+The Rust code satisfies them by construction (equality, and parent minus one). The C code has a different depth model (absolute cap) \
+and a different expiry boundary. The neutral statement therefore says 'no later' and 'strictly less remaining depth' and lists the C model's \
+difference as an open reconciliation item; it is not assumed to be the same rule."""

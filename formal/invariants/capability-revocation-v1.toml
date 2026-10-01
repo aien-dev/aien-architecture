@@ -1,0 +1,129 @@
+schema_version = 0
+id = "AIEN.INV.CAP.REVOCATION_CLOSURE.V1"
+version = 1
+status = "SEEDED"
+
+statement = """
+Once a capability is revoked, it is invalid, and every capability descended from it (its children, their \
+children, and so on) is also invalid. An expired capability is invalid. Revoking a capability never makes \
+its ancestors or unrelated capabilities invalid. Validity checks never turn an invalid capability into a \
+valid one."""
+
+assumptions = [
+  "Cryptographic identity: the signature or MAC binding a capability to its fields is sound. Crypto correctness is not proven here.",
+  "The capability graph is acyclic and parent links are recorded when a child is derived.",
+  "Time is supplied by the caller as a single monotone-enough 'now' value; clock correctness is not covered.",
+]
+
+semantic_types = ["Capability", "CapabilityGraph", "RevocationSet", "Time"]
+
+oracle_models = ["lean"]
+
+evidence_requirements = [
+  "positive corpus of valid capabilities staying valid after unrelated revocations",
+  "negative corpus of revoked, descendant-of-revoked, and expired capabilities that must be refused",
+  "deliberate mutant that skips descendant invalidation, which must not survive",
+  "existing implementation unit tests keep passing",
+]
+
+required_counterexamples = ["revoked_token_accepted", "descendant_of_revoked_accepted", "expired_token_accepted"]
+
+omega_takeover_condition = """
+Omega expresses revocation reachability and expiry as native propositions, accepts the positive corpus, \
+rejects the negative corpus, kills the required counterexample mutants, and emits a canonical proof/evidence \
+identity that the gates consume, with Lean absent."""
+
+[[positive_examples]]
+name = "sibling_unaffected"
+description = "Two children of one parent; one is revoked. The other remains valid."
+
+[[positive_examples]]
+name = "parent_unaffected"
+description = "A child is revoked. Its parent remains valid."
+
+[[negative_examples]]
+name = "revoked_itself"
+description = "A revoked token is refused."
+
+[[negative_examples]]
+name = "grandchild_of_revoked"
+description = "Parent revoked after a grandchild was derived. The grandchild is refused."
+
+[[negative_examples]]
+name = "expired"
+description = "Token with now greater than its valid_until is refused."
+
+[[counterexamples]]
+name = "revoked_token_accepted"
+description = "A token in the revoked set passes validation."
+
+[[counterexamples]]
+name = "descendant_of_revoked_accepted"
+description = "A token with a revoked ancestor passes validation."
+
+[[counterexamples]]
+name = "expired_token_accepted"
+description = "A token past its expiry passes validation."
+
+[[counterexamples]]
+name = "revocation_resurrected"
+description = "Re-deriving or re-issuing under an existing id clears a revocation."
+
+[[implementation_surfaces]]
+repo = "aien-dev/aienos"
+path = "crates/aienos-aegis/src/capability.rs"
+kind = "production"
+observed_at = "2ee61b4b158a385c5fcf2c925a625ac043babb21"
+note = "Rust: CapabilityGraph::revoke and CapabilityGraph::validate_token."
+
+[[implementation_surfaces]]
+repo = "aien-dev/aienos"
+path = "native/capability/aienos_capability.c"
+kind = "reference"
+observed_at = "2ee61b4b158a385c5fcf2c925a625ac043babb21"
+note = "C: state_revoke and cascade_revoke over generation slots. Grep-level read only; needs its own review before FORMAL-3."
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+revoke(token_id) walks the recorded child map (a stack, no visited set, so it assumes a DAG) and inserts every \
+reached id, including the starting id, into a revoked set. It does not check that the starting id exists; revoking \
+an unknown id just records it. It is idempotent."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+validate_token checks, in this order: own id in revoked set (TokenRevoked); every ancestor id reached by following \
+parent_id through the graph's token map is in the revoked set (TokenRevoked); now_utc > valid_until_utc (TokenExpired); \
+signature mismatch (InvalidSignature). The ancestor walk stops silently if an ancestor id is missing from the token map. \
+So revocation is enforced twice: eagerly by revoke's descendant walk and lazily by the ancestor walk at validation."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+Because the revocation check precedes the signature check, a token with a forged signature but a revoked id reports \
+TokenRevoked, not InvalidSignature. Both are refusals. Expiry is inclusive: now == valid_until_utc is still valid."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+validate_token validates only the token passed in plus revocation state of its ancestors. It does not re-check ancestors' expiry or \
+signatures. In the current derive rule a child's expiry equals its parent's, so an expired ancestor implies an expired child."""
+
+[[observations]]
+surface = "crates/aienos-aegis/src/capability.rs"
+text = """
+derive_child_token inserts into the token map under child_id without checking for an existing entry and does not clear \
+the revoked set. A re-derived child under a previously revoked id therefore stays revoked. Whether that is intended is not documented in the code read."""
+
+[[observations]]
+surface = "native/capability/aienos_capability.c"
+text = """
+Grep-level only. The C authority revokes by cascade over slots (cascade_revoke) and uses generation slots for reuse; \
+its documented behavior is 'revoking an ancestor revokes the descendants'. Not audited line by line for this manifest."""
+
+[[observations]]
+surface = "PLAN.md section 9 versus code"
+text = """
+no divergence found for 'revocation rejects the revoked token', 'revocation invalidates descendants', 'expired capability is invalid' in the Rust code. \
+The C model differs structurally (generation slots, '>=' expiry) and is recorded under the attenuation manifest."""

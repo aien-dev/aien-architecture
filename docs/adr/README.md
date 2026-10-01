@@ -37,3 +37,4 @@ Current ADRs:
 - [0022 - The canonical Cortex owner is omega `rx_cortex`](0022-canonical-cortex-owner.md) - Accepted 2026-09-30 (orchestrator engineering call under the operator's standing rule)
 - [0024 - Rust is scaffolding, Omega is destination, C where hardware-justified](0024-rust-scaffolding-omega-destination.md) - Accepted by operator Drake Stapleton, 2026-10-01 (supersedes the Rust-to-C migration plan)
 - [0026 - Sealed Discovery Examinations](0026-sealed-discovery-examinations.md) - PROPOSED 2026-10-01
+- [0027 - Formal verification uses Lean as a temporary oracle; Omega owns the invariants](0027-formal-oracle-lean-bootstrap.md) - Accepted by operator Drake Stapleton, 2026-10-01 (via his Formal Verification Bootstrap Plan)
