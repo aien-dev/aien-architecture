@@ -424,3 +424,93 @@ THEN ASK:
 
 WHAT UNIVERSE DID YOU DISCOVER?
 ```
+
+---
+
+## 16. Verification Contract, Dependencies & Responsibilities
+
+This section states how a discovery record says what it knows, how records compose, how they age, and who does what. It adds no new authority, no new layer, and no milestone. It documents the existing division of roles and tightens the records of §7 to §11.
+
+### 16.1 Responsibilities
+
+Verifying and authorizing are separate operations held by separate parties. A verdict from the verifier is never a permission, and a permission is never a proof.
+
+| Operation | Holder | What it does | What it never does |
+|---|---|---|---|
+| Propose | AIEN | Suggests theories, concepts and `EXPERIMENT_INTENT`s (§6, §11). | Execute, verify or authorize its own proposals. |
+| Define | Omega | States the claim with crisp boundaries: types, domains, error envelopes, V-Ladder certificates (§7.1). | Admit physical effects. |
+| Verify | AEGIS | Checks that a record, program or realization meets its stated contract and system invariants. | Change the checked work, decide policy, or belong to the generation system. |
+| Mint / revoke capabilities | Capability authority (capability root) | Issues and withdraws enforceable capabilities (ARCHITECTURE.md §2.7 rules). | Judge scientific merit. |
+| Authorize | Physics | Admits or refuses an `EXPERIMENT_INTENT` against capability, safety and rate limits (§6, §15). | Rewrite the theory under test. |
+| Realize | Physics | Executes the bounded mutation and emits the `EXPERIMENT_RECEIPT` (§11). | Act outside the authorized bounds. |
+| Act | Hardware | Performs the physical transformation. | Act without an authorized effect. |
+| Record | Cortex / Evidence ledger | Holds receipts, theories, negative knowledge (§9). | Rewrite a committed receipt. |
+| Observe and propose containment | ARGUS (ADR 0017) | Detects violations of hard invariants and proposes narrow containment. | Authorize, grant, refuse or revoke anything itself. |
+
+**Bridging the two wordings.** The published loop says "Omega verifies" and this document's creed says "AEGIS verifies". They are two layers of one act: Omega makes the meaning crisp and checkable (the definition, the V-Ladder certificate of §7.1), and AEGIS holds the verifying seat, the witness that performs the check against that definition. Neither of them authorizes; Physics does.
+
+**Trust base.** Every verdict depends on the checker, the toolchain that built it, and the hardware that ran it. A record names these in `DEPENDS_ON` (§16.2) so that a fault found in any of them flags the verdicts that relied on it (§16.5).
+
+### 16.2 The Verification Contract
+
+Every `OMEGA_THEORY`, `OMEGA_DISCOVERED_CONCEPT`, and promoted library entry carries a verification contract. It separates what the existing fields `ASSUMPTIONS`, `EVIDENCE_IDS` and `VERIFICATION_STATUS` (§7.1) currently blend together:
+
+```text
+VERIFICATION_CONTRACT:
+  PROVED:             Statements with an Omega-verified deductive proof, each naming its proof
+  TESTED:             Statements checked against finite cases, each naming the test set and its receipt
+  MEASURED:           Quantities observed on Physics, each naming its EXPERIMENT_RECEIPT and CALIBRATION_STATE
+  ASSUMED:            Conditions taken without proof or test (priors, sensor models, regime bounds)
+  DEPENDS_ON:         Records, receipts, calibrations, checker and toolchain identities relied upon
+  PERMITTED_EFFECTS:  The effects the record may request when realized, and nothing broader
+```
+
+Rules:
+- **None substitutes for another.** A test is not a proof, a measurement is not a test, an assumption is not a measurement. This follows the precedent of ADR 0020 §2.1 ("the five categories never collapse"): a claim moves between fields only by producing the evidence the destination field requires.
+- **Empty is honest.** An empty `PROVED` field is a correct record. A claim placed in the wrong field is a contract violation that AEGIS reports.
+- **A receipt is reproducible, not beyond challenge.** Its bytes cannot be argued with: they are committed and immutable. Its method and its interpretation can be contested, and a successful challenge produces a new record that cites the old one, never an edit to it.
+
+### 16.3 Composition Rule
+
+Records compose only when their contracts match:
+- **Provides / requires.** A composite is admissible when every `ASSUMED` or required input of one part is supplied by a `PROVED`, `TESTED` or `MEASURED` output of another, within the same `DOMAIN_OF_VALIDITY`. An unmet requirement stays visible in the composite's `ASSUMED` field; it is never silently discharged.
+- **Effect compatibility.** The composite's `PERMITTED_EFFECTS` is no broader than what its parts permit, and two parts whose effects conflict on the same state do not compose.
+- **Order of preference.** Pure functions first, then explicit state transitions with declared inputs and outputs. Shared mutable state is admitted only when the rules for how the parts interact on that state are themselves specified and verified.
+
+### 16.4 Human Intent Step
+
+Formal verification proves that a program meets its specification. It cannot establish an intention that was never stated. Before a specification is accepted as the target for synthesis or experiment, the human who states the intent (the Human Operator of AIEN.md) supplies:
+- **Concrete examples** of accepted and rejected outcomes.
+- **Forbidden outcomes**, entered through the existing `SAFETY_INVARIANTS` and `STOP_CONDITIONS` fields of `EXPERIMENT_INTENT` (§11), not through a parallel list.
+- **Review of consequential ambiguities:** every point where two readings of the specification lead to different effects is listed and resolved, or the specification is not accepted.
+
+For sealed worlds, examples and forbidden outcomes are written in the neutral schema of §6 (`CHANNEL_nnn`, `ACTION_HISTORY`, `OBSERVATION_TIME`). Stating them in ontology terms would leak human physics through the intent channel and breach §3.
+
+### 16.5 Applicability and Dependencies
+
+- **Receipts are immutable.** A committed `EXPERIMENT_RECEIPT` is never edited.
+- **The current assessment is separate.** Whether a record still applies is a separate, revisable assessment that cites receipts; it is never written into them.
+- **Reassessment is triggered by changed conditions, not elapsed time.** A changed `CALIBRATION_STATE`, a falsified or withdrawn dependency, or a fault found in a checker, toolchain or hardware identity flags every record whose `DEPENDS_ON` names it for recheck. A flagged record keeps its history and loses its standing only when the recheck fails.
+- **Withdrawal uses existing design.** Withdrawing the authority a record relied on follows the ARGUS-1 narrow-revoke pattern of ADR 0017: ARGUS proposes, AEGIS verifies against policy, the existing authority carries it out, and evidence is always written. Confidence in a record's current applicability is carried by the belief / estimation layer of ADR 0020 (estimate is not fact; confidence is not authority). These are cross-references, not new mechanisms.
+
+**Rule-change test (protocol, to be scheduled).** Change the rules of a simulated sealed world partway through a discovery run and measure three latencies: time to detect the change, time to stop relying on the old explanation, and time to a supported replacement. This test is gated behind the EXP-001 compression-bridge gate (PASS recorded by its successor EXP-001R) and completion of CEXP-1, as defined in The Turing Discovery Gap Conjecture, Revision 6, 2026-09-30. It carries no milestone number and supports no Physics Zero claim until it has run.
+
+### 16.6 Distinguishing Experiments and Equivalence
+
+This tightens §8:
+- **Name the rivals.** Every distinguishing experiment names, from `COMPETING_THEORY_IDS`, which rival explanations it separates and which it cannot. Passing `AIEN_DISTINGUISHING_EXPERIMENT_PASS` requires that list.
+- **Preserve ambiguity.** When no permitted intervention separates two theories, both stay `UNDERDETERMINED`. The system does not pick one by preference.
+- **Success is first an equivalence class.** Theories that differ only by a reparameterization (for example a variable z against z squared or 1/z) make the same predictions. Success is first stated as the class of relationships that agree on all permitted observations and interventions, not as one preferred form.
+- **Comparison to a named constant needs a declared correspondence rule.** Any comparison between a discovered quantity and a named physical constant is a human interpretation step after discovery (§3). It requires a correspondence rule (which discovered quantity maps to which human quantity, under which units and frames) declared and committed before the comparison is made. The constant never enters the discovery process.
+
+### 16.7 Blindness Inventory
+
+The firewall of §5 governs what the lineage may learn from. Blindness also covers what the experiment hands to the learner. The preregistered specification of every Physics Zero run (fixed in advance, in the sense of The Turing Discovery Gap Conjecture, Revision 6, 2026-09-30) additionally records:
+- **Permitted primitives:** the exact Omega formal and epistemic primitives supplied (§4), and the research mode (P0-MATH or P0-PRIMITIVE).
+- **Inherited knowledge:** every library, checkpoint and prior carried into the run, by digest, consistent with the lineage manifest of §5.
+- **Calibration assumptions:** the sensor and noise models assumed, and the `CALIBRATION_STATE` they rest on.
+- **Data transforms:** every preprocessing step between the sealed world and the observation channel, including the randomizations of §6.
+
+Under the decoder rule of Revision 6, anything the learner uses beyond the observations is part of the model and is charged in its description length.
+
+**Inherited-knowledge experiments sit outside Physics Zero.** An experiment in which pretrained models may propose candidates is permitted only as a separately named experiment class, explicitly outside Physics Zero, never part of the `AIEN-P0` lineage, and with a weaker claim: what it finds says nothing about discovery without inherited knowledge. Its inherited knowledge is charged under the decoder rule. The forbidden corpora of §5, the lineage manifest, and `P0_CONTAMINATION_AUDIT_PASS` are unchanged by this rule. No such class is defined yet.
