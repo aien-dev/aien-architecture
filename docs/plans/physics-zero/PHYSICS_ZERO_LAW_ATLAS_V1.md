@@ -21,6 +21,17 @@ experiments, on being compact, and on honestly saying "I found no law" when ther
 
 ---
 
+## Governing principle (Drake, 2026-10-01)
+
+> A scientific intelligence should not merely search for equations inside a fixed mathematical language.
+> It should be capable of discovering when that language is inadequate and inventing a better one because
+> the evidence demands it.
+
+Every rung below is read through this sentence. Addendum A (after section 10) turns it into a ladder
+of Constraint-to-Structure worlds, and its first lab (C2S-0) comes before any Dirac challenge.
+
+---
+
 ## 1. Benchmark taxonomy
 
 Rungs map onto the doctrine pyramid P0-0 to P0-8. Order within a family is difficulty order.
@@ -43,8 +54,10 @@ Rungs map onto the doctrine pyramid P0-0 to P0-8. Order within a family is diffi
 | T-0 | Theory succession | Old theory as a limit of a new one | P0-7 | M33 |
 | G-0 | Geodesic and coordinate invariance | Equivalence classes under coordinate groups | P0-7 | M34 |
 | PZ-ACTIVE | Active experimentation | Choosing the experiment that discriminates | P0-6 to P0-8 | M30 |
+| C2S-0 to C2S-4 | Constraint-to-Structure, see Addendum A | Discovering that the representation is inadequate, then inventing structure | P0-4 to P0-6 | M29, M31, M33 |
+| H0 to H9 | Blind historical reconstruction, see Addendum A.7 | Representation changes forced by evidence | P0-4 to P0-7 | M31 to M34 |
 
-Q6 is owned by DIRAC-0 (`docs/plans/dirac/DIRAC-0-SPEC.md`, arch PR #83, not yet merged when this was
+Q6 is owned by DIRAC-0, now reshaped as a C2S ladder (Addendum A.11), and it comes only after PHYSICS_ZERO_C2S_FOUNDATION_PASS. Q6 is owned by DIRAC-0 (`docs/plans/dirac/DIRAC-0-SPEC.md`, arch PR #83, not yet merged when this was
 written). That spec defines its own waves D0, D1, D2 and gates (DIRAC_PREP_FROZEN through
 DIRAC_D2_DISCOVERY_PASS). The Atlas only reserves the rung name and requires that the Dirac evaluator
 follow sections 4, 7, 8 and 9 below. It does not restate the Dirac design.
@@ -461,6 +474,179 @@ Consequences:
 
 ---
 
+## Addendum A: Constraint-to-Structure (C2S)
+
+Source: Drake's C2S brief of 2026-10-01 (21 points), integrated into the Atlas. It adds no new subsystem.
+It reuses sections 2 to 9 (Theory objects, equivalence, oracle isolation, scoring, leakage, falsification,
+evaluator). Where a point below conflicts with an earlier section, this addendum wins for C2S rungs only.
+
+### A.1 The question and the governing principle
+
+The core question changes from "can AIEN discover laws?" to: can AIEN discover when its current
+mathematics cannot describe reality, invent a better mathematics, and then use that invention to predict
+something it has never seen?
+
+Governing principle (Drake, point 21), kept verbatim:
+
+> A scientific intelligence should not merely search for equations inside a fixed mathematical language.
+> It should be capable of discovering when that language is inadequate and inventing a better one because
+> the evidence demands it.
+
+Progression every C2S world must exercise: OBSERVE, MODEL, FAIL, LOCATE CONTRADICTION, QUESTION
+REPRESENTATION, INVENT STRUCTURE, DERIVE CONSEQUENCES, PREDICT, TEST, FALSIFY, ABSTRACT.
+
+Why it matters: advances happen when valid requirements cannot coexist in the old representation. The
+chain is existing theory, new constraint, contradiction, locate the insufficient assumption, expand the
+language, derive relations, new predictions.
+
+### A.2 Rules for the mathematics (points 2 and 14)
+
+- AIEN is never handed the needed mathematics: no complex numbers, matrices, noncommutativity, spinors,
+  tensors, connections, curvature, Hilbert spaces, density matrices, groups, Lie or Clifford algebras,
+  distributions or announced latent dimensions. It has only generic machinery earned by earlier gates and
+  composes new abstractions itself.
+- Real-only and other awkward encodings are always allowed. Credit goes to compactness and prediction.
+- Promotion of a discovered structure into an Omega abstraction needs: several independent uses,
+  held-out compression gain, semantic preservation, verification, and reduced future search cost. It is
+  never promoted because humans have a name for it. This is the bridge to Omega library discovery
+  (`src/omega_discovery.{h,c}`, M11), which is program mining and not physics.
+
+### A.3 RepresentationAdequacy (point 3)
+
+A generic judgment: can representation R express a theory satisfying constraints C within budget B?
+Outcomes: ADEQUATE, INADEQUATE, UNKNOWN. A correct INADEQUATE ("my hypothesis language cannot represent
+this") is progress, not failure. Each verdict carries the constraints checked, the budget, and for
+INADEQUATE a witness (a constraint set no member of R satisfies, shown by an obstruction or by a
+search that exhausted the budget, labeled which). Exhausted-search INADEQUATE is weaker than an
+obstruction and is recorded as such.
+
+### A.4 RepresentationalCrisis (point 4)
+
+An event with fields: current_theory, conflicting_evidence, unsatisfied_constraints, attempted_repairs,
+evidence_that_repairs_fail. Its meaning is that the model class cannot satisfy the evidence, not that the
+parameters are poorly fitted.
+
+Reuse check against the real stack (omega `src/runtime/rx_cortex_record.h`, `rx_cortex*.{h,c}`,
+`src/runtime/rx_contract.h`):
+- Failed repairs fit existing Cortex FAILURE records (`CX_K_EXEC_FAILED`) with provenance links.
+- Evidence references fit World crumb ids and digests. Contracts of kind RC_HYPOTHESIS and RC_EVIDENCE
+  fit the theory and evidence objects.
+- The class-level claim (the whole model class fails) has no native field. It would be one derived claim
+  object linking the records above. Whether that needs a new Cortex record kind is NOT decided here,
+  and no Cortex edit is proposed in Wave 0. Status: reuse is plausible and unproven (NOT_RUN).
+
+### A.5 UnexpectedSolutionPolicy (point 12), a generic Physics Zero principle
+
+Strange branches are never silently discarded. Each is classified: NUMERICAL_ARTIFACT,
+MATHEMATICAL_ARTIFACT, UNPHYSICAL_UNDER_DOMAIN, REDUNDANT_REPRESENTATION, POTENTIAL_NEW_PHYSICAL_STRUCTURE,
+or UNRESOLVED. UNRESOLVED is allowed and honest. The evaluator checks the classification against a
+sealed answer, and a discarded-without-record branch is a scored error (new falsification rule F12).
+This applies to every Atlas rung, not only C2S.
+
+### A.6 The C2S ladder and gates (points 5 to 11, 13)
+
+| Rung | World | Candidate must | Gate |
+|---|---|---|---|
+| C2S-0 | scalar arithmetic fails, a compact vector or matrix relation wins (coupled observables, hidden rotations, basis-dependent measurements, noncommuting transforms) | expand scalar to structured state when and only when needed | PZ_C2S_ALGEBRA_EXPANSION_PASS |
+| C2S-1 | interference world; real-only possible but awkward | answer "what minimal algebraic extension makes this simple and predictive?" never "use complex numbers" | PZ_C2S_COMPLEX_PASS |
+| C2S-2 | A-then-B differs from B-then-A | discover order dependence (AB differs from BA) without matrix mechanics; generalize to unseen sequences | PZ_C2S_NONCOMMUTATIVE_PASS |
+| C2S-3 | evidence for first-order quantum-like evolution and for a relativistic energy-momentum relation; no named equations, no spinors | identify the incompatibility, reject inadequate representations, build one that satisfies both, make new correct predictions; no grading on the historical path | PZ_C2S_RELATIVISTIC_QUANTUM_PASS |
+| C2S-4 | a hidden relation equivalent to a quadratic energy-momentum-mass relation, notation hidden | find first-order evolution whose square gives the quadratic relation; scalar coefficients must fail; success is structure equivalent to a set of anticommuting square-to-identity objects | PZ_C2S_DIRAC_FACTORIZATION_PASS |
+
+Companion gates:
+- PZ_C2S_STATE_DIMENSION_PASS (point 10): hidden state dimension is not announced. Candidates of 1 to N
+  components are each charged for complexity, and dimension must be earned by held-out gain. The task
+  never says how many components to use.
+- PZ_C2S_NOVEL_CONSEQUENCE_PASS (point 11): after the candidate is frozen, a sealed dataset of
+  consequences is opened (solution branches, a two-valued internal degree of freedom, particle and
+  antiparticle branches, dispersion, field response). No credit for retrofitting.
+- PZ_NOVEL_PREDICTION_PASS (point 13): the candidate commits a prediction for an unobserved phenomenon
+  before the evaluator reveals it. Record prediction timestamp, theory digest, prediction distribution,
+  observation, surprise and TURING gain. This outweighs post-hoc explanation.
+
+Wording rule: the Dirac-flavored worlds (C2S-3, C2S-4) use the section 4 isolation rules and the
+DIRAC-0 evaluator separation. Their reference solutions live evaluator-side only. Lane 35 cites these
+gate names and does not redefine them.
+
+### A.7 Blind historical reconstruction suite H0 to H9 (point 15)
+
+Names hidden in every world. Each step is a representation change the evidence forces.
+
+| Id | Change forced |
+|---|---|
+| H0 | scalar to vector |
+| H1 | real to complex |
+| H2 | commutative to noncommutative |
+| H3 | Euclidean to curved |
+| H4 | absolute time to spacetime |
+| H5 | trajectory to amplitude |
+| H6 | scalar quantum to multi-component relativistic |
+| H7 | global symmetry to local connection |
+| H8 | pure state to density operator |
+| H9 | microscopic to effective field |
+
+Mapping to Atlas rungs: H0 and H2 feed C2S-0 and C2S-2, H1 feeds C2S-1 and Q0, H5 feeds Q0, H6 feeds
+C2S-3 and C2S-4, H8 feeds Q2, H9 feeds SC-0, H3 feeds G-0, H4 and H7 are later rungs (NOT_RUN, no spec).
+
+### A.8 Failure is part of the benchmark (point 16)
+
+Every C2S family includes worlds where the current representation is sufficient. Complexity cost
+punishes gratuitous structure. "Existing representation adequate" can be the right answer, and
+inventing structure there is a scored error (false complexification).
+
+### A.9 Scorecard (point 17)
+
+No single genius score. Each is reported separately: constraint satisfaction, predictive accuracy,
+held-out Turings, representation complexity, number of failed representations, time until inadequacy
+was recognized, cost of expansion, new-prediction accuracy, transfer, cross-domain reuse,
+false-complexification rate, uncertainty, falsification quality. These extend section 5 and do not
+replace it. A fixed pass threshold per gate is set before any run and committed with the world list.
+
+### A.10 C2S-0 Representational Adequacy Lab: the first implementation (point 20)
+
+Three tiny sealed worlds, evaluator-side:
+
+- World A: scalar representation is sufficient. Correct answer: ADEQUATE, add no complexity.
+- World B: a two-component state is required. Correct answer: INADEQUATE for scalar, increase state
+  structure, and justify the dimension by held-out gain.
+- World C: noncommuting structure is required. Correct answer: INADEQUATE for commuting classes,
+  invent noncommutative structure, and generalize to unseen operation orders.
+
+Each world has a null variant (noise, no law). All five benchmark validity gates BV1 to BV5 apply.
+Exit gate: PHYSICS_ZERO_C2S_FOUNDATION_PASS, which requires the three verdicts correct, no
+gratuitous complexity in A, no law in null variants, and two independent scorers in agreement.
+Status: NOT_RUN. MISSING_IMPLEMENTATION: the evaluator, the worlds, and a matrix-capable value type for
+AIEN-side candidates (reference solvers do not need one).
+
+Ordering rule: PHYSICS_ZERO_C2S_FOUNDATION_PASS must come before any Dirac challenge. No C2S-3, C2S-4
+or DIRAC wave D2 or D3 run counts until it passes.
+
+### A.11 DIRAC ladder reshaped (points 18 and 19)
+
+DIRAC-0 becomes mathematical invention under physical constraint, with the rungs D-1 (prove simpler
+representation classes inadequate), D0 (discover and represent the richer algebra), D1 (realize it
+physically), D2 (discover a predictive theory from observations), D3 (sealed novel prediction). The
+DIRAC spec text is owned by `docs/plans/dirac/DIRAC-0-SPEC.md` (Lane 35, arch PR #83), which cites the
+C2S gate names defined here. Mapping: D-1 uses the C2S-0 lab and C2S-3, D0 uses C2S-2 and C2S-4,
+D2 uses the state-dimension and novel-consequence gates, D3 uses PZ_NOVEL_PREDICTION_PASS.
+
+Long-term sequence of representation changes the Atlas should eventually ask about: forces to geometry,
+particles to fields, deterministic to probabilistic, pure to mixed, global to local gauge, microscopic
+to effective, fixed to running parameters, local to topological. Each asks whether reality forced a
+better language. None has a spec yet.
+
+### A.12 Leakage and falsification additions
+
+- L16: a task prompt or channel name that hints at the needed structure (the words "complex",
+  "matrix", "spinor", "anticommute"). Mitigation: prompt scrub, and a vocabulary canary list.
+- L17: a reference solution or sealed consequence dataset in a public path. Mitigation: evaluator-only.
+- F12: a strange branch discarded without a UnexpectedSolutionPolicy classification.
+- F13: a candidate passes a C2S rung by inventing structure in an ADEQUATE world (false complexification
+  above threshold).
+- F14: novel-consequence credit given for a prediction committed after reveal.
+
+---
+
 ## Closing summary
 
 What exists. Doctrine for Theory objects, the sealed oracle and the pyramid. A scoring idea (TURING
@@ -487,7 +673,13 @@ PZ-C, Q0, Q3, S0). Theory-link edges (Q1, X-0, T-0, SC-0). Discrepancy models (Q
 Distribution-valued laws (S1, Q0, Q2, Q4). Testable validity regions (SC-0, S2, T-0). Value types for
 complex and tensor (Q0, Q1, Q2, F rungs, Q6).
 
-Recommended next specs: SC-0 and X-0, because Drake's emphasis is laws that change with scale and the
+Recommended first build: the C2S-0 Representational Adequacy Lab (Addendum A.10). It needs only the evaluator and reference solvers, and it gates every Dirac challenge. Recommended next specs after it: SC-0 and X-0, because Drake's emphasis is laws that change with scale and the
 same physics in different forms. Alternative: swap Q2 for SC-0 in the first six if the quantum
 prerequisites (complex types) are judged too far away. The recommendation is to keep the six as written
 and write SC-0 and X-0 next.
+
+C2S addition. What exists: nothing implemented for C2S. What is missing: the adequacy evaluator, the
+three-world lab, a matrix-capable candidate-side value type, and a Cortex-level class-failure claim
+(reuse unproven). What must wait: every Dirac challenge until PHYSICS_ZERO_C2S_FOUNDATION_PASS;
+novel-prediction gates until a clean lineage and a sealed commitment exist. What can begin now: the
+C2S-0 lab (worlds A, B, C and null variants) with reference solvers only.
