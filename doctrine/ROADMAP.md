@@ -231,7 +231,7 @@ One nontrivial abstraction not present in the initial library that:
 - Cortex Receipt: Space `atlas-memory`, receipt ID `03c34210-4ecc-4c79-9bf9-c3ac37e157f8`.
 
 ### M19: `OMEGA_ACCELERATOR_RESIDENT`
-- Status: **REOPENED / IN PROGRESS**.
+- Status: **COMPLETE / CORRECTIVELY REQUALIFIED** (closed 2026-09-30 via M19R Gate 14, `aien-dev/omega#111` `5517d22`, receipt `50dd611b...`; previously recorded here as **REOPENED / IN PROGRESS** while the M19R recovery program ran).
 - Specification: `docs/milestone-19-spec.md`.
 - Target Substrate: Persistent Omega Execution Substrate in Coherent Memory on NVIDIA DGX Spark (`spark-b87b`, Grace Blackwell GB10, `sm_121`, 128 GiB unified LPDDR5x RAM).
 - Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`), `aien-dev/omega` M18 (commit `7273c37`).
