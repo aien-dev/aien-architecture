@@ -120,6 +120,8 @@ TRN1 v0 (`aien-protocols` `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md`, 
 
 **Proposed for TRN1 0.2 (to be filed with aien-protocols; number assigned there).** A `RESOURCE` record whose identity is:
 
+The TRN1 0.2 bump is shared with aien-architecture#98 (HD-08); the joint record-type number table lives in [causal-id-join-v0.md](causal-id-join-v0.md) section 3.
+
 | Field | Size | Meaning |
 |---|---|---|
 | op | u8 | 1 CHARGE, 2 REFUND, 3 REFUSE, 4 CANCEL, 5 OVERRUN, 6 OVER_OBSERVED |
@@ -127,7 +129,7 @@ TRN1 v0 (`aien-protocols` `specs/execution-transcript/TRN1_TRANSCRIPT_SPEC.md`, 
 | field | u16 | contract field number from section 1.2 (0 for a whole-need charge or refund) |
 | reserved | u32 | zero |
 | unit | u64 | the reaction or task id the outcome applies to |
-| cause | u64 | the cause id (ARCH-0025 section 2) |
+| cause | 32 bytes | the cause id, a 32-byte digest as defined in [causal-id-join-v0.md](causal-id-join-v0.md) section 2.1 (HD-08, aien-architecture#98) |
 | contract | 32 bytes | digest of the contract record in force |
 | declared | u64 | the declared limit for `field` (0 when ABSENT; presence is in the contract) |
 | used | u64 | the deterministic amount used, or 0 for a measured field |
