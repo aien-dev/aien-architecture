@@ -83,6 +83,20 @@ Addendum, 2026-10-01 push (merge times UTC; each merge checked with `gh pr view`
 - Roadmap: `aien-dev/aien-architecture#77` merge `68b3dbb` aligned the `doctrine/ROADMAP.md` §3 M19 note with the table (COMPLETE / CORRECTIVELY REQUALIFIED).
 - Not changed by these merges: no roadmap milestone row changes; AIENOS M5 and M6 and roadmap M20 and M23 are not closed; nothing is qualified on silicon or Machine 1.
 
+Addendum, 2026-10-01 push, later merges (Lane 23 reconciliation; every PR checked MERGED or OPEN with `gh pr view`, every in-repo receipt path checked on main with `gh api .../contents`; status words are the lanes' and receipts' own):
+
+- AIENOS M5 owner-signed migration record: `aien-dev/aienos#189` merge `6bcef8a` (native C Ed25519 from `#188`). AIENOS_M5_MIGRATION_SIG: PASS with TEST keys only; the real-owner row is BLOCKED_OPERATOR (offline key ceremony). Receipt aienos `evidence/trust1_m5_qualification_f21f2c038946093a01f3d6553b5bc1a82d8e6ac0bfbb6b36ed4e7a932a9df709.json` (commit `93614ba`, QEMU checks ran): NOT_QUALIFIED, pass 15 / fail 0 / not_run 0 / blocked 11 / missing 5 (31 rows).
+- AIENOS C disk layer and C Store engine: `aien-dev/aienos#190` merge `811bbc0` (C block layer + freestanding NVMe driver; AIENOS_DISK_NATIVE and AIENOS_STORE_NVME_QEMU PASS), `#191` merge `697391f` (C twin of System Store v1 + sealed Store; AIENOS_STORE_NATIVE PASS, Rust-compatible bytes). Receipt aienos `evidence/trust1_m5_qualification_6fd36c3012ad792862e6098492ae78d7b091c5fada8af73c7c60e6a8f544a650.json` (commit `c89e68c`, QEMU off): NOT_QUALIFIED, pass 15 / fail 0 / not_run 3 / blocked 11 / missing 5 (34 rows). Both receipts are kept. The production 512-byte Store row stays MISSING_IMPLEMENTATION: no kernel wiring, no physical SSD run, no Gate 6 anchor, no key rotation. Owner steps are listed in aienos `docs/TRUST-1-OPERATOR-STEPS.md`.
+- AIENOS M6-B secure transport (hosted): `aien-dev/aienos#192` merge `08cb905`, AIENOS_NET_SECURE: PASS (hosted only, TEST keys plus seeded entropy; X25519 + Ed25519 handshake, AES-GCM-SIV records); receipt aienos `native/net/receipts/m6a_net_host_83748f32165c969f2b903eefb4f975a2f4900035cc234a2b31ddfe04941166d6.txt` (commit `4017b8e`). Resend jitter in the M6-A control channel: `#193` merge `8d511d6`, PASS (hosted); receipt `native/net/receipts/m6a_net_host_b266e16da256456c91dae44ede2c47cbd7cbd830473cf9bc56f9541d0d876007.txt` (commit `d4bd682`). No native binding, no real keys, no timing measurement, no physical NIC qualification.
+- Fabric format v2 (64-byte, Ed25519-sized signature field): `aien-dev/omega#137` merge `1299b19`; receipt omega `evidence/F5-0/4cf465c70b477759c85c330db75066af8feab80585c7688f03004a20722557d8.json`, F5_0_FABRIC_LOOPBACK PASS (host). Signatures are still the HMAC stand-in until TRUST-1.
+- COMPOSITION-2, continued: `aien-dev/omega#132` merge `ff2af05` (a simulated second machine's Skill used through Fabric F5-0 inside the living World), `#131` merge `f7b22f1` (GPU tier of the 14-step gate, 14/14 x2 on the GB10, no CUDA; receipt omega `evidence/COMPOSITION-2/b6d6eed1b92fda28226e0bd21c8ad5d598e6f85a89c7a80748e28c00f8542686.json`), `#133` merge `c6cf052` (close waits for its own steps), `#139` merge `4aa71bf` (close reclaims everything; up to two isolated compositions per World, isolation, not a queue), `#135` merge `80da85c` (Fabric phase in the R13 silicon build), `#142` merge `18226b2` (receipts and `evidence/COMPOSITION-2/INDEX.md`). Authoritative host gate receipt omega `evidence/COMPOSITION-2/3f43152b2da43bd1b16349bd60aec2f99eb8eab241378ec11e4a1f76747d56aa.json` (PASS 14/14 x2, commit `4aa71bf`; supersedes `ca74b119...`, which is kept). R13 silicon receipt `evidence/COMPOSITION-2/4957ef16e1e53543c8b74ef297d7129cd238e4459c8c84f27c3a6719ac08c0bc.json`: R13_LIVING_SYSTEM SILICON_PASS_UNBOUND, Fabric phase PASS; the second machine is an in-process loopback stand-in, not a network or TRUST-1 qualification.
+- M23 G3 commitment signing: `aien-dev/omega#130` merge `7fb59d3` (vendored native Ed25519; PASS with TEST keys; unsigned bytes unchanged). Owner signing and sealing stay BLOCKED_OPERATOR.
+- E1 rows: WP-D reductions `aien-dev/omega#134` merge `c54d492` (frozen-order SUM/MAX/MIN/MEAN; `make test-numeric-reduce-cpu` PASS_EXCEPT_DECLARED_CHIP_ONLY; GB10 SUM chip parity PASS, 60 cases, receipt `be9d61ce...` kept outside the repository on the Spark; GB10 MAX/MIN/MEAN MISSING_IMPLEMENTATION). Still OPEN at this writing: `#127` (E1 WP-B transcendental sequences, CPU tier), `#141` (E1 row 7, GB10 FP32 DIV and SQRT), `#136` (roadmap M20 `OMEGA_TENSOR` semantic layer + CPU realization, not qualified). E1 is not closed.
+- M22 substrate and E5 provenance: `aien-dev/omega#140` merge `54826a3`; receipt omega `evidence/M22/receipts/eaa0cdeae9f348b19b80377baaeb5e5dea6a6577e9385e7a2a3c15caab24c5c8.json`: substrate tests PASS; "M22 NOT QUALIFIED: optimizer substrate + SGD path only; no tensor/autodiff integration (waits M20/M21)".
+- Estimation v3: `aien-dev/omega#129` merge `d78fd11`, `ESTIMATION_CALIBRATION (v3) = FAIL` at Phase A, sealed run NOT_RUN (omega `docs/estimation/receipts/est3c-v3/RESULT.md`; params sha256 `6be9c829...`); recorded in `aien-dev/aien-architecture#80` merge `ac83f0d`. A v4 attempt is in progress on omega branch `feat/est-v4` (no PR at this writing). EST-4 and EST-5 stay blocked.
+- Omega CI coverage: `aien-dev/omega#138` merge `d6837d4` (fabric, composition, search-trace, estimation and numeric host suites now run on GitHub for their own paths). Test-only fix of the flaky `test-empirical` check: `#128` merge `ee89461`.
+- Not changed by these merges: no roadmap milestone row changes; TRUST-1, AIENOS M5 and M6, roadmap M20, M22 and M23 are not closed; nothing here is qualified on Machine 1.
+
 ## 3. Program rule
 
 Do not build higher layers on a lower layer whose qualification is known to be misleading.
@@ -245,6 +259,8 @@ Resolve hardware qualification blocks instead of bypassing them.
 
 Status 2026-10-01: NOT_QUALIFIED. Native C crypto, envelope, anchors, identity separation and recovery are merged and host-tested (`aien-dev/aienos#183` `84de088`, `#186` `4492ca9`); first receipt `evidence/trust1_m5_qualification_5a5de9c1...json` (`#187` `929a720`): pass 10 / blocked 10 / missing 6 / not_run 2. Key hierarchy is BLOCKED_OPERATOR (TRUST-1 Gate 3 owner key ceremony); sealed volume keys, Store-wired envelopes and the owner-signed chain on Machine 1 are MISSING_IMPLEMENTATION. In-house Ed25519 exists (`#188` `913b962`) but is not yet wired into migration authorization.
 
+Status 2026-10-01, later: still NOT_QUALIFIED. Owner-signed migration record merged with TEST keys (`aien-dev/aienos#189` `6bcef8a`; real-owner row BLOCKED_OPERATOR); C disk layer and C Store engine merged (`#190` `811bbc0`, `#191` `697391f`), production 512-byte Store row still MISSING_IMPLEMENTATION. Latest receipt `evidence/trust1_m5_qualification_6fd36c30...json`: pass 15 / not_run 3 / blocked 11 / missing 5; the QEMU-complete receipt `f21f2c03...` shows not_run 0. Owner steps: aienos `docs/TRUST-1-OPERATOR-STEPS.md`. See §2 later-merges addendum.
+
 ### D2. M6 minimal networking
 
 Build the minimum native networking needed by the system:
@@ -257,6 +273,8 @@ Build the minimum native networking needed by the system:
 - deterministic failure/recovery.
 
 Status 2026-10-01: M6-A hosted C network stack merged (`aien-dev/aienos#184`, `999b5aa`): Ethernet/ARP/IPv4/UDP, virtio capability parsing and a TEST-identity control transport; M6A_NET_HOST: PASS (host only; no QEMU, no hardware). Native NIC binding needs a C kernel; secure transport needs the M5 key hierarchy; physical NIC qualification follows TRUST-1 Gate 7.
+
+Status 2026-10-01, later: M6-B secure control transport merged (`aien-dev/aienos#192`, `08cb905`), AIENOS_NET_SECURE: PASS (hosted only, TEST keys); resend jitter (`#193`, `8d511d6`) PASS (hosted). Native binding, production keys and physical NIC qualification are still not done.
 
 ### D3. M7 native CPU inference
 
@@ -325,6 +343,8 @@ The backward pass is ordinary Omega and uses the same Forge/AEGIS path.
 - validation precedes one atomic generation switch;
 - crash/fault injection must yield OLD or NEW, never half-updated.
 
+Status 2026-10-01: substrate merged, M22 NOT QUALIFIED (`aien-dev/omega#140`, `54826a3`; receipt omega `evidence/M22/receipts/eaa0cdea...json`): shadow state with one atomic generation switch, crash tests at 8 fail points yield OLD or NEW, float32 SGD + momentum. No tensor or autodiff integration (waits M20/M21); faults are process crashes, not power loss.
+
 ### E5. Training provenance
 
 Separate:
@@ -333,6 +353,8 @@ Separate:
 - full parameter/optimizer state provenance at committed training steps.
 
 Do not hash full model contents after every small kernel launch.
+
+Status 2026-10-01: two-tier provenance (chained per-dispatch records, full digest only at commit) merged with the M22 substrate (`aien-dev/omega#140`, `54826a3`); not yet exercised by a real tensor training step.
 
 **Exit gate:** a complete training step is deterministic enough to reproduce/verify and transactionally recoverable.
 
@@ -380,6 +402,8 @@ Status 2026-09-30: World execution is recorded into omega `rx_cortex` through on
 
 Status 2026-10-01: World commit binder (`rx_world_set_binder`, `aien-dev/omega#121`, `5c403f0`) binds the selected J-Space branch at commit; the causal path World -> J-Space -> AEGIS -> commit -> Cortex with OLD-or-NEW crash recovery is `#125` (`f099141`). Cortex owner recorded: ADR 0022 (`aien-dev/aien-architecture#75`, `6c06e50`) names omega `rx_cortex` canonical. Host PASS; receipt omega `evidence/COMPOSITION-2/ca74b119bbb9008306638b68ae0e82f31d05c4c9ee35ba2b5bb0991f787778f6.json`. GPU tier NOT_RUN.
 
+Status 2026-10-01, later: the GPU tier of the 14-step gate ran and passed 14/14 x2 on the GB10 (`aien-dev/omega#131`, `f7b22f1`; receipt omega `evidence/COMPOSITION-2/b6d6eed1...json`), so the "GPU tier NOT_RUN" above is superseded. Close now reclaims everything and up to two isolated compositions run per World (`#139`, `4aa71bf`); authoritative host receipt `evidence/COMPOSITION-2/3f43152b...json`.
+
 ### F4. J-Space
 
 - fork candidate Worlds;
@@ -391,6 +415,8 @@ Status 2026-10-01: World commit binder (`rx_world_set_binder`, `aien-dev/omega#1
 Status 2026-09-30: production J-Space for local branches merged (`aien-dev/omega#116`, `529ebfa`): generation-checked ids, limits, durable checkpoints, staged branches. Remote operations return `JS_ERR_REMOTE`; machine placement is a placeholder; not yet in the living-system build.
 
 Status 2026-10-01: COMPOSITION-2 explores two alternatives in J-Space, commits one verified branch and discards the other, inside the R13 living World (`aien-dev/omega#125` `f099141`, `#126` `4f8485b`), host only. Remote J-Space still returns `JS_ERR_REMOTE`.
+
+Status 2026-10-01, later: the same J-Space path also runs with both Skills executed on the GB10 in the GPU tier of the gate (`aien-dev/omega#131`, `f7b22f1`). Remote J-Space still returns `JS_ERR_REMOTE`; the Fabric second machine is an in-process stand-in.
 
 ### F5. Fabric
 
@@ -409,6 +435,8 @@ Start with coarse work units, not per-layer distributed inference.
 Status 2026-09-30: not started. Only stable Machine identities exist (`AienMachineId`, `aien-dev/omega#113`, `16f8518`).
 
 Status 2026-10-01: F5-0 interface PASS, host-only loopback (`aien-dev/omega#123`, `a18ec6b`; spec `aien-dev/aien-architecture#78`, `40c17de`; receipt omega `evidence/F5-0/e419a00b54d52b7307cada39d29e501d8a776a100471e0c2a2c41dfd84753858.json`): authenticated membership, capability advertisement, leases and loss withdrawal across three loopback machines. Not yet in the living system; no network transport (needs AIENOS M6), no AEGIS send gate, HMAC stand-in for the owner-key signature, no topology measurement or placement. BLOCKED_OPERATOR: aienos ADR 0010 is still Proposed.
+
+Status 2026-10-01, later: format v2 with a 64-byte signature field (`aien-dev/omega#137`, `1299b19`); a simulated second machine joins the R13 living World (`#132`, `ff2af05`) and runs in the silicon build (`#135`, `80da85c`). Still in-process loopback only: no network transport, HMAC stand-in signature, aienos ADR 0010 still Proposed.
 
 **Exit gate:** one objective can be decomposed, explored across branches/machines, realized, verified, committed, and remembered through canonical typed interfaces.
 
@@ -456,6 +484,8 @@ Before final training, commit:
 Train, freeze model digest, reveal holdout, evaluate once, write immutable receipt.
 
 Status 2026-10-01: the sealed-holdout commitment format, reveal-and-check procedure and receipt format are merged and tested (`aien-dev/omega#122`, `ce7821d`); nothing is sealed yet. Sealing is BLOCKED_OPERATOR: secret salt generation, choice of storage for the sealed set, and owner-key signature of the public commitment.
+
+Status 2026-10-01, later: owner signature of the public commitment record implemented with TEST keys (`aien-dev/omega#130`, `7fb59d3`). Real owner signing and sealing stay BLOCKED_OPERATOR.
 
 ### G4. M25 guided synthesis
 
@@ -597,6 +627,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 - Alias: COMPOSITION-1 (formerly misnamed 'M20 program' in agent briefs, 2026-09-30). Any "M20" in omega PRs #113 to #116 or `m20*` branch names means COMPOSITION-1; roadmap M20 is `OMEGA_TENSOR` (Lane 3).
 - Merged so far: `aien-dev/omega#113`, `#114`, `#115`, `#116` (see §2 composition-merges addendum). Open: World commit binding of J-Space, Cortex ownership ADR, living-system integration, Fabric.
 - COMPOSITION-2 (2026-10-01): merged `aien-dev/omega#121` (`5c403f0`), `#125` (`f099141`), `#126` (`4f8485b`); host PASS, receipt omega `evidence/COMPOSITION-2/ca74b119...json`. This closes, at host level, World commit binding of J-Space and living-system integration; the Cortex ownership ADR is ADR 0022 (`aien-dev/aien-architecture#75`). Fabric F5-0 interface merged host-only (`aien-dev/omega#123`). Open: GPU tier NOT_RUN, Fabric in the living system, more than one composition per World.
+- COMPOSITION-2, later (2026-10-01): `aien-dev/omega#131` (`f7b22f1`, GPU tier 14/14 x2), `#132` (`ff2af05`, Fabric second machine in the living World), `#133` (`c6cf052`), `#139` (`4aa71bf`, close reclaims everything, two isolated compositions per World), `#135` (`80da85c`), `#142` (`18226b2`). Authoritative host receipt is now omega `evidence/COMPOSITION-2/3f43152b...json` (supersedes `ca74b119...`).
 
 **Lane 5 — Resident reaction runtime (ADR 0016):** R0–R16, sequenced in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
 
@@ -615,9 +646,10 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 **Lane 7 - Belief / estimation layer (ADR 0020):** EST-0 to EST-10; current state in [`docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md`](docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md).
 
 - EST-0 to EST-3 (contract, linear Kalman reference, one real signal, calibration) may run before R16 closes only as a standalone module: new files under `omega/src/estimation/` and `omega/tests/estimation/`, own `mk/estimation.mk` targets, not in `all` or `test`, not included by `omega/src/runtime/`.
-- EST-4 onward (World, cost model, TURING, J-Space, Cortex, curiosity, information gain) is unblocked following R16 closure and the lifting of the `omega/src/runtime/` hold.
+- EST-4 onward (World, cost model, TURING, J-Space, Cortex, curiosity, information gain) is no longer held by R16 (closed; `omega/src/runtime/` hold lifted) but still waits on a passing EST-3 calibration (status line below).
 - Estimator output never becomes an authority input and never replaces raw evidence. An estimator that fails EST-3 calibration is not promoted.
 - New estimation code stays clean of the R16 loop-inventory patterns.
+- Status 2026-10-01: three frozen calibration attempts FAILED and are recorded (v1 `aien-dev/omega#105`, v2 `#118`, v3 `#129` `d78fd11`); v4 in progress on omega branch `feat/est-v4`. EST-4/EST-5 stay blocked on a passing calibration.
 
 These lanes converge before AIEN_0 is promoted into the live runtime.
 
