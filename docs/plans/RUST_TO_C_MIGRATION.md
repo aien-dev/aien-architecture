@@ -215,6 +215,8 @@ Each part gets a C twin that passes the same tests as the Rust version before th
 
 These are open. Each needs Drake's call or more measurement before work starts.
 
+Status 2026-10-01 (Lane 33 reconciliation, recorded from merged code, not a new decision): item 1 was taken in practice as bottom-up (crypto `aien-dev/aienos#183`, Store `#190`/`#191`, then the C kernel `#194` to `#204`; C boot loader not started), under Drake's standing "go with the recommendation" rule. Item 2 was executed by `aien-dev/aienos#188` (`913b962`, own Ed25519 + SHA-512 in C, RFC 8032 vectors). Items 3 to 8 are unchanged. See `CURRENT_EXECUTION_PLAN.md` §2, Lane 33 addendum.
+
 1. **Order inside aienos.** boot → kernel → store → crypto (as briefed, needs temporary C-calls-Rust bridges), or crypto → store → kernel → boot (bottom-up, no bridges, boot last).
 2. **Ed25519 signatures.** Today they come from vendored outside code (`ed25519-dalek`). Writing our own Ed25519 in C is security-critical work that needs its own test plan: RFC 8032 vectors, plus a differential check against the current code.
 3. **BLAKE3 in Crumb v1.** Either write BLAKE3 in C ourselves, or switch Crumb to a hash we already own (SHA-256 in aienos-crypto). Switching changes every digest, including `golden_registry_digest.txt`, so it is a format version bump, not a port.

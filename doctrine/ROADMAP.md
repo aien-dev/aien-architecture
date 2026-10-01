@@ -28,6 +28,8 @@ Status vocabulary:
 | `REOPENED / IN PROGRESS` | Previously reported complete; reopened for requalification. Not complete. |
 | `PLANNED` | Not started. |
 
+Note (2026-10-01, Lane 33): rows M20, M22 and M23 stay `PLANNED` because no exit gate is met, but precursor work has merged for each (M20 draft `aien-dev/omega#136` open; M22 substrate `#140`; M23 corpus `#122`). For these rows `PLANNED` means "no gate met, precursor work merged", not "nothing started"; see their notes in §3.
+
 ---
 
 ## 2. The Canonical Roadmap Table
@@ -121,7 +123,7 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 ### M6: `OMEGA_SELF_HOST` (correction note, 2026-09-30)
 - The historical identifier, commit `8033c38`, receipt `evidence/omega_self_host_qualification_receipt.json` and the COMPLETE row above are kept unchanged. The 10 M6 gates as specified did pass.
 - What the gates actually proved: the emitted "compiler" (`src/omega_self_host.c`, `emit_compiler_code`) checks the `OMGG` header, then dispatches on the object-count byte. For the 8-object graph $G_S$ it writes three constant words (ADD, SUB, RET). For the 5-object graph $G_C$ it copies its own instruction bytes. So `C1 == C2 == C3` holds by self-copy (quine style), not by compiling $G_C$.
-- M6 is therefore **not** evidence of a general Omega compiler or of compiler self-hosting, and it does not satisfy `SOVEREIGNTY.md` §6.3 invariant 1. A general Omega compiler does not exist on omega main. What exists is narrower: `omega_program_realize` (`src/omega_program.c`) lowers one program body shape (a sequence of arithmetic and bitwise operations with immediate constants across 8/16/32/64-bit integer types) to AArch64, and omega itself names this realization, not a compiler; the surface-language front end (`src/language/`) is partial; the compiler slice is OSC-1 work.
+- M6 is therefore **not** evidence of a general Omega compiler or of compiler self-hosting, and it does not satisfy `SOVEREIGNTY.md` §6.3 invariant 1. A general Omega compiler does not exist on omega main. What exists is narrower: `omega_program_realize` (`src/omega_program.c`) lowers one program body shape (a sequence of arithmetic and bitwise operations with immediate constants across 8/16/32/64-bit integer types) to AArch64, and omega itself names this realization, not a compiler; the surface-language front end (`src/language/`) is partial; the compiler slice is OSC-1 work. Update 2026-10-01 (Lane 33): the OSC-1 slice (`aien-dev/omega#144` `b81f850`) and OSC-2 (`#148` to `#151`, last `7e713e3`: checked contracts, structs, arenas) are merged, IMPLEMENTED / NOT QUALIFIED with host receipts only. It is a compiler slice, not self-hosting, and not a general Omega compiler; M6 is unchanged.
 - Source of this correction (omega main `6d1ff1d`): `spec/self-host.md` note of 2026-09-29; `docs/adr/OMEGA-SYSTEMS-CORE-0000.md` item C8 (decided by Drake Stapleton, 2026-09-29: the M6 result "was a fixed-output self-copy check, not compilation, and is never evidence of a compiler"); `docs/osc/audit/language-compiler.md`.
 - Reopening M6 or redefining its gate is an explicit decision that has not been taken. Until then the row stays COMPLETE with this note.
 
@@ -286,22 +288,24 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
 | R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
 | R15 quantitative performance | PASS | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates) |
-| R16 orchestrator retirement | COMPLETE | DGX Spark | `aien-dev/omega#112` merged (`3dd5eaa`). All gates G1–G8 PASS on clean candidate `850fc545770554c8db45e97acf20224663878685`. Canonical receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`). 281/281 sites classified (0 unclassified). Full R1–R15 candidate ladder passed on GB10 silicon. Runtime freeze on `omega/src/runtime/` lifted. |
+| R16 orchestrator retirement | COMPLETE | DGX Spark | `aien-dev/omega#112` merged (`3dd5eaa`). All gates G1–G8 PASS on clean candidate `850fc545770554c8db45e97acf20224663878685`. Canonical receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`). 281/281 sites classified (0 unclassified). Full R1–R15 candidate ladder passed on GB10 silicon. Runtime freeze on `omega/src/runtime/` lifted. Exception recorded 2026-10-01: `#112` merged with its `evidence-immutable` check FAILED (run `36799862685`); `evidence/R16/inventory.json` was edited in place by `1edb56b` and `6831117`, which the PR did not record. |
 
 Status updated 2026-09-30 upon candidate-bound silicon qualification receipt and PR #112 merge. ADR 0016 migration is COMPLETE.
+
+Scope note (2026-10-01, Lane 33): every candidate-bound R13 to R16 receipt above binds a commit that predates omega `#126` (`4f8485b`), which added J-Space, Cortex, the Capability Graph, the Skill Router and composition (and later Fabric, `#132`/`#135`) to the R13 living build. R1 to R16 are qualified at their own candidate commits only. The living build on current main has one R13 run, `evidence/COMPOSITION-2/4957ef16...json`, SILICON_PASS_UNBOUND (`candidate_bound: false`), and R16-G3 has not been re-run on it: the current living build is IMPLEMENTED / NOT QUALIFIED until re-qualified. The rows above are not changed.
 
 ### ADR 0020 (ARCH-0020) belief / estimation stages EST-0-EST-10
 
 These are the implementation stages of ADR 0020, not roadmap milestones; they carry no M-number and do not change the table in §2. EST-4 and later wait for R16 closure.
 
-Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). A v4 attempt is in progress on omega branch `feat/est-v4` (no PR at this writing).
+Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). A v4 attempt is in progress: open omega PR `#153` (branch `feat/est-v4`), not merged; attempts 1 and 2 VOID, attempt 3 running, no verdict (Lane 33 correction).
 
 | Stage | Exit token | Status |
 | :--- | :--- | :--- |
 | EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
 | EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
 | EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | IN PROGRESS (signal tools merged `aien-dev/omega#105` `6d1ff1d`; exit not claimed) |
-| EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4 in progress |
+| EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4 in progress (open PR `omega#153`, no verdict) |
 | EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (blocked on a passing EST-3) |
 | EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (blocked on a passing EST-3) |
 | EST-6 TURING evidence | `TURING_ESTIMATION_EVIDENCE` | PLANNED |
@@ -311,7 +315,7 @@ Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and 
 | EST-10 active information gain | `ACTIVE_INFORMATION_GAIN` | PLANNED |
 
 ### M20: `OMEGA_TENSOR`
-- Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-dev/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-dev/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` and GB10 DIV/SQRT `#141` OPEN at this writing (see `CURRENT_EXECUTION_PLAN.md` §2 addenda).
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-dev/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-dev/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` (`7a5a13c`, CPU only) and standalone GB10 DIV/SQRT `#141` (`6b14354`) are merged (corrected 2026-10-01, Lane 33; they were already merged or merging when this note was written), as are GB10 main-path WP-C `#147` (`2d8cd68`) and DIV/SQRT `#152` (`07004a8`). E1 is still PARTIAL, 2 of 6 exit requirements met; `#136` remains an open draft (see `CURRENT_EXECUTION_PLAN.md` §2 Lane 33 addendum).
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
