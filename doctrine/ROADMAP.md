@@ -316,6 +316,7 @@ Status 2026-10-01: R16 is closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and 
 
 ### M20: `OMEGA_TENSOR`
 - Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-dev/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-dev/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` (`7a5a13c`, CPU only) and standalone GB10 DIV/SQRT `#141` (`6b14354`) are merged (corrected 2026-10-01, Lane 33; they were already merged or merging when this note was written), as are GB10 main-path WP-C `#147` (`2d8cd68`) and DIV/SQRT `#152` (`07004a8`). E1 is still PARTIAL, 2 of 6 exit requirements met; `#136` remains an open draft (see `CURRENT_EXECUTION_PLAN.md` §2 Lane 33 addendum).
+- Status 2026-10-02: the E1 prerequisite is CLOSED on the GB10 chip campaign at omega `fb36109` (merged `40d1ea37`, `aien-dev/omega#225`, Physics `e95e3ed`): consolidated receipt omega `evidence/E1-CLOSURE/e7851c69d34ac777a9436af16d0bdd5d69264c8528c62d562b600f5d89153061.json`, six of six E1 bullets met, exclusions recorded in omega `docs/numeric/E1_GAP_TABLE.md` (natural-base EXP/LOG not on GB10). M20 `OMEGA_TENSOR` itself is unchanged: table status PLANNED, `#136` an open draft, no exit gate met.
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
