@@ -3,6 +3,8 @@
 **Status:** Accepted by operator, 2026-09-27 (directive: "Treat this document as the architectural decision. Do not redesign it back into a service pipeline.")
 **Gate:** `R0_REACTION_ARCHITECTURE_LOCKED` — satisfied when this ADR is merged to `main`.
 **Supersedes:** nothing. **Amends:** the runtime-composition reading of `doctrine/ARCHITECTURE.md` §1.1 and §2.6 (see "Doctrine reconciliation").
+**Amendment 1 (ACCEPTED 2026-10-02 by operator Drake Stapleton, decision Option B):** FORGE is a realization and memory policy, not a stage of accepting a reaction result. See "Amendment 1" under "Doctrine reconciliation".
+
 **Related:** ADR 0005 (effect broker), ADR 0007 (J-Space effect boundary), ADR 0013/0014 (FORGE realizes, AEGIS verifies, AIENOS owns capabilities), ADR 0015 (Resident Semantic Store, accepted and merged 2026-09-27).
 **Migration map:** [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](../plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md) (NOT A MASTER PLAN).
 
@@ -59,11 +61,19 @@ Part II was written with some pre-ADR-0014 vocabulary. Read it through this tabl
 `ATLAS AWAKENS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.` remains the canonical statement of **responsibilities and causal dependencies**. After this ADR it is **not** a runtime turn order. In the resident system:
 
 - "AIEN proposes" means AIEN publishes typed proposals (`Hypothesis`, `PlanCandidate`, …) into the shared world.
-- "OMEGA defines" and "FORGE realizes" are reactions that become ready when those proposals exist.
+- "OMEGA defines" and "FORGE realizes" are reactions that become ready when those proposals exist. FORGE realization is a realization and memory policy, not a step in accepting a reaction result (ADR 0016 Amendment 1, 2026-10-02, below).
 - "AEGIS verifies" means authority state takes part in readiness. Verification reactions gate promotion. AEGIS is not a synchronous call on every step.
 - "Evidence teaches" means evidence is appended as structured causal crumbs, and durable learning is promoted only at generation barriers.
 
 The §2.6 "Bidirectional Lowering Protocol" still describes the dependency structure of one realization. Its numbered steps are dependencies, not a loop body.
+
+#### Amendment 1 (ACCEPTED 2026-10-02 by operator Drake Stapleton, Option B)
+
+- FORGE is a realization policy: hardware lowering and, inside J-Space, a memory-pressure policy (`js_forge_choose`, `js_forge_enforce`). It is not a stage of accepting a reaction result.
+- The recorded accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex, as documented in `aien-dev/omega` `docs/runtime/COMMIT_A_REACTION_DESIGN.md` (merged 35af57d). No FORGE step sits on it.
+- Wherever this ADR, `doctrine/ARCHITECTURE.md` §2.6 or any other document lists FORGE before verify, act or commit, read it as a dependency for hardware realization only, not as a commit step.
+- If hardware realization later needs a hook on the accept path, that is a new decision and a new amendment.
+- This does not change ADR 0024: Physics and FORGE remain hardware-substrate class B.
 
 ### Relationship to ADR 0015 (Resident Semantic Store)
 

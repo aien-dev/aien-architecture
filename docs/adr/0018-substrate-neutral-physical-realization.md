@@ -209,10 +209,12 @@ These are **workstream gates, not roadmap milestones.** They carry no M-number. 
 
 ## 13. Doctrine reconciliation
 
+- ADR 0016 Amendment 1 (2026-10-02): the end-state diagram above and the FORGE steps in it are dependency structure for realization only. FORGE is not a stage of accepting a reaction result; the accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex.
+
 - `doctrine/ARCHITECTURE.md` §2.4: FORGE realizes over one or more typed physical substrates as capability providers, and emits calibration and measurement evidence.
 - `doctrine/ARCHITECTURE.md` §2.5: AEGIS inquiry 8 — does a bounded or stochastic numerical result satisfy the semantic result contract, with calibration and measurement conditions in evidence?
 - `doctrine/ARCHITECTURE.md` §3: the CPU+GPU dual topology is the first qualified Machine, not the definition of a Machine.
-- `doctrine/FORGE.md` is unchanged: its OMEGA → FORGE → AEGIS → HARDWARE → EVIDENCE chain already holds for every substrate.
+- `doctrine/FORGE.md` was unchanged by this ADR: its OMEGA → FORGE → AEGIS → HARDWARE → EVIDENCE chain already holds for every substrate. (It later received one clarifying sentence under ADR 0016 Amendment 1, 2026-10-02: the chain is a realization dependency order, not a commit path.)
 ## 14. Final review questions (answered at proposal time)
 
 These are the thirteen questions the workstream brief requires before any implementation PR. A YES to any of the last three is a design failure. Answers are as of 2026-09-29, from the audits in §11.

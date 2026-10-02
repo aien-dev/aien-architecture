@@ -253,7 +253,7 @@ One nontrivial abstraction not present in the initial library that:
 ### M19R: `FOUNDATION_REPAIR`
 - Status: **PASS / CLOSED** (reclosed foundation 2026-09-30 via Gate 14 receipt `50dd611b...`).
 - Specification: `docs/m19r-recovery-program.md`.
-- Objective: repair the M19 qualification substrate (truthful evidence, GPU memory lifecycle, FORGE-realize/AEGIS-verify seam, observed hardware identity, FP32 machine vocabulary) before any Sovereign Training Runtime milestone (M20 onward) is qualified on top of it.
+- Objective: repair the M19 qualification substrate (truthful evidence, GPU memory lifecycle, FORGE-realize/AEGIS-verify seam, observed hardware identity, FP32 machine vocabulary) before any Sovereign Training Runtime milestone (M20 onward) is qualified on top of it. (The FORGE-realize/AEGIS-verify seam is a hardware realization seam, not a stage of accepting a reaction result; ADR 0016 Amendment 1, 2026-10-02.)
 - Gate: the Combined Foundation Admission Gate in `docs/m19r-recovery-program.md` covers only the foundation (evidence, runtime lifecycle, realize/verify seam, hardware identity, FP32 substrate). M19 re-closes, and M20 (`OMEGA_TENSOR`) opens, only after that foundation admission gate passes; M20-M24 remain separately qualified milestones, each with its own gate and receipt.
 - Gate progress (as of 2026-09-28):
 

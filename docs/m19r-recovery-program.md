@@ -204,6 +204,8 @@ Objective: Eliminate physical GPU memory leaks and establish deterministic, mono
 
 ### Gate 3: FORGE-0 - FORGE realize / AEGIS verify seam
 
+Note (ADR 0016 Amendment 1, 2026-10-02): this is the hardware realization seam. FORGE is not a stage of accepting a reaction result; that chain is World -> J-Space -> compose.verify -> commit -> Cortex.
+
 Objective: Formally establish the typed FORGE-realize / AEGIS-verify seam and eliminate obsolete authorization concepts that are not doctrine, without touching what is already correct doctrine.
 
 1. Architectural Alignment (per ADR 0013 clause 5 — see §1 doctrine block). No renaming of PHYSICS or its historical vocabulary.
@@ -400,7 +402,7 @@ Objective: Generate backward computation graphs as first-class Omega programs wi
    Omega Forward Graph -> Differentiator -> Omega Backward Graph
    ```
    - Derivative generation uses symbolic differentiation rules over Omega primitives.
-   - The resulting backward graph is submitted to FORGE, verified by AEGIS, and realized through the identical hardware execution pipeline.
+   - The resulting backward graph is submitted to FORGE, verified by AEGIS, and realized through the identical hardware execution pipeline. (Hardware realization path only; ADR 0016 Amendment 1.)
    - Core Invariant: Training computation is standard Omega computation.
 2. Numerical Verification:
    - Compare analytical gradients against double-precision finite differences on small graphs.
