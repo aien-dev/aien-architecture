@@ -45,16 +45,18 @@ This is a convergence of mechanisms that already exist: Omega's verified library
 ### 1. The VerifiedCrumbV1 object
 
 A Verified Crumb is one immutable record with these fields. The byte-level encoding (field order, length prefixes, integer widths, hash function) is NOT decided here; it is owned by `aien-protocols` `specs/verified-crumb/` (in flight) and must follow the same canonical-bytes discipline as `EvidenceReceiptV1` (Context item 7).
-
 | Field | Meaning |
 |---|---|
-| `format` | The literal format tag and version, `VerifiedCrumbV1`. |
-| `semantic_id` | Omega's program identity (`OmegaProgram.program_id`, the id bound to the canonical body and contract, `src/omega_library.c:175-180` refuses a zero id). This is the only name by which the object is addressed. |
-| `body_digest` | Digest of the canonical program body, so the store can check what it holds against the id. |
-| `dependencies` | An ordered list of `semantic_id` values. Never names, never versions, never ranges. No length cap below the library capacity; truncation is an error, not a behavior. |
-| `receipt_id` | The id of the passing evidence receipt that establishes admissibility (Decision 2). Required, never zero. |
-| `verifier_profile` | The named profile under which the receipt was produced (which qualification, which verifier, which pins). An unknown profile is a refusal. |
-| `name` | Human-readable metadata. Never authority, never used in resolution. |
+| `format_version` | The literal format tag and version, `VerifiedCrumbV1`. |
+| `semantic_id` | Omega's program identity (`OmegaProgram.program_id`, the id bound to the canonical body and contract, `src/omega_library.c:175-180` refuses a zero id). This is the only name by which resolution ever addresses the object. |
+| `contract_id` | The id of the typed contract the program satisfies. |
+| `source_or_ir_digest` | Digest of the canonical source or IR, so the store can check what it holds against the id. |
+| `realization_ids[]` | The realization ids admitted for this program. |
+| `dependencies[]` | Entries of `{semantic_id, required_contract}`. Never names, never versions, never ranges. No length cap below the library capacity; truncation is an error, not a behavior. |
+| `verification` | `{receipt_id, verifier_profile, verifier_version, evidence_root}`. `receipt_id` is the passing evidence receipt that establishes admissibility (Decision 2): required, never zero. An unknown `verifier_profile` is a refusal. |
+| `exports[]` | What the object makes available to importers. |
+| `capabilities[]` | The capabilities the object requires. |
+| `name` | Human-readable metadata, carried in the name index. Never authority, never used in resolution. |
 
 ### 2. Identity and admissibility are two different facts
 
@@ -69,7 +71,7 @@ lockfile -> semantic id -> store -> receipt -> transitive closure
 ```
 
 1. The lockfile maps each import to a `semantic_id`. It contains nothing else that resolves.
-2. The store returns the object for that `semantic_id`, and its `body_digest` must match.
+2. The store returns the object for that `semantic_id`, and its `source_or_ir_digest` must match.
 3. The receipt named by `receipt_id` must exist, verify under its `verifier_profile`, and bind that `semantic_id`.
 4. Steps 2 and 3 repeat for every dependency, transitively, until the closure is complete. The whole closure is part of the build identity.
 
@@ -140,15 +142,15 @@ Omega's compiler does not yet compile the Rust and C stack that ships today, so 
 
 | # | Code | Refuses when |
 |---|---|---|
-| 1 | `UNVERIFIED_DEPENDENCY` | a dependency has no admissible receipt (named in the plan) |
-| 2 | `MISSING_DEPENDENCY` | a dependency's semantic id is absent from the lock or store |
-| 3 | `MISSING_RECEIPT` | the object has no receipt id, or the receipt is absent |
-| 4 | `RECEIPT_MISMATCH` | the receipt does not bind this semantic id |
-| 5 | `STORE_DIGEST_MISMATCH` | the stored body does not match the id |
-| 6 | `DEPENDENCY_CYCLE` | the closure contains a cycle |
-| 7 | `NAME_OR_VERSION_DEPENDENCY` | a dependency is expressed as a name, version or range |
-| 8 | `NOT_IN_GENESIS_SET` | an unreceipted object is not a member of VC-GENESIS-1 |
-| 9 | `UNKNOWN_VERIFIER_PROFILE` | the receipt names a profile the verifier does not know (named in the plan) |
+| 1 | `UNVERIFIED_DEPENDENCY` | a dependency has no admissible receipt |
+| 2 | `MISSING_RECEIPT` | the object has no receipt id, or the receipt is absent from the store |
+| 3 | `RECEIPT_HASH_MISMATCH` | the receipt's recorded source or artifact digest does not match what is present |
+| 4 | `DEPENDENCY_NOT_PINNED` | a dependency is expressed as a name, version, range or "latest" instead of a semantic id in the lock |
+| 5 | `DEPENDENCY_CYCLE` | the closure contains a cycle |
+| 6 | `STALE_RECEIPT` | the receipt predates a change to the source it covers |
+| 7 | `UNDECLARED_IMPORT` | the reconstructed graph has an edge the manifest does not declare |
+| 8 | `TAINTED_ARTIFACT` | an `omega-dev` output or other tainted object is offered as a dependency |
+| 9 | `UNKNOWN_VERIFIER_PROFILE` | the receipt names a profile the verifier does not know |
 
 Only codes 1 and 9 are named in the plan, which elides the rest with an ellipsis. Codes 2 to 8 are this ADR's own naming and are marked as proposed names; the stage 5 specification may rename them but may not remove a refusal class or add an override.
 
@@ -185,9 +187,8 @@ Crumbline is the first subsystem moved onto the Verified Crumb path: it is the e
 1. The byte layout of VerifiedCrumbV1 and the hash function: owned by `aien-protocols` `specs/verified-crumb/` (in flight). The field set in Decision 1 is this ADR's; if the specification needs a field changed it amends this ADR.
 2. The exact members of VC-GENESIS-1: decided in stage 6 with a manual audit, by ADR.
 3. Whether the store lives on the Omega resident semantic store (ARCH-0015) or beside it: decided in stage 3.
-4. Names 2 to 8 of the refusal codes (Decision 9): provisional until stage 5.
-5. How `aien-test` moves onto the single receipt contract (ARCH-0028 Decision 4 amendment): decided with the contract in `aien-protocols`.
-6. How `aien verify-closure` reads the present Rust and C dependency graph (Cargo lockfile, Makefiles): the stage 5 scout's output decides; UNVERIFIED here.
+4. How `aien-test` moves onto the single receipt contract (ARCH-0028 Decision 4 amendment): decided with the contract in `aien-protocols`.
+6. How `aien verify-closure` reads the present Rust and C dependency graph: `cargo metadata --offline --locked` for Rust, a quoted-`#include` scanner relative to `-Isrc` for C (scout report, `~/handoffs/2026-10-02-VC1-SCOUT-scout.md`); the manifest format is decided in stage 5.
 
 ## Not decided here
 
