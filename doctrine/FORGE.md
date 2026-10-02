@@ -6,6 +6,8 @@
 
 FORGE is the physical realization and machine-lowering subsystem.
 
+FORGE is a realization and memory policy. It is not a step in how Omega accepts a reaction result; the recorded accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02). The chain below is a dependency order for realizing one program on hardware, not a commit path.
+
 ```text
 OMEGA
   defines semantic meaning and constraints

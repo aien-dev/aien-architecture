@@ -273,6 +273,8 @@ Status 2026-10-01, later: still NOT_QUALIFIED. Owner-signed migration record mer
 
 Status 2026-10-01, Lane 33 correction: the newest receipt is aienos `evidence/trust1_m5_qualification_3358bc25...json` (commit `5a3a05c`): NOT_QUALIFIED, 37 rows, pass 20 / fail 0 / not_run 1 / blocked 11 / missing 5. It is stale (predates SMMU `#197`, Store record v2 `#199` and the later C kernel merges; its Store-kernel row used the QEMU-only unsafe DMA bypass); a rerun on current main is owed. The C kernel exists (QEMU only, see §2 Lane 33 addendum) but every C kernel image uses TEST Store keys and a TEST machine id; no production key path exists.
 
+Status 2026-10-02: ADR 0016 Amendment 1 (decided by Drake, Option B). FORGE is a realization and memory policy, not a step in how Omega accepts a reaction result. The accept chain is World -> J-Space -> compose.verify -> commit -> Cortex (omega docs/runtime/COMMIT_A_REACTION_DESIGN.md, 35af57d). Flow lines in this plan that list Forge before AEGIS or World commits are dependency order for hardware realization, annotated inline.
+
 ### D2. M6 minimal networking
 
 Build the minimum native networking needed by the system:
@@ -352,7 +354,7 @@ Omega forward graph
 Omega backward graph
 ```
 
-The backward pass is ordinary Omega and uses the same Forge/AEGIS path.
+The backward pass is ordinary Omega and uses the same Forge/AEGIS path. (Realization path only, not a commit step; ADR 0016 Amendment 1.)
 
 ### E4. M22 OMEGA_OPTIMIZER
 
@@ -413,7 +415,7 @@ Status 2026-10-01: end to end with fail-closed routing modes (withdrawn, stale g
 - World = branchable execution state.
 - Cortex = durable epistemic memory.
 - Effects begin as typed Omega effect programs.
-- Forge realizes physical/external operations.
+- Forge realizes physical/external operations. (Realization policy, not a step in accepting a reaction result; ADR 0016 Amendment 1.)
 - AEGIS verifies contracts.
 - Effect Broker is a narrow protocol adapter.
 - World commit binds selected branch, effect receipts, evidence roots, and identities.
@@ -625,10 +627,10 @@ Power on
 → Skill/Capability Graph resolves needs
 → Fabric places eligible work
 → Omega defines semantics
-→ Forge realizes for available hardware
+→ Forge realizes for available hardware (hardware realization only; not on the accept path, ADR 0016 Amendment 1)
 → AEGIS verifies
 → hardware/tools act
-→ World commits
+→ World commits (accept chain is World -> J-Space -> compose.verify -> commit -> Cortex; ADR 0016 Amendment 1, 2026-10-02)
 → provenance/evidence seal
 → Cortex learns
 → AIEN continues

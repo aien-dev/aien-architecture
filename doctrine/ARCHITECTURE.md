@@ -55,7 +55,7 @@ AIEN ───── OMEGA ───── FORGE ───── HARDWARE
 3. **AIEN**: The sovereign cognitive intelligence. Residing primarily within high-bandwidth accelerator memory, Aien parses human intention, maintains continuous associative world models in Cortex, reasons across possibility spaces, and proposes intents, hypotheses, and architectural mutations.
 4. **OMEGA**: The semantic calculus and formal transformation engine. It decouples computational meaning from physical representation, defining formal programs, data types, graph relations, and mathematical invariants.
 5. **FORGE (Machine Realization Engine / Physical Realizer)**: The physical compiler and machine realization engine. It understands concrete hardware mechanics: memory allocations, page table mappings, cache line invalidations, register pressure, DMA descriptors, GPFIFO queues, device registers, and interconnect topologies. It lowers formal OMEGA programs into physical machine operations and communicates physical constraints back to OMEGA.
-6. **AEGIS (Invariant Checker & Verifier)**: The continuous verification framework spanning the entire execution chain. It checks that OMEGA programs match AIEN intents, verifies that FORGE realizations satisfy semantic constraints, validates memory bounds, slot generations, and type safety, guarantees rollback paths, and inspects post-execution hardware states against contracts.
+6. **AEGIS (Invariant Checker & Verifier)**: The continuous verification framework spanning the entire execution chain. It checks that OMEGA programs match AIEN intents, verifies that FORGE realizations satisfy semantic constraints, validates memory bounds, slot generations, and type safety, guarantees rollback paths, and inspects post-execution hardware states against contracts. (This describes realization contracts, not a stage of accepting a reaction result; ADR 0016 Amendment 1.)
 7. **HARDWARE**: Physical execution silicon (AArch64 host CPUs, Blackwell/Hopper GPUs, SMMUv3, NVLink-C2C, PCIe controllers) performing electrical state transitions.
 8. **EVIDENCE**: The immutable ledger of execution telemetry, verified cryptographic receipts, and measured counters, closing the feedback loop into AIEN.
 
@@ -180,7 +180,7 @@ Where:
 * **Ontological Role:** Aegis is the continuous formal verifier spanning the entire transformation path. It does not dictate what Aien can think or propose; it verifies that proposed realizations are safe, internally consistent, and compliant with system invariants.
 * **Core Verification Inquiries:**
   1. Does the Omega program faithfully represent what Aien proposed?
-  2. Does the FORGE realization preserve Omega constraints?
+  2. Does the FORGE realization preserve Omega constraints? (a realization-contract inquiry, not a stage of accepting a reaction result; ADR 0016 Amendment 1)
   3. Are memory bounds, slot generations, and layouts valid without ABA hazards?
   4. Is a RAM, BRAM, GPU, or peripheral state change internally consistent?
   5. Does the proposed physical transformation have a valid rollback or recovery path where required?
@@ -190,18 +190,18 @@ Where:
 
 ### 2.6 The Bidirectional Lowering Protocol (OMEGA <-> FORGE <-> AEGIS)
 
-The compilation and execution path operates through an iterative dialogue:
+The realization of one program operates through an iterative dialogue. FORGE is a realization policy, not a step in how Omega accepts a reaction result; the recorded accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02):
 
 1. **Intent Formulation:** AIEN proposes a desired state mutation or experiment.
 2. **Semantic Formalization:** OMEGA defines the exact mathematical meaning and invariant bounds.
 3. **Physical Lowering & Constraint Discovery:** FORGE compiles the OMEGA program to concrete hardware state (page tables, cache flushes, GPFIFO packets, register state). If a physical constraint is reached (e.g. non-contiguous allocation, alignment mismatch, or pinning requirement), FORGE communicates machine facts and realization alternatives back to OMEGA.
 4. **Trade-off Resolution:** OMEGA (with AIEN when strategic) selects the optimal alternative and finalizes the program.
 5. **Invariant Verification:** AEGIS verifies that the realization preserves semantic constraints, satisfies capability bounds and slot generations, maintains internal consistency, and has valid rollback or recovery paths.
-6. **Hardware Execution:** FORGE dispatches the verified realization to hardware execution queues.
+6. **Hardware Execution:** FORGE dispatches the verified realization to hardware execution queues. This is hardware realization only; it is not a commit step (ADR 0016 Amendment 1).
 7. **State Contract Inspection:** Hardware executes the state change. AEGIS validates the resulting hardware state against the contract.
 8. **Evidence Ingestion:** The outcome is recorded into the immutable Evidence Ledger and fed back to AIEN.
 
-These steps describe the **dependency structure** of one realization. They are not a runtime turn order (§2.7).
+These steps describe the **dependency structure** of one realization. They are not a runtime turn order (§2.7). They do not describe how a reaction result is accepted (ADR 0016 Amendment 1).
 
 ### 2.7 Runtime Composition: One Resident Reaction System (ADR 0016)
 
@@ -214,6 +214,8 @@ AIEN, OMEGA, and AEGIS are **faculties of one resident system**, not sequential 
 - Every nontrivial transition leaves a structured, content-addressed causal record.
 
 The doctrine sentence `ATLAS AWAKENS … EVIDENCE TEACHES` remains the statement of responsibilities and causal dependencies.
+
+FORGE is a realization and memory policy, not a stage of accepting a reaction result. The accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02; `aien-dev/omega` `docs/runtime/COMMIT_A_REACTION_DESIGN.md`).
 
 The full standard, its terminology mapping, and the R0–R16 gates are in [ADR 0016](../docs/adr/0016-resident-reaction-architecture.md). The code migration map is in [`docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md`](../docs/plans/CURRENT_CODE_TO_R0_R16_MIGRATION.md).
 

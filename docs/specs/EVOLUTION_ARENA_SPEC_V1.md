@@ -112,7 +112,7 @@ When the winner is handed to the store, it becomes an `RxGenDraft` (omega `rx_ge
 | `RxGenDraft` blob | Arena content |
 |---|---|
 | `provenance` | the **CandidateHeader** below, in the omega canonical encoding (big-endian, per omega `spec/canonical-encoding.md`; exact bytes re-checked after OSC-0B, §0.1), digest = `candidate_id` |
-| `realization` | the Omega program plus the FORGE realization plan (a `ForgeVerifiedRealization` (physics #13 merged) once sealed) |
+| `realization` | the Omega program plus the FORGE realization plan (a `ForgeVerifiedRealization` (physics #13 merged) once sealed) (a hardware realization record, not part of accepting a result; ADR 0016 Amendment 1) |
 | `config` | mutation parameters (tile size, unroll factor, arm selection, …) |
 | `model` | unused in V1 (reserved for learned components; forbidden mutation surface) |
 | `evidence` | root digest of the Evidence packages about this Candidate (§4.4), written by the measurement/judge reaction; the proposer and Candidate code have no write path to it |
@@ -338,7 +338,7 @@ Each numbered item is a dependency-ready reaction, not a scheduler step (R13/R16
  1. Baseline draft World forked from the active generation.
  2. Proposer emits Candidates via the §2.3 operators (budget-bounded, R6).
  3. OMEGA constructs each Candidate's program; semantic_digest checked (I16).
- 4. AEGIS verifies invariants; FORGE seals the realization; failures → REJECTED.
+ 4. AEGIS verifies invariants; the FORGE realization plan is sealed for hardware realization (not an accept step, ADR 0016 Amendment 1); failures → REJECTED.
  5. Verified Candidates run in their draft Worlds on training + validation shapes.
  6. Evidence packages written (§4.4), bound to the FORGE-HWID descriptor.
  7. J-Space keeps dimensions separate, Pareto-filters, allocates remaining budget

@@ -13,7 +13,7 @@ Source: `aien-architecture/docs/AIEN_M20_M26_ENGINEERING_PLAN.md` §0 (Findings 
 
 - **What M19 proved:** Omega links directly against PHYSICS source (`physics/m16/m16_native.c`, `physics/nvrm/nvrm.c`) and drives real GPFIFO submission, doorbell rings, and completion semaphores on physical DGX Spark GB10 silicon. The execution path works.
 - **The gap:** the M15 PHYSICS accelerator authority model (`ACCEL_OP_MAP_DMA`/`SUBMIT`/`RESET`, decision codes, effect receipts) is referenced nowhere in Omega. `OmegaAcceleratorWorld` embeds `M16NativeContext` and raw `NvrmMem` directly. What the architecture calls an authority boundary is, in the code, just which repository a file happens to live in — there is no typed seam a request must pass through.
-- **Gate that closes it:** Gate 3, FORGE-0 (FORGE realize / AEGIS verify seam), in `docs/m19r-recovery-program.md`. It introduces the typed `Omega Realization Request -> Forge Machine Descriptor -> Forge lowering -> AEGIS verification -> Hardware submission` seam as new, additive code, without renaming or removing any existing PHYSICS/OMEGA file or symbol, the `physics` repository name, or `is_physics_authorized`.
+- **Gate that closes it:** Gate 3, FORGE-0 (FORGE realize / AEGIS verify seam), in `docs/m19r-recovery-program.md`. It introduces the typed `Omega Realization Request -> Forge Machine Descriptor -> Forge lowering -> AEGIS verification -> Hardware submission` seam (a hardware realization seam, not a reaction-accept step; ADR 0016 Amendment 1, 2026-10-02) as new, additive code, without renaming or removing any existing PHYSICS/OMEGA file or symbol, the `physics` repository name, or `is_physics_authorized`.
 
 ### E-M19-2 — GPU device memory has no deallocation path
 

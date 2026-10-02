@@ -56,6 +56,8 @@ Current architecture uses:
 
 `ATLAS AWAKENS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.`
 
+This sentence is responsibilities and causal dependencies, not a turn order and not the way a reaction result is accepted. FORGE is a realization and memory policy; the accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02).
+
 The repository `aien-dev/physics` remains a historical/current implementation location until its GitHub repository rename is performed. A repository-name transition does not rewrite old evidence.
 
 ## Change discipline
