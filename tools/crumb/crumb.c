@@ -1296,6 +1296,247 @@ static int cmd_backfill(const char *root, const char *since, int dry) {
     printf("backfill %s (%s, %zu commits%s): %d crumb dirs, updated %d, unchanged %d, ledger git entries %d, lane entries %d, dirs truncated in doc %d\n", r, repo, g_nc, since ? ", since given" : "", st.dirs, st.updated, st.unchanged, st.git_entries, st.lane_entries, st.truncated_dirs);
     return 0;
 }
+static void usage(void);
+/* ---------- RFC-0002 section 7: crumb explain ---------- */
+#define EXPL_COMMITS 10
+#define EXPL_WHISPERS 5
+static void print_strs(const char *label, const J *a, int max) {   /* array of strings, or a single string */
+    if (!a) return;
+    if (a->t == JSTR) { printf("  %s: %s\n", label, a->s); return; }
+    if (a->t != JARR) return;
+    for (size_t i = 0; i < a->n && (int)i < max; i++) {
+        if (a->v[i]->t == JSTR) printf("  %s: %s\n", label, a->v[i]->s);
+        else { char *d = jdump(a->v[i]); d[strcspn(d, "\n")] = 0; printf("  %s: %s\n", label, d); }
+    }
+}
+static J *load_crumb(const char *dir) { char *cp = pjoin(dir, ".crumb"), *txt = slurp(cp); J *c = txt ? jparse(txt) : NULL; return c && c->t == JOBJ ? c : NULL; }
+/* does a continuation path entry (e.g. "tools/crumb/", "repo tools/crumb/.crumb") mention rel? */
+static int path_mentions(const char *entry, const char *rel) {
+    if (!strcmp(rel, ".")) return 1;
+    size_t rl = strlen(rel);
+    for (const char *s = entry; (s = strstr(s, rel)); s++) {
+        int before = s == entry || s[-1] == ' ' || s[-1] == '/' || s[-1] == '"';
+        char a = s[rl];
+        int after = !a || a == '/' || a == ' ' || a == '"';
+        if (before && after) return 1;
+    }
+    /* entry is an ancestor of rel (owner of the parent directory) */
+    size_t el = strlen(entry);
+    while (el && entry[el - 1] == '/') el--;
+    return el > 0 && el < rl && !strncmp(entry, rel, el) && rel[el] == '/';
+}
+static int cont_matches(const J *c, const char *rel) {
+    J *co = jget(c, "coordination");
+    static const char *keys[] = { "scope", "owned", "owned_paths", NULL };
+    if (!co || co->t != JOBJ) return 0;
+    for (int k = 0; keys[k]; k++) {
+        J *a = jget(co, keys[k]);
+        if (a && a->t == JARR) for (size_t i = 0; i < a->n; i++) if (a->v[i]->t == JSTR && path_mentions(a->v[i]->s, rel)) return 1;
+    }
+    return 0;
+}
+static const char *cont_when(const J *c) {
+    J *id = jget(c, "identity");
+    const char *s = id ? jstrval(id, "sealed_at") : NULL;
+    if (!s && id) s = jstrval(id, "created_at");
+    return s ? s : "";
+}
+static int cmd_explain(const char *target) {
+    char r[PATH_MAX];
+    if (!realpath(target, r)) die("no such file or directory: %s", target);
+    struct stat st; if (stat(r, &st)) die("cannot stat %s", target);
+    char *abs = xstrdup(r), *dir = S_ISDIR(st.st_mode) ? xstrdup(r) : dir_of(r);
+    Plane *p = plane_resolve(dir);
+    const char *env = getenv("CRUMB_COORD_ROOT");
+    char *top = p ? p->top : NULL, *rel = NULL;
+    if (p) {
+        size_t tl = strlen(top);
+        rel = abs[tl] ? xstrdup(abs + tl + 1) : xstrdup(".");
+    } else rel = xstrdup(base_of(abs));
+    char *store = p ? p->store : (env && *env ? xstrdup(env) : NULL);
+    printf("EXPLAIN %s\n  repository path: %s\n", abs, rel);
+
+    /* 1. nearest .crumb */
+    printf("== NEAREST CRUMB ==\n");
+    char *d = xstrdup(dir), *nearest = NULL; J *nc = NULL;
+    for (;;) {
+        if ((nc = load_crumb(d))) { nearest = xstrdup(d); break; }
+        if (top && !strcmp(d, top)) break;
+        char *up = dir_of(d); if (!strcmp(up, d) || !strcmp(up, ".")) break;
+        if (!*up) { free(up); up = xstrdup("/"); if (!strcmp(d, "/")) break; }
+        free(d); d = up;
+    }
+    if (nc) {
+        printf("  file: %s/.crumb\n  name: %s\n  layer: %s\n  purpose: %s\n", nearest, sv(nc, "name"), sv(nc, "layer"), sv(nc, "purpose"));
+        J *inv = jget(nc, "invariants"); if (inv) print_strs("invariant", inv, 50); else printf("  invariant: (none)\n");
+        J *ex = jget(nc, "exports"); if (ex) print_strs("export", ex, 50); else printf("  export: (none)\n");
+        J *rl = jget(nc, "related"); if (rl) print_strs("related", rl, 50); else printf("  related: (none)\n");
+    } else printf("  (no .crumb found at or above this path)\n");
+
+    /* 2. inherited invariants */
+    printf("== INHERITED INVARIANTS ==\n");
+    int any = 0;
+    if (nearest) {
+        char *u = dir_of(nearest);
+        while (strcmp(u, nearest) && strcmp(u, ".")) {
+            if (top && strlen(u) < strlen(top)) break;
+            J *pc = load_crumb(u);
+            if (pc) { J *inv = jget(pc, "invariants"); if (inv && inv->t == JARR) for (size_t i = 0; i < inv->n; i++) if (inv->v[i]->t == JSTR) { printf("  from %s/.crumb: %s\n", u, inv->v[i]->s); any = 1; } }
+            if (top && !strcmp(u, top)) break;
+            char *nx = dir_of(u); if (!strcmp(nx, u)) break; u = nx;
+        }
+    }
+    if (!any) printf("  (none)\n");
+
+    /* 3. shared coordination */
+    printf("== SHARED COORDINATION ==\n");
+    if (p) {
+        Txn *t = txn_begin(p, 0); txn_prune(t);
+        char *dr = !strcmp(rel, ".") ? xstrdup(".") : (S_ISDIR(st.st_mode) ? xstrdup(rel) : dir_of(rel));
+        any = 0;
+        for (size_t i = 0; i < t->n; i++) if (t->r[i]->agent && !t->r[i]->dead && jget(t->r[i]->root, "updated_at")) { print_agent(t->r[i]->root, sv(t->r[i]->root, "agent")); any = 1; }
+        if (!any) printf("  agents: (none)\n");
+        any = 0;
+        for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent) {
+            J *lk = jget(t->r[i]->root, "locks");
+            if (lk && lk->t == JOBJ) for (size_t k = 0; k < lk->n; k++) {
+                const char *kk = lk->k[k]; char *kd = key_dir(kk);
+                if (!strcmp(dr, ".") || !strcmp(kd, dr) || path_mentions(kk, rel)) { print_lock(kk, lk->v[k]); any = 1; }
+            }
+        }
+        if (!any) printf("  locks: (none)\n");
+        J *wh = jget(dir_rec(t, dr)->root, "whispers"); any = 0;
+        if (wh && wh->t == JARR) for (size_t i = wh->n > EXPL_WHISPERS ? wh->n - EXPL_WHISPERS : 0; i < wh->n; i++) {
+            printf("  whisper %s -> %s: %s  [%s]\n", sv(wh->v[i], "from"), jstrval(wh->v[i], "to") ? jstrval(wh->v[i], "to") : "all", sv(wh->v[i], "message"), sv(wh->v[i], "timestamp")); any = 1;
+        }
+        if (!any) printf("  whispers: (none)\n");
+        txn_end(t, 0);
+    } else if (store) printf("  coordination root %s (no repository)\n", store);
+    else printf("  shared coordination: none (not a git repository)\n");
+
+    /* 4. commits */
+    printf("== RECENT COMMITS ==\n");
+    if (p) {
+        char q[PATH_MAX + 64]; snprintf(q, sizeof q, "log --oneline -%d -- '%s'", EXPL_COMMITS, rel);
+        char *lg = run_git_full(top, q);
+        if (*lg) { for (char *s = strtok(lg, "\n"); s; s = strtok(NULL, "\n")) printf("  %s\n", s); } else printf("  (no commits touch this path)\n");
+    } else printf("  (not a git repository)\n");
+    if (nc) {
+        J *ex = jget(nc, "extensions"), *pv = ex && ex->t == JOBJ ? jget(ex, "provenance") : NULL, *en = pv && pv->t == JOBJ ? jget(pv, "entries") : NULL;
+        if (en && en->t == JARR) for (size_t i = 0; i < en->n && i < EXPL_COMMITS; i++) {
+            const char *sh = jstrval(en->v[i], "sha"); int dup = 0;
+            for (size_t j = 0; sh && j < i; j++) if (!strcmp(sv(en->v[j], "sha"), sh)) dup = 1;
+            if (sh && !dup) printf("  named in .crumb: %s %s\n", sh, sv(en->v[i], "subject"));
+        }
+    }
+
+    /* 5. evidence references */
+    printf("== EVIDENCE REFERENCES ==\n");
+    any = 0;
+    if (nc) {
+        J *ex = jget(nc, "extensions");
+        if (ex && ex->t == JOBJ) {
+            J *ev = jget(ex, "evidence");
+            if (ev) { print_strs("crumb evidence", ev, 20); any = 1; }
+            J *pv = jget(ex, "provenance"), *en = pv && pv->t == JOBJ ? jget(pv, "entries") : NULL;
+            if (en && en->t == JARR) for (size_t i = 0; i < en->n && i < EXPL_COMMITS; i++) { long pr = jlong(en->v[i], "pr", 0); int dup = 0; for (size_t j = 0; j < i; j++) if (jlong(en->v[j], "pr", 0) == pr) dup = 1; if (pr && !dup) { printf("  crumb pr: #%ld (%s)\n", pr, sv(en->v[i], "sha")); any = 1; } }
+        }
+    }
+    /* 6. continuations */
+    J *best = NULL; char *bestf = NULL; int nmatch = 0;
+    if (store) {
+        char **f = NULL; size_t n = 0; char *cd = pjoin(store, "continuations");
+        collect_json(cd, &f, &n);
+        for (size_t i = 0; i < n; i++) {
+            char *txt = slurp(f[i]); J *c = txt ? jparse(txt) : NULL;
+            if (!c || c->t != JOBJ || !jget(c, "identity") || !cont_matches(c, rel)) continue;
+            nmatch++;
+            J *ev = jget(c, "evidence");
+            if (ev && ev->t == JOBJ) {
+                static const char *ek[] = { "commits", "prs", "receipts", NULL };
+                for (int k = 0; ek[k]; k++) { J *a = jget(ev, ek[k]); if (a && a->t == JARR) for (size_t j = 0; j < a->n && j < 10; j++) if (a->v[j]->t == JSTR) { printf("  continuation %s %s: %s\n", sv(jget(c, "identity"), "checkpoint_id"), ek[k], a->v[j]->s); any = 1; } }
+                J *ts = jget(ev, "tests");
+                if (ts && ts->t == JARR) for (size_t j = 0; j < ts->n && j < 10; j++) { printf("  continuation test: %s -> %s\n", sv(ts->v[j], "name"), sv(ts->v[j], "result")); any = 1; }
+            }
+            if (!best || strcmp(cont_when(c), cont_when(best)) > 0) { best = c; bestf = f[i]; }
+        }
+    }
+    if (!any) printf("  (none)\n");
+    printf("== NEWEST CONTINUATION ==\n");
+    if (!best) printf("  (none touches this path)\n");
+    else {
+        J *id = jget(best, "identity"), *st2 = jget(best, "state"), *items = st2 && st2->t == JOBJ ? jget(st2, "items") : st2;
+        printf("  id: %s  sealed: %s  by: %s  (%d matching, showing 1)\n  file: %s\n  reason: %s\n", sv(id, "checkpoint_id"), cont_when(best), sv(id, "created_by"), nmatch, bestf, sv(id, "reason"));
+        J *rv = jget(best, "revalidation"); if (rv) printf("  revalidation: %s\n", sv(rv, "status"));
+        if (items && items->t == JARR) for (size_t i = 0; i < items->n; i++) printf("  [%s] %s\n", sv(items->v[i], "tag"), sv(items->v[i], "claim"));
+    }
+    return 0;
+}
+
+/* ---------- RFC-0002 section 7: checkpoint / resume (thin wrappers around cc.sh) ---------- */
+static char *cc_path(void) {
+    const char *e = getenv("CRUMB_CC");
+    if (e && *e) return xstrdup(e);
+    const char *h = getenv("HOME");
+    if (!h || !*h) die("HOME is not set; set CRUMB_CC to the path of cc.sh");
+    size_t n = strlen(h) + 64; char *s = xmalloc(n);
+    snprintf(s, n, "%s/.claude/skills/checkpoint/scripts/cc.sh", h); return s;
+}
+static void cc_env(Plane *p) {   /* records must land in <coordination root>/continuations */
+    const char *env = getenv("CRUMB_COORD_ROOT");
+    if (p) setenv("CRUMB_COORD_ROOT", p->store, 1);
+    else if (!(env && *env)) die("no repository context: run inside a git checkout or set CRUMB_COORD_ROOT");
+    char self[PATH_MAX]; ssize_t n = readlink("/proc/self/exe", self, sizeof self - 1);
+    if (n > 0 && !getenv("CRUMB_BIN")) { self[n] = 0; setenv("CRUMB_BIN", self, 1); }
+}
+static char *cc_script(void) {
+    char *cc = cc_path();
+    if (access(cc, X_OK) != 0) die("cc.sh not found or not executable at %s (the checkpoint skill; set CRUMB_CC to override)", cc);
+    return cc;
+}
+static char *shq(const char *s) { Buf q = {0}; bstr(&q, "'"); for (; *s; s++) { if (*s == '\'') bstr(&q, "'\\''"); else bput(&q, s, 1); } bstr(&q, "'"); return q.p; }
+static int cmd_checkpoint(int a, char **v) {
+    const char *agent = NULL, *reason = NULL, *seal = NULL;
+    for (int i = 0; i < a; i++) {
+        if (!strcmp(v[i], "--reason") && i + 1 < a) reason = v[++i];
+        else if (!strcmp(v[i], "--seal") && i + 1 < a) seal = v[++i];
+        else if (!agent && v[i][0] != '-') agent = v[i];
+        else usage();
+    }
+    if (!agent && !seal) usage();
+    Plane *p = plane_resolve("."); cc_env(p);
+    char *cc = cc_script(); const char *ag = agent ? agent : (getenv("CC_AGENT") ? getenv("CC_AGENT") : "claude");
+    setenv("CC_AGENT", ag, 1);
+    if (seal) execl(cc, cc, "seal", seal, ag, (char *)NULL);
+    else {
+        char *top = p ? p->top : absdir(".");
+        Buf cmd = {0}; char *q1 = shq(cc), *q2 = shq(agent), *q3 = shq(top);
+        bstr(&cmd, q1); bstr(&cmd, " new "); bstr(&cmd, q2); bstr(&cmd, " "); bstr(&cmd, q3);
+        FILE *f = popen(cmd.p, "r"); if (!f) die("cannot run %s", cc);
+        char out[PATH_MAX + 2]; size_t n = fread(out, 1, sizeof out - 1, f); out[n] = 0;
+        if (pclose(f) != 0 || !n) die("cc.sh new failed");
+        out[strcspn(out, "\n")] = 0;
+        if (reason) {
+            Buf c2 = {0}; char *qr = shq(reason), *qo = shq(out);
+            bstr(&c2, "tmp=$(mktemp) && jq --arg r "); bstr(&c2, qr); bstr(&c2, " '.identity.reason=$r' "); bstr(&c2, qo);
+            bstr(&c2, " > \"$tmp\" && mv \"$tmp\" "); bstr(&c2, qo);
+            if (system(c2.p) != 0) die("could not record the reason (jq missing?)");
+        }
+        printf("%s\n", out);
+        fprintf(stderr, "fill in the record, then: crumb checkpoint --seal <id> %s\n", agent);
+        return 0;
+    }
+    die("cannot exec %s: %s", cc, strerror(errno));
+    return 1;
+}
+static int cmd_resume(const char *id) {
+    Plane *p = plane_resolve("."); cc_env(p);
+    char *cc = cc_script();
+    execl(cc, cc, "resume", id, (char *)NULL);
+    die("cannot exec %s: %s", cc, strerror(errno));
+    return 1;
+}
+
 static long ttl_arg(const char *s, long dflt) { if (!s) return dflt; char *e; long v = strtol(s, &e, 10); if (*e || v < 0) die("bad ttl: %s", s); return v; }
 static void usage(void) {
     fputs("usage: crumb <command> ...\n"
@@ -1307,6 +1548,9 @@ static void usage(void) {
           "  whisper <from> <dir> <to|-> <msg> [prio] [target_file]\n"
           "  close <agent> <dir> <target> [action] [msg] release lock, add history vector, optional whisper\n"
           "  sniff <agent> <dir>                         what to read before touching a directory\n"
+          "  explain <file-or-dir>                       nearest + inherited crumbs, coordination, commits, evidence, newest continuation\n"
+          "  checkpoint <agent> [--reason R]             new Continuation Crumb (wraps cc.sh); then checkpoint --seal <id> [agent]\n"
+          "  resume <id>                                 print record, revalidate against live repos (wraps cc.sh)\n"
           "  list [path]                                 live scents, locks, whispers under path\n"
           "  validate [path]                             check .crumb files against RFC-0001 required fields\n", stderr);
     exit(1);
@@ -1330,6 +1574,9 @@ int main(int argc, char **argv) {
     if (!strcmp(c, "whisper") && a >= 4) return cmd_whisper(v[0], v[1], v[2], v[3], a > 4 ? v[4] : NULL, a > 5 ? v[5] : NULL);
     if (!strcmp(c, "close") && a >= 3) return cmd_close(v[0], v[1], v[2], a > 3 ? v[3] : "modify", a > 4 ? v[4] : NULL);
     if (!strcmp(c, "sniff") && a >= 2) return cmd_sniff(v[0], v[1]);
+    if (!strcmp(c, "explain") && a == 1) return cmd_explain(v[0]);
+    if (!strcmp(c, "checkpoint")) return cmd_checkpoint(a, v);
+    if (!strcmp(c, "resume") && a == 1) return cmd_resume(v[0]);
     if (!strcmp(c, "list") || !strcmp(c, "validate")) {
         int val = !strcmp(c, "validate"); Tot t = {0, 0, 0};
         char *r = absdir(a ? v[0] : ".");
