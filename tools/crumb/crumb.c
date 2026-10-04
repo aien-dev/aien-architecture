@@ -16,6 +16,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include <dirent.h>
 #include <errno.h>
+#include <stdint.h>
 #include <fcntl.h>
 #include <limits.h>
 #include <stdarg.h>
@@ -100,6 +101,9 @@ static void jescape(Buf *b, const char *s) {
         case '\n': bstr(b, "\\n"); break;
         case '\r': bstr(b, "\\r"); break;
         case '\t': bstr(b, "\\t"); break;
+        case '\b': bstr(b, "\\b"); break;
+        case '\f': bstr(b, "\\f"); break;
+        case 0x7f: bstr(b, "\\u007f"); break;
         default:
             if (*p < 0x20) { snprintf(t, sizeof t, "\\u%04x", *p); bstr(b, t); }
             else bput(b, (const char *)p, 1);
@@ -1538,6 +1542,385 @@ static int cmd_resume(const char *id) {
 }
 
 static long ttl_arg(const char *s, long dflt) { if (!s) return dflt; char *e; long v = strtol(s, &e, 10); if (*e || v < 0) die("bad ttl: %s", s); return v; }
+/* ---------- RFC-0003: Crumb Compiler (C port of crumb-compile.sh; design decisions D1-D9 there are binding) ----------
+ * compile/verify/status: hand-authored kernel stays, everything structural is generated bottom-up into
+ * .crumb extensions.generated with Merkle digests. Output is byte-identical to the shell reference. */
+static char *xstrndup_(const char *s, size_t n) { char *p = xmalloc(n + 1); memcpy(p, s, n); p[n] = 0; return p; }
+typedef struct { uint32_t h[8]; uint64_t len; unsigned char buf[64]; size_t nb; } Sha;
+static const uint32_t K256[64] = {
+ 0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,
+ 0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,
+ 0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,
+ 0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2 };
+#define ROR(x, n) (((x) >> (n)) | ((x) << (32 - (n))))
+static void sha_block(Sha *s, const unsigned char *p) {
+    uint32_t w[64], a, b, c, d, e, f, g, h;
+    for (int i = 0; i < 16; i++) w[i] = (uint32_t)p[4*i] << 24 | (uint32_t)p[4*i+1] << 16 | (uint32_t)p[4*i+2] << 8 | p[4*i+3];
+    for (int i = 16; i < 64; i++) {
+        uint32_t s0 = ROR(w[i-15], 7) ^ ROR(w[i-15], 18) ^ (w[i-15] >> 3), s1 = ROR(w[i-2], 17) ^ ROR(w[i-2], 19) ^ (w[i-2] >> 10);
+        w[i] = w[i-16] + s0 + w[i-7] + s1;
+    }
+    a = s->h[0]; b = s->h[1]; c = s->h[2]; d = s->h[3]; e = s->h[4]; f = s->h[5]; g = s->h[6]; h = s->h[7];
+    for (int i = 0; i < 64; i++) {
+        uint32_t t1 = h + (ROR(e, 6) ^ ROR(e, 11) ^ ROR(e, 25)) + ((e & f) ^ (~e & g)) + K256[i] + w[i];
+        uint32_t t2 = (ROR(a, 2) ^ ROR(a, 13) ^ ROR(a, 22)) + ((a & b) ^ (a & c) ^ (b & c));
+        h = g; g = f; f = e; e = d + t1; d = c; c = b; b = a; a = t1 + t2;
+    }
+    s->h[0] += a; s->h[1] += b; s->h[2] += c; s->h[3] += d; s->h[4] += e; s->h[5] += f; s->h[6] += g; s->h[7] += h;
+}
+static void sha_init(Sha *s) {
+    static const uint32_t iv[8] = { 0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19 };
+    memcpy(s->h, iv, sizeof iv); s->len = 0; s->nb = 0;
+}
+static void sha_add(Sha *s, const void *data, size_t n) {
+    const unsigned char *p = data; s->len += n;
+    while (n) {
+        size_t k = 64 - s->nb; if (k > n) k = n;
+        memcpy(s->buf + s->nb, p, k); s->nb += k; p += k; n -= k;
+        if (s->nb == 64) { sha_block(s, s->buf); s->nb = 0; }
+    }
+}
+static void sha_hex(Sha *s, char *out) {   /* out: 65 bytes */
+    uint64_t bits = s->len * 8; unsigned char pad = 0x80, z = 0, lb[8];
+    sha_add(s, &pad, 1); while (s->nb != 56) sha_add(s, &z, 1);
+    for (int i = 0; i < 8; i++) lb[i] = (unsigned char)(bits >> (56 - 8 * i));
+    sha_add(s, lb, 8);
+    for (int i = 0; i < 8; i++) snprintf(out + 8 * i, 9, "%08x", s->h[i]);
+}
+
+static void jsort(J *j) {   /* jq -S: object keys in codepoint (= UTF-8 byte) order, recursively */
+    if (j->t == JARR) { for (size_t i = 0; i < j->n; i++) jsort(j->v[i]); return; }
+    if (j->t != JOBJ) return;
+    for (size_t i = 1; i < j->n; i++) {   /* insertion sort on parallel arrays (stable, small) */
+        char *k = j->k[i]; J *v = j->v[i]; size_t m = i;
+        while (m > 0 && strcmp(j->k[m - 1], k) > 0) { j->k[m] = j->k[m - 1]; j->v[m] = j->v[m - 1]; m--; }
+        j->k[m] = k; j->v[m] = v;
+    }
+    for (size_t i = 0; i < j->n; i++) jsort(j->v[i]);
+}
+static void jcompact(const J *j, Buf *b) {   /* jq -c */
+    switch (j->t) {
+    case JARR: bput(b, "[", 1); for (size_t i = 0; i < j->n; i++) { if (i) bput(b, ",", 1); jcompact(j->v[i], b); } bput(b, "]", 1); break;
+    case JOBJ: bput(b, "{", 1); for (size_t i = 0; i < j->n; i++) { if (i) bput(b, ",", 1); jescape(b, j->k[i]); bput(b, ":", 1); jcompact(j->v[i], b); } bput(b, "}", 1); break;
+    default: jprint(j, b, 0);
+    }
+}
+static char *jcompact_s(const J *j) { Buf b = {0}; bstr(&b, ""); jcompact(j, &b); return b.p; }
+
+static char *cap_cmd(const char *cmd, size_t *len) {   /* all output bytes of a shell command, NUL-safe */
+    FILE *f = popen(cmd, "r"); Buf b = {0}; bstr(&b, "");
+    if (!f) { if (len) *len = 0; return b.p; }
+    char t[8192]; size_t n;
+    while ((n = fread(t, 1, sizeof t, f)) > 0) bput(&b, t, n);
+    pclose(f); if (len) *len = b.n; return b.p;
+}
+static void chomp(char *s) { size_t n = strlen(s); while (n && s[n - 1] == '\n') s[--n] = 0; }
+
+typedef struct { char *blob, *path; } CFile;
+static int cfcmp(const void *a, const void *b) { return strcmp(((const CFile *)a)->path, ((const CFile *)b)->path); }
+typedef struct { char *dir, *dig; } DDig;
+typedef struct { CFile *f; size_t nf; DDig *dd; size_t ndd, cdd; char *top; } Comp;
+
+static int is_crumb_name(const char *path) {   /* D1: every .crumb and .crumb.local */
+    const char *b = strrchr(path, '/'); b = b ? b + 1 : path;
+    return !strcmp(b, ".crumb") || !strcmp(b, ".crumb.local");
+}
+static int is_evidence(const char *p) {
+    size_t n = strlen(p);
+    if (n >= 13 && !strcmp(p + n - 13, ".receipt.json")) return 1;
+    static const char *w[] = { "evidence/", "receipts/", NULL };
+    for (int k = 0; w[k]; k++) for (const char *s = p; (s = strstr(s, w[k])); s++) if (s == p || s[-1] == '/') return 1;
+    return 0;
+}
+static void comp_load_files(Comp *c) {   /* D2: tracked files of the working tree, blob ids via git hash-object */
+    size_t n; char *raw;
+    char *tq = shq(c->top), cmd[PATH_MAX + 64];
+    snprintf(cmd, sizeof cmd, "git -C %s ls-files -z 2>/dev/null", tq);
+    raw = cap_cmd(cmd, &n);
+    Buf present = {0}; bstr(&present, ""); size_t np = 0; char **pp = NULL, *s = raw;
+    while (s < raw + n) {
+        size_t l = strlen(s);
+        if (l && !is_crumb_name(s)) {
+            char *full = pjoin(c->top, s); struct stat st;
+            if (stat(full, &st) == 0 && S_ISREG(st.st_mode)) { pp = xrealloc(pp, (np + 1) * sizeof *pp); pp[np++] = xstrdup(s); bstr(&present, s); bput(&present, "\n", 1); }
+            free(full);
+        }
+        s += l + 1;
+    }
+    c->nf = 0; c->f = NULL;
+    if (np) {
+        char tmpl[] = "/tmp/crumb-compile-XXXXXX"; int fd = mkstemp(tmpl);
+        if (fd < 0) die("cannot create temp file");
+        if (write(fd, present.p, present.n) != (ssize_t)present.n) die("temp write failed");
+        close(fd);
+        snprintf(cmd, sizeof cmd, "git -C %s hash-object --stdin-paths < %s 2>/dev/null", tq, tmpl);
+        char *hs = cap_cmd(cmd, NULL); unlink(tmpl);
+        char *sv2 = NULL, *ln = strtok_r(hs, "\n", &sv2);
+        c->f = xmalloc(np * sizeof *c->f);
+        for (size_t i = 0; i < np; i++) {
+            if (!ln) die("git hash-object returned too few ids");
+            c->f[i].blob = xstrdup(ln); c->f[i].path = pp[i]; ln = strtok_r(NULL, "\n", &sv2);
+        }
+        c->nf = np;
+        qsort(c->f, c->nf, sizeof *c->f, cfcmp);
+    }
+}
+static const char *dig_of(Comp *c, const char *dir) { for (size_t i = 0; i < c->ndd; i++) if (!strcmp(c->dd[i].dir, dir)) return c->dd[i].dig; return NULL; }
+static void dig_set(Comp *c, const char *dir, const char *dig) {
+    if (c->ndd == c->cdd) { c->cdd = c->cdd ? c->cdd * 2 : 16; c->dd = xrealloc(c->dd, c->cdd * sizeof *c->dd); }
+    c->dd[c->ndd].dir = xstrdup(dir); c->dd[c->ndd++].dig = xstrdup(dig);
+}
+static size_t utf8_prefix(const char *s, int cps) {   /* byte length of the first cps codepoints (jq .[0:n]) */
+    size_t i = 0; int k = 0;
+    while (s[i] && k < cps) { i++; while (((unsigned char)s[i] & 0xC0) == 0x80) i++; k++; }
+    return i;
+}
+static int sstrcmp(const void *a, const void *b) { return strcmp(*(char *const *)a, *(char *const *)b); }
+static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generated object, without stamps */
+    int root = !strcmp(d, "."); size_t pl = root ? 0 : strlen(d) + 1;
+    char pre[PATH_MAX]; if (!root) snprintf(pre, sizeof pre, "%s/", d); else pre[0] = 0;
+    Sha st, ev; sha_init(&st); sha_init(&ev); long nfiles = 0, nev = 0; (void)pl;
+    for (size_t i = 0; i < c->nf; i++) {
+        if (!root && strncmp(c->f[i].path, pre, strlen(pre))) continue;
+        sha_add(&st, c->f[i].blob, strlen(c->f[i].blob)); sha_add(&st, " ", 1); sha_add(&st, c->f[i].path, strlen(c->f[i].path)); sha_add(&st, "\n", 1);
+        nfiles++;
+        if (is_evidence(c->f[i].path)) { sha_add(&ev, c->f[i].blob, strlen(c->f[i].blob)); sha_add(&ev, "\n", 1); nev++; }
+    }
+    char sth[65], evh[65]; sha_hex(&st, sth); sha_hex(&ev, evh);
+    /* D5: semantic kernel as hand written */
+    char *cp = pjoin(d, ".crumb"), *full = pjoin(c->top, cp), *txt = slurp(full); J *cr = txt ? jparse(txt) : NULL;
+    J *sem = jnew(JOBJ);
+    if (cr && cr->t == JOBJ) {
+        static const char *ks[] = { "purpose", "layer", "invariants", "exports", "related", "boundaries", NULL };
+        for (int k = 0; ks[k]; k++) { J *v = jget(cr, ks[k]); if (v && v->t != JNULL) jset(sem, ks[k], v); }
+    }
+    jsort(sem); char *semc = jcompact_s(sem);
+    /* D7: children = immediate subdirectories (not hidden) that hold a .crumb */
+    char *dfull = root ? xstrdup(c->top) : pjoin(c->top, d); DIR *dp = opendir(dfull);
+    char **names = NULL; size_t nn = 0;
+    if (dp) { struct dirent *e; while ((e = readdir(dp))) if (e->d_name[0] != '.') { names = xrealloc(names, (nn + 1) * sizeof *names); names[nn++] = xstrdup(e->d_name); } closedir(dp); }
+    qsort(names, nn, sizeof *names, sstrcmp);
+    J *kids = jnew(JARR); Sha crs; sha_init(&crs);
+    for (size_t i = 0; i < nn; i++) {
+        char *kd = root ? xstrdup(names[i]) : pjoin(d, names[i]), *kc = pjoin(kd, ".crumb"), *kcf = pjoin(c->top, kc); struct stat sb;
+        if (stat(kcf, &sb) || !S_ISREG(sb.st_mode)) continue;
+        const char *kdig = dig_of(c, kd); char *kdig_own = NULL;
+        if (!kdig) {   /* not compiled in this run: fall back to what the crumb says */
+            char *kt = slurp(kcf); J *kj = kt ? jparse(kt) : NULL; J *x = kj ? jget(kj, "extensions") : NULL; x = x ? jget(x, "generated") : NULL;
+            const char *g = x ? jstrval(x, "digest") : NULL; kdig = kdig_own = xstrdup(g ? g : "uncompiled");
+        }
+        char *kt = slurp(kcf); J *kj = kt ? jparse(kt) : NULL; const char *kp = kj ? jstrval(kj, "purpose") : NULL; if (!kp) kp = "";
+        char *kpur = xstrdup(kp); kpur[utf8_prefix(kpur, 96)] = 0; chomp(kpur);
+        char gq[PATH_MAX * 2 + 64], *kq = shq(kd); snprintf(gq, sizeof gq, "log -1 --format=%%h HEAD -- %s ':!**/.crumb'", kq);
+        char *lc = run_git_full(c->top, gq); chomp(lc);
+        J *o = jnew(JOBJ); jset(o, "name", jstr(names[i])); jset(o, "digest", jstr(kdig)); jset(o, "purpose", jstr(kpur)); jset(o, "last_commit", jstr(lc));
+        jpush(kids, o); sha_add(&crs, kdig, strlen(kdig)); sha_add(&crs, "\n", 1);
+        (void)kdig_own;
+    }
+    char crh[65]; sha_hex(&crs, crh);
+    Sha ds; sha_init(&ds); sha_add(&ds, semc, strlen(semc)); sha_add(&ds, sth, 64); sha_add(&ds, crh, 64); sha_add(&ds, evh, 64);
+    char dgh[65]; sha_hex(&ds, dgh);   /* D3: content only, no stamps */
+    strcpy(dig_out, dgh);
+    J *g = jnew(JOBJ); char t[80];
+    jset(g, "compiler", jstr("crumb-compile/1"));
+    snprintf(t, sizeof t, "sha256:%s", sth); jset(g, "source_tree", jstr(t));
+    jset(g, "files", jnum(nfiles)); jset(g, "children", kids);
+    snprintf(t, sizeof t, "sha256:%s", crh); jset(g, "children_root", jstr(t));
+    jset(g, "evidence_files", jnum(nev));
+    snprintf(t, sizeof t, "sha256:%s", evh); jset(g, "evidence_root", jstr(t));
+    snprintf(t, sizeof t, "sha256:%s", dgh); jset(g, "digest", jstr(t));
+    jsort(g); return g;
+}
+/* D3a (added by the C port): children[].last_commit is derived from history and changes with every commit that
+ * touches the child, exactly like the stamps of D3. It is written by compile but never decides STALE; otherwise a
+ * PR could never pass verify (committing changes last_commit, which would need another compile, forever). */
+static void strip_lc(J *g) { J *k = jget(g, "children"); if (k && k->t == JARR) for (size_t i = 0; i < k->n; i++) if (k->v[i]->t == JOBJ) jdel(k->v[i], "last_commit"); }
+typedef struct { char *d; int depth; } CDir;
+static int cdcmp(const void *a, const void *b) {
+    const CDir *x = a, *y = b;
+    if (x->depth != y->depth) return y->depth - x->depth;   /* deepest first (D4) */
+    return strcmp(x->d, y->d);
+}
+static void find_crumbs(const char *top, const char *rel, CDir **out, size_t *n, size_t *cap) {
+    char *full = *rel ? pjoin(top, rel) : xstrdup(top); DIR *dp = opendir(full); if (!dp) return;
+    struct dirent *e;
+    while ((e = readdir(dp))) {
+        if (!strcmp(e->d_name, ".") || !strcmp(e->d_name, "..")) continue;
+        char *r = *rel ? pjoin(rel, e->d_name) : xstrdup(e->d_name), *f = pjoin(top, r); struct stat st;
+        if (lstat(f, &st) == 0) {
+            if (!strcmp(e->d_name, ".crumb") && !S_ISDIR(st.st_mode)) {
+                if (*n == *cap) { *cap = *cap ? *cap * 2 : 32; *out = xrealloc(*out, *cap * sizeof **out); }
+                (*out)[*n].d = *rel ? xstrdup(rel) : xstrdup("."); (*n)++;
+            } else if (S_ISDIR(st.st_mode) && strcmp(r, ".git")) find_crumbs(top, r, out, n, cap);
+        }
+        free(r); free(f);
+    }
+    closedir(dp); free(full);
+}
+
+/* mode: 'c' compile, 'v' verify, 's' status. Returns number of stale crumbs; *total set. */
+static int compile_engine(char mode, const char *root, int quiet, int *total_out, char *head_out) {
+    Comp c; memset(&c, 0, sizeof c);
+    char *rq = shq(root), cmd[PATH_MAX + 80]; snprintf(cmd, sizeof cmd, "git -C %s rev-parse --show-toplevel 2>/dev/null", rq);
+    char *top = cap_cmd(cmd, NULL); chomp(top);
+    if (!*top) die("crumb %s: not inside a git repository: %s", mode == 'c' ? "compile" : mode == 'v' ? "verify" : "status", root);
+    c.top = top;
+    char *head = run_git(top, "rev-parse HEAD"); if (strlen(head) != 40) head = xstrdup("0000000000000000000000000000000000000000");
+    if (head_out) strcpy(head_out, head);
+    comp_load_files(&c);
+    /* D4, D7: every directory holding a .crumb (tracked or freshly seeded on disk), deepest first */
+    CDir *ds = NULL; size_t nd = 0, cap = 0; find_crumbs(top, "", &ds, &nd, &cap);
+    { size_t tl; char *lz = NULL; snprintf(cmd, sizeof cmd, "git -C %s ls-files -z 2>/dev/null", rq); lz = cap_cmd(cmd, &tl);
+      for (char *s = lz; s < lz + tl; s += strlen(s) + 1) {
+        size_t l = strlen(s); const char *b = strrchr(s, '/'); b = b ? b + 1 : s;
+        if (strcmp(b, ".crumb")) continue;
+        char *d = l == 6 ? xstrdup(".") : xstrndup_(s, l - 7); int dup = 0;
+        for (size_t i = 0; i < nd; i++) if (!strcmp(ds[i].d, d)) dup = 1;
+        if (dup) continue;
+        if (nd == cap) { cap = cap ? cap * 2 : 32; ds = xrealloc(ds, cap * sizeof *ds); }
+        ds[nd++].d = d;
+      } }
+    { size_t w = 0; for (size_t i = 0; i < nd; i++) {   /* sort -u */
+        int dup = 0; for (size_t j = 0; j < w; j++) if (!strcmp(ds[j].d, ds[i].d)) dup = 1;
+        if (!dup) ds[w++] = ds[i]; } nd = w; }
+    for (size_t i = 0; i < nd; i++) { int n = 0; if (!strcmp(ds[i].d, ".")) n = -1; else for (const char *s = ds[i].d; *s; s++) if (*s == '/') n++; ds[i].depth = n; }
+    qsort(ds, nd, sizeof *ds, cdcmp);
+    int total = 0, changed = 0, stale = 0; char stamp[21]; now_iso(stamp);
+    for (size_t i = 0; i < nd; i++) {
+        const char *d = ds[i].d; char *cp = pjoin(d, ".crumb"), *full = pjoin(top, cp); struct stat sb;
+        if (stat(full, &sb) || !S_ISREG(sb.st_mode)) continue;
+        total++;
+        char dg[65]; J *nw = comp_object(&c, d, dg); dig_set(&c, d, dg);
+        char *txt = slurp(full); J *cr = txt ? jparse(txt) : NULL;
+        J *old = jnew(JOBJ);
+        if (cr && cr->t == JOBJ) { J *x = jget(cr, "extensions"), *g = x && x->t == JOBJ ? jget(x, "generated") : NULL;
+            if (g && g->t == JOBJ) { old = jclone(g); jdel(old, "generated_at_commit"); jdel(old, "compiled_at"); } }
+        jsort(old);
+        strip_lc(old); J *nwc = jclone(nw); strip_lc(nwc);   /* D3a: last_commit is a stamp for staleness */
+        char *ns = jcompact_s(nwc), *os = jcompact_s(old);
+        if (!strcmp(ns, os)) { if (mode == 's' && !quiet) printf("CURRENT    %s\n", d); continue; }
+        stale++;
+        if (mode == 's') { if (!quiet) printf("%s %s\n", old->n == 0 ? "UNCOMPILED" : "STALE     ", d); }
+        else if (mode == 'v') { if (!quiet) printf("STALE      %s\n", d); }
+        else {
+            if (!cr || cr->t != JOBJ) die("cannot compile %s: not a JSON object", cp);
+            J *x = jget(cr, "extensions"); if (!x || x->t != JOBJ) { x = jnew(JOBJ); jset(cr, "extensions", x); }
+            J *g = jclone(nw); jset(g, "generated_at_commit", jstr(head)); jset(g, "compiled_at", jstr(stamp));
+            jset(x, "generated", g); jsort(cr);
+            char *out = jdump(cr), *tmp = xmalloc(strlen(full) + 32); snprintf(tmp, strlen(full) + 32, "%s.tmp.%ld", full, (long)getpid());
+            FILE *f = fopen(tmp, "wb"); if (!f) die("cannot write %s", tmp);
+            if (fputs(out, f) < 0 || fclose(f) != 0) die("write failed: %s", tmp);
+            if (rename(tmp, full)) die("rename failed: %s", full);
+            changed++; if (!quiet) printf("COMPILED   %s\n", d);
+        }
+    }
+    if (total_out) *total_out = total;
+    char h7[8]; memcpy(h7, head, 7); h7[7] = 0;
+    if (!quiet) {
+        if (mode == 'c') printf("crumb compile: %d crumbs, %d rewritten, HEAD %s\n", total, changed, h7);
+        else if (mode == 'v') {
+            if (stale) printf("crumb verify: FAIL: %d of %d crumbs stale; run: crumb compile\n", stale, total);
+            else printf("crumb verify: OK: %d crumbs current\n", total);
+        } else printf("crumb status: %d crumbs, %d not current\n", total, stale);
+    }
+    return stale;
+}
+static int cmd_compile(char mode, const char *root) { int t; int s = compile_engine(mode, root, 0, &t, NULL); return mode == 'v' && s ? 1 : 0; }
+static int cmd_propose(const char *dir, const char *purpose) {   /* D5: only extensions.proposed, never .purpose */
+    char *cp = pjoin(dir, ".crumb"), *txt = slurp(cp);
+    if (!txt) die("no .crumb in %s", dir);
+    J *cr = jparse(txt); if (!cr || cr->t != JOBJ) die("%s is not a JSON object", cp);
+    J *x = jget(cr, "extensions"); if (!x || x->t != JOBJ) { x = jnew(JOBJ); jset(cr, "extensions", x); }
+    const char *by = getenv("CRUMB_SESSION"); if (!by || !*by) by = getenv("USER"); if (!by) by = "";
+    char at[21]; now_iso(at);
+    J *pr = jnew(JOBJ); jset(pr, "purpose", jstr(purpose)); jset(pr, "status", jstr("PROPOSED")); jset(pr, "by", jstr(by)); jset(pr, "at", jstr(at));
+    jset(x, "proposed", pr); jsort(cr);
+    spit(cp, jdump(cr));
+    printf("PROPOSED purpose for %s (stays PROPOSED until a human moves it into .purpose)\n", dir);
+    return 0;
+}
+
+/* ---------- RFC-0003: crumb context ---------- */
+#define CTX_TREE_MAX 40
+static const char *crumb_purpose(J *c, char *buf, size_t n) {   /* .purpose, else PROPOSED, else none */
+    const char *p = c ? jstrval(c, "purpose") : NULL;
+    if (p && *p && !strstr(p, "not yet described")) { snprintf(buf, n, "%s", p); return buf; }
+    J *x = c ? jget(c, "extensions") : NULL, *pr = x && x->t == JOBJ ? jget(x, "proposed") : NULL;
+    const char *pp = pr && pr->t == JOBJ ? jstrval(pr, "purpose") : NULL;
+    if (pp && *pp) { snprintf(buf, n, "PROPOSED: %s", pp); return buf; }
+    snprintf(buf, n, "(no purpose yet)"); return buf;
+}
+static int cmd_context(const char *target) {
+    char r[PATH_MAX];
+    if (!realpath(target, r)) die("no such file or directory: %s", target);
+    struct stat st; if (stat(r, &st)) die("cannot stat %s", target);
+    char *abs = xstrdup(r), *dir = S_ISDIR(st.st_mode) ? xstrdup(r) : dir_of(r);
+    Plane *p = plane_resolve(dir);
+    if (!p) die("crumb context needs a git repository: %s", target);
+    size_t tl = strlen(p->top); char *rel = abs[tl] ? xstrdup(abs + tl + 1) : xstrdup(".");
+    int total = 0; char head[64] = "";
+    int stale = compile_engine('s', p->top, 1, &total, head); head[7] = 0;
+    printf("CRUMB CONTEXT %s\n", rel);
+    if (stale) printf("Crumbs STALE: %d of %d (run crumb compile)\n", stale, total);
+    else printf("Crumbs CURRENT at HEAD %s (%d crumbs)\n", head, total);
+    printf("== TREE ==\n");
+    { J *rc = load_crumb(p->top); char b[300]; if (rc) printf("  . : %s\n", crumb_purpose(rc, b, sizeof b)); }
+    DIR *dp = opendir(p->top); char **nm = NULL; size_t nn = 0;
+    if (dp) { struct dirent *e; while ((e = readdir(dp))) if (e->d_name[0] != '.') { nm = xrealloc(nm, (nn + 1) * sizeof *nm); nm[nn++] = xstrdup(e->d_name); } closedir(dp); }
+    qsort(nm, nn, sizeof *nm, sstrcmp);
+    size_t shown = 0, more = 0;
+    for (size_t i = 0; i < nn; i++) {
+        char *kd = pjoin(p->top, nm[i]); J *kc = load_crumb(kd);
+        if (!kc) continue;
+        if (shown >= CTX_TREE_MAX) { more++; continue; }
+        char b[300]; printf("  %s/ : %s\n", nm[i], crumb_purpose(kc, b, sizeof b)); shown++;
+    }
+    if (more) printf("  ... %zu more\n", more);
+    if (!shown) printf("  (no child crumbs)\n");
+    printf("== YOUR TASK TOUCHES ==\n  %s%s\n", rel, S_ISDIR(st.st_mode) ? "/" : "");
+    printf("== READ THESE CRUMBS (root to nearest) ==\n");
+    { char **chain = NULL; size_t nc = 0, ptl = strlen(p->top); char *d = xstrdup(dir);
+      for (;;) {
+        size_t dl = strlen(d), tl2 = ptl;
+        if (dl < tl2) break;
+        if (load_crumb(d)) { chain = xrealloc(chain, (nc + 1) * sizeof *chain); chain[nc++] = xstrdup(d); }
+        if (dl == tl2) break;
+        char *up = dir_of(d); free(d); d = up;
+      }
+      if (!nc) printf("  (no .crumb at or above this path)\n");
+      for (size_t i = nc; i-- > 0; ) { const char *rr = chain[i][ptl] ? chain[i] + ptl + 1 : "."; char b[300]; J *cj = load_crumb(chain[i]);
+        printf("  %s%s.crumb : %s\n", !strcmp(rr, ".") ? "" : rr, !strcmp(rr, ".") ? "" : "/", crumb_purpose(cj, b, sizeof b)); }
+    }
+    printf("== CURRENT CONFLICTS ==\n");
+    Txn *t = txn_begin(p, 0); txn_prune(t); int any = 0; size_t rl = strlen(rel);
+    for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent) {
+        J *lk = jget(t->r[i]->root, "locks");
+        if (lk && lk->t == JOBJ) for (size_t k = 0; k < lk->n; k++) {
+            const char *kk = lk->k[k]; size_t kl = strlen(kk);
+            int hit = !strcmp(rel, ".") || !strcmp(kk, rel) || (kl > rl && !strncmp(kk, rel, rl) && kk[rl] == '/') || (rl > kl && !strncmp(rel, kk, kl) && rel[kl] == '/');
+            if (hit) { print_lock(kk, lk->v[k]); any = 1; }
+        }
+    }
+    if (!any) printf("  (none)\n");
+    txn_end(t, 0);
+    printf("== RELEVANT CONTINUATION ==\n");
+    J *best = NULL; char *bestf = NULL; int nmatch = 0;
+    { char **f = NULL; size_t n = 0; char *cd = pjoin(p->store, "continuations"); collect_json(cd, &f, &n);
+      for (size_t i = 0; i < n; i++) {
+        char *txt = slurp(f[i]); J *c = txt ? jparse(txt) : NULL;
+        if (!c || c->t != JOBJ || !jget(c, "identity") || !cont_matches(c, rel)) continue;
+        nmatch++; if (!best || strcmp(cont_when(c), cont_when(best)) > 0) { best = c; bestf = f[i]; }
+      } }
+    if (!best) printf("  (none touches this path)\n");
+    else {
+        J *id = jget(best, "identity"), *s2 = jget(best, "state"), *items = s2 && s2->t == JOBJ ? jget(s2, "items") : s2;
+        printf("  id: %s  sealed: %s  (%d matching, showing newest)\n  file: %s\n  reason: %s\n", sv(id, "checkpoint_id"), cont_when(best), nmatch, bestf, sv(id, "reason"));
+        if (items && items->t == JARR) for (size_t i = 0; i < items->n && i < 8; i++) printf("  [%s] %s\n", sv(items->v[i], "tag"), sv(items->v[i], "claim"));
+        if (items && items->t == JARR && items->n > 8) printf("  ... %zu more (crumb explain %s)\n", items->n - 8, rel);
+    }
+    return 0;
+}
+
 static void usage(void) {
     fputs("usage: crumb <command> ...\n"
           "  seed <root> [-n] [-v]                       write/refresh .crumb files (idempotent; -n dry run)\n"
@@ -1549,6 +1932,11 @@ static void usage(void) {
           "  close <agent> <dir> <target> [action] [msg] release lock, add history vector, optional whisper\n"
           "  sniff <agent> <dir>                         what to read before touching a directory\n"
           "  explain <file-or-dir>                       nearest + inherited crumbs, coordination, commits, evidence, newest continuation\n"
+          "  compile [root]                              RFC-0003: regenerate structural crumb data bottom-up (Merkle digests)\n"
+          "  verify [root]                               exit 1 if any committed crumb differs from what compile would write\n"
+          "  status [root]                               CURRENT / STALE / UNCOMPILED per crumb\n"
+          "  propose <dir> <purpose>                     write extensions.proposed.purpose (never .purpose)\n"
+          "  context [path]                              entry point: tree, what to read, conflicts, continuation, freshness\n"
           "  checkpoint <agent> [--reason R]             new Continuation Crumb (wraps cc.sh); then checkpoint --seal <id> [agent]\n"
           "  resume <id>                                 print record, revalidate against live repos (wraps cc.sh)\n"
           "  list [path]                                 live scents, locks, whispers under path\n"
@@ -1575,6 +1963,12 @@ int main(int argc, char **argv) {
     if (!strcmp(c, "close") && a >= 3) return cmd_close(v[0], v[1], v[2], a > 3 ? v[3] : "modify", a > 4 ? v[4] : NULL);
     if (!strcmp(c, "sniff") && a >= 2) return cmd_sniff(v[0], v[1]);
     if (!strcmp(c, "explain") && a == 1) return cmd_explain(v[0]);
+    if (!strcmp(c, "sha256") && a == 0) { Sha s; char h[65]; unsigned char t[8192]; size_t n; sha_init(&s); while ((n = fread(t, 1, sizeof t, stdin)) > 0) sha_add(&s, t, n); sha_hex(&s, h); printf("%s\n", h); return 0; }
+    if (!strcmp(c, "compile") && a <= 1) return cmd_compile('c', a ? v[0] : ".");
+    if (!strcmp(c, "verify") && a <= 1) return cmd_compile('v', a ? v[0] : ".");
+    if (!strcmp(c, "status") && a <= 1) return cmd_compile('s', a ? v[0] : ".");
+    if (!strcmp(c, "propose") && a == 2) return cmd_propose(v[0], v[1]);
+    if (!strcmp(c, "context") && a <= 1) return cmd_context(a ? v[0] : ".");
     if (!strcmp(c, "checkpoint")) return cmd_checkpoint(a, v);
     if (!strcmp(c, "resume") && a == 1) return cmd_resume(v[0]);
     if (!strcmp(c, "list") || !strcmp(c, "validate")) {

@@ -1,0 +1,16 @@
+name: Crumb compiler
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  crumb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and test the crumb tool
+        run: make -C tools/crumb test
+      - name: Crumbs must be exactly what the compiler produces now
+        run: ./tools/crumb/crumb verify .
