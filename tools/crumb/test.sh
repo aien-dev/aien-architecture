@@ -175,18 +175,21 @@ echo x >> src/a.c; git add -A; "$C" context src/a.c | grep -q "^Crumbs STALE: 2 
 # differential vs the shell reference (needs jq, git, sha256sum)
 REF="$HERE/crumb-compile.sh"
 if command -v jq >/dev/null 2>&1 && [ -f "$REF" ]; then
+  wipe() { for f in $(cd "$1" && find . -name .crumb -not -path "./.git/*"); do jq -S "del(.extensions.generated)" "$1/$f" > "$1/$f.t" && mv "$1/$f.t" "$1/$f"; done; }   # compile from nothing, so last_commit is fresh in both
   diffgen() { # $1 repoA (shell) $2 repoB (C): every .crumb extensions.generated minus stamps must match
     r=0; for f in $(cd "$1" && find . -name .crumb -not -path './.git/*'); do
       a=$(jq -cS '.extensions.generated | del(.generated_at_commit, .compiled_at)' "$1/$f"); b=$(jq -cS '.extensions.generated | del(.generated_at_commit, .compiled_at)' "$2/$f")
       [ "$a" = "$b" ] || { echo "DIFF $f"; r=1; }
     done; return $r; }
   cd "$T" || exit 1; rm -rf dA dB; git clone -q --no-hardlinks "$CC3" dA && git clone -q --no-hardlinks "$CC3" dB
+  wipe "$T/dA"; wipe "$T/dB"
   (cd dA && sh "$REF" compile . >/dev/null) && (cd dB && "$C" compile . >/dev/null)
   diffgen "$T/dA" "$T/dB" >/dev/null && ok "C3 differential on scratch repo: generated blocks identical to crumb-compile.sh" || bad "C3 differential scratch"
   (cd dB && sh "$REF" verify . >/dev/null) && (cd dA && "$C" verify . >/dev/null) && ok "C3 each tool verifies the other's output" || bad "C3 cross verify"
   TOP=$(git -C "$HERE" rev-parse --show-toplevel 2>/dev/null)
   if [ -n "$TOP" ]; then
     rm -rf eA eB; git clone -q --no-hardlinks "$TOP" eA && git clone -q --no-hardlinks "$TOP" eB
+    wipe "$T/eA"; wipe "$T/eB"
     (cd eA && sh "$REF" compile . >/dev/null) && (cd eB && "$C" compile . >/dev/null)
     diffgen "$T/eA" "$T/eB" > "$T/diff.out" && ok "C3 differential on this repo: generated blocks identical" || { cat "$T/diff.out"; bad "C3 differential this repo"; }
     cmp -s "$T/eA/.crumb" "$T/eB/.crumb" 2>/dev/null; sed '/compiled_at/d' "$T/eA/tools/.crumb" > "$T/ta"; sed '/compiled_at/d' "$T/eB/tools/.crumb" > "$T/tb"

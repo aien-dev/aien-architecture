@@ -81,6 +81,6 @@ Caveat for stages 4-5: Omega's program representation is still narrow (unary-u64
 | Touching one file: STALE is exactly its directory, its ancestors and the root; siblings stay CURRENT | PASS |
 | `propose` never changes `.purpose`; compile never touches the semantic kernel; a proposal does not make crumbs stale | PASS |
 | `context` prints all sections, both freshness lines, ancestors, PROPOSED purpose, locks on the path only, bounded output | PASS |
-| Differential against `crumb-compile.sh` on a scratch repo and on this repo: generated blocks identical, each tool verifies the other's output, whole file byte-identical apart from `compiled_at` | PASS (reported NOT_RUN if `jq` is missing) |
+| Differential against `crumb-compile.sh` on a scratch repo and on this repo (both tools compile from nothing, so `last_commit` is fresh in both): generated blocks identical, each tool verifies the other's output, whole file byte-identical apart from `compiled_at` | PASS (reported NOT_RUN if `jq` is missing) |
 | Number literals other than plain integers inside the semantic kernel (jq canonicalises them, the C tool keeps them verbatim) | NOT_RUN (UNVERIFIED) |
 | Paths containing spaces or newlines (the shell reference splits them; the C tool does not) | NOT_RUN (UNVERIFIED) |
