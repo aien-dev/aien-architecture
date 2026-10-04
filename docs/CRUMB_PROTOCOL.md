@@ -19,6 +19,8 @@ Crumbline is the training curriculum in `aien-sovereign-core/crates/crumbs`. The
 
 If the Rust crate and RFC-0001 disagree, RFC-0001 wins. The tool leaves legacy files untouched and reports them.
 
+RFC-0002 (`docs/CRUMB_PROTOCOL_RFC_0002.md`) extends this protocol with a repository-wide coordination plane shared by all worktrees, `crumb explain`, and Continuation Crumbs for session handoff; agent workflow in `docs/crumbs/AGENT_WORKFLOW.md`.
+
 ## The two files
 
 - `.crumb`: durable, committed, JSON. Required: `schema_version` ("1.0.0"), `name`, `purpose`. Optional: `layer`, `above`, `below`, `invariants`, `exports`, `extensions`.
