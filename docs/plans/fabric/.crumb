@@ -1,50 +1,62 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/fabric",
-  "layer": "docs/plans/fabric",
-  "purpose": "Directory docs/plans/fabric. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/plans/fabric. Purpose not yet described by a human.",
-      "files": [
-        "F5_0_FABRIC_INTERFACE.md"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:f5e2891d09b853edee1bc6c977d83a3669f2ef02aab6322ba5e0fd3c54835011",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 1,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:e0cfd8cb96e14dc604444b10ff0ebef6d6e5e7ea8fb0245790cf6048b456fd8e"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "40c17de",
-          "timestamp": "2026-09-30T22:48:28-05:00",
           "author": "aien-dev",
+          "pr": 78,
+          "sha": "40c17de",
+          "source": "backfill-git",
           "subject": "Merge pull request #78 from aien-dev/docs/fabric-f5-0",
-          "pr": 78
+          "timestamp": "2026-09-30T22:48:28-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane6",
-          "sha": "40c17de",
-          "pr": 78,
           "note": "aien-architecture #78 MERGED 40c17de: docs/plans/fabric/F5_0_FABRIC_INTERFACE.md (NOT A MASTER PLAN).",
-          "ref": "2026-10-01-push-lane6-report.md"
+          "pr": 78,
+          "ref": "2026-10-01-push-lane6-report.md",
+          "sha": "40c17de",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane6",
-          "sha": "40c17de",
-          "pr": 78,
           "note": "~05:00Z Lane 6 DONE: omega #123 a18ec6b Fabric F5-0 loopback PASS (receipt evidence/F5-0/e419a00b...), arch #78 40c17de spec. Drake decision added: accept aienos ADR 0010 (Fabric identity/advertiseme",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 78,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "40c17de",
+          "source": "backfill-lane-report"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
+    "seed": {
+      "files": [
+        "F5_0_FABRIC_INTERFACE.md"
+      ],
+      "purpose_auto": "Directory docs/plans/fabric. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/fabric",
+  "name": "docs/plans/fabric",
+  "purpose": "Directory docs/plans/fabric. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

@@ -1,35 +1,47 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/mixed-algebra/research",
-  "layer": "docs/plans/mixed-algebra/research",
-  "purpose": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans/mixed-algebra",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human.",
-      "files": [
-        "PHASE_EXPERIMENT_AND_HARDWARE.md",
-        "PRIOR_ART.md"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:faeb21e72f69dc4ba2333400b5203027c167c5e24ef68871d9b3c861d9dca7a8",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 2,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:9ae4daff5a6e4c63ba259fb8afe229397c5cb902f1091a27b6564933e119d060"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "e2bb8a8",
-          "timestamp": "2026-09-29T14:17:53-05:00",
           "author": "aien-dev",
+          "pr": 58,
+          "sha": "e2bb8a8",
+          "source": "backfill-git",
           "subject": "Merge pull request #58 from aien-dev/docs/mixed-algebra",
-          "pr": 58
+          "timestamp": "2026-09-29T14:17:53-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
+    "seed": {
+      "files": [
+        "PHASE_EXPERIMENT_AND_HARDWARE.md",
+        "PRIOR_ART.md"
+      ],
+      "purpose_auto": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/mixed-algebra/research",
+  "name": "docs/plans/mixed-algebra/research",
+  "purpose": "Directory docs/plans/mixed-algebra/research. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

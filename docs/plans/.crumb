@@ -1,8 +1,4 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans",
-  "layer": "docs/plans",
-  "purpose": "Directory docs/plans. Purpose not yet described by a human.",
   "above": {
     "name": "docs",
     "path": ".."
@@ -42,308 +38,373 @@
     }
   ],
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/plans. Purpose not yet described by a human.",
-      "files": [
-        "CURRENT_CODE_TO_R0_R16_MIGRATION.md",
-        "RUST_TO_C_MIGRATION.md"
-      ]
+    "generated": {
+      "children": [
+        {
+          "digest": "f84222360555f2020bb3600a9117850be252c82e616fa05e5578648e1215bc2b",
+          "last_commit": "1438799",
+          "name": "analog-realization",
+          "purpose": "Directory docs/plans/analog-realization. Purpose not yet described by a human."
+        },
+        {
+          "digest": "eecb93fc776fe3c4d7f45f1755dc77d89cf4fb422e6542c8a6edb944f605a968",
+          "last_commit": "a1febd2",
+          "name": "arena-x",
+          "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
+        },
+        {
+          "digest": "d7014810e0dc3719698b60e664e667a24e0912eb361800174985c6c434fd4ea4",
+          "last_commit": "2ff40e9",
+          "name": "belief-estimation",
+          "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human."
+        },
+        {
+          "digest": "c0418daf92c5a7547db1d87af95d6de1936c4a632db812c3f66168b670dbef6c",
+          "last_commit": "f81e4ce",
+          "name": "dirac",
+          "purpose": "Directory docs/plans/dirac. Purpose not yet described by a human."
+        },
+        {
+          "digest": "694d1efaa7edd1dbbf4e2e5adb8a3942bd900ba5b7996e42f8788d5ac85c517d",
+          "last_commit": "b9aa9a2",
+          "name": "discovery",
+          "purpose": "Directory docs/plans/discovery. Purpose not yet described by a human."
+        },
+        {
+          "digest": "f5e2891d09b853edee1bc6c977d83a3669f2ef02aab6322ba5e0fd3c54835011",
+          "last_commit": "6490acc",
+          "name": "fabric",
+          "purpose": "Directory docs/plans/fabric. Purpose not yet described by a human."
+        },
+        {
+          "digest": "2ae8b016572273d6b640eea3af4a1fdb8a4ef276cf366ada9d040f942a205e73",
+          "last_commit": "e89ba94",
+          "name": "mixed-algebra",
+          "purpose": "Directory docs/plans/mixed-algebra. Purpose not yet described by a human."
+        },
+        {
+          "digest": "46a34ede9b6d7db75132c88223b963f4ac24dcb2f4620b0b4b3cc420121fe1f6",
+          "last_commit": "e4470d8",
+          "name": "physics-zero",
+          "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
+        }
+      ],
+      "children_root": "sha256:3fb5deed18e86996c0c7642b496b3bb11b82cb548217f7250851ef3debb73828",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:dd7b025ef67efb70e9e740fd748979b0a7cba6fb6e8b0152b07230a9415839e8",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 28,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:9d18e2344cc675539b64e91ca282a3530a074b51221fa4842352ef683d6f52bd"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 19,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "e983393",
-          "timestamp": "2026-10-01T07:58:31-05:00",
           "author": "aien-dev",
+          "pr": 84,
+          "sha": "e983393",
+          "source": "backfill-git",
           "subject": "Merge pull request #84 from aien-dev/lane36-pz-atlas",
-          "pr": 84
+          "timestamp": "2026-10-01T07:58:31-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "e983393",
-          "pr": 84,
           "note": "PR: aien-dev/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
-          "ref": "2026-10-01-push-lane36-report.md"
+          "pr": 84,
+          "ref": "2026-10-01-push-lane36-report.md",
+          "sha": "e983393",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "e983393",
-          "pr": 84,
           "note": "MERGED e983393",
-          "ref": "2026-10-01-push-lane36-report.md"
+          "pr": 84,
+          "ref": "2026-10-01-push-lane36-report.md",
+          "sha": "e983393",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "e983393",
-          "pr": 84,
           "note": "12:58Z Lane 36 interim: arch #84 open (Atlas research + V1 + C2S Addendum A, all gates NOT_RUN; Gemini review 15 findings fixed; Codex at limit; some citations '(unsure)' need spot-check before exter",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane36",
-          "sha": "e983393",
           "pr": 84,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "e983393",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane36",
           "note": "12:58Z Lane 36 DONE: arch #84 MERGED (Atlas research + V1 + C2S Addendum A). Next PZ step = C2S-0 Representational Adequacy Lab (scorer + reference solvers, three sealed worlds A/B/C, exit PHYSICS_ZE",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 84,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "e983393",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
-          "sha": "6ebd2fe",
-          "timestamp": "2026-10-01T07:52:59-05:00",
           "author": "aien-dev",
+          "pr": 83,
+          "sha": "6ebd2fe",
+          "source": "backfill-git",
           "subject": "docs(dirac): DIRAC-0 spec + ADR 0023 PROPOSED (D-01) (#83)",
-          "pr": 83
+          "timestamp": "2026-10-01T07:52:59-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane33",
-          "sha": "6ebd2fe",
-          "pr": 83,
           "note": "D-01 aien-architecture PR #83 MERGED 6ebd2fe: docs/plans/dirac/DIRAC-0-SPEC.md, DIRAC_0_CURRENT_STATE.md, docs/adr/0023-dirac-0-program.md (PROPOSED), one paragraph in CURRENT_EXECUTION_PLAN.md (end ",
-          "ref": "2026-10-01-push-lane35-report.md"
+          "pr": 83,
+          "ref": "2026-10-01-push-lane35-report.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "6ebd2fe",
-          "pr": 83,
           "note": "12:51Z physics #23 MERGED 79b30a5 (first CI, 'Host gates'); board in active use by lanes 15/33/34/35/36; Lane 36 Atlas C2S = Addendum A, PR pending; Lane 35 arch #83 (ADR 0023 + DIRAC spec) rebases a",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane35",
-          "sha": "6ebd2fe",
           "pr": 83,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane35",
           "note": "12:53Z Lane 35 DONE: arch #83 6ebd2fe (DIRAC-0 spec + ADR 0023, C2S ladder D-1..D3, status proposed, DIRAC_PREP_FROZEN not passed) + omega #158 458c57f (oracle plan, public fixtures only; sealed keys",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 83,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
-          "sha": "5a9c57e",
-          "timestamp": "2026-10-01T07:50:28-05:00",
           "author": "aien-dev",
+          "pr": 82,
+          "sha": "5a9c57e",
+          "source": "backfill-git",
           "subject": "Merge pull request #82 from aien-dev/docs/lane33-reconcile",
-          "pr": 82
+          "timestamp": "2026-10-01T07:50:28-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane33",
-          "sha": "5a9c57e",
-          "pr": 82,
           "note": "| aien-architecture | #82 | 5a9c57e | Codex: no actionable defect | r16 pass (run 36863190690) |",
-          "ref": "2026-10-01-push-lane33-report.md"
+          "pr": 82,
+          "ref": "2026-10-01-push-lane33-report.md",
+          "sha": "5a9c57e",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane33",
-          "sha": "5a9c57e",
-          "pr": 82,
           "note": "arch #82 (CURRENT_EXECUTION_PLAN, ROADMAP, docs/02-implementation-status, RUST_TO_C_MIGRATION §6):** track1 §8 edits (a) to (l).",
-          "ref": "2026-10-01-push-lane33-report.md"
+          "pr": 82,
+          "ref": "2026-10-01-push-lane33-report.md",
+          "sha": "5a9c57e",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane37",
-          "sha": "5a9c57e",
-          "pr": 82,
           "note": "Rebased after #82 (5a9c57e), conflict resolved by keeping both. External review: Codex on the first draft (in PR body) + Gemini agy on the decision commit. r16 check passed.",
-          "ref": "2026-10-01-push-lane37-report.md"
+          "pr": 82,
+          "ref": "2026-10-01-push-lane37-report.md",
+          "sha": "5a9c57e",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "5a9c57e",
-          "pr": 82,
           "note": "12:40Z Drake: add a keeper to watch for drift. Started Gemini keeper loop (~/handoffs/keeper/keeper.sh, every 45 min, read-only, log ~/handoffs/keeper/2026-10-01-keeper-log.md). Launched Lane 36 (Phy",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane33",
-          "sha": "5a9c57e",
           "pr": 82,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "5a9c57e",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane33",
           "note": "12:51Z Lane 33 DONE: arch #82, omega #155, aienos #206 MERGED (docs truthful: E1 2/6, kernel 9/14 QEMU, TRUST-1 not qualified, R16 merged-with-failing-check noted; Gate 5 failed receipt added to omeg",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 82,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "5a9c57e",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
-          "sha": "ac83f0d",
-          "timestamp": "2026-09-30T23:44:11-05:00",
           "author": "aien-dev",
+          "pr": 80,
+          "sha": "ac83f0d",
+          "source": "backfill-git",
           "subject": "Merge pull request #80 from aien-dev/docs/est-v3-phase-a-fail",
-          "pr": 80
+          "timestamp": "2026-09-30T23:44:11-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane23",
-          "sha": "ac83f0d",
-          "pr": 80,
           "note": "§2 new \"later merges\" addendum: aienos #189 6bcef8a, #190 811bbc0, #191 697391f, #192 08cb905, #193 8d511d6; omega #128 ee89461, #129 d78fd11, #130 7fb59d3, #131 f7b22f1, #132 ff2af05, #133 c6cf052,",
-          "ref": "2026-10-01-push-lane23-report.md"
+          "pr": 80,
+          "ref": "2026-10-01-push-lane23-report.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane4",
-          "sha": "ac83f0d",
-          "pr": 80,
           "note": "aien-architecture #80: MERGED ac83f0d (state file section 8: v1/v2/v3 FAIL table, EST-4/5 blocked).",
-          "ref": "2026-10-01-push-lane4-report.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane4",
-          "sha": "ac83f0d",
           "pr": 80,
+          "ref": "2026-10-01-push-lane4-report.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane4",
           "note": "~08:40Z Lane 4 DONE: EST v3 PHASE_A_FAIL recorded, omega#129 d78fd11, arch#80 ac83f0d; finding: 10-step variance ratio 2.137 (thermal ramp persists), F5 closest; EST-4/5 blocked. Launching Lane 15 (v",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 80,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
-          "sha": "40c17de",
-          "timestamp": "2026-09-30T22:48:28-05:00",
           "author": "aien-dev",
+          "pr": 78,
+          "sha": "40c17de",
+          "source": "backfill-git",
           "subject": "Merge pull request #78 from aien-dev/docs/fabric-f5-0",
-          "pr": 78
+          "timestamp": "2026-09-30T22:48:28-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane6",
-          "sha": "40c17de",
-          "pr": 78,
           "note": "aien-architecture #78 MERGED 40c17de: docs/plans/fabric/F5_0_FABRIC_INTERFACE.md (NOT A MASTER PLAN).",
-          "ref": "2026-10-01-push-lane6-report.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane6",
-          "sha": "40c17de",
           "pr": 78,
+          "ref": "2026-10-01-push-lane6-report.md",
+          "sha": "40c17de",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane6",
           "note": "~05:00Z Lane 6 DONE: omega #123 a18ec6b Fabric F5-0 loopback PASS (receipt evidence/F5-0/e419a00b...), arch #78 40c17de spec. Drake decision added: accept aienos ADR 0010 (Fabric identity/advertiseme",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 78,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "40c17de",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 73,
           "sha": "b9aa9a2",
-          "timestamp": "2026-09-30T21:47:47-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(discovery): CEXP-2 abstraction and DEXP-1 discoverability frozen specs (#73)",
-          "pr": 73
+          "timestamp": "2026-09-30T21:47:47-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 70,
           "sha": "e89ba94",
-          "timestamp": "2026-09-30T20:13:35-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs: reconcile M19R Gate 14 and R16 closure, lift runtime freeze (#70)",
-          "pr": 70
+          "timestamp": "2026-09-30T20:13:35-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 66,
           "sha": "e004417",
-          "timestamp": "2026-09-30T07:20:41-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #66 from aien-dev/docs/arena-x-audit",
-          "pr": 66
+          "timestamp": "2026-09-30T07:20:41-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 65,
           "sha": "f2cf579",
-          "timestamp": "2026-09-30T07:10:34-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #65 from aien-dev/docs/belief-estimation-adr0020",
-          "pr": 65
+          "timestamp": "2026-09-30T07:10:34-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 63,
           "sha": "33acd89",
-          "timestamp": "2026-09-29T17:07:51-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #63 from aien-dev/docs/mixed-algebra-handoff-audit",
-          "pr": 63
+          "timestamp": "2026-09-29T17:07:51-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 59,
           "sha": "1438799",
-          "timestamp": "2026-09-29T14:28:29-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "doctrine: R16 roadmap status PASS -> IN PROGRESS (only G1/G2 evidenced) (#59)",
-          "pr": 59
+          "timestamp": "2026-09-29T14:28:29-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 58,
           "sha": "e2bb8a8",
-          "timestamp": "2026-09-29T14:17:53-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #58 from aien-dev/docs/mixed-algebra",
-          "pr": 58
+          "timestamp": "2026-09-29T14:17:53-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 57,
           "sha": "8ec9b1d",
-          "timestamp": "2026-09-29T11:52:22-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(governance): record R16 orchestrator retirement closure (#57)",
-          "pr": 57
+          "timestamp": "2026-09-29T11:52:22-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 56,
           "sha": "bbd2579",
-          "timestamp": "2026-09-29T11:08:41-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(governance): synchronize analog current state audit and ADR 0018 drafting basis (#56)",
-          "pr": 56
+          "timestamp": "2026-09-29T11:08:41-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 55,
           "sha": "91c0f65",
-          "timestamp": "2026-09-29T10:50:42-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(governance): synchronize status across roadmap, architecture doctrine, ADR index, and arena spec (#55)",
-          "pr": 55
+          "timestamp": "2026-09-29T10:50:42-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 53,
           "sha": "b19b4ac",
-          "timestamp": "2026-09-29T10:31:32-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(governance): synchronize architecture status, ratify ADR 0017, and align AEGIS definition (#53)",
-          "pr": 53
+          "timestamp": "2026-09-29T10:31:32-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 46,
           "sha": "641bd3c",
-          "timestamp": "2026-09-29T09:57:59-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #46 from aien-dev/docs/analog-realization-adr0018",
-          "pr": 46
+          "timestamp": "2026-09-29T09:57:59-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 45,
           "sha": "7154d8a",
-          "timestamp": "2026-09-29T07:34:52-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "Merge pull request #45: Rust to C migration plan (decided 2026-09-27)",
-          "pr": 45
+          "timestamp": "2026-09-29T07:34:52-05:00"
         },
         {
-          "source": "backfill-git",
-          "sha": "4790423",
-          "timestamp": "2026-09-27T12:27:27-05:00",
           "author": "aien-dev",
+          "pr": 42,
+          "sha": "4790423",
+          "source": "backfill-git",
           "subject": "docs(adr): ADR 0016 resident reaction architecture + R0-R16 migration map (#42)",
-          "pr": 42
+          "timestamp": "2026-09-27T12:27:27-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 19
+    },
+    "seed": {
+      "files": [
+        "CURRENT_CODE_TO_R0_R16_MIGRATION.md",
+        "RUST_TO_C_MIGRATION.md"
+      ],
+      "purpose_auto": "Directory docs/plans. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans",
+  "name": "docs/plans",
+  "purpose": "Directory docs/plans. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

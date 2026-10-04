@@ -1,37 +1,49 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/discovery",
-  "layer": "docs/plans/discovery",
-  "purpose": "Directory docs/plans/discovery. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans",
     "path": ".."
   },
   "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:694d1efaa7edd1dbbf4e2e5adb8a3942bd900ba5b7996e42f8788d5ac85c517d",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 4,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:dc29188e6a8ec649cae2ce7f4ce839a9eb46a2ec886d83289a05fe4cd2b16f25"
+    },
+    "owner_lane": "",
+    "provenance": {
+      "entries": [
+        {
+          "author": "aien-dev",
+          "pr": 73,
+          "sha": "b9aa9a2",
+          "source": "backfill-git",
+          "subject": "docs(discovery): CEXP-2 abstraction and DEXP-1 discoverability frozen specs (#73)",
+          "timestamp": "2026-09-30T21:47:47-05:00"
+        }
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
     "seed": {
-      "purpose_auto": "Directory docs/plans/discovery. Purpose not yet described by a human.",
       "files": [
         "CEXP2_ABSTRACTION_EXPERIMENT.md",
         "DEXP1_DISCOVERABILITY_MAP.md",
         "DISCOVERY_CURRENT_STATE.md",
         "README.md"
-      ]
-    },
-    "owner_lane": "",
-    "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
-      "entries": [
-        {
-          "source": "backfill-git",
-          "sha": "b9aa9a2",
-          "timestamp": "2026-09-30T21:47:47-05:00",
-          "author": "aien-dev",
-          "subject": "docs(discovery): CEXP-2 abstraction and DEXP-1 discoverability frozen specs (#73)",
-          "pr": 73
-        }
-      ]
+      ],
+      "purpose_auto": "Directory docs/plans/discovery. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/discovery",
+  "name": "docs/plans/discovery",
+  "purpose": "Directory docs/plans/discovery. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

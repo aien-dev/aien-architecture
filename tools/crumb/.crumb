@@ -1,92 +1,104 @@
 {
-  "schema_version": "1.0.0",
-  "name": "tools/crumb",
-  "layer": "tools/crumb",
-  "purpose": "Directory tools/crumb. Purpose not yet described by a human.",
   "above": {
     "name": "tools",
     "path": ".."
   },
   "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:26:27Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:d019d19038100b81f99ddb3b7e89be068fe385125bdb35e178c8415564fd293d",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 6,
+      "generated_at_commit": "12bacc58d42b05ac997fd5b7af855f51e3cf8841",
+      "source_tree": "sha256:ca66c899c01f233063241ac432c804a0192b6310f1b2286e48a9c273efacbf5a"
+    },
+    "owner_lane": "",
+    "provenance": {
+      "entries": [
+        {
+          "author": "aien-dev",
+          "pr": 89,
+          "sha": "0af71ba",
+          "source": "backfill-git",
+          "subject": "tools(crumb): .crumbignore and local git exclude (#89)",
+          "timestamp": "2026-10-01T08:38:21-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 88,
+          "sha": "8595032",
+          "source": "backfill-git",
+          "subject": "tools(crumb): backfill subcommand (retroactive history) (#88)",
+          "timestamp": "2026-10-01T08:34:46-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 86,
+          "sha": "73f15fe",
+          "source": "backfill-git",
+          "subject": "tools(crumb): seed skips vendor and evidence directories (#86)",
+          "timestamp": "2026-10-01T08:23:02-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 85,
+          "sha": "6253477",
+          "source": "backfill-git",
+          "subject": "tools(crumb): RFC-0001 Crumb Protocol tool in C + doctrine pointer (#85)",
+          "timestamp": "2026-10-01T08:18:43-05:00"
+        },
+        {
+          "lane": "lane38",
+          "note": "Verdict: PASS. arch #85 MERGED 6253477 (r16 green). Tool installed at ~/.local/bin/crumb. Roster migrated.",
+          "pr": 85,
+          "ref": "2026-10-01-push-lane38-report.md",
+          "sha": "6253477",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane38",
+          "note": "arch #85 (squash 6253477): tools/crumb/crumb.c (C11, one file, no deps), Makefile, test.sh, docs/CRUMB_PROTOCOL.md. Build with -Wall -Wextra -Werror clean. `make test`: 20 PASS.",
+          "pr": 85,
+          "ref": "2026-10-01-push-lane38-report.md",
+          "sha": "6253477",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane38",
+          "note": "13:20Z Lane 38 DONE: Crumb Protocol (RFC-0001, crumb-spec 10b8251) adopted; C crumb tool MERGED arch #85 6253477, installed ~/.local/bin/crumb; board.sh = wrapper; roster in ~/handoffs/.crumb.local (",
+          "pr": 85,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6253477",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane38",
+          "note": "13:40Z Crumb check-in (Drake asked): arch #85 + #86 MERGED (tool + skip list); all lanes posting scents/whispers via crumb. Backfill subcommand committed on branch feat/crumb-backfill (c67ed8a, 13:28",
+          "pr": 85,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6253477",
+          "source": "backfill-lane-report"
+        }
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 4
+    },
     "seed": {
-      "purpose_auto": "Directory tools/crumb. Purpose not yet described by a human.",
       "files": [
         "Makefile",
         "crumb.c",
         "test.sh"
-      ]
-    },
-    "owner_lane": "",
-    "provenance": {
-      "source": "backfill",
-      "total_commits": 4,
-      "ledger_cap": 20,
-      "entries": [
-        {
-          "source": "backfill-git",
-          "sha": "0af71ba",
-          "timestamp": "2026-10-01T08:38:21-05:00",
-          "author": "aien-dev",
-          "subject": "tools(crumb): .crumbignore and local git exclude (#89)",
-          "pr": 89
-        },
-        {
-          "source": "backfill-git",
-          "sha": "8595032",
-          "timestamp": "2026-10-01T08:34:46-05:00",
-          "author": "aien-dev",
-          "subject": "tools(crumb): backfill subcommand (retroactive history) (#88)",
-          "pr": 88
-        },
-        {
-          "source": "backfill-git",
-          "sha": "73f15fe",
-          "timestamp": "2026-10-01T08:23:02-05:00",
-          "author": "aien-dev",
-          "subject": "tools(crumb): seed skips vendor and evidence directories (#86)",
-          "pr": 86
-        },
-        {
-          "source": "backfill-git",
-          "sha": "6253477",
-          "timestamp": "2026-10-01T08:18:43-05:00",
-          "author": "aien-dev",
-          "subject": "tools(crumb): RFC-0001 Crumb Protocol tool in C + doctrine pointer (#85)",
-          "pr": 85
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane38",
-          "sha": "6253477",
-          "pr": 85,
-          "note": "Verdict: PASS. arch #85 MERGED 6253477 (r16 green). Tool installed at ~/.local/bin/crumb. Roster migrated.",
-          "ref": "2026-10-01-push-lane38-report.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane38",
-          "sha": "6253477",
-          "pr": 85,
-          "note": "arch #85 (squash 6253477): tools/crumb/crumb.c (C11, one file, no deps), Makefile, test.sh, docs/CRUMB_PROTOCOL.md. Build with -Wall -Wextra -Werror clean. `make test`: 20 PASS.",
-          "ref": "2026-10-01-push-lane38-report.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane38",
-          "sha": "6253477",
-          "pr": 85,
-          "note": "13:20Z Lane 38 DONE: Crumb Protocol (RFC-0001, crumb-spec 10b8251) adopted; C crumb tool MERGED arch #85 6253477, installed ~/.local/bin/crumb; board.sh = wrapper; roster in ~/handoffs/.crumb.local (",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane38",
-          "sha": "6253477",
-          "pr": 85,
-          "note": "13:40Z Crumb check-in (Drake asked): arch #85 + #86 MERGED (tool + skip list); all lanes posting scents/whispers via crumb. Backfill subcommand committed on branch feat/crumb-backfill (c67ed8a, 13:28",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
-        }
-      ]
+      ],
+      "purpose_auto": "Directory tools/crumb. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "tools/crumb",
+  "name": "tools/crumb",
+  "purpose": "Directory tools/crumb. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

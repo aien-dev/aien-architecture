@@ -1,74 +1,86 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/belief-estimation",
-  "layer": "docs/plans/belief-estimation",
-  "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/plans/belief-estimation. Purpose not yet described by a human.",
-      "files": [
-        "BELIEF_ESTIMATION_CURRENT_STATE.md"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:d7014810e0dc3719698b60e664e667a24e0912eb361800174985c6c434fd4ea4",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 1,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:42f015074d598897ab84811ee898ac6c8f0132ea67471fe4e1c8e426e461b0cb"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 3,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "ac83f0d",
-          "timestamp": "2026-09-30T23:44:11-05:00",
           "author": "aien-dev",
+          "pr": 80,
+          "sha": "ac83f0d",
+          "source": "backfill-git",
           "subject": "Merge pull request #80 from aien-dev/docs/est-v3-phase-a-fail",
-          "pr": 80
+          "timestamp": "2026-09-30T23:44:11-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane23",
-          "sha": "ac83f0d",
-          "pr": 80,
           "note": "§2 new \"later merges\" addendum: aienos #189 6bcef8a, #190 811bbc0, #191 697391f, #192 08cb905, #193 8d511d6; omega #128 ee89461, #129 d78fd11, #130 7fb59d3, #131 f7b22f1, #132 ff2af05, #133 c6cf052,",
-          "ref": "2026-10-01-push-lane23-report.md"
+          "pr": 80,
+          "ref": "2026-10-01-push-lane23-report.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane4",
-          "sha": "ac83f0d",
-          "pr": 80,
           "note": "aien-architecture #80: MERGED ac83f0d (state file section 8: v1/v2/v3 FAIL table, EST-4/5 blocked).",
-          "ref": "2026-10-01-push-lane4-report.md"
-        },
-        {
-          "source": "backfill-lane-report",
-          "lane": "lane4",
-          "sha": "ac83f0d",
           "pr": 80,
+          "ref": "2026-10-01-push-lane4-report.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
+        },
+        {
+          "lane": "lane4",
           "note": "~08:40Z Lane 4 DONE: EST v3 PHASE_A_FAIL recorded, omega#129 d78fd11, arch#80 ac83f0d; finding: 10-step variance ratio 2.137 (thermal ramp persists), F5 closest; EST-4/5 blocked. Launching Lane 15 (v",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 80,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "ac83f0d",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 70,
           "sha": "e89ba94",
-          "timestamp": "2026-09-30T20:13:35-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs: reconcile M19R Gate 14 and R16 closure, lift runtime freeze (#70)",
-          "pr": 70
+          "timestamp": "2026-09-30T20:13:35-05:00"
         },
         {
-          "source": "backfill-git",
-          "sha": "f2cf579",
-          "timestamp": "2026-09-30T07:10:34-05:00",
           "author": "aien-dev",
+          "pr": 65,
+          "sha": "f2cf579",
+          "source": "backfill-git",
           "subject": "Merge pull request #65 from aien-dev/docs/belief-estimation-adr0020",
-          "pr": 65
+          "timestamp": "2026-09-30T07:10:34-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 3
+    },
+    "seed": {
+      "files": [
+        "BELIEF_ESTIMATION_CURRENT_STATE.md"
+      ],
+      "purpose_auto": "Directory docs/plans/belief-estimation. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/belief-estimation",
+  "name": "docs/plans/belief-estimation",
+  "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }
