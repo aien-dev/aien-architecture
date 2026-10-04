@@ -25,7 +25,7 @@ Until now people and agents wrote the descriptions in crumbs by hand, and they w
 
 `digest = sha256(semantic || source_tree || children_root || evidence_root)`, where `semantic` is the compact, key-sorted JSON of the semantic kernel with null keys removed, and the three roots are the lowercase hex digests. `children_root` is the sha256 of each child's digest followed by a newline, in name order. Directories are compiled deepest first (D4), so a parent always embeds its children's final digests. Changing one file therefore changes that directory's digest and those of its ancestors only; siblings stay CURRENT.
 
-## 4. Design decisions D1-D9 (binding, from the reference implementation) and D3a
+## 4. Design decisions D1-D10 (binding; D1-D9 from the reference implementation) and D3a
 
 | ID | Decision | Trap it closes |
 |---|---|---|
@@ -39,6 +39,7 @@ Until now people and agents wrote the descriptions in crumbs by hand, and they w
 | D7 | Only directories that already hold a `.crumb` take part; `crumb seed` decides membership. | One mechanism for membership, not two. Hidden child directories are not listed as children. |
 | D8 | Evidence is tracked files whose path has a component named `evidence` or `receipts`, or ending `.receipt.json`; `evidence_root` hashes their blob ids in path order. | Receipts become part of the fingerprint, so a changed receipt shows up as STALE. |
 | D9 | Output is key-sorted JSON, written to a temporary file then renamed, byte-stable. | `verify` can be an exact comparison. |
+| D10 | A directory listed in `<root>/.crumbignore` (one relative directory per line, the same file `crumb seed` reads) is excluded with its whole subtree from compile, verify and status: no `.crumb` under it is read as a child or rewritten. Its tracked files still count toward the enclosing crumb's `source_tree` and `evidence_root`. Added 2026-10-04 for the rollout to omega, aienos and physics. | Trees guarded by immutability checks (omega `evidence/`, which holds a seeded `.crumb`; physics `nvrm` and `m16`) would otherwise be rewritten by compile and fail their own CI. The shell reference does not implement D10; the differential holds for repositories without a `.crumbignore`. |
 
 ## 5. Commands
 

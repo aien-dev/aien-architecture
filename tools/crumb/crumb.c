@@ -886,6 +886,18 @@ static int ignored_rel(const char *rel) {
     for (size_t i = 0; i < g_nign; i++) if (!strcmp(rel, g_ign[i])) return 1;
     return 0;
 }
+/* D10: a .crumbignore entry excludes that directory and everything below it from compile/verify/status.
+   Its files still count toward the enclosing crumb's source tree (so a change there is still noticed upstairs),
+   but no .crumb under it is ever read as a child or rewritten. Needed for trees guarded by immutability
+   checks (omega evidence/, physics nvrm and m16). */
+static int ignored_subtree(const char *rel) {
+    for (size_t i = 0; i < g_nign; i++) {
+        size_t n = strlen(g_ign[i]);
+        if (!strncmp(rel, g_ign[i], n) && (rel[n] == 0 || rel[n] == '/')) return 1;
+    }
+    return 0;
+}
+static void reset_ignore(void) { for (size_t i = 0; i < g_nign; i++) free(g_ign[i]); free(g_ign); g_ign = NULL; g_nign = 0; }
 static Node *scan(const char *path, const char *rel, int isroot) {
     Node *n = xmalloc(sizeof *n); memset(n, 0, sizeof *n);
     n->path = xstrdup(path); n->rel = xstrdup(rel); n->name = xstrdup(base_of(path));
@@ -1703,6 +1715,7 @@ static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generate
     J *kids = jnew(JARR); Sha crs; sha_init(&crs);
     for (size_t i = 0; i < nn; i++) {
         char *kd = root ? xstrdup(names[i]) : pjoin(d, names[i]), *kc = pjoin(kd, ".crumb"), *kcf = pjoin(c->top, kc); struct stat sb;
+        if (ignored_subtree(kd)) continue;   /* D10 */
         if (stat(kcf, &sb) || !S_ISREG(sb.st_mode)) continue;
         const char *kdig = dig_of(c, kd); char *kdig_own = NULL;
         if (!kdig) {   /* not compiled in this run: fall back to what the crumb says */
@@ -1748,6 +1761,7 @@ static void find_crumbs(const char *top, const char *rel, CDir **out, size_t *n,
         if (!strcmp(e->d_name, ".") || !strcmp(e->d_name, "..")) continue;
         char *r = *rel ? pjoin(rel, e->d_name) : xstrdup(e->d_name), *f = pjoin(top, r); struct stat st;
         if (lstat(f, &st) == 0) {
+            if (S_ISDIR(st.st_mode) && ignored_subtree(r)) { free(r); free(f); continue; }   /* D10 */
             if (!strcmp(e->d_name, ".crumb") && !S_ISDIR(st.st_mode)) {
                 if (*n == *cap) { *cap = *cap ? *cap * 2 : 32; *out = xrealloc(*out, *cap * sizeof **out); }
                 (*out)[*n].d = *rel ? xstrdup(rel) : xstrdup("."); (*n)++;
@@ -1765,6 +1779,7 @@ static int compile_engine(char mode, const char *root, int quiet, int *total_out
     char *top = cap_cmd(cmd, NULL); chomp(top);
     if (!*top) die("crumb %s: not inside a git repository: %s", mode == 'c' ? "compile" : mode == 'v' ? "verify" : "status", root);
     c.top = top;
+    reset_ignore(); load_ignore(top);   /* D10: <root>/.crumbignore subtrees never participate */
     char *head = run_git(top, "rev-parse HEAD"); if (strlen(head) != 40) head = xstrdup("0000000000000000000000000000000000000000");
     if (head_out) strcpy(head_out, head);
     comp_load_files(&c);
@@ -1775,6 +1790,7 @@ static int compile_engine(char mode, const char *root, int quiet, int *total_out
         size_t l = strlen(s); const char *b = strrchr(s, '/'); b = b ? b + 1 : s;
         if (strcmp(b, ".crumb")) continue;
         char *d = l == 6 ? xstrdup(".") : xstrndup_(s, l - 7); int dup = 0;
+        if (ignored_subtree(d)) { free(d); continue; }   /* D10 */
         for (size_t i = 0; i < nd; i++) if (!strcmp(ds[i].d, d)) dup = 1;
         if (dup) continue;
         if (nd == cap) { cap = cap ? cap * 2 : 32; ds = xrealloc(ds, cap * sizeof *ds); }
