@@ -1,6 +1,7 @@
 # ADR 0034: Physical-Form Realization IR
 
-**Status:** PROPOSED, 2026-10-04. Not accepted. Becomes ACCEPTED only by operator decision recorded on this file; merging the PR that adds it does not accept it.
+**Status:** Accepted by the orchestrator under operator delegation of 2026-10-04 (Drake: "make the calls yourself"); operator may revoke. Proposed 2026-10-04; acceptance recorded on this file the same day after the review below.
+**Acceptance review (2026-10-04, orchestrator):** every code claim in sections 1, 2 and 4 was re-checked against live `main` (omega `cb7cc21`, physics `dcc7c21`, aienos `25836ba`, aien-architecture `35dd324`) and holds. Change since proposal: `aien-dev/physics#46` (FORM0) merged as `dcc7c21` on 2026-10-04, so FORM0 is IMPLEMENTED on main (host, `SIMULATED_DEVELOPMENT`, 163 checks, receipt `evidence/FORM0/ca1f0847…f7c4.json`). Amendments at acceptance: the FORM1 row (section 11) names the whole-realization measured cost record and forbids estimated inputs; the section 4 ABSENT wording is made precise. Criteria applied: factual claims verifiable in the live repos (yes); no second authority, estimator or cost model (section 3; section 11 FORM1); names state implemented contracts per ADR 0009 (reserved kinds are refused by decode); the operator's 2026-10-04 material is reflected (eight form families in section 2.2, cost record in FORM1, "physics does not repeal complexity" in section 9).
 **Supersedes:** nothing. **Amends:** nothing. **Extends:** ARCH-0018 (substrate-neutral physical realization) with the realization-side intermediate it left implicit, and ARCH-0019 (mixed-algebra realization) by placing the declared algebraic domain of a realization in a named artifact.
 **Related:** ARCH-0013 / ARCH-0014 (FORGE realizes, AEGIS verifies), ARCH-0016 (resident reaction architecture; dependency structure, not turn order), ARCH-0020 (belief / estimation), ARCH-0033 (verification pipeline, PROPOSED).
 **Workstream:** FORM0 (this cut), FORM1 to FORM4 (section 11). These are workstream gates, not roadmap milestones; sequencing stays in `CURRENT_EXECUTION_PLAN.md` section 6 C3. NOT A MASTER PLAN.
@@ -82,7 +83,7 @@ No other kinds are reserved. The families below (from the operator's 2026-10-04 
 
 ### 2.3 Wire form and identity
 
-`physics` `forge/form/forge_form.h` (PR `aien-dev/physics#46`):
+`physics` `forge/form/forge_form.h` (PR `aien-dev/physics#46`, merged `dcc7c21`, 2026-10-04):
 
 - Own magic `"FGFM"`, version 1, TLV body with the FORGE V2 discipline (ascending tags, fixed widths, every field required, little-endian), strict decoder that refuses unknown tags, wrong widths, bad order, missing fields, out-of-range values, reserved kinds, and any input whose canonical re-encoding differs. Digest = SHA-256 over header + body (`sha256_clean.c`, never duplicated).
 - Form fields: `form_kind`, `scalar_domain`, `operator_rows`, `operator_cols`, `accumulation`. That is all. A gate greps the struct for substrate, vendor, device, calibration, clock, temperature, address, bus and machine words and fails if any appears.
@@ -144,7 +145,7 @@ Every evidence record and realization record produced by the FORM0 code is `SIMU
 - This ADR; `ENERGY_FUNCTIONAL`; `STOCHASTIC_DISTRIBUTION`; FORM1 to FORM4 (section 11).
 
 **ABSENT**
-- Any `PhysicalForm` / `realization_form` / `LINEAR_OPERATOR` / `ENERGY_FUNCTIONAL` object before PR physics#46 (grep of omega and physics: no hits).
+- Any `PhysicalForm` / `realization_form` / `LINEAR_OPERATOR` / `ENERGY_FUNCTIONAL` object before PR physics#46 (grep of omega and physics: no such object; the only textual hit is the substring inside omega `src/visor/visor_realization.{h,c}` `visor_realization_format_text` / `_json`, Visor display functions, not a form).
 - A matvec SemanticResultContract object in omega outside `physics` FORGE V2 (omega has `rx_contract` and `turing_contract`, neither carries V2 error kinds).
 - A hardware or substrate capability right in AIENOS.
 - Any physical non-digital device, calibration or measurement in the project.
@@ -192,7 +193,7 @@ Analog in-memory computation, physical neural networks, optical transforms, phys
 | Gate | Definition | Depends on |
 |---|---|---|
 | FORM0 | Form IR, LINEAR_OPERATOR, two lowerings of one contract, host gate + receipt (`physics#46`) | AR2 (PASS) |
-| FORM1 | Form-aware selection record: `turing.decision.v1` candidates carry form digest + lowering digest; selection by measured cost among eligible realizations (test-side first, `rx_empirical_optimizer` pattern, no runtime edit) | FORM0, ARCH-0019 section 9.1 |
+| FORM1 | Form-aware selection record: `turing.decision.v1` candidates carry form digest + lowering digest and a **whole-realization measured cost record** bound to the FORGE V2 evidence of that realization: setup and input-encoding time and energy, compute (execution) time and energy, measurement and readout (conversion) time and energy, reset, end-to-end latency, measured error distribution against the contract oracle (`error_kind`, `error_abs`, `error_rel_ppb`, `error_norm`, repeat statistics), confidence (declared and achieved, for `BOUNDED_STOCHASTIC`), calibration age (time since the bound calibration object, against `calibration_validity_s`) and the receipt digest. Every time and energy figure carries its `energy_source` / provenance tag and is `MEASURED` or `NOT_MEASURED`; a component that FORGE V2 evidence does not carry separately today (V2 has `execution_duration_ns`, `conversion_duration_ns`, one `energy_nj`) is recorded `NOT_MEASURED` in the form realization record (kind 2), never split from a total by estimate; FORGE V2 objects and bytes stay unchanged. An `ESTIMATED` figure is never an input to selection: prediction belongs to the one cost model `RxCostModel` (ARCH-0020 section 4, ARCH-0031), and this record adds no second cost model and no second estimator. Selection by measured cost among eligible realizations (test-side first, `rx_empirical_optimizer` pattern, no runtime edit) | FORM0 (PASS, `dcc7c21`), ARCH-0019 section 9.1 |
 | FORM2 | `ENERGY_FUNCTIONAL` reference: exhaustive and digital-optimizer references, contract with objective bound, host gate; decode accepts kind 2 only once this lands | an Omega `solve_optimization` contract (MA-3) |
 | FORM3 | Omega seam: non-exact contract kinds in `rx_contract` (AR3 / MA-3) and capability-based realization eligibility replacing `RX_COG_HW_*` (AR5); explicit blob versioning before any `rx_costmodel` widening (MA-5) | R16 closed (done), ADR 0020 EST-3 |
 | FORM4 | First physical lowering of a form (AR4) with `PHYSICAL` provenance | operator decision on a device |
