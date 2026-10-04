@@ -1,69 +1,81 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/analog-realization",
-  "layer": "docs/plans/analog-realization",
-  "purpose": "Directory docs/plans/analog-realization. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans",
     "path": ".."
   },
   "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:f84222360555f2020bb3600a9117850be252c82e616fa05e5578648e1215bc2b",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 4,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:c87ebf0a4dadd9728baa58d8e1dfc07ed2830e0304e303281decb0b7917cbf32"
+    },
+    "owner_lane": "",
+    "provenance": {
+      "entries": [
+        {
+          "author": "aien-dev",
+          "pr": 59,
+          "sha": "1438799",
+          "source": "backfill-git",
+          "subject": "doctrine: R16 roadmap status PASS -> IN PROGRESS (only G1/G2 evidenced) (#59)",
+          "timestamp": "2026-09-29T14:28:29-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 57,
+          "sha": "8ec9b1d",
+          "source": "backfill-git",
+          "subject": "docs(governance): record R16 orchestrator retirement closure (#57)",
+          "timestamp": "2026-09-29T11:52:22-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 56,
+          "sha": "bbd2579",
+          "source": "backfill-git",
+          "subject": "docs(governance): synchronize analog current state audit and ADR 0018 drafting basis (#56)",
+          "timestamp": "2026-09-29T11:08:41-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 55,
+          "sha": "91c0f65",
+          "source": "backfill-git",
+          "subject": "docs(governance): synchronize status across roadmap, architecture doctrine, ADR index, and arena spec (#55)",
+          "timestamp": "2026-09-29T10:50:42-05:00"
+        },
+        {
+          "author": "aien-dev",
+          "pr": 46,
+          "sha": "641bd3c",
+          "source": "backfill-git",
+          "subject": "Merge pull request #46 from aien-dev/docs/analog-realization-adr0018",
+          "timestamp": "2026-09-29T09:57:59-05:00"
+        }
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 5
+    },
     "seed": {
-      "purpose_auto": "Directory docs/plans/analog-realization. Purpose not yet described by a human.",
       "files": [
         "ANALOG_ARGUS_TELEMETRY_REQUIREMENTS.md",
         "ANALOG_REALIZATION_COLLISION_MAP.md",
         "ANALOG_REALIZATION_CURRENT_STATE.md",
         "ANALOG_REALIZATION_TEST_PLAN.md"
-      ]
-    },
-    "owner_lane": "",
-    "provenance": {
-      "source": "backfill",
-      "total_commits": 5,
-      "ledger_cap": 20,
-      "entries": [
-        {
-          "source": "backfill-git",
-          "sha": "1438799",
-          "timestamp": "2026-09-29T14:28:29-05:00",
-          "author": "aien-dev",
-          "subject": "doctrine: R16 roadmap status PASS -> IN PROGRESS (only G1/G2 evidenced) (#59)",
-          "pr": 59
-        },
-        {
-          "source": "backfill-git",
-          "sha": "8ec9b1d",
-          "timestamp": "2026-09-29T11:52:22-05:00",
-          "author": "aien-dev",
-          "subject": "docs(governance): record R16 orchestrator retirement closure (#57)",
-          "pr": 57
-        },
-        {
-          "source": "backfill-git",
-          "sha": "bbd2579",
-          "timestamp": "2026-09-29T11:08:41-05:00",
-          "author": "aien-dev",
-          "subject": "docs(governance): synchronize analog current state audit and ADR 0018 drafting basis (#56)",
-          "pr": 56
-        },
-        {
-          "source": "backfill-git",
-          "sha": "91c0f65",
-          "timestamp": "2026-09-29T10:50:42-05:00",
-          "author": "aien-dev",
-          "subject": "docs(governance): synchronize status across roadmap, architecture doctrine, ADR index, and arena spec (#55)",
-          "pr": 55
-        },
-        {
-          "source": "backfill-git",
-          "sha": "641bd3c",
-          "timestamp": "2026-09-29T09:57:59-05:00",
-          "author": "aien-dev",
-          "subject": "Merge pull request #46 from aien-dev/docs/analog-realization-adr0018",
-          "pr": 46
-        }
-      ]
+      ],
+      "purpose_auto": "Directory docs/plans/analog-realization. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/analog-realization",
+  "name": "docs/plans/analog-realization",
+  "purpose": "Directory docs/plans/analog-realization. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

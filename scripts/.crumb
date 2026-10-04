@@ -1,51 +1,63 @@
 {
-  "schema_version": "1.0.0",
-  "name": "scripts",
-  "layer": "scripts",
-  "purpose": "Directory scripts. Purpose not yet described by a human.",
   "above": {
     "name": "cs-aien-architecture",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory scripts. Purpose not yet described by a human.",
-      "files": [
-        "check_doctrine.sh",
-        "verify-r16-status.sh"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:44Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:b3d92d7358ad2a5174868b2227ae0f3b7d667cfc065820c43e9375f1ce51cbec",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 4,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:867d2105ce9d06cf687c79e1d77fb1290e3a8cdbde481ce50313a4edd1ef2ee4"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 3,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "550872e",
-          "timestamp": "2026-09-29T15:02:52-05:00",
           "author": "dhgmonkey",
+          "pr": 61,
+          "sha": "550872e",
+          "source": "backfill-git",
           "subject": "Require qualification evidence before claiming R16 PASS (#61)",
-          "pr": 61
+          "timestamp": "2026-09-29T15:02:52-05:00"
         },
         {
-          "source": "backfill-git",
+          "author": "aien-dev",
+          "pr": 30,
           "sha": "bf3c519",
-          "timestamp": "2026-09-26T09:41:43-05:00",
-          "author": "aien-dev",
+          "source": "backfill-git",
           "subject": "docs(roadmap): calibrate M17 realization boundary and declare M18 code generation mandate (#30)",
-          "pr": 30
+          "timestamp": "2026-09-26T09:41:43-05:00"
         },
         {
-          "source": "backfill-git",
-          "sha": "31cf388",
-          "timestamp": "2026-09-26T01:12:19-05:00",
           "author": "aien-dev",
+          "pr": 10,
+          "sha": "31cf388",
+          "source": "backfill-git",
           "subject": "docs(doctrine): consistency sweep — single M0-M40 roadmap, Atlas canonical, contract-driven EL (#10)",
-          "pr": 10
+          "timestamp": "2026-09-26T01:12:19-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 3
+    },
+    "seed": {
+      "files": [
+        "check_doctrine.sh",
+        "verify-r16-status.sh"
+      ],
+      "purpose_auto": "Directory scripts. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "scripts",
+  "name": "scripts",
+  "purpose": "Directory scripts. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

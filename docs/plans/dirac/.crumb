@@ -1,59 +1,71 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/plans/dirac",
-  "layer": "docs/plans/dirac",
-  "purpose": "Directory docs/plans/dirac. Purpose not yet described by a human.",
   "above": {
     "name": "docs/plans",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/plans/dirac. Purpose not yet described by a human.",
-      "files": [
-        "DIRAC-0-SPEC.md",
-        "DIRAC_0_CURRENT_STATE.md"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:c0418daf92c5a7547db1d87af95d6de1936c4a632db812c3f66168b670dbef6c",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 2,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:f8021f2d07f408b59f446dc42d7f7db5a68251ef1d8e397adb8b6777d26b8d1a"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "6ebd2fe",
-          "timestamp": "2026-10-01T07:52:59-05:00",
           "author": "aien-dev",
+          "pr": 83,
+          "sha": "6ebd2fe",
+          "source": "backfill-git",
           "subject": "docs(dirac): DIRAC-0 spec + ADR 0023 PROPOSED (D-01) (#83)",
-          "pr": 83
+          "timestamp": "2026-10-01T07:52:59-05:00"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane33",
-          "sha": "6ebd2fe",
-          "pr": 83,
           "note": "D-01 aien-architecture PR #83 MERGED 6ebd2fe: docs/plans/dirac/DIRAC-0-SPEC.md, DIRAC_0_CURRENT_STATE.md, docs/adr/0023-dirac-0-program.md (PROPOSED), one paragraph in CURRENT_EXECUTION_PLAN.md (end ",
-          "ref": "2026-10-01-push-lane35-report.md"
+          "pr": 83,
+          "ref": "2026-10-01-push-lane35-report.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane36",
-          "sha": "6ebd2fe",
-          "pr": 83,
           "note": "12:51Z physics #23 MERGED 79b30a5 (first CI, 'Host gates'); board in active use by lanes 15/33/34/35/36; Lane 36 Atlas C2S = Addendum A, PR pending; Lane 35 arch #83 (ADR 0023 + DIRAC spec) rebases a",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 83,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
         },
         {
-          "source": "backfill-lane-report",
           "lane": "lane35",
-          "sha": "6ebd2fe",
-          "pr": 83,
           "note": "12:53Z Lane 35 DONE: arch #83 6ebd2fe (DIRAC-0 spec + ADR 0023, C2S ladder D-1..D3, status proposed, DIRAC_PREP_FROZEN not passed) + omega #158 458c57f (oracle plan, public fixtures only; sealed keys",
-          "ref": "2026-10-01-next-major-push-orchestrator.md"
+          "pr": 83,
+          "ref": "2026-10-01-next-major-push-orchestrator.md",
+          "sha": "6ebd2fe",
+          "source": "backfill-lane-report"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
+    "seed": {
+      "files": [
+        "DIRAC-0-SPEC.md",
+        "DIRAC_0_CURRENT_STATE.md"
+      ],
+      "purpose_auto": "Directory docs/plans/dirac. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/plans/dirac",
+  "name": "docs/plans/dirac",
+  "purpose": "Directory docs/plans/dirac. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

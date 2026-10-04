@@ -1,34 +1,46 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/archive/plans/2026-09-25",
-  "layer": "docs/archive/plans/2026-09-25",
-  "purpose": "Directory docs/archive/plans/2026-09-25. Purpose not yet described by a human.",
   "above": {
     "name": "docs/archive/plans",
     "path": ".."
   },
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/archive/plans/2026-09-25. Purpose not yet described by a human.",
-      "files": [
-        "14-master-architectural-plan.md",
-        "AIEN_MASTER_ARCHITECTURAL_PLAN.md"
-      ]
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:6518fb4d48d841b0247f4325619cc769bb577f8fd75f4c86aa527fcb2869bde8",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 2,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:b905164e9c6b71dfe6017a59e4b7528c216eea27ebf2828ad9d0455e38ea6b85"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "38c7cc2",
-          "timestamp": "2026-09-27T06:49:25-05:00",
           "author": "aien-dev",
-          "subject": "docs: consolidate whole-system plan authority"
+          "sha": "38c7cc2",
+          "source": "backfill-git",
+          "subject": "docs: consolidate whole-system plan authority",
+          "timestamp": "2026-09-27T06:49:25-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
+    "seed": {
+      "files": [
+        "14-master-architectural-plan.md",
+        "AIEN_MASTER_ARCHITECTURAL_PLAN.md"
+      ],
+      "purpose_auto": "Directory docs/archive/plans/2026-09-25. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/archive/plans/2026-09-25",
+  "name": "docs/archive/plans/2026-09-25",
+  "purpose": "Directory docs/archive/plans/2026-09-25. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

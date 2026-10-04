@@ -1,8 +1,4 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/archive/plans",
-  "layer": "docs/archive/plans",
-  "purpose": "Directory docs/archive/plans. Purpose not yet described by a human.",
   "above": {
     "name": "docs",
     "path": "../.."
@@ -18,26 +14,55 @@
     }
   ],
   "extensions": {
-    "seed": {
-      "purpose_auto": "Directory docs/archive/plans. Purpose not yet described by a human.",
-      "files": [
-        "README.md"
-      ]
+    "generated": {
+      "children": [
+        {
+          "digest": "4c964aa222db0b3129f60f9e5ff3add943e64c26974eee796548e8e997072374",
+          "last_commit": "38c7cc2",
+          "name": "2026-09-22",
+          "purpose": "Directory docs/archive/plans/2026-09-22. Purpose not yet described by a human."
+        },
+        {
+          "digest": "6518fb4d48d841b0247f4325619cc769bb577f8fd75f4c86aa527fcb2869bde8",
+          "last_commit": "38c7cc2",
+          "name": "2026-09-25",
+          "purpose": "Directory docs/archive/plans/2026-09-25. Purpose not yet described by a human."
+        }
+      ],
+      "children_root": "sha256:9064412dfa9ada5a975ffd1c93ac7ed9e04cb60378f24ae0da0bf89b9498f681",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:b762355cfafd4b2071ede1f4d9034b02578f53d3437fc57aeba82008dca5604d",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 5,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:74e338d53033c9dbf133d1377715c3f0093e107fd443ea79a7c858df53f72b63"
     },
     "owner_lane": "",
     "provenance": {
-      "source": "backfill",
-      "total_commits": 1,
-      "ledger_cap": 20,
       "entries": [
         {
-          "source": "backfill-git",
-          "sha": "38c7cc2",
-          "timestamp": "2026-09-27T06:49:25-05:00",
           "author": "aien-dev",
-          "subject": "docs: consolidate whole-system plan authority"
+          "sha": "38c7cc2",
+          "source": "backfill-git",
+          "subject": "docs: consolidate whole-system plan authority",
+          "timestamp": "2026-09-27T06:49:25-05:00"
         }
-      ]
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 1
+    },
+    "seed": {
+      "files": [
+        "README.md"
+      ],
+      "purpose_auto": "Directory docs/archive/plans. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/archive/plans",
+  "name": "docs/archive/plans",
+  "purpose": "Directory docs/archive/plans. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }

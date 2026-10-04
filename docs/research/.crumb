@@ -1,52 +1,64 @@
 {
-  "schema_version": "1.0.0",
-  "name": "docs/research",
-  "layer": "docs/research",
-  "purpose": "Directory docs/research. Purpose not yet described by a human.",
   "above": {
     "name": "docs",
     "path": ".."
   },
   "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:6301e5dfed47f354392e2b2b175845f1135e348b71fa91fa925dd2775947afa8",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 4,
+      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
+      "source_tree": "sha256:531181c86ea506506c53e432c60234de73034aaf2f7a04f128a30e28ea427e67"
+    },
+    "owner_lane": "",
+    "provenance": {
+      "entries": [
+        {
+          "author": "aien-dev",
+          "pr": 47,
+          "sha": "ff826a7",
+          "source": "backfill-git",
+          "subject": "Merge pull request #47: Evolution Arena spec V1 (docs only)",
+          "timestamp": "2026-09-29T07:40:40-05:00"
+        },
+        {
+          "author": "Drake Stapleton",
+          "pr": 27,
+          "sha": "d7bbfb9",
+          "source": "backfill-git",
+          "subject": "docs(roadmap): ratify Milestone 15 PHYSICS_ACCELERATOR_LINK (#27)",
+          "timestamp": "2026-09-26T04:29:41-05:00"
+        },
+        {
+          "author": "Drake Stapleton",
+          "sha": "6440c9a",
+          "source": "backfill-git",
+          "subject": "Document the AIEN system architecture.",
+          "timestamp": "2026-09-22T17:12:59-05:00"
+        }
+      ],
+      "ledger_cap": 20,
+      "source": "backfill",
+      "total_commits": 3
+    },
     "seed": {
-      "purpose_auto": "Directory docs/research. Purpose not yet described by a human.",
       "files": [
         "dgx-spark-hardware-audit-m15.md",
         "evolution-arena-program.md",
         "pearl.md",
         "prior-art.md"
-      ]
-    },
-    "owner_lane": "",
-    "provenance": {
-      "source": "backfill",
-      "total_commits": 3,
-      "ledger_cap": 20,
-      "entries": [
-        {
-          "source": "backfill-git",
-          "sha": "ff826a7",
-          "timestamp": "2026-09-29T07:40:40-05:00",
-          "author": "aien-dev",
-          "subject": "Merge pull request #47: Evolution Arena spec V1 (docs only)",
-          "pr": 47
-        },
-        {
-          "source": "backfill-git",
-          "sha": "d7bbfb9",
-          "timestamp": "2026-09-26T04:29:41-05:00",
-          "author": "Drake Stapleton",
-          "subject": "docs(roadmap): ratify Milestone 15 PHYSICS_ACCELERATOR_LINK (#27)",
-          "pr": 27
-        },
-        {
-          "source": "backfill-git",
-          "sha": "6440c9a",
-          "timestamp": "2026-09-22T17:12:59-05:00",
-          "author": "Drake Stapleton",
-          "subject": "Document the AIEN system architecture."
-        }
-      ]
+      ],
+      "purpose_auto": "Directory docs/research. Purpose not yet described by a human."
     }
-  }
+  },
+  "layer": "docs/research",
+  "name": "docs/research",
+  "purpose": "Directory docs/research. Purpose not yet described by a human.",
+  "schema_version": "1.0.0"
 }
