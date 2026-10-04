@@ -687,7 +687,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 - Shadow prices for declared SOFT resource budgets only. INVARIANT constraints (correctness, security, containment, authority, semantic validity, provenance, verification) are never priced; CAPACITY limits are never relaxed and carry diagnostic prices only.
 - Order: hard gates, separate measurements, Pareto filtering, then DUAL pricing among the survivors. DUAL never decides validity, eligibility, promotion or authority, and is link-isolated from `rx_gen_*` and `aienos_cap_*`.
 - DUAL-0 and DUAL-1 may run now as a standalone module (new files under `omega/src/dual/` and `omega/tests/dual/`, own `mk/dual.mk` targets, not in `all` or `test`, not included by `omega/src/runtime/`). DUAL-3 (advisory scheduler: read-only tap, zero production authority) may follow DUAL-1.
-- DUAL-2 waits on EST-5 and EST-7; DUAL-4 waits on DUAL-2, DUAL-3 and the Evolution Arena V1 activation hold; DUAL-5 (the only stage that grants production influence) waits on EST-4, EST-5 and EST-7 for every consumed signal and must beat simpler baselines.
+- DUAL-2 waits on EST-5 and EST-7; DUAL-4 waits on DUAL-2, DUAL-3, the Evolution Arena V1 activation hold and an allocation policy frozen in the Arena Evaluation contract, and runs in observe-and-record Arena runs only; DUAL-5 (the only stage that grants production influence) waits on DUAL-2, DUAL-3, DUAL-4 and on EST-3, EST-4, EST-5 and EST-7 for every consumed signal, and must beat simpler baselines.
 - Status 2026-10-03: ADR 0031 recorded; no DUAL code exists. EST-3 remains FAILED on main, so no price may influence production.
 
 These lanes converge before AIEN_0 is promoted into the live runtime.

@@ -24,14 +24,14 @@ Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 
 | Concept | Status | Where | Note |
 |---|---|---|---|
-| Pareto filtering before ordering | IMPLEMENTED (one site) | omega `src/runtime/rx_capq.c` `cq_rank`, `dominates()`; spec `spec/capability-query-ir.md` | hard admit chain `cq_query_admit` (`rx_capq.c:625-645`: liveness, types, effects, authority ceiling, latency, energy, reliability, evidence, max cost, min confidence) runs first; then the front; then a lexicographic caller order with `CqTradeoffs.tolerance_ppm` bands. No weighted sum. Natural DUAL hook: after the front, before the order loop |
+| Pareto filtering before ordering | IMPLEMENTED (one site) | omega `src/runtime/rx_capq.c` `cq_rank`, `dominates()`; spec `spec/capability-query-ir.md` | hard admit chain in `cq_query_admit` (filter loop at `rx_capq.c:625-645`: liveness, types, effects, authority ceiling, latency, energy, reliability, evidence, max cost, min confidence) runs first; then the front; then a lexicographic caller order with `CqTradeoffs.tolerance_ppm` bands. No weighted sum. Natural DUAL hook: after the front, before the order loop |
 | Ranked alternatives for routing | IMPLEMENTED | omega `rx_skillroute.h` `sr_route_alternatives` | reuses the `rx_capq` order |
 | Cognitive routing | IMPLEMENTED, not Pareto | omega `spec/cognitive-routing.md` | feasibility, then least expected energy (time if energy unmetered); unsatisfiable requirement refused |
 | Empirical optimizer | IMPLEMENTED, scalar | omega `rx_costmodel.c` `rx_cm_decide` | best `mean_log2_ps` among arms whose upper bound meets the budgets; if none, best overall flagged `RX_CM_WHY_OVER_BUDGET` (budgets act soft here, hard in `cq_query_admit`) |
 | Cost model fields | IMPLEMENTED | omega `src/runtime/rx_costmodel.h` | `RxCmPrediction` (`mean_log2_ps`, `sd_log2`, `dof`, `energy_pj`, `fail_p`); `RxCostModel` (`power_mw`, `verify_ns`, `synth_ns`, `code_bytes`, `sd_scale` from `rx_cm_calibrate`); `RxCmFeatures` (`latency_budget_ps`, `energy_budget_pj`, `pressure` bucket) |
 | Capability-query cost fields | IMPLEMENTED (advertised or estimated) | omega `rx_capq.h` `CqEntry` / `CqCandidate` | cost (abstract units), latency (us), energy (uJ), confidence and reliability (ppm), evidence level |
 | KV capacity or bandwidth budget fields | MISSING | omega | `JS_REAL_KV_STATE` is a realization type only |
-| Price-like quantity | PARTIAL (hand-set) | omega `rx_jspace.c` `choose()` and `enforce_u` | keeps bytes resident if best action cost `>= pressure * retain_ns_per_byte`; pressure fixed at `1e9` (over total budget) or `1e3` (over hot arena). First candidate for a DUAL-supplied price |
+| Price-like quantity | PARTIAL (hand-set) | omega `rx_jspace.c` `choose()` and `enforce_u` | keeps bytes resident if best action cost `>= pressure * retain_ns_per_byte`; pressure is `1e9` when total residency is over budget (a CAPACITY case, stays hard) and `1e3` when only the hot arena is over half the budget (soft). The `1e3` case is the first candidate for a DUAL-supplied price |
 | J-Space hard limits | IMPLEMENTED | omega `rx_jspace.h` `JsLimits` | `max_resident_bytes`, `max_spill_bytes`, etc. return `JS_ERR_FULL`: `CAPACITY` class |
 | Typed result contracts | IMPLEMENTED, orthogonal to cost | omega `src/runtime/rx_contract.h` (`rc_*`, `RC_E_BUDGET`) | hard gates; `INVARIANT` class |
 | Estimation records | IMPLEMENTED (standalone), not qualified | omega `src/estimation/est_types.h` (`est_observation`, `est_belief` with `evidence_root`, `est_prediction`, `est_innovation`) | DUAL inputs must reference these records |
@@ -46,10 +46,10 @@ Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 
 ## 3. Discrepancies with the brief
 
-1. **The scheduler the brief describes is legacy.** Fixed batch budgets, KV watermark and preemption live in aien-sovereign-core, which its README calls legacy Linux-hosted scaffolding and `doctrine/ARCHITECTURE.md` §2.8 classes as a physical scheduler (class E), not on the reaction path. The authoritative semantic scheduler is omega `rx_world.c`, which orders reactions and has no batch or KV policy. ADR 0031 therefore targets registered decision sites, not a repository.
+1. **The scheduler the brief describes is legacy.** Fixed batch budgets, KV watermark and preemption live in aien-sovereign-core, which its README calls legacy Linux-hosted scaffolding and `doctrine/ARCHITECTURE.md` §2.8 classes as a physical scheduler (class E), not on the reaction path. The semantic scheduler recorded as authoritative in §2.8 is omega `rx_world.c`, which orders reactions; no batch or KV policy was found there (UNVERIFIED beyond a grep). ADR 0031 therefore targets registered decision sites, not a repository.
 2. **Budgets are both hard and soft today.** `cq_query_admit` rejects over-budget latency and energy; `rx_cm_decide` runs them flagged; RSI thresholds reject. ADR 0031 §3 rule 4 treats an existing hard reject as `CAPACITY` until the owning contract declares a class.
 3. **Serial placement is not required.** EST-8 to EST-10 do not depend on DUAL (ADR 0031 §9.2).
-4. **Name collision.** omega already has a `Shadow` structure (`rx_graph.c`) with a recorded ARGUS collision; the brief's "Shadow Scheduler" is named the advisory scheduler (`DUAL_ADVISORY_SCHEDULER`).
+4. **Name collision.** omega already has a `Shadow` structure (`rx_graph.c`) with an ARGUS collision recorded in omega `docs/turing/TURING_CURRENT_STATE.md:107-113`; the brief's "Shadow Scheduler" is named the advisory scheduler (`DUAL_ADVISORY_SCHEDULER`).
 5. **Arena spec header is stale** (still PROPOSED, still calls omega #68 a draft), as already recorded in the belief-estimation current-state document. Not changed here.
 
 ## 4. Decision sites for DUAL-3 (initial list)
@@ -57,7 +57,7 @@ Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 | Site id | Decision | Alternatives | Production owner |
 |---|---|---|---|
 | `jspace.residency` | keep, move, compress, spill or evict a branch realization | `choose()` actions | omega `rx_jspace.c` |
-| `capq.front_order` | order inside the capability-query Pareto front | front members | omega `rx_capq.c` |
+| `capq.front_order` | order inside the capability-query Pareto front | front members | omega `rx_capq.c` (advisory only: its latency and energy budgets are hard rejects today, so they are CAPACITY and unpriced until a need contract declares a SOFT budget; ADR 0031 §3 rule 4) |
 | `costmodel.arm` | realization arm per call | eligible arms | omega `rx_costmodel.c` |
 | `serve.admit_preempt` | admission, preemption victim, prefill chunk allocation | waiting/preempted queue heads, running sequences | aien-sovereign-core `aien-scheduler` (scaffolding; moves with its Omega replacement under ARCH-0024) |
 
@@ -72,7 +72,7 @@ Each slice is one small pull request with its own receipt. None touches `omega/s
 5. **DUAL-3a, read-only tap at one site.** Start with `jspace.residency` (omega, smallest blast radius, already has a price-shaped input) or `serve.admit_preempt` (real batch decisions). Tap records alternatives and the actual choice; a with/without comparison proves identical decisions. This is the first change under `src/runtime/` and must stay clean of the R16 loop-inventory patterns.
 6. **DUAL-3b, advisory campaign.** Pre-registered workloads, `DualRecommendation` for every decision, prediction-error report. Exit `DUAL_ADVISORY_SCHEDULER = PASS`.
 7. **DUAL-2, Pareto integration (test builds).** Waits on EST-5 and EST-7. Exit `DUAL_PARETO_INTEGRATION = PASS`.
-8. **DUAL-4, Arena allocation.** Waits on DUAL-2, DUAL-3 and the Arena V1 activation hold. Exit `DUAL_ARENA_ALLOCATION = PASS`.
-9. **DUAL-5, closed-loop qualification.** Waits on EST-4, EST-5, EST-7 for every consumed signal. Exit `DUAL_CLOSED_LOOP_QUALIFICATION = PASS`.
+8. **DUAL-4, Arena allocation.** Waits on DUAL-2, DUAL-3, the Arena V1 activation hold and a DUAL allocation policy frozen in the Arena Evaluation contract; observe-and-record Arena runs only until DUAL-5. Exit `DUAL_ARENA_ALLOCATION = PASS`.
+9. **DUAL-5, closed-loop qualification.** Waits on DUAL-2, DUAL-3, DUAL-4 and on EST-3, EST-4, EST-5, EST-7 for every consumed signal. Exit `DUAL_CLOSED_LOOP_QUALIFICATION = PASS`.
 
 Slices 1 to 4 are permitted now by the same rule that let EST-0 to EST-3 run as a standalone module. Slices 5 and 6 need no ESTIMATION gate because they have no production authority. Slices 7 to 9 wait as stated.
