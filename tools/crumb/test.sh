@@ -172,6 +172,20 @@ echo x >> src/a.c; git add -A; "$C" context src/a.c | grep -q "^Crumbs STALE: 2 
 "$C" context docs | grep -q 'held by lane-x' && bad "C3 context ignores locks elsewhere" || ok "C3 context ignores locks elsewhere"
 "$C" close lane-x src src/a.c >/dev/null
 [ "$("$C" context src | wc -l)" -lt 80 ] && ok "C3 context output is bounded" || bad "C3 context bounded"
+# D10: .crumbignore subtrees never participate in compile/verify/status (omega evidence/, physics nvrm, m16)
+"$C" compile . >/dev/null; git add -A; git -c user.name=t -c user.email=t@t commit -qm "pre-ignore"
+ev0=$(cat src/deep/.crumb); printf '# guarded tree\nsrc/deep/\n' > .crumbignore
+st=$("$C" verify . | grep '^STALE' | awk '{print $2}' | sort | tr '\n' ' ')
+[ "$st" = ". src " ] && ok "C3 D10 adding .crumbignore stales only the parent and its ancestors (children list changed)" || bad "C3 D10 ignore stale set (got: $st)"
+"$C" compile . >/dev/null
+[ "$(cat src/deep/.crumb)" = "$ev0" ] && ok "C3 D10 compile never rewrites a .crumb under an ignored subtree" || bad "C3 D10 ignored crumb rewritten"
+jq -e '.extensions.generated.children | map(.name) | index("deep") == null' src/.crumb >/dev/null && ok "C3 D10 ignored directory is not a child of its parent" || bad "C3 D10 ignored child listed"
+"$C" status . | grep -q 'src/deep' && bad "C3 D10 status lists ignored dir" || ok "C3 D10 status does not list the ignored directory"
+echo 'int b3;' > src/deep/b.c; git add -A; st=$("$C" verify . | grep '^STALE' | awk '{print $2}' | sort | tr '\n' ' ')
+[ "$st" = ". src " ] && ok "C3 D10 a file under the ignored subtree still stales the enclosing crumbs, never the ignored one" || bad "C3 D10 enclosing stale (got: $st)"
+"$C" compile . >/dev/null; [ "$(cat src/deep/.crumb)" = "$ev0" ] && ok "C3 D10 ignored crumb still untouched after that compile" || bad "C3 D10 ignored crumb touched"
+rm .crumbignore; "$C" compile . >/dev/null; "$C" verify . >/dev/null && ok "C3 D10 removing .crumbignore and recompiling returns to OK" || bad "C3 D10 remove ignore"
+git add -A; git -c user.name=t -c user.email=t@t commit -qm "post-ignore"
 # differential vs the shell reference (needs jq, git, sha256sum)
 REF="$HERE/crumb-compile.sh"
 if command -v jq >/dev/null 2>&1 && [ -f "$REF" ]; then

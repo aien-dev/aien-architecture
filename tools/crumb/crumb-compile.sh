@@ -20,6 +20,8 @@
 #  D8  Evidence = tracked files under the directory whose path has a component named evidence or receipts, or that
 #      end in .receipt.json; evidence_root = sha256 of their blob ids in path order.
 #  D9  Output is written with jq -S (sorted keys) via tmp+rename, byte-stable, so `verify` can be an exact comparison.
+#  D10 (C tool only) <root>/.crumbignore subtrees never take part in compile/verify/status; this shell reference
+#      does not implement D10, so the differential holds only for repositories without a .crumbignore.
 set -eu
 die() { echo "crumb-compile: $*" >&2; exit 1; }
 need() { command -v "$1" >/dev/null 2>&1 || die "needs $1"; }
