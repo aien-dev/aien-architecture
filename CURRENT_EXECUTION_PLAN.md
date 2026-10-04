@@ -690,6 +690,8 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 - DUAL-2 waits on EST-5 and EST-7; DUAL-4 waits on DUAL-2, DUAL-3, the Evolution Arena V1 activation hold and an allocation policy frozen in the Arena Evaluation contract, and runs in observe-and-record Arena runs only; DUAL-5 (the only stage that grants production influence) waits on DUAL-2, DUAL-3, DUAL-4 and on EST-3, EST-4, EST-5 and EST-7 for every consumed signal, and must beat simpler baselines.
 - Status 2026-10-03: ADR 0031 recorded; no DUAL code exists. EST-3 remains FAILED on main, so no price may influence production.
 
+**Lane 9 - Inertial Alignment, ANS (ADR 0032):** ANS-0 to ANS-4; advisory only, no verdict may block, grant or promote until `ARGUS1_G1`..`G13` PASS and the Evolution Arena activation hold lifts. ANS-0 is a standalone omega module (`src/ans`, not in `all` or `test`) and may merge once its tests and purity check pass; ANS-3 (promotion pre-check) is observe-only until the hold lifts. Status 2026-10-03: ADR 0032 recorded; omega module PR in flight.
+
 These lanes converge before AIEN_0 is promoted into the live runtime.
 
 ## 17. Immediate next gates
