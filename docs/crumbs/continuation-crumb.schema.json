@@ -1,0 +1,117 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/aien-dev/aien-architecture/main/docs/crumbs/continuation-crumb.schema.json",
+  "title": "ContinuationCrumbV1",
+  "description": "Compact, referential record of where a development session stopped and how another agent resumes (RFC-0002 section 5). Not a transcript. Not an oracle: revalidation is mandatory on resume.",
+  "type": "object",
+  "required": ["acr_version", "identity", "repository", "mission", "state", "evidence", "execution", "coordination", "operator", "resume", "revalidation"],
+  "properties": {
+    "acr_version": { "const": 1 },
+    "identity": {
+      "type": "object",
+      "required": ["id", "created_at", "created_by", "reason"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^cc-[0-9]{4}-[a-z0-9][a-z0-9-]*$" },
+        "created_at": { "type": "string", "format": "date-time" },
+        "sealed_at": { "type": ["string", "null"], "format": "date-time" },
+        "created_by": { "type": "string", "description": "Stable agent/session id, never a PID alone." },
+        "reason": { "type": "string", "enum": ["context-pressure", "milestone", "handoff-to-peer", "end-of-session", "failing-repeatedly", "other"] },
+        "supersedes": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"], "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "repository": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["remote", "branch", "head"],
+        "properties": {
+          "name": { "type": "string" }, "remote": { "type": "string" }, "worktree": { "type": "string" },
+          "branch": { "type": "string" }, "head": { "type": "string", "pattern": "^[0-9a-f]{7,40}$" },
+          "base": { "type": ["string", "null"], "pattern": "^[0-9a-f]{7,40}$" }, "dirty_files": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "mission": {
+      "type": "object", "required": ["objective", "milestone", "definition_of_done"],
+      "properties": {
+        "objective": { "type": "string", "minLength": 1 }, "milestone": { "type": "string", "minLength": 1 },
+        "definition_of_done": { "type": "array", "minItems": 1, "items": { "type": "string" }, "description": "Verbatim. The outgoing session may not soften it while compressing." },
+        "priority": { "type": "string" }
+      }
+    },
+    "state": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "required": ["tag", "claim"],
+        "properties": {
+          "tag": { "enum": ["PROVEN", "PARTIAL", "BLOCKED", "ASSUMED", "OPEN"] },
+          "claim": { "type": "string", "minLength": 1 },
+          "evidence": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
+          "blocker": { "type": "string", "description": "Required when tag is BLOCKED: the exact dependency at implementation level." },
+          "note": { "type": "string" }
+        },
+        "allOf": [
+          { "if": { "properties": { "tag": { "const": "PROVEN" } } }, "then": { "required": ["evidence"], "properties": { "evidence": { "minItems": 1 } } } },
+          { "if": { "properties": { "tag": { "const": "BLOCKED" } } }, "then": { "required": ["blocker"], "properties": { "blocker": { "minLength": 1 } } } }
+        ]
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "commits": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
+        "prs": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
+        "tests": { "type": "array", "items": { "type": "object", "required": ["name", "command", "result"], "properties": { "name": { "type": "string" }, "command": { "type": "string" }, "result": { "type": "string", "description": "PASS / FAIL / NOT_RUN plus commit" }, "where": { "type": "string" } } } },
+        "receipts": { "type": "array", "items": { "$ref": "#/$defs/ref" } },
+        "golden_values": { "type": "array", "items": { "type": "object", "required": ["name", "value"], "properties": { "name": { "type": "string" }, "value": {}, "source": { "type": "string" } } }, "description": "Exact values a correct result must reproduce; a mismatch is a FAIL regardless of anything else." }
+      }
+    },
+    "execution": {
+      "type": "object", "required": ["current", "next"],
+      "properties": {
+        "completed": { "type": "array", "items": { "type": "string" } },
+        "current": { "type": "string" },
+        "next": { "type": "array", "minItems": 1, "items": { "type": "object", "required": ["id", "task"], "properties": { "id": { "type": "string" }, "task": { "type": "string" }, "depends_on": { "type": "array", "items": { "type": "string" } }, "gate": { "type": "string" } } } },
+        "backlog": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "coordination": {
+      "type": "object",
+      "properties": {
+        "scope": { "type": "array", "items": { "type": "string" }, "description": "Repository-relative directories whose .crumb describes the code involved; sniff/explain surface this record for them." },
+        "owned": { "type": "array", "items": { "type": "string" } },
+        "other_owned": { "type": "array", "items": { "type": "object", "required": ["who", "paths"], "properties": { "who": { "type": "string" }, "paths": { "type": "array", "items": { "type": "string" } }, "note": { "type": "string" } } } },
+        "active_workers": { "type": "array", "items": { "type": "string" } },
+        "do_not_touch": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "operator": {
+      "type": "object",
+      "properties": {
+        "approval_required": { "type": "array", "items": { "type": "string" } },
+        "hardware_rules": { "type": "array", "items": { "type": "string" } },
+        "destructive_rules": { "type": "array", "items": { "type": "string" } },
+        "standing_preferences": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "resume": {
+      "type": "object", "required": ["validate_first", "first_action", "bootstrap"],
+      "properties": {
+        "validate_first": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+        "first_action": { "type": "string", "minLength": 1 },
+        "bootstrap": { "type": "string", "minLength": 1, "maxLength": 700 }
+      }
+    },
+    "revalidation": {
+      "type": "object", "required": ["status"],
+      "properties": {
+        "status": { "enum": ["UNVERIFIED", "NEEDS_REVIEW", "VERIFIED"] },
+        "checked_at": { "type": ["string", "null"] }, "checked_by": { "type": ["string", "null"] },
+        "findings": { "type": "array", "items": { "type": "object", "required": ["field", "result"], "properties": { "field": { "type": "string" }, "result": { "enum": ["CONFIRMED", "STALE", "SUPERSEDED", "UNKNOWN"] }, "note": { "type": "string" } } } }
+      }
+    }
+  },
+  "$defs": {
+    "ref": { "type": "string", "description": "A reference the next agent follows, not a copy: commit:<sha>, pr:<repo>#<n>, receipt:<path>, test:<name>, crumb:<dir>/.crumb, or a short free-form pointer.", "minLength": 3 }
+  }
+}
