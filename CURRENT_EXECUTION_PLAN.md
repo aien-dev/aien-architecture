@@ -239,7 +239,7 @@ ADR 0018 (ACCEPTED, merged 641bd3c) extends FORGE from the digital CPU+GPU Machi
 |---|---|---|
 | AR0 | ADR 0018 accepted and merged | **PASS:** Accepted by operator Drake Stapleton, merged 641bd3c |
 | AR1 | FORGE substrate-neutral descriptor contract (V2 descriptor + evidence, KATs, v1 KAT digest wrapped) | **PASS:** V2 contract in `physics#16` (`1f7c321`), C1 foundation in `physics#13` (`5969159`), combined gates pass |
-| AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | AR1. May proceed as new files; must not touch `omega/src/runtime/` |
+| AR2 | Analog **simulation** provider + digital oracle parity, receipts `SIMULATED_DEVELOPMENT` | **PASS:** `aien-dev/physics#21` (`d52759d`, 2026-09-30), `forge/analog-sim/`, 52 checks, receipt `evidence/AR2/808e79f8…b073.json`, every record `SIMULATED_DEVELOPMENT` (status recorded 2026-10-04 after audit) |
 | AR3 | Calibration, uncertainty and evidence qualification | AR2. Same file rule as AR2 |
 | AR4 | First physical analog operation (matvec, digital oracle vs physical analog, same contract) | AR3 + R16 closed (`aien-dev/omega#68`) + an operator decision on a physical device |
 | AR5 | Omega multi-substrate empirical selection | `aien-dev/omega#60` landed + R16 closed |
@@ -247,6 +247,8 @@ ADR 0018 (ACCEPTED, merged 641bd3c) extends FORGE from the digital CPU+GPU Machi
 | AR7 | J-Space / RSI multi-substrate optimization | Phase H3 (RSI optimization loop) |
 
 Order inside the existing sequence: V2 contract landed early in physics#16, but AR1 completion follows the C1 FORGE boundary (physics#13); AR2-AR3 run beside Phase C/E without touching Omega runtime code; AR4-AR5 follow R16; AR6 follows F5; AR7 follows H3.
+
+**Realization-form IR (ADR 0034, ACCEPTED 2026-10-04 by the orchestrator under operator delegation, revocable by the operator; extends ADR 0018 / 0019; NOT A MASTER PLAN):** workstream gates FORM0 to FORM4 run beside C3 and carry no M-number. FORM0 (form IR, `LINEAR_OPERATOR`, two lowerings of one contract, host gate) is **PASS**: merged as `aien-dev/physics#46` (`dcc7c21`, 2026-10-04; new files `forge/form/`, receipt `evidence/FORM0/ca1f0847…f7c4.json`, `SIMULATED_DEVELOPMENT`); FORM1 (form-aware selection record, test-side) follows FORM0; FORM2 (`ENERGY_FUNCTIONAL` reference) waits on an Omega `solve_optimization` contract (MA-3); FORM3 (non-exact kinds in `rx_contract`, capability-based eligibility replacing `RX_COG_HW_*`, explicit cost-model blob versioning) is the AR3 / AR5 / MA-5 Omega seam and waits on ADR 0020 EST-3; FORM4 is AR4 (physical device, operator decision). No gate here changes FORGE V2 bytes, Omega identities, routing, the cost model or authority.
 
 **Exit gate (AR4):** one matvec realized on a physical analog substrate satisfies the same SemanticResultContract as its digital oracle, with bounded error, repeatability, a fresh bound calibration, complete evidence, no authority bypass, no vendor identity in the semantic program, clean digital fallback, and no way for a faulted device to corrupt the World.
 
