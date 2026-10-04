@@ -154,6 +154,7 @@ out=$("$C" verify .); st=$(echo "$out" | grep '^STALE' | awk '{print $2}' | sort
 [ "$st" = ". src src/deep " ] && ok "C3 touching src/deep/b.c: STALE is exactly src/deep, src and the root (ancestors only)" || bad "C3 ancestor-only staleness (got: $st)"
 echo "$out" | grep -q 'docs\|evidence' && bad "C3 sibling dirs stay current" || ok "C3 sibling dirs stay current"
 "$C" compile . >/dev/null; "$C" verify . >/dev/null && ok "C3 compile after the change: verify OK again" || bad "C3 recompile"
+git add -A; git -c user.name=t -c user.email=t@t commit -qm "change + compile"; "$C" verify . >/dev/null && ok "C3 verify stays OK after the compiled change is committed (last_commit is not an input, D3a)" || bad "C3 D3a last_commit"
 before=$(jq -r .purpose docs/.crumb); sem0=$(jq -cS '{purpose,layer,invariants,exports,related,boundaries}' src/.crumb)
 "$C" propose docs "Design notes and decision records" | grep -q PROPOSED && ok "C3 propose prints PROPOSED" || bad "C3 propose"
 [ "$(jq -r .purpose docs/.crumb)" = "$before" ] && [ "$(jq -r .extensions.proposed.purpose docs/.crumb)" = "Design notes and decision records" ] && [ "$(jq -r .extensions.proposed.status docs/.crumb)" = PROPOSED ] && ok "C3 propose never changes .purpose, writes extensions.proposed" || bad "C3 propose purpose"

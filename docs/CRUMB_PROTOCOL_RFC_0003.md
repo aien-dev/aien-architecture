@@ -25,13 +25,14 @@ Until now people and agents wrote the descriptions in crumbs by hand, and they w
 
 `digest = sha256(semantic || source_tree || children_root || evidence_root)`, where `semantic` is the compact, key-sorted JSON of the semantic kernel with null keys removed, and the three roots are the lowercase hex digests. `children_root` is the sha256 of each child's digest followed by a newline, in name order. Directories are compiled deepest first (D4), so a parent always embeds its children's final digests. Changing one file therefore changes that directory's digest and those of its ancestors only; siblings stay CURRENT.
 
-## 4. Design decisions D1-D9 (binding, from the reference implementation)
+## 4. Design decisions D1-D9 (binding, from the reference implementation) and D3a
 
 | ID | Decision | Trap it closes |
 |---|---|---|
 | D1 | `source_tree` excludes every `.crumb` and `.crumb.local`. | Compiling would change the tree, which changes the digest: no fixed point. |
 | D2 | Files are the tracked files of the working tree, hashed as git blob ids, not HEAD's tree. Untracked files never count. | A PR author compiles before committing; CI's checkout must give the same answer. |
 | D3 | Digests cover content only. `generated_at_commit` and `compiled_at` are stamps and `verify` ignores them. | Otherwise every commit would make every crumb stale and CI would fail forever. |
+| D3a | Added by the C port: `children[].last_commit` is written by compile but never decides STALE (it is a stamp in the sense of D3). | Committing a change moves a child's last commit, which would need another compile, which needs another commit: a PR could never pass `verify`. Demonstrated on the shell reference at `d41087c`, where a fresh clone reports 2 stale crumbs. |
 | D4 | Bottom-up order, deepest first. | A parent's `children[]` must hold final child digests. |
 | D5 | The compiler never writes the semantic kernel; `propose` writes only `extensions.proposed`. | An LLM description must not silently become architectural truth. |
 | D6 | `last_commit` per child ignores `.crumb` files (`':!**/.crumb'`). | Compile commits would count as changes to the code. |
@@ -76,7 +77,7 @@ Caveat for stages 4-5: Omega's program representation is still narrow (unary-u64
 | SHA-256 matches the known vector and `sha256sum` on 300 KB | PASS |
 | Fresh crumbs are UNCOMPILED; `verify` exits 1 | PASS |
 | Fixed point: second compile rewrites 0 | PASS |
-| `verify` OK after compile; OK after an empty commit | PASS |
+| `verify` OK after compile; OK after an empty commit; OK after the compiled change is committed (D3a) | PASS |
 | Touching one file: STALE is exactly its directory, its ancestors and the root; siblings stay CURRENT | PASS |
 | `propose` never changes `.purpose`; compile never touches the semantic kernel; a proposal does not make crumbs stale | PASS |
 | `context` prints all sections, both freshness lines, ancestors, PROPOSED purpose, locks on the path only, bounded output | PASS |

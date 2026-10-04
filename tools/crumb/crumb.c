@@ -1731,6 +1731,10 @@ static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generate
     snprintf(t, sizeof t, "sha256:%s", dgh); jset(g, "digest", jstr(t));
     jsort(g); return g;
 }
+/* D3a (added by the C port): children[].last_commit is derived from history and changes with every commit that
+ * touches the child, exactly like the stamps of D3. It is written by compile but never decides STALE; otherwise a
+ * PR could never pass verify (committing changes last_commit, which would need another compile, forever). */
+static void strip_lc(J *g) { J *k = jget(g, "children"); if (k && k->t == JARR) for (size_t i = 0; i < k->n; i++) if (k->v[i]->t == JOBJ) jdel(k->v[i], "last_commit"); }
 typedef struct { char *d; int depth; } CDir;
 static int cdcmp(const void *a, const void *b) {
     const CDir *x = a, *y = b;
@@ -1792,7 +1796,8 @@ static int compile_engine(char mode, const char *root, int quiet, int *total_out
         if (cr && cr->t == JOBJ) { J *x = jget(cr, "extensions"), *g = x && x->t == JOBJ ? jget(x, "generated") : NULL;
             if (g && g->t == JOBJ) { old = jclone(g); jdel(old, "generated_at_commit"); jdel(old, "compiled_at"); } }
         jsort(old);
-        char *ns = jcompact_s(nw), *os = jcompact_s(old);
+        strip_lc(old); J *nwc = jclone(nw); strip_lc(nwc);   /* D3a: last_commit is a stamp for staleness */
+        char *ns = jcompact_s(nwc), *os = jcompact_s(old);
         if (!strcmp(ns, os)) { if (mode == 's' && !quiet) printf("CURRENT    %s\n", d); continue; }
         stale++;
         if (mode == 's') { if (!quiet) printf("%s %s\n", old->n == 0 ? "UNCOMPILED" : "STALE     ", d); }
