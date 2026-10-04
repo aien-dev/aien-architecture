@@ -41,3 +41,4 @@ Current ADRs:
 - [0028 - AIEN-TEST: manifest v1, EvidenceReceiptV1, verdict set, resource pools, incremental digests, Omega-native successor](0028-aien-test-runner-and-evidence-contract.md) - Accepted by operator Drake Stapleton, 2026-10-02 (via his approved `aien-test` spec)
 - [0029 - Verified Crumbs: Omega's verified library is the only dependency resolver](0029-verified-crumbs-single-dependency-resolver.md) - Accepted by operator Drake Stapleton, 2026-10-02 (via his approved Verified Crumb plan); amends ARCH-0028 Decision 4 (receipt contract)
 - [0030 - Switchboard: one typed router over our own AI accounts](0030-switchboard-ai-account-router.md) - PROPOSED 2026-10-03
+- [0031 - DUAL: constraint pricing for soft resource budgets; hard gates are never priced](0031-dual-constraint-pricing.md) - Accepted by operator Drake Stapleton, 2026-10-03 (via his "DUAL / Constraint Pricing" brief)
