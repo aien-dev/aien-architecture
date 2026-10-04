@@ -106,4 +106,32 @@ HOME="$T/home" "$C" backfill . >/dev/null
 grep -q '"pr": 7' src/.crumb && grep -q "\"sha\": \"$sha\"" src/.crumb && grep -q backfill-git src/.crumb && ok "backfill: PR 7 + sha in src/.crumb" || bad "backfill entry"
 grep -q "$sha #7" docs/crumbs/BACKFILL.md && ok "BACKFILL.md lists commit" || bad "BACKFILL.md"
 HOME="$T/home" "$C" backfill . | grep -q 'updated 0' && HOME="$T/home" "$C" backfill . | grep -q 'BACKFILL.md: unchanged' && ok "backfill idempotent" || bad "backfill idempotent"
+# ---- RFC-0002 section 7: crumb explain ----
+cd "$T/r" || exit 1
+ex=$("$C" explain src)
+for h in 'NEAREST CRUMB' 'INHERITED INVARIANTS' 'SHARED COORDINATION' 'RECENT COMMITS' 'EVIDENCE REFERENCES' 'NEWEST CONTINUATION'; do
+  echo "$ex" | grep -q "^== $h ==" && ok "explain prints section: $h" || bad "explain section: $h"
+done
+echo "$ex" | grep -q 'purpose: Hand written C sources' && echo "$ex" | grep -q 'invariant: no globals' && ok "explain shows nearest .crumb purpose + invariants" || bad "explain nearest"
+echo "$ex" | grep -q 'feat: add b (#7)' && ok "explain lists commits touching the path" || bad "explain commits"
+"$C" explain src/a.c | grep -q 'repository path: src/a.c' && ok "explain accepts a file" || bad "explain file"
+echo "$ex" | grep -q '(none touches this path)' && ok "explain: no continuation yet" || bad "explain none"
+echo '{"version":1,"dir_path":"x","history":[]}' > /dev/null
+"$C" claim agent-x src a.c "explain test" >/dev/null; "$C" whisper agent-x src - "explain whisper" >/dev/null
+ex=$("$C" explain src); echo "$ex" | grep -q 'held by agent-x' && echo "$ex" | grep -q 'whisper agent-x -> all: explain whisper' && ok "explain shows shared locks + whispers" || bad "explain coordination"
+STORE=$(git rev-parse --absolute-git-dir)/crumb/v1; mkdir -p "$STORE/continuations"
+cat > "$STORE/continuations/cc-9001-test.json" <<JSON
+{"acr_version":1,"identity":{"checkpoint_id":"cc-9001-test","created_by":"tester","sealed_at":"2026-10-04T10:00:00Z","reason":"explain test"},
+ "state":{"items":[{"tag":"PROVEN","claim":"src parser works","evidence":["commit:abc1234"]}]},
+ "evidence":{"commits":["abc1234"],"prs":["repo#7"],"receipts":[],"tests":[{"name":"parser","result":"PASS"}]},
+ "coordination":{"owned_paths":["src/"],"scope":[],"do_not_touch":[]},"revalidation":{"status":"UNVERIFIED"}}
+JSON
+cat > "$STORE/continuations/cc-9002-other.json" <<JSON
+{"identity":{"checkpoint_id":"cc-9002-other","sealed_at":"2026-10-04T11:00:00Z"},"state":{"items":[{"tag":"OPEN","claim":"docs thing"}]},"coordination":{"scope":["docs/.crumb"]}}
+JSON
+ex=$("$C" explain src)
+echo "$ex" | grep -q 'id: cc-9001-test' && echo "$ex" | grep -q '\[PROVEN\] src parser works' && echo "$ex" | grep -q 'continuation test: parser -> PASS' && ok "explain surfaces continuation whose owned_paths match" || bad "explain continuation"
+echo "$ex" | grep -q 'cc-9002-other' && bad "explain ignores continuation about another path" || ok "explain ignores continuation about another path"
+"$C" explain docs | grep -q 'id: cc-9002-test\|id: cc-9002-other' && ok "explain matches via coordination.scope" || bad "explain scope"
+"$C" explain "$T/nonexistent" >/dev/null 2>&1; [ $? -ne 0 ] && ok "explain on missing path fails" || bad "explain missing"
 exit $fail

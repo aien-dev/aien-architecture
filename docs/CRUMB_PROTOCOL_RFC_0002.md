@@ -134,17 +134,18 @@ This RFC closes the gap for **all linked worktrees of one repository on one file
 
 ## 9. Tests (the feature is not done until these run)
 
-| # | Test | Where |
-|---|---|---|
-| T1 | Cross-worktree visibility: A claims `src/runtime.c`, B's sniff from worktree B shows it | `tools/crumb/test.sh` |
-| T2 | Cross-worktree conflict: B's claim of the same target exits 2 | same |
-| T3 | Release: A closes, B's claim succeeds | same |
-| T4 | Independent targets: both claims survive | same |
-| T5 | Concurrent mutation: 8 parallel distinct claims all survive; 8 same-target claims yield exactly one success | same |
-| T6 | TTL/crash: expired lock pruned, reclaimable | same |
-| T7 | Path normalization: two absolute worktree paths -> one lock identity | same |
-| T8 | Legacy `.crumb.local` read/import with provenance, never overriding newer shared state | same |
-| T9 | Continuation revalidation: checkpoint at C, advance the repo, resume reports STALE/SUPERSEDED and status NEEDS_REVIEW | `tools/crumb/test-continuation.sh` |
+| # | Test | Where | Result (2026-10-04) |
+|---|---|---|---|
+| T1 | Cross-worktree visibility: A claims `src/runtime.c`, B's sniff from worktree B shows it | `tools/crumb/test.sh` | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T2 | Cross-worktree conflict: B's claim of the same target exits 2 | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T3 | Release: A closes, B's claim succeeds | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T4 | Independent targets: both claims survive | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T5 | Concurrent mutation: 8 parallel distinct claims all survive; 8 same-target claims yield exactly one success | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T6 | TTL/crash: expired lock pruned, reclaimable | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T7 | Path normalization: two absolute worktree paths -> one lock identity | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T8 | Legacy `.crumb.local` read/import with provenance, never overriding newer shared state | same | PASS (`make -C tools/crumb test`, 0 FAIL) |
+| T9 | Continuation revalidation: checkpoint at C, advance the repo, resume reports STALE/SUPERSEDED and status NEEDS_REVIEW | `tools/crumb/test-continuation.sh` | PASS (8 checks; STALE repo HEAD + NEEDS_REVIEW; SKIP prints NOT_RUN where jq or cc.sh is absent) |
+| E1 | `crumb explain`: every section header, nearest `.crumb`, commits, locks and whispers, continuation surfaced by `owned_paths` and by `scope`, unrelated continuation ignored, missing path fails | `tools/crumb/test.sh` | PASS (15 checks) |
 
 Results are reported PASS / FAIL / NOT_RUN per test in the merging PR; nothing unrun is called PASS.
 
