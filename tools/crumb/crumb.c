@@ -1,5 +1,5 @@
 /*
- * crumb: RFC-0001 Crumb Protocol (v1.0.0) tool. Single file, C11, no dependencies.
+ * crumb: RFC-0001 Crumb Protocol (v1.0.0) + RFC-0002 common coordination plane (v1.1.0) tool. Single file, C11, no dependencies.
  * Spec: aien-dev/crumb-spec SPEC.md + ROLES.md (archived, pinned at 10b8251).
  *
  *   crumb seed <root> [-n] [-v]     write/refresh .crumb in every qualifying directory
@@ -13,8 +13,10 @@
  *   crumb validate [path]
  */
 #define _DEFAULT_SOURCE
+#define _POSIX_C_SOURCE 200809L
 #include <dirent.h>
 #include <errno.h>
+#include <fcntl.h>
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -370,7 +372,7 @@ static int has_lock_by(J *root, const char *agent) {
 }
 
 /* ---------- operations ---------- */
-static int cmd_claim(const char *agent, const char *dir, const char *target, const char *intent, long ttl) {
+static int legacy_claim(const char *agent, const char *dir, const char *target, const char *intent, long ttl) {
     Local l = local_open(dir);
     J *lk = jget(l.root, "locks");
     J *cur = lk ? jget(lk, target) : NULL;
@@ -390,14 +392,14 @@ static int cmd_claim(const char *agent, const char *dir, const char *target, con
     printf("CLAIMED %s in %s as %s (ttl %lds)\n", target, l.dir, agent, ttl);
     return 0;
 }
-static int cmd_update(const char *agent, const char *dir, const char *focus, long ttl) {
+static int legacy_update(const char *agent, const char *dir, const char *focus, long ttl) {
     Local l = local_open(dir);
     scent_set(l.root, agent, focus, ttl);
     local_save(&l);
     printf("SCENT %s in %s: %s (ttl %lds)\n", agent, l.dir, focus, ttl);
     return 0;
 }
-static int cmd_whisper(const char *from, const char *dir, const char *to, const char *msg, const char *prio, const char *tf) {
+static int legacy_whisper(const char *from, const char *dir, const char *to, const char *msg, const char *prio, const char *tf) {
     if (prio && *prio && strcmp(prio, "low") && strcmp(prio, "normal") && strcmp(prio, "high") && strcmp(prio, "critical")) die("priority must be low|normal|high|critical");
     Local l = local_open(dir);
     whisper_add(l.root, from, to, msg, prio, tf);
@@ -405,7 +407,7 @@ static int cmd_whisper(const char *from, const char *dir, const char *to, const 
     printf("WHISPER %s -> %s in %s\n", from, to && strcmp(to, "-") ? to : "(broadcast)", l.dir);
     return 0;
 }
-static int cmd_close(const char *agent, const char *dir, const char *target, const char *action, const char *msg) {
+static int legacy_close(const char *agent, const char *dir, const char *target, const char *action, const char *msg) {
     static const char *ok[] = { "create", "modify", "delete", "audit", "test", "build", NULL };
     int good = 0; for (int i = 0; ok[i]; i++) if (!strcmp(ok[i], action)) good = 1;
     if (!good) die("action must be create|modify|delete|audit|test|build");
@@ -438,7 +440,7 @@ static void show_local(const char *dir, J *root, const char *agent) {
     }
     (void)dir;
 }
-static int cmd_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 */
+static int legacy_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 */
     char *d = absdir(dir), *cp = pjoin(d, ".crumb");
     char *txt = slurp(cp); J *c = txt ? jparse(txt) : NULL;
     printf("sniff %s as %s\n", d, agent);
@@ -450,6 +452,405 @@ static int cmd_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 */
     Local l = local_open(d);
     show_local(d, l.root, agent);
     return 0;
+}
+
+/* ---------- RFC-0002 common coordination plane ----------
+ * Inside a git repository all operational state lives in one store shared by every
+ * worktree: <git-common-dir>/crumb/v1/{dirs,agents,continuations,ledger}. Outside git the
+ * RFC-0001 .crumb.local behaviour above is used unchanged (legacy fallback). */
+static void mkdir_p(const char *path);
+
+typedef struct { char *store, *top, *abs, *rel, *branch, *head, *base; } Plane;
+typedef struct { char *path; J *root; char *before; int agent, dead, existed; } Rec;
+typedef struct { Plane *p; Rec **r; size_t n, cap; int fd; } Txn;
+
+static char *run_git_full(const char *root, const char *args) {
+    Buf q = {0}; bstr(&q, "'");
+    for (const char *p = root; *p; p++) { if (*p == '\'') bstr(&q, "'\\''"); else bput(&q, p, 1); }
+    bstr(&q, "'");
+    size_t cn = q.n + strlen(args) + 32; char *cmd = xmalloc(cn);
+    snprintf(cmd, cn, "git -C %s %s 2>/dev/null", q.p, args);
+    FILE *f = popen(cmd, "r"); Buf b = {0}; bstr(&b, "");
+    if (!f) return b.p;
+    char t[4096]; size_t n;
+    while ((n = fread(t, 1, sizeof t, f)) > 0) bput(&b, t, n);
+    pclose(f);
+    return b.p;
+}
+static char *norm_path(const char *s) {   /* collapse . .. // ; NULL if it escapes the root */
+    char *cp = xstrdup(s), **st = xmalloc((strlen(s) + 2) * sizeof *st); size_t n = 0;
+    for (char *tok = strtok(cp, "/"); tok; tok = strtok(NULL, "/")) {
+        if (!strcmp(tok, ".")) continue;
+        if (!strcmp(tok, "..")) { if (!n) return NULL; n--; continue; }
+        st[n++] = tok;
+    }
+    if (!n) return xstrdup(".");
+    Buf b = {0}; bstr(&b, "");
+    for (size_t i = 0; i < n; i++) { if (i) bstr(&b, "/"); bstr(&b, st[i]); }
+    return b.p;
+}
+static char *dir_of(const char *p) { char *c = xstrdup(p), *s = strrchr(c, '/'); if (s) *s = 0; else strcpy(c, "."); return c; }
+static char *key_dir(const char *key) { return strchr(key, '/') ? dir_of(key) : xstrdup("."); }
+static int exists_at(const char *top, const char *rel) { char *f = pjoin(top, rel); struct stat st; int r = lstat(f, &st) == 0; free(f); return r; }
+/* stable session id, never a PID alone: CRUMB_SESSION if set, else agent@host */
+static char *session_id(const char *agent) {
+    const char *e = getenv("CRUMB_SESSION");
+    if (e && *e) return xstrdup(e);
+    char h[256]; if (gethostname(h, sizeof h) != 0) strcpy(h, "unknown-host");
+    h[sizeof h - 1] = 0;
+    size_t n = strlen(agent) + strlen(h) + 2; char *s = xmalloc(n); snprintf(s, n, "%s@%s", agent, h); return s;
+}
+
+static Plane *plane_resolve(const char *dir) {
+    char *abs = absdir(dir), *top = run_git(abs, "rev-parse --show-toplevel"), r[PATH_MAX];
+    if (!*top || !realpath(top, r)) return NULL;
+    top = xstrdup(r);
+    size_t tl = strlen(top);
+    if (strncmp(abs, top, tl) || (abs[tl] && abs[tl] != '/')) return NULL;
+    Plane *p = xmalloc(sizeof *p); memset(p, 0, sizeof *p);
+    p->abs = abs; p->top = top; p->rel = abs[tl] ? xstrdup(abs + tl + 1) : xstrdup(".");
+    const char *env = getenv("CRUMB_COORD_ROOT");
+    if (env && *env) p->store = xstrdup(env);
+    else { char *cfg = run_git(abs, "config --get crumb.coordinationRoot"); if (*cfg) p->store = cfg; }
+    if (!p->store) {
+        char *cd = run_git(abs, "rev-parse --git-common-dir");
+        if (!*cd) die("inside a git repository (%s) but cannot resolve its common directory; set CRUMB_COORD_ROOT", top);
+        char *full = cd[0] == '/' ? cd : pjoin(abs, cd);
+        if (!realpath(full, r)) die("cannot resolve git common directory %s; set CRUMB_COORD_ROOT", full);
+        p->store = pjoin(r, "crumb/v1");
+    }
+    p->branch = run_git(abs, "symbolic-ref --short -q HEAD"); if (!*p->branch) p->branch = xstrdup("(detached)");
+    p->head = run_git(abs, "rev-parse --short=12 HEAD");
+    p->base = run_git(abs, "merge-base HEAD origin/main"); if (strlen(p->base) > 12) p->base[12] = 0;
+    return p;
+}
+/* repository-relative key for a target: <dir>/<target> if that exists, else <target> from the
+ * repo root if that exists, else repo-relative as given when it contains '/', else <dir>/<target>.
+ * An absolute path inside this worktree is made repo-relative, so two worktrees agree. */
+static char *target_key(const Plane *p, const char *target, const char *rel) {
+    if (target[0] == '/') {
+        size_t tl = strlen(p->top);
+        if (strncmp(target, p->top, tl) || target[tl] != '/') die("target %s is outside the repository %s", target, p->top);
+        char *k = norm_path(target + tl + 1);
+        if (!k) die("target %s escapes the repository", target);
+        return k;
+    }
+    char *c1 = norm_path(strcmp(rel, ".") ? pjoin(rel, target) : target), *c2 = norm_path(target);
+    if (c1 && strcmp(c1, ".") && exists_at(p->top, c1)) return c1;
+    if (c2 && strcmp(c2, ".") && exists_at(p->top, c2)) return c2;
+    if (strchr(target, '/') && c2) return c2;
+    if (c1) return c1;
+    if (c2) return c2;
+    die("target %s escapes the repository", target);
+    return NULL;
+}
+static void fsync_dir(const char *dir) { int fd = open(dir, O_RDONLY); if (fd >= 0) { (void)fsync(fd); close(fd); } }
+static void durable_write(const char *path, const char *data) {   /* tmp, fsync, rename, fsync dir */
+    char *dd = dir_of(path); mkdir_p(dd);
+    size_t tn = strlen(path) + 32; char *tmp = xmalloc(tn);
+    snprintf(tmp, tn, "%s.tmp%ld", path, (long)getpid());
+    int fd = open(tmp, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+    if (fd < 0) die("cannot write %s: %s", tmp, strerror(errno));
+    size_t len = strlen(data), off = 0;
+    while (off < len) { ssize_t w = write(fd, data + off, len - off); if (w < 0) { if (errno == EINTR) continue; die("write failed: %s", tmp); } off += (size_t)w; }
+    if (fsync(fd) != 0) die("fsync failed: %s", tmp);
+    if (close(fd) != 0) die("close failed: %s", tmp);
+    if (rename(tmp, path) != 0) die("rename failed: %s", path);
+    fsync_dir(dd);
+}
+static Txn *txn_begin(Plane *p, int mutate) {
+    Txn *t = xmalloc(sizeof *t); memset(t, 0, sizeof *t); t->p = p; t->fd = -1;
+    if (!mutate) return t;
+    static const char *sub[] = { "dirs", "agents", "continuations", "ledger", NULL };
+    for (int i = 0; sub[i]; i++) { char *d = pjoin(p->store, sub[i]); mkdir_p(d); free(d); }
+    char *lp = pjoin(p->store, ".lock");
+    t->fd = open(lp, O_RDWR | O_CREAT, 0644);
+    if (t->fd < 0) die("cannot open %s: %s", lp, strerror(errno));
+    struct flock fl; memset(&fl, 0, sizeof fl); fl.l_type = F_WRLCK; fl.l_whence = SEEK_SET;
+    while (fcntl(t->fd, F_SETLKW, &fl) != 0) if (errno != EINTR) die("cannot lock %s: %s", lp, strerror(errno));
+    return t;
+}
+static Rec *rec_load(Txn *t, const char *path, int agent, const char *label) {
+    for (size_t i = 0; i < t->n; i++) if (!strcmp(t->r[i]->path, path)) return t->r[i];
+    Rec *r = xmalloc(sizeof *r); memset(r, 0, sizeof *r);
+    if (t->n == t->cap) { t->cap = t->cap ? t->cap * 2 : 16; t->r = xrealloc(t->r, t->cap * sizeof *t->r); }
+    t->r[t->n++] = r;
+    r->path = xstrdup(path); r->agent = agent;
+    char *txt = slurp(path); J *j = txt ? jparse(txt) : NULL;
+    if (txt && (!j || j->t != JOBJ)) die("%s is not valid JSON; fix or move it aside", path);
+    r->existed = txt != NULL;
+    if (!j) j = jnew(JOBJ);
+    if (!agent) {
+        if (!jget(j, "schema_version")) jset(j, "schema_version", jstr(SCHEMA));
+        if (!jget(j, "directory")) jset(j, "directory", jstr(label));
+    }
+    r->root = j; r->before = jdump(j);
+    if (agent) {
+        long u = parse_iso(jstrval(j, "updated_at"));
+        if (r->existed && (u < 0 || (long)time(NULL) - u > jlong(j, "ttl_seconds", SCENT_TTL))) r->dead = 1;
+    } else sweep(j);
+    return r;
+}
+static char *dir_path(const Plane *p, const char *rel) {
+    if (!strcmp(rel, ".")) return pjoin(p->store, "dirs/_root.json");
+    char *a = pjoin(p->store, "dirs"), *b = pjoin(a, rel), *c = xmalloc(strlen(b) + 6);
+    sprintf(c, "%s.json", b); return c;
+}
+static Rec *dir_rec(Txn *t, const char *rel) { return rec_load(t, dir_path(t->p, rel), 0, rel); }
+static char *agent_path(const Plane *p, const char *agent) {
+    char *n = xstrdup(agent);
+    for (char *s = n; *s; s++) if (!((*s >= 'a' && *s <= 'z') || (*s >= 'A' && *s <= 'Z') || (*s >= '0' && *s <= '9') || *s == '.' || *s == '-' || *s == '_')) *s = '_';
+    char *a = pjoin(p->store, "agents"), *b = pjoin(a, n), *c = xmalloc(strlen(b) + 6);
+    sprintf(c, "%s.json", b); return c;
+}
+static Rec *agent_rec(Txn *t, const char *agent) { return rec_load(t, agent_path(t->p, agent), 1, NULL); }
+static void collect_json(const char *dir, char ***out, size_t *n) {
+    DIR *d = opendir(dir); if (!d) return;
+    struct dirent *e;
+    while ((e = readdir(d))) {
+        if (!strcmp(e->d_name, ".") || !strcmp(e->d_name, "..")) continue;
+        char *full = pjoin(dir, e->d_name); struct stat st;
+        if (stat(full, &st) == 0 && S_ISDIR(st.st_mode)) collect_json(full, out, n);
+        else { size_t l = strlen(e->d_name); if (l > 5 && !strcmp(e->d_name + l - 5, ".json")) { *out = xrealloc(*out, (*n + 1) * sizeof **out); (*out)[(*n)++] = full; continue; } }
+        free(full);
+    }
+    closedir(d);
+}
+static void txn_prune(Txn *t) {   /* load every record: expired entries drop out (written back on commit) */
+    char **f = NULL; size_t n = 0;
+    char *dd = pjoin(t->p->store, "dirs"), *ad = pjoin(t->p->store, "agents");
+    collect_json(dd, &f, &n);
+    size_t pl = strlen(dd) + 1;
+    for (size_t i = 0; i < n; i++) {
+        char *rel = xstrdup(f[i] + pl); rel[strlen(rel) - 5] = 0;
+        rec_load(t, f[i], 0, !strcmp(rel, "_root") ? "." : rel);
+    }
+    char **g = NULL; size_t m = 0;
+    collect_json(ad, &g, &m);
+    for (size_t i = 0; i < m; i++) rec_load(t, g[i], 1, NULL);
+}
+static void txn_end(Txn *t, int commit) {
+    if (commit) for (size_t i = 0; i < t->n; i++) {
+        Rec *r = t->r[i];
+        if (r->dead) { if (unlink(r->path) == 0) { char *d = dir_of(r->path); fsync_dir(d); free(d); } continue; }
+        char *now = jdump(r->root);
+        if (strcmp(now, r->before)) durable_write(r->path, now);
+    }
+    if (t->fd >= 0) close(t->fd);   /* releases the OS lock */
+}
+static J *jclone(const J *j) { char *s = jdump(j); J *c = jparse(s); free(s); return c ? c : jnew(JNULL); }
+static void agent_set(Txn *t, const char *agent, const char *focus, long ttl) {
+    Plane *p = t->p; char ts[21]; now_iso(ts);
+    Rec *r = agent_rec(t, agent); r->dead = 0;
+    J *e = jnew(JOBJ);
+    jset(e, "agent", jstr(agent)); jset(e, "session", jstr(session_id(agent))); jset(e, "focus", jstr(focus)); jset(e, "dir", jstr(p->rel));
+    jset(e, "worktree", jstr(p->top)); jset(e, "branch", jstr(p->branch)); jset(e, "head", jstr(p->head)); jset(e, "base", jstr(p->base));
+    jset(e, "updated_at", jstr(ts)); jset(e, "ttl_seconds", jnum(ttl));
+    r->root = e;
+}
+static int agent_has_lock(Txn *t, const char *agent) {
+    for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent && has_lock_by(t->r[i]->root, agent)) return 1;
+    return 0;
+}
+static void import_legacy(Txn *t) {   /* one-time merge of this worktree's .crumb.local into the shared store */
+    Plane *p = t->p;
+    char *lp = pjoin(p->abs, ".crumb.local"), *txt = slurp(lp);
+    if (!txt) return;
+    J *l = jparse(txt);
+    if (!l || l->t != JOBJ) die("%s is not valid JSON; fix or move it aside", lp);
+    Rec *dr = dir_rec(t, p->rel);
+    J *mk = jarr_of(dr->root, "legacy_imported");
+    for (size_t i = 0; i < mk->n; i++) if (mk->v[i]->t == JSTR && !strcmp(mk->v[i]->s, p->top)) return;
+    sweep(l);
+    J *lk = jget(l, "locks");
+    if (lk && lk->t == JOBJ) for (size_t i = 0; i < lk->n; i++) {
+        char *key = target_key(p, lk->k[i], p->rel), *td = key_dir(key);
+        J *dst = jobj_of(dir_rec(t, td)->root, "locks");
+        if (jget(dst, key)) continue;   /* never override newer shared state */
+        J *e = jclone(lk->v[i]);
+        jset(e, "target", jstr(key)); jset(e, "worktree", jstr(p->top)); jset(e, "imported_from", jstr(p->top));
+        jset(dst, key, e);
+    }
+    J *sc = jget(l, "active_scents");
+    if (sc && sc->t == JOBJ) for (size_t i = 0; i < sc->n; i++) {
+        Rec *ar = agent_rec(t, sc->k[i]);
+        if (jget(ar->root, "updated_at") && !ar->dead) continue;
+        J *e = jnew(JOBJ);
+        jset(e, "agent", jstr(sc->k[i])); jset(e, "focus", jstr(jstrval(sc->v[i], "focus") ? jstrval(sc->v[i], "focus") : ""));
+        jset(e, "dir", jstr(p->rel)); jset(e, "worktree", jstr(p->top)); jset(e, "branch", jstr("")); jset(e, "head", jstr("")); jset(e, "base", jstr(""));
+        jset(e, "updated_at", jstr(jstrval(sc->v[i], "updated_at") ? jstrval(sc->v[i], "updated_at") : ""));
+        jset(e, "ttl_seconds", jnum(jlong(sc->v[i], "ttl_seconds", SCENT_TTL))); jset(e, "imported_from", jstr(p->top));
+        ar->root = e; ar->dead = 0;
+    }
+    J *wh = jget(l, "whispers");
+    if (wh && wh->t == JARR) for (size_t i = 0; i < wh->n; i++) {
+        J *e = jclone(wh->v[i]); jset(e, "imported_from", jstr(p->top)); jpush(jarr_of(dr->root, "whispers"), e);
+    }
+    J *hi = jget(l, "history");
+    if (hi && hi->t == JARR && hi->n) {
+        J *h = jarr_of(dr->root, "history");
+        for (size_t i = 0; i < hi->n; i++) { J *e = jclone(hi->v[i]); jset(e, "imported_from", jstr(p->top)); jpush(h, e); }
+        if (h->n > HISTORY_CAP) { size_t d = h->n - HISTORY_CAP; memmove(h->v, h->v + d, HISTORY_CAP * sizeof *h->v); h->n = HISTORY_CAP; }
+    }
+    jpush(mk, jstr(p->top));
+}
+static const char *sv(const J *o, const char *k) { const char *s = jstrval(o, k); return s ? s : ""; }
+static void print_lock(const char *key, const J *e) {
+    printf("  lock    %-16s held by %s [%s]: %s  [%s]%s%s\n", key, sv(e, "holder"), sv(e, "branch"), sv(e, "intent"), sv(e, "acquired_at"),
+           jstrval(e, "imported_from") ? " imported from " : "", jstrval(e, "imported_from") ? jstrval(e, "imported_from") : "");
+}
+static int cmd_claim(const char *agent, const char *dir, const char *target, const char *intent, long ttl) {
+    Plane *p = plane_resolve(dir);
+    if (!p) return legacy_claim(agent, dir, target, intent, ttl);
+    char *key = target_key(p, target, p->rel), *td = key_dir(key);
+    Txn *t = txn_begin(p, 1); txn_prune(t); import_legacy(t);
+    Rec *tr = dir_rec(t, td);
+    J *cur = jget(jobj_of(tr->root, "locks"), key);
+    if (cur) {
+        const char *h = jstrval(cur, "holder");
+        if (h && strcmp(h, agent)) {
+            printf("BLOCKED %s held by %s on branch %s (worktree %s) since %s (%s)\n", key, h, sv(cur, "branch"), sv(cur, "worktree"), sv(cur, "acquired_at"), sv(cur, "intent"));
+            txn_end(t, 1);
+            return 2;
+        }
+    }
+    char ts[21]; now_iso(ts);
+    J *e = jnew(JOBJ);
+    jset(e, "holder", jstr(agent)); jset(e, "session", jstr(session_id(agent))); jset(e, "target", jstr(key)); jset(e, "intent", jstr(intent));
+    jset(e, "worktree", jstr(p->top)); jset(e, "branch", jstr(p->branch)); jset(e, "head", jstr(p->head)); jset(e, "base", jstr(p->base));
+    jset(e, "acquired_at", jstr(ts)); jset(e, "ttl_seconds", jnum(ttl));
+    jset(jobj_of(tr->root, "locks"), key, e);
+    agent_set(t, agent, intent, SCENT_TTL > ttl ? SCENT_TTL : ttl);
+    txn_end(t, 1);
+    printf("CLAIMED %s in %s as %s on %s (ttl %lds)\n", key, p->top, agent, p->branch, ttl);
+    return 0;
+}
+static int cmd_update(const char *agent, const char *dir, const char *focus, long ttl) {
+    Plane *p = plane_resolve(dir);
+    if (!p) return legacy_update(agent, dir, focus, ttl);
+    Txn *t = txn_begin(p, 1); txn_prune(t); import_legacy(t);
+    agent_set(t, agent, focus, ttl);
+    txn_end(t, 1);
+    printf("SCENT %s in %s: %s (ttl %lds)\n", agent, p->abs, focus, ttl);
+    return 0;
+}
+static int cmd_whisper(const char *from, const char *dir, const char *to, const char *msg, const char *prio, const char *tf) {
+    if (prio && *prio && strcmp(prio, "low") && strcmp(prio, "normal") && strcmp(prio, "high") && strcmp(prio, "critical")) die("priority must be low|normal|high|critical");
+    Plane *p = plane_resolve(dir);
+    if (!p) return legacy_whisper(from, dir, to, msg, prio, tf);
+    Txn *t = txn_begin(p, 1); txn_prune(t); import_legacy(t);
+    whisper_add(dir_rec(t, p->rel)->root, from, to, msg, prio, tf);
+    txn_end(t, 1);
+    printf("WHISPER %s -> %s in %s\n", from, to && strcmp(to, "-") ? to : "(broadcast)", p->abs);
+    return 0;
+}
+static int cmd_close(const char *agent, const char *dir, const char *target, const char *action, const char *msg) {
+    static const char *ok[] = { "create", "modify", "delete", "audit", "test", "build", NULL };
+    int good = 0; for (int i = 0; ok[i]; i++) if (!strcmp(ok[i], action)) good = 1;
+    if (!good) die("action must be create|modify|delete|audit|test|build");
+    Plane *p = plane_resolve(dir);
+    if (!p) return legacy_close(agent, dir, target, action, msg);
+    char *key = target_key(p, target, p->rel), *td = key_dir(key);
+    Txn *t = txn_begin(p, 1); txn_prune(t); import_legacy(t);
+    Rec *tr = dir_rec(t, td);
+    J *lk = jobj_of(tr->root, "locks"), *cur = jget(lk, key);
+    const char *intent = "";
+    if (cur) {
+        const char *h = jstrval(cur, "holder");
+        if (h && strcmp(h, agent)) { printf("REFUSED: %s is held by %s, not %s\n", key, h, agent); txn_end(t, 1); return 2; }
+        if (jstrval(cur, "intent")) intent = jstrval(cur, "intent");
+    }
+    history_add(tr->root, agent, action, key, intent);
+    if (cur) jdel(lk, key);
+    if (!agent_has_lock(t, agent)) agent_rec(t, agent)->dead = 1;
+    if (msg && *msg) whisper_add(tr->root, agent, NULL, msg, "normal", key);
+    txn_end(t, 1);
+    printf("CLOSED %s in %s by %s (%s)%s\n", key, p->top, agent, action, cur ? "" : " [no lock was held]");
+    return 0;
+}
+static void print_agent(const J *e, const char *name) {
+    long u = parse_iso(jstrval(e, "updated_at")), age = u < 0 ? -1 : (long)time(NULL) - u;
+    printf("  agent   %-16s branch %s  focus: %s  heartbeat %lds ago  [%s]\n", name, sv(e, "branch"), sv(e, "focus"), age, sv(e, "worktree"));
+}
+static int cmd_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 + RFC-0002 */
+    Plane *p = plane_resolve(dir);
+    if (!p) {
+        int r = legacy_sniff(agent, dir);
+        printf("shared coordination: none (not a git repository)\n");
+        return r;
+    }
+    char *cp = pjoin(p->abs, ".crumb"), *txt = slurp(cp); J *c = txt ? jparse(txt) : NULL;
+    printf("sniff %s as %s\n", p->abs, agent);
+    if (c) {
+        J *inv = jget(c, "invariants");
+        printf("  .crumb: %s | %s\n", jstrval(c, "name") ? jstrval(c, "name") : "?", jstrval(c, "purpose") ? jstrval(c, "purpose") : "(legacy format)");
+        if (inv && inv->t == JARR) for (size_t i = 0; i < inv->n; i++) if (inv->v[i]->t == JSTR) printf("  invariant: %s\n", inv->v[i]->s);
+    } else printf("  no .crumb here\n");
+    Txn *t = txn_begin(p, 0); txn_prune(t); import_legacy(t);   /* read side: merged in memory, never saved */
+    printf("shared coordination: ACTIVE\n  common root: %s\n  this worktree: %s [%s %s]\nACTIVE AGENTS\n", p->store, p->top, p->branch, p->head);
+    int any = 0;
+    for (size_t i = 0; i < t->n; i++) if (t->r[i]->agent && !t->r[i]->dead && jget(t->r[i]->root, "updated_at")) { print_agent(t->r[i]->root, sv(t->r[i]->root, "agent")); any = 1; }
+    if (!any) printf("  (none)\n");
+    printf("LOCKS\n"); any = 0;
+    for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent) {
+        J *lk = jget(t->r[i]->root, "locks");
+        if (lk && lk->t == JOBJ) for (size_t k = 0; k < lk->n; k++) { print_lock(lk->k[k], lk->v[k]); any = 1; }
+    }
+    if (!any) printf("  (none)\n");
+    printf("OTHER WORKTREES\n");
+    char *wl = run_git_full(p->abs, "worktree list --porcelain"), *save = NULL;
+    int shown = 0;
+    for (char *ln = strtok_r(wl, "\n", &save); ln; ) {
+        if (strncmp(ln, "worktree ", 9)) { ln = strtok_r(NULL, "\n", &save); continue; }
+        char *wt = xstrdup(ln + 9), *br = xstrdup("(detached)");
+        while ((ln = strtok_r(NULL, "\n", &save)) && strncmp(ln, "worktree ", 9)) if (!strncmp(ln, "branch refs/heads/", 18)) br = xstrdup(ln + 18);
+        char rp[PATH_MAX];
+        if (strcmp(wt, p->top) && !(realpath(wt, rp) && !strcmp(rp, p->top))) {
+            printf("  %s [%s]: ", wt, br); shown = 1;
+            int na = 0;
+            for (size_t i = 0; i < t->n; i++) if (t->r[i]->agent && !t->r[i]->dead && !strcmp(sv(t->r[i]->root, "worktree"), wt)) { printf("%s%s", na++ ? ", " : "agent ", sv(t->r[i]->root, "agent")); }
+            if (!na) printf("no agents");
+            int nc = 0;
+            for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent) {
+                J *lk = jget(t->r[i]->root, "locks");
+                if (lk && lk->t == JOBJ) for (size_t k = 0; k < lk->n; k++) {
+                    const char *kk = lk->k[k];
+                    int in = !strcmp(p->rel, ".") || (!strncmp(kk, p->rel, strlen(p->rel)) && kk[strlen(p->rel)] == '/');
+                    if (in && !strcmp(sv(lk->v[k], "worktree"), wt)) printf("%s%s", nc++ ? ", " : "; CONFLICT: ", kk);
+                }
+            }
+            if (!nc) printf("; conflicts: none");
+            printf("\n");
+        }
+    }
+    if (!shown) printf("  (none)\n");
+    printf("WHISPERS\n");
+    J *wh = jget(dir_rec(t, p->rel)->root, "whispers"); any = 0;
+    if (wh && wh->t == JARR) for (size_t i = 0; i < wh->n; i++) {
+        const char *to = jstrval(wh->v[i], "to"), *from = jstrval(wh->v[i], "from");
+        if (to && strcmp(to, agent)) continue;
+        printf("  whisper %s -> %s: %s  [%s%s%s]\n", from ? from : "?", to ? to : "all", sv(wh->v[i], "message"), sv(wh->v[i], "timestamp"), jstrval(wh->v[i], "priority") ? " " : "", sv(wh->v[i], "priority")); any = 1;
+    }
+    if (!any) printf("  (none)\n");
+    txn_end(t, 0);
+    return 0;
+}
+static int g_skip_local;
+static int shared_list(Plane *p) {   /* returns number of directories shown */
+    Txn *t = txn_begin(p, 0); txn_prune(t);
+    int n = 0;
+    for (size_t i = 0; i < t->n; i++) if (!t->r[i]->agent) {
+        const char *rel = sv(t->r[i]->root, "directory");
+        if (strcmp(p->rel, ".") && strncmp(rel, p->rel, strlen(p->rel))) continue;
+        J *lk = jget(t->r[i]->root, "locks"), *wh = jget(t->r[i]->root, "whispers");
+        if (!((lk && lk->n) || (wh && wh->n))) continue;
+        n++; printf("%s\n", rel);
+        if (lk && lk->t == JOBJ) for (size_t k = 0; k < lk->n; k++) print_lock(lk->k[k], lk->v[k]);
+        show_local(rel, t->r[i]->root, NULL);
+    }
+    for (size_t i = 0; i < t->n; i++) if (t->r[i]->agent && !t->r[i]->dead && jget(t->r[i]->root, "updated_at")) print_agent(t->r[i]->root, sv(t->r[i]->root, "agent"));
+    txn_end(t, 0);
+    return n;
 }
 
 /* ---------- tree walk ---------- */
@@ -644,7 +1045,7 @@ static void walk_list(const char *path, const char *rel, int depth, int validate
             }
         }
     }
-    if (!validate && slurp(lp)) {
+    if (!validate && !g_skip_local && slurp(lp)) {
         Local l = local_open(path);   /* read side: sweep applied in memory, never saved */
         J *sc = jget(l.root, "active_scents"), *lk = jget(l.root, "locks"), *wh = jget(l.root, "whispers");
         if ((sc && sc->n) || (lk && lk->n) || (wh && wh->n)) { t->n_local++; printf("%s\n", rel); show_local(path, l.root, NULL); }
@@ -932,7 +1333,10 @@ int main(int argc, char **argv) {
     if (!strcmp(c, "list") || !strcmp(c, "validate")) {
         int val = !strcmp(c, "validate"); Tot t = {0, 0, 0};
         char *r = absdir(a ? v[0] : ".");
+        Plane *sp = val ? NULL : plane_resolve(r);
+        if (sp) g_skip_local = 1;
         walk_list(r, ".", 0, val, &t);
+        if (sp) t.n_local += shared_list(sp);
         printf("%d .crumb file(s), %d directory(ies) with live local crumbs%s\n", t.n_crumb, t.n_local, val && t.bad ? ", INVALID found" : "");
         return t.bad ? 1 : 0;
     }
