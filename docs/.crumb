@@ -38,7 +38,7 @@
       "children": [
         {
           "digest": "10ea4003bed3aad111e3ed497f360b3d17c3449a47e379d60d941c1249762816",
-          "last_commit": "35dd324",
+          "last_commit": "4223284",
           "name": "adr",
           "purpose": "Directory docs/adr. Purpose not yet described by a human."
         },
@@ -80,7 +80,7 @@
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 120,
-      "generated_at_commit": "a0b354550ccb131a651dcb3ee9bf372aadc89378",
+      "generated_at_commit": "4223284b750d6eff4484892d1266468535752b73",
       "source_tree": "sha256:618194411a502954bf97a94ec15b24fe76d68f1eb326f5963f44e7b06c7ca077"
     },
     "owner_lane": "",
