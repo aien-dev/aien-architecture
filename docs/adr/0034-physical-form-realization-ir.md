@@ -69,7 +69,16 @@ Nothing above the contract changes. Nothing in AIENOS changes: substrate access 
 | `ENERGY_FUNCTIONAL` (2) | minimize E(s) = s^T J s + h^T s over s in {-1,+1}^n (or a declared bounded integer box); result contract: E(s*) <= bound, or E(s*) within delta of a reference optimizer's value with declared confidence | no existing Omega contract; needs a `solve_optimization` operation with an objective bound in the SemanticResultContract (MA-3 territory) | reference: exhaustive for n <= 20, otherwise a deterministic digital optimizer with recorded value; acceptance = contract bound, never "reached the global optimum" | NOT WRITTEN | oscillator / Ising networks, thermodynamic samplers | SPECIFIED, RESERVED, REFUSED BY DECODE |
 | `STOCHASTIC_DISTRIBUTION` (3) | draw samples from a declared distribution; result is the sample set, accepted by declared statistics | needs `MEASURED_DISTRIBUTION` contract semantics, which no omega seam implements (section 5) | distributional statistics against the contract; raw samples are evidence | NOT WRITTEN | physical stochastic samplers | RESERVED, REFUSED BY DECODE |
 
-No other kinds are reserved. `DYNAMICAL_SYSTEM`, `WAVE_TRANSFORM`, `CONSTRAINT_SYSTEM`, `ATTRACTOR` and `CORRELATION` were considered and are **not** added: none has an Omega contract to map from today, and a reserved id without a mapping is a promise, not a design.
+No other kinds are reserved. The families below (from the operator's 2026-10-04 "software specifies, physics computes" material) were considered and are **not** given ids: none has an Omega contract to map from today, and a reserved id without a mapping is a promise, not a design. Each gets an id only when a contract, a digital reference and an acceptance rule exist for it.
+
+| Considered family | Physical meaning (one line) | Why not reserved yet |
+|---|---|---|
+| dynamical system | a state evolves under declared dynamics; the result is the trajectory or its endpoint | no Omega contract names a trajectory or an endpoint tolerance |
+| graph coupling | coupled nodes settle into a joint state; the result is the settled configuration | subsumed by `ENERGY_FUNCTIONAL` once a coupling matrix is the objective; no separate contract |
+| wave / interference transform | a linear transform realized by propagation (Fourier-like, convolution-like) | a `LINEAR_OPERATOR` with a structured A; needs a structured-operator contract before it earns its own id |
+| constraint manifold | the result must lie on a declared set; physics enforces the constraint | no constraint-satisfaction contract in `rx_contract` |
+| attractor / associative recall | a perturbed state relaxes to the nearest stored pattern | no recall contract; "nearest" needs a declared metric and acceptance bound |
+
 
 ### 2.3 Wire form and identity
 
@@ -171,7 +180,7 @@ A stochastic realization is a valid realization only when the contract kind admi
 
 ## 9. Scientific framing
 
-Analog in-memory computation, physical neural networks, optical transforms, physical reservoir computing, Ising / energy-landscape optimization, stochastic and thermodynamic computation, reversible-computation principles and dynamical systems motivate the form families above. They prove no AIEN advantage. A physical realization is useful only if its measured end-to-end cost beats the competing digital realization under the same contract; mapping a problem to a Hamiltonian makes it neither polynomial nor guaranteed to reach a global optimum.
+Analog in-memory computation, physical neural networks, optical transforms, physical reservoir computing, Ising / energy-landscape optimization, stochastic and thermodynamic computation, reversible-computation principles and dynamical systems motivate the form families above. They prove no AIEN advantage. A physical realization is useful only if its measured end-to-end cost beats the competing digital realization under the same contract; mapping a problem to a Hamiltonian makes it neither polynomial nor guaranteed to reach a global optimum. **Physics does not repeal complexity:** relaxation can trap in a local minimum, encoding and readout cost count against the realization, and any advantage is problem- and implementation-dependent and must be measured per contract, never assumed from the substrate class.
 
 ## 10. Success criteria
 
