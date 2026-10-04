@@ -1,6 +1,7 @@
 #!/bin/sh
 # crumb self-test. usage: sh test.sh ./crumb. Uses a scratch dir only.
 C=${1:-./crumb}; C=$(cd "$(dirname "$C")" && pwd)/$(basename "$C")
+HERE=$(cd "$(dirname "$0")" && pwd)
 T=$(mktemp -d); trap 'rm -rf "$T"' EXIT
 fail=0; ok() { echo "PASS $1"; }; bad() { echo "FAIL $1"; fail=1; }
 mkdir -p "$T/r/src/deep" "$T/r/docs" "$T/r/old"; cd "$T/r" || exit 1
@@ -134,4 +135,61 @@ echo "$ex" | grep -q 'id: cc-9001-test' && echo "$ex" | grep -q '\[PROVEN\] src 
 echo "$ex" | grep -q 'cc-9002-other' && bad "explain ignores continuation about another path" || ok "explain ignores continuation about another path"
 "$C" explain docs | grep -q 'id: cc-9002-test\|id: cc-9002-other' && ok "explain matches via coordination.scope" || bad "explain scope"
 "$C" explain "$T/nonexistent" >/dev/null 2>&1; [ $? -ne 0 ] && ok "explain on missing path fails" || bad "explain missing"
+# ---- RFC-0003: Crumb Compiler (compile / verify / status / propose / context) ----
+printf 'abc' | "$C" sha256 | grep -q '^ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad$' && ok "C3 sha256 known vector (abc)" || bad "C3 sha256 vector"
+head -c 300000 /dev/urandom > "$T/rand.bin"
+[ "$("$C" sha256 < "$T/rand.bin")" = "$(sha256sum < "$T/rand.bin" | cut -c1-64)" ] && ok "C3 sha256 matches sha256sum on 300 KB" || bad "C3 sha256 vs sha256sum"
+CC3="$T/cc3"; mkdir -p "$CC3/src/deep" "$CC3/docs" "$CC3/evidence" && cd "$CC3" || exit 1
+git init -q -b main . && echo 'int a;' > src/a.c && echo 'int b;' > src/deep/b.c && echo n > docs/n.md && echo r > evidence/r.json && echo top > README
+"$C" seed . >/dev/null; git add -A && git -c user.name=t -c user.email=t@t commit -qm init
+"$C" status . | grep -q 'UNCOMPILED' && ok "C3 status: fresh crumbs are UNCOMPILED" || bad "C3 status uncompiled"
+"$C" verify . >/dev/null; [ $? -eq 1 ] && ok "C3 verify exits 1 on uncompiled crumbs" || bad "C3 verify uncompiled"
+"$C" compile . | grep -q 'rewritten' && ok "C3 compile runs" || bad "C3 compile"
+git add -A && git -c user.name=t -c user.email=t@t commit -qm compiled
+"$C" compile . | grep -q ', 0 rewritten' && ok "C3 fixed point: second compile rewrites 0" || bad "C3 fixed point"
+"$C" verify . | grep -q 'OK' && ok "C3 verify OK after compile" || bad "C3 verify OK"
+git -c user.name=t -c user.email=t@t commit -q --allow-empty -m "empty" && "$C" verify . >/dev/null && ok "C3 empty commit keeps verify OK (stamps are not inputs)" || bad "C3 empty commit"
+echo 'int b2;' > src/deep/b.c; git add -A
+out=$("$C" verify .); st=$(echo "$out" | grep '^STALE' | awk '{print $2}' | sort | tr '\n' ' ')
+[ "$st" = ". src src/deep " ] && ok "C3 touching src/deep/b.c: STALE is exactly src/deep, src and the root (ancestors only)" || bad "C3 ancestor-only staleness (got: $st)"
+echo "$out" | grep -q 'docs\|evidence' && bad "C3 sibling dirs stay current" || ok "C3 sibling dirs stay current"
+"$C" compile . >/dev/null; "$C" verify . >/dev/null && ok "C3 compile after the change: verify OK again" || bad "C3 recompile"
+before=$(jq -r .purpose docs/.crumb); sem0=$(jq -cS '{purpose,layer,invariants,exports,related,boundaries}' src/.crumb)
+"$C" propose docs "Design notes and decision records" | grep -q PROPOSED && ok "C3 propose prints PROPOSED" || bad "C3 propose"
+[ "$(jq -r .purpose docs/.crumb)" = "$before" ] && [ "$(jq -r .extensions.proposed.purpose docs/.crumb)" = "Design notes and decision records" ] && [ "$(jq -r .extensions.proposed.status docs/.crumb)" = PROPOSED ] && ok "C3 propose never changes .purpose, writes extensions.proposed" || bad "C3 propose purpose"
+[ "$sem0" = "$(jq -cS '{purpose,layer,invariants,exports,related,boundaries}' src/.crumb)" ] && ok "C3 compile never touches the semantic kernel" || bad "C3 kernel"
+ctx=$("$C" context src/deep/b.c)
+for h in 'TREE' 'YOUR TASK TOUCHES' 'READ THESE CRUMBS' 'CURRENT CONFLICTS' 'RELEVANT CONTINUATION'; do
+  echo "$ctx" | grep -q "^== $h" && ok "C3 context prints section: $h" || bad "C3 context section: $h"
+done
+"$C" verify . >/dev/null && ok "C3 propose does not stale crumbs (proposal is not a digest input)" || bad "C3 propose stale"
+echo x >> src/a.c; git add -A; "$C" context src/a.c | grep -q "^Crumbs STALE: 2 .*run crumb compile" && ok "C3 context freshness: STALE: n (run crumb compile)" || bad "C3 context stale line"
+"$C" compile . >/dev/null; "$C" context src | grep -q '^Crumbs CURRENT at HEAD' && ok "C3 context freshness: CURRENT at HEAD <sha>" || bad "C3 context current line"
+"$C" context src/deep/b.c | grep -q 'src/.crumb' && "$C" context src/deep/b.c | grep -q 'src/deep/.crumb' && ok "C3 context recommends the path's ancestor crumbs" || bad "C3 context ancestors"
+"$C" context . | grep -q 'PROPOSED: Design notes' && ok "C3 context shows PROPOSED purpose for a child without .purpose" || bad "C3 context proposed"
+"$C" claim lane-x src src/a.c "ctx test" >/dev/null; "$C" context src/a.c | grep -q 'held by lane-x' && ok "C3 context lists a shared-store lock on the path" || bad "C3 context conflict"
+"$C" context docs | grep -q 'held by lane-x' && bad "C3 context ignores locks elsewhere" || ok "C3 context ignores locks elsewhere"
+"$C" close lane-x src src/a.c >/dev/null
+[ "$("$C" context src | wc -l)" -lt 80 ] && ok "C3 context output is bounded" || bad "C3 context bounded"
+# differential vs the shell reference (needs jq, git, sha256sum)
+REF="$HERE/crumb-compile.sh"
+if command -v jq >/dev/null 2>&1 && [ -f "$REF" ]; then
+  diffgen() { # $1 repoA (shell) $2 repoB (C): every .crumb extensions.generated minus stamps must match
+    r=0; for f in $(cd "$1" && find . -name .crumb -not -path './.git/*'); do
+      a=$(jq -cS '.extensions.generated | del(.generated_at_commit, .compiled_at)' "$1/$f"); b=$(jq -cS '.extensions.generated | del(.generated_at_commit, .compiled_at)' "$2/$f")
+      [ "$a" = "$b" ] || { echo "DIFF $f"; r=1; }
+    done; return $r; }
+  cd "$T" || exit 1; rm -rf dA dB; git clone -q --no-hardlinks "$CC3" dA && git clone -q --no-hardlinks "$CC3" dB
+  (cd dA && sh "$REF" compile . >/dev/null) && (cd dB && "$C" compile . >/dev/null)
+  diffgen "$T/dA" "$T/dB" >/dev/null && ok "C3 differential on scratch repo: generated blocks identical to crumb-compile.sh" || bad "C3 differential scratch"
+  (cd dB && sh "$REF" verify . >/dev/null) && (cd dA && "$C" verify . >/dev/null) && ok "C3 each tool verifies the other's output" || bad "C3 cross verify"
+  TOP=$(git -C "$HERE" rev-parse --show-toplevel 2>/dev/null)
+  if [ -n "$TOP" ]; then
+    rm -rf eA eB; git clone -q --no-hardlinks "$TOP" eA && git clone -q --no-hardlinks "$TOP" eB
+    (cd eA && sh "$REF" compile . >/dev/null) && (cd eB && "$C" compile . >/dev/null)
+    diffgen "$T/eA" "$T/eB" > "$T/diff.out" && ok "C3 differential on this repo: generated blocks identical" || { cat "$T/diff.out"; bad "C3 differential this repo"; }
+    cmp -s "$T/eA/.crumb" "$T/eB/.crumb" 2>/dev/null; sed '/compiled_at/d' "$T/eA/tools/.crumb" > "$T/ta"; sed '/compiled_at/d' "$T/eB/tools/.crumb" > "$T/tb"
+    cmp -s "$T/ta" "$T/tb" && ok "C3 whole .crumb file byte-identical apart from compiled_at (same commit stamp)" || bad "C3 file bytes"
+  else echo "NOT_RUN differential on this repo (not in a git checkout)"; fi
+else echo "NOT_RUN C3 differential (jq or crumb-compile.sh missing)"; fi
 exit $fail

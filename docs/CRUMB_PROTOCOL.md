@@ -21,6 +21,8 @@ If the Rust crate and RFC-0001 disagree, RFC-0001 wins. The tool leaves legacy f
 
 RFC-0002 (`docs/CRUMB_PROTOCOL_RFC_0002.md`) extends this protocol with a repository-wide coordination plane shared by all worktrees, `crumb explain`, and Continuation Crumbs for session handoff; agent workflow in `docs/crumbs/AGENT_WORKFLOW.md`.
 
+RFC-0003 (`docs/CRUMB_PROTOCOL_RFC_0003.md`) adds the Crumb Compiler: structural crumb data is generated (`crumb compile`), checked by `crumb verify` in CI, and read through `crumb context`.
+
 ## The two files
 
 - `.crumb`: durable, committed, JSON. Required: `schema_version` ("1.0.0"), `name`, `purpose`. Optional: `layer`, `above`, `below`, `invariants`, `exports`, `extensions`.
