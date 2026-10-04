@@ -1,7 +1,5 @@
 # License Notice
 
-This repository package was prepared as architecture documentation for the AIEN ecosystem.
+This repository is licensed under the GNU Affero General Public License v3.0 or later (AGPL-3.0-or-later). The full text is in [LICENSE](LICENSE).
 
-The existing AIEN repositories currently contain different licensing arrangements. Do not infer a new license for this documentation from this file alone.
-
-Before public publication of `aien-dev/aien-architecture`, explicitly select the intended license and add the complete canonical license text. If the architecture repository is intended to follow `aien-sovereign-core`, copy the then-current canonical `LICENSE` from that repository rather than maintaining a divergent copy here.
+Decision: Drake Stapleton, 2026-10-04. All public aien-dev repositories moved to AGPL-3.0-or-later on that date.
