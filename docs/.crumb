@@ -56,7 +56,7 @@
         },
         {
           "digest": "2812aeb880835afae274e0a164ed976362b191717bd958d54a4c5c5f48ed05af",
-          "last_commit": "d2a49e0",
+          "last_commit": "9403e34",
           "name": "plans",
           "purpose": "Directory docs/plans. Purpose not yet described by a human."
         },
@@ -74,14 +74,14 @@
         }
       ],
       "children_root": "sha256:bde813bd3da2022fdea0b51909fffcaf9185928075df4868d9520f7c42fcff99",
-      "compiled_at": "2026-10-05T12:34:11Z",
+      "compiled_at": "2026-10-05T17:52:10Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:7a274e73dd98c83d87711fb503bf433361846084959462cc56e01a70b11f1871",
+      "digest": "sha256:4e1642f63092b7a66dba3b40e8cffe7a748d025a201ed2effb4c37ad1ab81957",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 121,
-      "generated_at_commit": "d2a49e0fb4dac777271bf7c184ff048d5c63b4ba",
-      "source_tree": "sha256:11300a4e990a14754138c6d4a38cb2c2288a6b90136d405792df12cf49089d6b"
+      "generated_at_commit": "d0fe710a7289b7ad025dd73b062835fbb75f659c",
+      "source_tree": "sha256:2efff52ac67b33d36a95ee3da2dc3c342a8d91edd802a07f126658db46efb08e"
     },
     "owner_lane": "",
     "provenance": {

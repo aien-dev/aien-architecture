@@ -75,6 +75,11 @@ omega #290 (the R15 sampler no longer leaves a 24 h `sleep` holding the quiet fl
 - **TRUST-1 M5:** 11 gates need attended hardware boots or operator ceremonies; 5 have no implementation; the
   Gate 7 preflight refuses because Secure Boot is off on this machine (operator setting). Not qualified.
 - **Physical machine:** every AIENOS result is QEMU. Nothing here qualifies the Spark booting AIENOS.
+- **Contract pins in the manifest are wrong** (found 2026-10-05 by `scripts/check_candidate_pins.sh`). `CAND-1.toml`
+  `[contracts]` pins the crumb-spec and spark-crumbs heads (`10b8251`, `98bb7cb`); the sovereign-core `Cargo.lock` at
+  `2eec75b` consumes `24194d1` and `9355a92` (two commits behind each head, the revisions CAND-0 pins). The built
+  executables used the consumed revisions, so the digests are unaffected; the manifest line is wrong. A frozen
+  manifest is not edited; CAND-2 pins the consumed revisions.
 - **Path independence** tested 2026-10-05 by a build at a second checkout path (`CAND1-PATH2-2eec75b`): 8 of 9
   executables reproduce the CAND-1 digests, including aien-cli. omegatool (`omega-runtime`) does not: it embeds the
   physics checkout path in three strings (control: the second-path omega checkout built with the physics path set
