@@ -38,8 +38,17 @@ while IFS= read -r line; do
   if [[ "$line" =~ ^\[([A-Za-z0-9_.-]+)\][[:space:]]*(#.*)?$ ]]; then sec="${BASH_REMATCH[1]}."; continue; fi
 done < "$f"
 
-# first 40-hex token of a lock file (the rest of the line or file may be a comment)
-lock_sha() { grep -o -m1 '[0-9a-f]\{40\}' | head -1; }
+# The pin of a lock file: its first line that is not blank and not a comment must be exactly 40 lowercase hex
+# (comment lines after it are allowed). Anything else, or a failed read, prints nothing and fails. The read is
+# captured with its exit status before parsing: on a missing commit `gh api` prints an error body that itself
+# contains the 40-hex ref, which must never be taken for the file.
+read_lock() { # read_lock <repo> <sha> <path>
+  local text line
+  text=$(file_at "$1" "$2" "$3") || return 1
+  line=$(printf '%s\n' "$text" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//' | grep -v -m1 -e '^$' -e '^#')
+  [[ "$line" =~ ^[0-9a-f]{40}$ ]] || return 1
+  echo "$line"
+}
 
 # git revision of the aien-dev repo $2 in Cargo.lock text $1: every package whose source is that repo (a repo
 # that ships several crates, such as aien-protocols, counts once); fails on zero or several revisions
@@ -61,7 +70,7 @@ same() { # same <label> <pinned> <consumed>
 sc="${kv[commits.aien-sovereign-core]:-}"; om="${kv[commits.omega]:-}"
 [ -n "$sc" ] && [ -n "$om" ] || { err "manifest lacks commits.aien-sovereign-core or commits.omega"; exit 1; }
 
-if sc_omega=$(file_at aien-sovereign-core "$sc" omega.lock | lock_sha) && [ -n "$sc_omega" ]; then
+if sc_omega=$(read_lock aien-sovereign-core "$sc" omega.lock); then
   same "sovereign-core omega.lock -> commits.omega" "$om" "$sc_omega"
 else err "cannot read omega.lock at aien-sovereign-core $sc"; sc_omega=""; fi
 
@@ -74,10 +83,9 @@ if cargo_lock=$(file_at aien-sovereign-core "$sc" Cargo.lock) && [ -n "$cargo_lo
   prot=$(cargo_rev "$cargo_lock" aien-protocols) || prot=""
 else err "cannot read Cargo.lock at aien-sovereign-core $sc"; prot=""; fi
 
-read_omega_lock() { file_at omega "$om" "$1" | lock_sha; }
-om_physics=$(read_omega_lock physics.lock) || om_physics=""
-om_aienos=$(read_omega_lock aienos.lock) || om_aienos=""
-om_argus=$(read_omega_lock argus.lock) || om_argus=""
+om_physics=$(read_lock omega "$om" physics.lock) || om_physics=""
+om_aienos=$(read_lock omega "$om" aienos.lock) || om_aienos=""
+om_argus=$(read_lock omega "$om" argus.lock) || om_argus=""
 [ -n "$om_aienos" ] && same "omega aienos.lock -> commits.aienos" "${kv[commits.aienos]:-}" "$om_aienos" \
   || err "cannot read aienos.lock at omega $om"
 if [ -n "${kv[commits.physics]:-}" ]; then

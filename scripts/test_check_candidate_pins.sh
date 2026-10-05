@@ -11,7 +11,8 @@ SP=7777777777777777777777777777777777777777; AR=88888888888888888888888888888888
 OTHER=9999999999999999999999999999999999999999
 cat > "$tmp/stub.sh" <<S
 #!/usr/bin/env bash
-cat "$tmp/files/\$1/\$2/\$3" 2>/dev/null
+# like gh api on a missing file or commit: an error body that contains the requested ref, and exit 1
+cat "$tmp/files/\$1/\$2/\$3" 2>/dev/null || { echo "{\"message\":\"No commit found for the ref \$2\"}"; exit 1; }
 S
 chmod +x "$tmp/stub.sh"; export CAND_FILE_AT="$tmp/stub.sh"
 
@@ -100,6 +101,14 @@ tree; printf '\n[[package]]\nname = "crumb-spec-extra"\nsource = "git+https://gi
 expect 1 "two revisions of one repo in Cargo.lock" "$tmp/m.toml" "several"
 tree; sed -i "s/crumb-spec?rev=$CS#$CS/crumb-spec-fork?rev=$CS#$CS/" "$tmp/files/aien-sovereign-core/$SC/Cargo.lock"
 expect 1 "a repo whose name only starts with the contract name does not count" "$tmp/m.toml" "crumb-spec: git revision none"
+tree
+# a missing lock whose error body carries the omega ref must not read as "argus.lock pins omega"
+tree; rm "$tmp/files/omega/$OM/argus.lock"; sed "s/^omega-argus-lock = .*/omega-argus-lock = \"$OM\"/" "$tmp/m.toml" > "$tmp/i.toml"
+expect 1 "error body with the ref is not a lock file" "$tmp/i.toml" "consumed_pins.omega-argus-lock: its lock file could not be read"
+tree; printf '# pinned after %s\n%s\n' "$OTHER" "$AO" | serve "omega/$OM/aienos.lock"
+expect 0 "a leading comment with a sha is skipped" "$tmp/m.toml"
+tree; printf '%s %s\n' "$AO" "trailing words" | serve "omega/$OM/aienos.lock"
+expect 1 "first line must be exactly the sha" "$tmp/m.toml" "cannot read aienos.lock"
 tree
 sed '/^aien-sovereign-core = /d' "$tmp/m.toml" > "$tmp/h.toml"
 expect 1 "manifest without sovereign-core" "$tmp/h.toml" "lacks"
