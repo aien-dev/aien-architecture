@@ -4,13 +4,13 @@ schema = "CandidateManifestV1"
 id = "CAND-0"
 status = "frozen"
 created = "2026-10-05"
-note = "Code candidate for the 2026-10-05 overnight qualification campaign. Frozen 2026-10-05T03:25Z from GitHub mains plus the sovereign-core omega.lock chain (omega) and the omega physics.lock (physics). Replaces the 2026-10-01 draft CAND-0 (heads 25b4a51, bb3a5f4, e58742a, 4a4877a, f11ac55), which was never frozen and never qualified anything; it is in git history. Evidence publication commits are not code candidates. Executable digests were produced by lane L1-CAND on 2026-10-05, host only, from clean worktrees at these commits; build recipe and gaps are in CAND-0.gates.md."
+note = "Code candidate for the 2026-10-05 overnight qualification campaign. Frozen 2026-10-05T03:25Z from GitHub mains plus the sovereign-core omega.lock chain (omega) and the omega physics.lock (physics), with aien-protocols pinned to the revision sovereign-core Cargo.lock consumes (main 3a4cdbe is not used by the build). Replaces the 2026-10-01 draft CAND-0 (heads 25b4a51, bb3a5f4, e58742a, 4a4877a, f11ac55), which was never frozen and never qualified anything; it is in git history. Evidence publication commits are not code candidates. Executable digests were produced by lane L1-CAND on 2026-10-05, host only, from clean worktrees at these commits; build recipe and gaps are in CAND-0.gates.md."
 
 [commits]
 omega = "e5593ae488fcb9038557a4317a07faa7625649a3"
 aienos = "9d41efc9d1bea31be0640ca70eeeec9d1d000fad"
 aien-sovereign-core = "0c1d249f2d119c7c2d726a2d252dc913e6185d28"
-aien-protocols = "3a4cdbe8d360a2e1ddb3e8b108684048b9d4ba10"
+aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
 aien-architecture = "c5d80978c7a22cc039e67def9745cede5010f388"
 physics = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
 interplane = "58c5198a17b94bd8830305e81d3a82a369ee3bd4"
@@ -22,8 +22,8 @@ interplane = "58c5198a17b94bd8830305e81d3a82a369ee3bd4"
 crumb-spec = "24194d1b7917ef19244aae6bcaff510686b75fef"
 spark-crumbs = "9355a92bc9adfe95a6ec5f8ac926f38a0b6e7db2"
 
-# Informational: pins that the pinned repos themselves hold. These are not the same as [commits] in three
-# places (see CAND-0.gates.md, reproducibility gaps G1 to G3). Not checked by check_candidate.sh.
+# Informational: pins that the pinned repos themselves hold. These are not the same as [commits] in two
+# places (see CAND-0.gates.md, reproducibility gaps G1 and G3; G2 is closed). Not checked by check_candidate.sh.
 [consumed_pins]
 sovereign-core-omega-lock = "e5593ae488fcb9038557a4317a07faa7625649a3"
 sovereign-core-cargo-lock-aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"

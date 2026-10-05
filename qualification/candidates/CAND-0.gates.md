@@ -41,7 +41,7 @@ aien-architecture and interplane (no executables in the manifest for them). aien
 ## 3. Reproducibility gaps (precise)
 
 - G1, aienos pin. omega `aienos.lock` holds d39dd5bc3deb (an ancestor of the CAND-0 aienos 9d41efc9d1be). The omega gates that build the aienos capability library bind to d39dd5b, and `c4_requal.sh` will print `NOT_BOUND` for CAND-0 until omega's `aienos.lock` equals the candidate or a new candidate is cut. omega `argus.lock` pins b375dcaa2887 on branch `feat/argus-0` (OBSERVED, file contents).
-- G2, aien-protocols pin. aien-sovereign-core builds against `aien-protocols` rev 7ac6facb630c through git dependencies in `Cargo.lock` (4 entries, also crumb-spec 24194d1b7917 and spark-crumbs 9355a92bc9ad). The CAND-0 pin 3a4cdbe8d360 is 8 commits later (mostly `specs/` and licence changes; `crates/` has 32 changed files, INFERRED to be metadata and crumb files, not read in full). So the pinned commit is not what the build consumes. The contracts in the manifest follow `Cargo.lock`, not the archived repo HEADs.
+- G2, aien-protocols pin (closed in the manifest). The CAND-0 pin is 7ac6facb630ca7e9a6ab4125b292203fe2bb6687, the revision aien-sovereign-core 0c1d249 `Cargo.lock` consumes through git dependencies (4 entries; the same lock also holds crumb-spec 24194d1b7917 and spark-crumbs 9355a92bc9ad, which the `[contracts]` pins follow). aien-protocols main, 3a4cdbe8d360, is 8 commits later (mostly `specs/` and licence changes) and is not what the build uses; it is not in the candidate.
 - G3, crumb compiler. omega and aienos `crumb.lock` pin aien-architecture d0f0b95d344b; CAND-0 pins c5d80978c7a2. `git diff d0f0b95 c5d80978 -- tools/crumb` is empty (OBSERVED), so the crumb tool source is identical.
 - G4, no toolchain pin. No `rust-toolchain` file in any pinned repo; CI uses the floating stable channel. This lane used rustc 1.98.1.
 - G5, network and cache. The builds used `--offline` and succeeded only because `~/.cargo` already holds the crates and the three git checkouts (no `vendor/` directory). A cold machine needs crates.io and GitHub. UNVERIFIED on a cold cache.
@@ -113,7 +113,7 @@ scripts and test headers. Status for every row except the zero-CUDA rows: NOT_RU
 | end to end harness | `bash scripts/verify_all.sh` (`AIENOS_STRICT=1` turns a skipped step into a failure) | QEMU |
 | Machine 1 and hardware | any physical aienos claim | BLOCKED_OPERATOR / BLOCKED_HARDWARE until Drake provides the machine; never inferred from QEMU |
 
-### aien-protocols (3a4cdbe), aien-architecture (c5d8097), interplane (58c5198)
+### aien-protocols (7ac6fac), aien-architecture (c5d8097), interplane (58c5198)
 | Repo | Command | Class |
 |---|---|---|
 | aien-protocols | `cargo fmt --all -- --check`; `cargo check --workspace --all-targets`; `cargo clippy --workspace --all-targets -- -D warnings`; `cargo test --workspace --verbose` | host |
