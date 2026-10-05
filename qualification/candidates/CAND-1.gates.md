@@ -26,7 +26,7 @@ built, hashed, deleted and built again. Evidence: `CAND1-BUILD-2eec75b/summary.t
 | R16 | G1/G2 loop inventory, every repo at its CAND-1 commit | PASS | 513 sites, 0 unclassified, 0 stale, no WARN; `CAND1-R16INV-cb06d08` (before the SC-126..129 rows: 4 unclassified, FAIL, kept) |
 | CI | GitHub checks on the CAND-1 commits | PASS | omega 39/39 (2 skipped), aienos 14/14, interplane 8/8, sovereign-core 1/1 (Workspace Verification & Invariant Audit) |
 | AIENOS | ck_gates (QEMU) | 18 PASS, 0 FAIL, 2 MISSING_IMPLEMENTATION | `CAND1-CKGATES-bbad5e4`; KEYBOARD (no xHCI/USB HID driver in the C kernel), M0_ROLLBACK (C loader A/B parked) |
-| AIENOS | TRUST-1 M5 qualification | NOT_QUALIFIED: 20 PASS, 11 BLOCKED, 5 MISSING_IMPLEMENTATION, 1 FAIL that is BLOCKED_OPERATOR | `CAND1-TRUST-bbad5e4`; the FAIL is `t1_gate7_preflight`: Secure Boot is off on this machine (operator setting since 2026-10-01), so the preflight correctly refuses |
+| AIENOS | TRUST-1 M5 qualification | NOT_QUALIFIED: 20 PASS, 11 BLOCKED, 5 MISSING_IMPLEMENTATION, 1 FAIL (fix needs an operator action) | `CAND1-TRUST-bbad5e4`; the FAIL is `t1_gate7_preflight`: Secure Boot is off on this machine (operator setting since 2026-10-01), so the preflight correctly refuses |
 | Native model | strict real-model gate (TinyLlama, GB10, production build, 0 fallback) | PASS | `CAND1-NATIVE-2eec75b/receipt-strict-gate.json` |
 | Native model | Omega vs own CPU reference | PASS | `receipt-omega-vs-ref.json` |
 | Native model | Omega vs independent HF oracle | PASS | step-0 max abs logit difference 0.0435 against bound 0.15, same token; `receipt-omega-vs-oracle.json` |
