@@ -1,0 +1,102 @@
+# Candidate manifest, schema CandidateManifestV1. See docs/qualification/CANDIDATE.md.
+# Required gates, build recipe and known reproducibility gaps: qualification/candidates/CAND-0.gates.md; results: CAND-2.gates.md
+schema = "CandidateManifestV1"
+id = "CAND-2"
+status = "frozen"
+created = "2026-10-05"
+note = "CAND-1 plus the 2026-10-05 cand3 campaign fixes; supersedes CAND-1 (CANDIDATE.md freeze rule 1: CAND-1.toml is not edited). Frozen 2026-10-05T17:57Z from GitHub mains and the lock chain (sovereign-core omega.lock -> omega; omega physics.lock, aienos.lock, argus.lock). Omega changes since CAND-1 (cb06d08..79a805d): source code changed in #296 (omegatool resolves the physics checkout at run time, closing CAND-1's path-independence FAIL) and #300 (operator emergency stop in the runtime; the R16 G6 item stays MISSING_IMPLEMENTATION because the production program does not wire it); the Makefile changed in #286, #294, #295, #296, #298, #300; the rest is tools, tests, docs and evidence (#170, #287-#293, #297, #299). Of the nine executables only omegatool's digest changed. Sovereign-core changes only omega.lock (#215). The R16 map lives in omega; the map-only commit c62f47b (#301) is code-identical to 79a805d (git diff 79a805d c62f47b touches only spec/r16-orchestrator-retirement-map.md and .crumb files) and is the tree the CAND-2 R16 harness runs from. [contracts] pin the revisions sovereign-core Cargo.lock consumes; CAND-1.toml pinned the two heads instead (recorded in CAND-1.gates.md section 3). Executable digests: two clean double builds from different roots (CAND2-BUILD-A, CAND2-BUILD-B), all 18 builds identical; recipe and results in CAND-2.gates.md."
+
+[commits]
+omega = "79a805d162bfded8c5ce5a4c14f7c29e79025f39"
+aienos = "bbad5e4250e57f8cbd1be4cf1390109aa65ef92c"
+aien-sovereign-core = "286fa9b7afbc71f06ed7e1dd29f68f36714fd92a"
+aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
+aien-architecture = "7390f5d963c54984b89c8a3d6dee4ab0e990b6c5"
+physics = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
+interplane = "204996832b1810673644169716518d42dcda3e0a"
+
+# The revisions the candidate code consumes (aien-sovereign-core 286fa9b Cargo.lock, git dependencies; checked by
+# scripts/check_candidate_pins.sh). Both repos are archived; their heads (crumb-spec 10b8251, spark-crumbs 98bb7cb)
+# are 2 commits ahead and are not consumed.
+[contracts]
+crumb-spec = "24194d1b7917ef19244aae6bcaff510686b75fef"
+spark-crumbs = "9355a92bc9adfe95a6ec5f8ac926f38a0b6e7db2"
+
+# Pins that the pinned repos themselves hold; scripts/check_candidate_pins.sh checks the first five against the lock
+# files. The crumb.lock pin differs from [commits] aien-architecture (gap G3 in CAND-0.gates.md; the crumb tool
+# source is identical, see CAND-2.gates.md section 1).
+[consumed_pins]
+sovereign-core-omega-lock = "79a805d162bfded8c5ce5a4c14f7c29e79025f39"
+sovereign-core-cargo-lock-aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
+omega-physics-lock = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
+omega-aienos-lock = "bbad5e4250e57f8cbd1be4cf1390109aa65ef92c"
+omega-argus-lock = "b375dcaa2887d53cda407d773c2e4e489a0b1365"
+omega-and-aienos-crumb-lock-aien-architecture = "d0f0b95d344b4c6628c3d868346932fd247ce168"
+
+# SHA-256 of each built binary or image under test. Built on the Spark, host only, at the commits above, from two
+# roots (~/workspace/cand3-campaign/cand2/rootA and .../rootB/deeper/path-two), each with its own fresh CARGO_HOME
+# filled by cargo fetch --locked; every item built twice per root: 4 identical builds each. aien-cli contains no
+# home-directory path and no cargo registry path. omega-runtime is new (CAND-1 f96bdb7c embedded the physics
+# checkout path); the other eight equal the CAND-1 digests, because no code they contain changed.
+[executables]
+omega-runtime = "5a3084278ce62868b3655978bc161a0c635b368bddc588963849dd2c5cb343cd"
+omega-gpu-engine-lib = "a4af088104203c9ce1b92b6787f140d822a8039ac86349a0438fb7a379c0fc5c"
+aien-cli-native-release = "3a17ee79a238ad223fd59f4436d98906a0144b8d5ac47809da194a9ac1d493db"
+aien-proof = "a37247a121eb96f56a637d5edf0712a636b341b9c02478dce5c119b559db5430"
+aien-test = "34ae31e5b16b078c6e41ca219c12e7895269542480c1b3509618ea3cd2c576ef"
+aienos-boot-image = "8b1595cc8e6729d7531a08f2ff19ceb9cddc6eba731f4efb1543a2ee37da5a07"
+aienos-ck-core-image = "a21218dc1df890274e1b90f9f8e4a3f3d374fd161b274836abcd462e3a195a82"
+physics-boot-bin = "4b22a08cd408b5cf90258af13b833b97a5211b4d2480fa74be357228f4aed3bd"
+atlas-m2-boot-bin = "1d6d75a6881bb9d9b17a777ec7dee885780386c4699d776adc7cc1c277b09012"
+
+# Model inputs for the real-model gates (inputs, never executables): unchanged from CAND-1.
+[model]
+model-id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+format = "safetensors, torch_dtype bfloat16"
+model-safetensors-sha256 = "6e6001da2106d4757498752a021df6c2bdc332c650aae4bae6b0c004dcf14933"
+model-safetensors-bytes = "2200119864"
+tokenizer-json-sha256 = "bcd04f0eadf90287bd26e1a183ac487d8a141b09b06aecb7725bbdd343640f2e"
+config-json-sha256 = "486bedda3a6988332e60d9638a09ca4b260d34ebcf1b19e22cf3b140b63d8fe9"
+geometry = "LlamaForCausalLM: layers 22, hidden 2048, heads 32, kv heads 4, head_dim 64 (hidden/heads), intermediate 5632, vocab 32000, max positions 2048, rope_theta 10000.0, rms_norm_eps 1e-05"
+oracle-fixture-safetensors-sha256 = "4707e3ba5c75f6c953217235528b38b3dffa334f68b8356f7356f9a5f6a6a6ea"
+oracle-fixture-manifest-sha256 = "d9871e7834513dfff5d453e6915440e4976098a7e84bc75086a3ab7833dcefd9"
+
+[toolchain]
+rustc = "rustc 1.98.1 (48a229cea 2026-09-01), LLVM 22.1.8, host aarch64-unknown-linux-gnu"
+cargo = "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+cc = "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+make = "GNU Make 4.3"
+binutils = "GNU ld and ar 2.42 (Ubuntu)"
+cross-cc = "aarch64-linux-gnu-gcc, for physics m2_build.sh and the aienos C kernel (host is aarch64)"
+mojo = "not used by the default build (spark-max-cabi is opt-in since sovereign-core #212)"
+rust-toolchain-file = "none in any pinned repo (gap G4)"
+
+# What was built and how. Script: ~/workspace/cand3-campaign/cand2/cand2_build.sh (copy in each evidence directory).
+[build]
+physics = "./m2_build.sh (physics has no Makefile; omega compiles physics m16/nvrm sources directly). physics.bin and atlas_m2.bin rebuild byte for byte equal to the committed files."
+omega = "make -j6 PHYSICS_DIR=<physics worktree> OUT_DIR=build/rb all libomega_gpu"
+aien-sovereign-core = "cargo fetch --locked into a fresh CARGO_HOME, then scripts/repro-build.sh --offline (cargo build --release --locked with --remap-path-prefix for CARGO_HOME and the repo root) -p aien-cli -p aien-proof -p aien-test, default features (dev-fallback off), AIEN_OMEGA_DIR and AIEN_PHYSICS_DIR set, AIEN_DEV_FALLBACK and AIEN_FORCE_CPU_STUB unset"
+release-profile = "opt-level 3, lto true, codegen-units 1, panic abort, strip true (workspace Cargo.toml)"
+aienos = "make -C native/kernel -j4, then make -C native/kernel -j4 full (core image and full image)"
+aien-cli-target-dir = "<root>/wt-sc/target-rb (root A and root B)"
+native-engine-linked = "cargo:rustc-cfg=has_omega_gpu printed by crates/aien-omega-gpu/build.rs; aien-cli carries the string OmegaGb10Backend (native Omega engine, no CUDA, NVIDIA GB10 sm_121)"
+
+# Environment of the production configuration: unchanged from CAND-1.
+[env]
+AIEN_DEV_FALLBACK = "unset (production strict); CI sets 1 for host test runs, which a strict receipt rejects"
+AIEN_FORCE_CPU_STUB = "unset (would force the CPU stub library)"
+AIEN_OMEGA_DIR = "omega checkout at omega.lock, required for the native engine link"
+AIEN_PHYSICS_DIR = "physics checkout at omega physics.lock, required when physics is not at <omega>/../physics"
+AIEN_OMEGA_GPU_LIB = "unset (would link a prebuilt archive without a sha check)"
+AIEN_GPU_BACKEND = "omega demands the native backend at run time; AIEN_REQUIRE_BLACKWELL does the same"
+AIEN_E2E_CHECKPOINT = "directory of the TinyLlama checkpoint for the real-model gates"
+AIEN_MODEL_PATH = "safetensors file for aien-cli; with AIEN_TOKENIZER_PATH, AIEN_MODEL_DIR, AIEN_REQUIRE_CHECKPOINT=1 (no fallback to reference weights)"
+
+[hardware]
+machine = "spark-b87b, NVIDIA DGX Spark (GB10)"
+gpu = "NVIDIA GB10, Blackwell, part 2E12-275-A1, VBIOS 9A.0B.2D.00.00, driver 580.173.02"
+kernel = "Linux 7.0.0-1019-nvidia, aarch64"
+os = "Ubuntu 24.04.5 LTS"
+cpu = "20 cores: Cortex-X925 and Cortex-A725"
+memory = "127598528 kB"
+gpu-load-note = "At freeze (17:57Z) the GPU held one resident process of another account (atlas image python, 18.4 GB, 0 % utilization); no other GPU or build job. Chip timing results state the load they ran under (CAND-2.gates.md)."
