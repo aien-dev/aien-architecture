@@ -159,7 +159,7 @@ Branch `experiment/ternary-semantics` `ae1e2a3`, spec says PARKED 2026-09-26. 18
 
 ## 13. Conflicts
 
-1. **R16 status.** R16 is COMPLETE and CLOSED (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `22d7a79a...`). The runtime-edit freeze on `omega/src/runtime/` is LIFTED.
+1. **R16 status.** R16 was recorded COMPLETE and CLOSED (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `22d7a79a...`); correction 2026-10-05: that is a historical PASS at `850fc54`, the receipt is INVALID as a current claim, requalification at `3108fc2` recorded R16 FAIL, and R16 is NOT requalified on CAND-0 (omega `evidence/REQUAL-3108fc2/`, `reports/L2-EVID.md`). The runtime-edit freeze on `omega/src/runtime/` is LIFTED.
 2. **Three machine-identity shapes.** `CqCandidate.machine_id` is `uint32_t` (`src/runtime/rx_capq.h:107`); FORGE V2 `machine_identity` is 32 bytes; OS-0010 `MachineId` is opaque. Not reconciled (FORGE V2 spec §14 Q4).
 3. **`rx_contract` is exact-only** (`rx_contract.h:75-99`); ADR 0018 §3.1 requires ULP, relative and distributional bounds.
 4. **Program id v2 is scalar-u64-unary only** (`omega_program.h:43-53`); cannot name any tensor, float or residue op.
