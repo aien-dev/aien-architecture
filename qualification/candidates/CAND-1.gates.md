@@ -2,7 +2,7 @@
 
 CAND-1 is CAND-0 plus the 2026-10-05 overnight fixes (see `CAND-1.toml` note). Frozen 2026-10-05T05:35Z.
 Evidence lives on the Spark under `~/workspace/evidence-out/CAND1-*`. The campaign ledger is
-`~/handoffs/2026-10-05-overnight-campaign.md`. Statuses: PASS, FAIL, NOT_RUN, BLOCKED_HARDWARE,
+`~/handoffs/2026-10-05-overnight-campaign.md`. Published copies (immutable, with SHA256SUMS): omega `evidence/CAND1-AUDIT-20261005` (omega #288) and `evidence/CAND1-QUIET-AUDIT-20261005` (omega #292), whose `INDEX.md` maps each claim below to its artifact. Statuses: PASS, FAIL, NOT_RUN, BLOCKED_HARDWARE,
 BLOCKED_OPERATOR, MISSING_IMPLEMENTATION. "Host" means no chip; "QEMU" qualifies nothing physical.
 
 ## 1. Clean-worktree builds (host only)
@@ -80,4 +80,8 @@ omega #290 (the R15 sampler no longer leaves a 24 h `sleep` holding the quiet fl
   physics checkout path in three strings (control: the second-path omega checkout built with the physics path set
   back to the original reproduced the CAND-1 digest, so that path alone makes the difference). FAIL for
   omegatool; fixing it changes the binary and needs a new candidate.
+- **Clean reconstruction** 2026-10-05 (`CAND1-RECON-2eec75b`): fresh `git clone` of all four repos from GitHub at the
+  CAND-1 commits, an empty CARGO_HOME filled by `cargo fetch --locked`, then the same double build. Same result as
+  the second path: 8 of 9 match the CAND-1 digests and each item builds identically twice; omegatool differs only by
+  the embedded physics path. So the candidate rebuilds from the public GitHub sources (with this machine's toolchain), except omegatool.
 - **EST v5 D2** ran 2026-10-05 (clean window) and scored HELD_OUT_FAIL (PIT bin 0 = 0.0681, below 0.07; 22 of 23 statistics passed). It ran from omega branch `lane44/est-v5` and measures the machine's temperature forecasting, not the CAND-1 build, so it is not a CAND-1 gate result. Record: `docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md` section 10.
