@@ -37,7 +37,7 @@ still name CAND-1. They are not new runs.
 | Area | Gate | CAND-1 status | Why it carries |
 |---|---|---|---|
 | Native model | strict real-model gate; Omega vs CPU reference; Omega vs HF oracle; paged_attention_batch; runtime e2e; daemon; zero CUDA | PASS | aien-cli, aien-test and libomega_gpu.a digests identical; same model inputs |
-| Attention | GB10 attention timing, TinyLlama shape (quiet window 1) | PASS | gpu_attention_test is built from `tests/gpu_attention_test.c`, `src/omega_gpu_attention_api.h` and libomega_gpu.a: the two sources are unchanged cb06d08..79a805d, no CC or CFLAGS line changed, and the library digest is identical |
+| Attention | GB10 attention timing, TinyLlama shape (quiet window 1) | PASS | gpu_attention_test is built from `tests/gpu_attention_test.c`, `src/omega_gpu_attention_api.h` and libomega_gpu.a; the two sources are unchanged cb06d08..79a805d and CFLAGS lost only `-DOMEGA_PHYSICS_DIR` (#296), which neither file uses. Measured: built at cb06d08 and at 79a805d in the same worktree, the binary is byte-identical (sha256 e28bf26b...4299) and so is libomega_gpu.a (evidence `CAND2-ATTN-IDENTITY`, host build only) |
 | AIENOS | ck_gates (QEMU): 18 PASS, 2 MISSING_IMPLEMENTATION | as CAND-1 | aienos images identical |
 | AIENOS | TRUST-1 M5: NOT_QUALIFIED | as CAND-1 | aienos images identical; the attended steps are still blocked on the operator |
 | Continuity | M4_CONTINUITY, M4_RECOVERY, M4_ALLEN, M4_STORE_CRASH (QEMU only) | PASS (QEMU) | aienos images identical |
