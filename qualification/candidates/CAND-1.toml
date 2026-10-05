@@ -34,8 +34,9 @@ omega-and-aienos-crumb-lock-aien-architecture = "d0f0b95d344b4c6628c3d868346932f
 
 # SHA-256 of each built binary or image under test. Built on the Spark, host only, at the commits above.
 # aien-cli contains no home-directory path and no cargo registry path (0 matches each; sovereign-core #212 closed
-# G7 and G13). Both clean builds used the same target path, so independence from the build path is inferred from
-# that scan, not tested by a build at a second path.
+# G7 and G13). Second-path build 2026-10-05 (evidence CAND1-PATH2-2eec75b): 8 of these 9 digests are reproduced
+# from a different checkout path; omega-runtime (omegatool) is not, because it embeds the physics checkout path in
+# three strings (proven by a control build). Removing that path changes the binary, so it needs a new candidate.
 [executables]
 omega-runtime = "f96bdb7cd65e21bfed04532525ca424a810604b441d1cb1de70dbe1f6c0b6f30"
 omega-gpu-engine-lib = "a4af088104203c9ce1b92b6787f140d822a8039ac86349a0438fb7a379c0fc5c"
