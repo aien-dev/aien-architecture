@@ -42,24 +42,36 @@ still name CAND-1. They are not new runs.
 | AIENOS | TRUST-1 M5: NOT_QUALIFIED | as CAND-1 | aienos images identical; the attended steps are still blocked on the operator |
 | Continuity | M4_CONTINUITY, M4_RECOVERY, M4_ALLEN, M4_STORE_CRASH (QEMU only) | PASS (QEMU) | aienos images identical |
 
-## 3. Results that must be rerun on CAND-2 (omegatool changed)
+## 3. Results rerun on CAND-2 (omegatool changed)
 
-Every living-runtime result ran omegatool or binaries built from the changed omega tree, so none carries. They run in
-one quiet window under declared attempts (`~/workspace/cand3-campaign/cand2/DECLARED-ATTEMPTS.md`, sha256 announced
-before the window). Results are added to this section after the window, with an independent reconstruction of the
-verdict from the receipts.
+Every living-runtime result ran omegatool or binaries built from the changed omega tree, so none carries. They ran in
+one quiet window, 2026-10-05 18:04:14Z to 18:23:25Z, under `quietlock hold` (owner cand3-campaign), from the
+map-only harness commit c62f47b (code-identical to 79a805d) and physics 6d7cf0d, under declared attempts:
+`DECLARED-ATTEMPTS.md` sha256 `8a6e06dac775ed2e5c17b3a5c5ba96d80f457654803755f00c840110a56585cf`, announced before
+the window. Each attempt ran once; nothing was rerun or replaced. Evidence: `~/workspace/evidence-out/CAND2-LIVING-79a805d/`;
+its `CLAIM-INDEX.md` ties every claim below to a file copied under its sha256 in `receipts/`. An independent reader (its notes are the
+"Conditions and limits" section of `CLAIM-INDEX.md`) re-derived every status from the raw files before this page
+changed and agreed with each one.
 
-| Attempt | Gate | Status |
-|---|---|---|
-| A1 | R16 harness `tools/r16_qualify.sh` (omega c62f47b, code = 79a805d) | NOT_RUN (pending window) |
-| A1b | R11 living under load | NOT_RUN (pending window) |
-| A2 | R13 test build on silicon, candidate bound | NOT_RUN (pending window) |
-| A3 | production hygiene on silicon | NOT_RUN (pending window) |
-| A4 | COMPOSITION-2 GPU tier | NOT_RUN (pending window) |
-| A5 | CHIPWAIT campaign, 3 runs | NOT_RUN (pending window) |
-| A6 | M18 full qualification | NOT_RUN (pending window) |
-| A7 | R15 silicon performance acceptance | NOT_RUN (pending window); expected BLOCKED_INSTRUMENT while the SPBM energy reader is not loaded |
-| - | INTERPLANE offline gates: GitHub checks at the pinned commit 2049968 (interplane changed in #50-#68 and #208 since CAND-1: rust crates, adapters, conformance, bench, spec; CAND-1's result does not carry) | at freeze: 6 success, 2 in progress |
+| Attempt | Gate | Status | Evidence (sha256 prefix) |
+|---|---|---|---|
+| A1 | R16 harness `tools/r16_qualify.sh` | **not PASS** (R16_QUALIFY_RESULT=NOT_RUN): G1-G5 PASS; G6 MISSING_IMPLEMENTATION (11 of 12 items PASS, the operator emergency stop is not wired into the production program); G7 NOT_RUN (no R15 PASS exists); G8 outside the script. G6 and G7 were expected in the declaration | receipt `40742fde` |
+| A1b | R11 living under load | PASS: 436 checks, 0 failures, living run exercised (work moved from Cortex-A725 to Cortex-X925, AIEN noticed, Omega re-realized); load 1.09 at start | log `1ba30ea2` |
+| A2 | R13 test build on silicon, candidate bound | PASS (`candidate_bound` true, tree clean) | receipt `220b5256` |
+| A3 | production hygiene on silicon | PASS (link map clean, ARGUS linked and observing, refuses to run unobserved) | log `eeaecad7` |
+| A4 | COMPOSITION-2 GPU tier | PASS | receipt `06fa0b05` |
+| A5 | CHIPWAIT campaign, 3 runs of M19R full mode | PASS 3/3: each run 18/18 M19 gates, 157/157 regression gates, long soak 100000 cycles passed. Limit: each soak is 41 to 43 s of chip time; it meets the written criterion, it is not hours of endurance. The run files carry no commit; binding rests on the command line and snapshots | verdict `147a7652`, runs `28a74464`, `bb174c40`, `77d12724` |
+| A6 | M18 full qualification | PASS: 18/18 M18 gates (36 evaluated with the regression gates) | log `7317ef22` |
+| A7 | R15 silicon performance acceptance | NOT_RUN, harness defect: the window's r15 lane never built the R15 programs (absent after the chipwait lane). Not an instrument refusal and not a performance result | `R15-silicon/run-dir-progress.log` |
+| A7b | R15 silicon, declared after A7 and before it ran (`DECLARED-ATTEMPT-A7b.md` sha256 `f56a97d6`), rebuilt then run once at 18:26Z | BLOCKED_INSTRUMENT: no `aien_spbm` hwmon (the signed SPBM reader is not loaded), as declared. R15 is not PASS, so R16 G7 cannot pass | `A7b-R15/` |
+| - | INTERPLANE offline gates, GitHub checks at the pinned commit 2049968 | PASS: 9/9 check runs completed success, 17:57Z to 17:59Z (read from GitHub at 18:06Z; not copied into the evidence directory) | GitHub check runs at 2049968 |
+
+Machine conditions: Xid count 0 before and after every step. Present throughout and not stopped (not ours): another
+account's idle GPU process (18408 MiB) and an idle ollama server with no model loaded. 1-minute load 0.60 to 2.42.
+
+**CAND-2 verdict:** not qualified. Every rerun gate that can pass did pass (R11, R13, production hygiene,
+COMPOSITION-2, M19 3/3, M18), but R16 cannot pass while G6 is missing and R15 cannot run without the SPBM energy
+reader (operator action).
 
 ## 4. What CAND-2 does not prove (known before the window)
 
