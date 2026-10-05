@@ -67,8 +67,8 @@ The pieces worth keeping are primitives, not runtimes:
 | R12 resident GPU seat | PASS | GB10 silicon (#44, `05b0692`; hardening #45, `4331bf3`) |
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon (#49, `fcb5793`) |
 | R14 living recovery | PASS | GB10 silicon (#50, `f70ae10`) |
-| R15 quantitative performance | PASS | DGX Spark (#67, `bba3bd3`, 16/16 gates) |
-| R16 orchestrator retirement | COMPLETE | DGX Spark (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json`) |
+| R15 quantitative performance | HISTORICAL PASS (16/16 at `3e9e53b`); requal FAIL 14/16 at `3108fc2` (omega `evidence/REQUAL-3108fc2/`); NOT requalified on CAND-0 | DGX Spark (#67, `bba3bd3`, 16/16 gates) |
+| R16 orchestrator retirement | HISTORICAL PASS at `850fc54`; receipt INVALID as a current claim; requal FAIL at `3108fc2`; NOT requalified on CAND-0 | DGX Spark (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json`) |
 
 The R3/R4 claims are scoped to the host reference runtime. They say nothing about GPU execution (R12) or about the native AIENOS capability root (R7).
 

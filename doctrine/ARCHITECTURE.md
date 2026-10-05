@@ -223,7 +223,7 @@ The full standard, its terminology mapping, and the R0–R16 gates are in [ADR 0
 
 This table names, for each runtime concept, the one implementation that is authoritative today and the class of every surviving alternate. It follows the R16 orchestrator retirement map (`aien-dev/omega` `spec/r16-orchestrator-retirement-map.md` §5, with clarification C3 in §6). Class letters are the map's: A retired by non-use (legacy), B maintenance, C recovery, D reference oracle, E physical scheduler, F external protocol loop, N not a central loop. Code was checked on `main` of omega `6d1ff1d`, aienos `f0facc7`, physics `f63a6ef` and aien-sovereign-core `0df7c32`.
 
-"Authoritative" means the implementation other code must defer to. It does not mean native: every authoritative item below still runs hosted on Linux. Native AIENOS and the persistent-agent demonstration are not done, M19 is reopened (`ROADMAP.md`), and R16 is in progress (G1/G2 only).
+"Authoritative" means the implementation other code must defer to. It does not mean native: every authoritative item below still runs hosted on Linux. Native AIENOS and the persistent-agent demonstration are not done, M19 is reopened (`ROADMAP.md`), and R16 is a historical PASS at `850fc54` that requalification at `3108fc2` recorded as FAIL and that is not requalified on CAND-0 (omega `evidence/REQUAL-3108fc2/`; `ROADMAP.md` R16 row).
 
 | Concept | Authoritative implementation | Surviving alternates and class | Status and gaps |
 |---|---|---|---|

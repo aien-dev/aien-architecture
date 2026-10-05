@@ -20,7 +20,7 @@ Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 - No shadow price, dual variable or scarcity estimate exists in any of the four repositories (case-insensitive grep for `shadow price`, `lagrang`, `scarcity`, `budget pressure`: zero hits). In omega, `lambda` appears only as the cost model's ridge prior precision (`RxCostModel.lambda`).
 - Every place that encodes scarcity today encodes it as a constant: J-Space residency pressure, scheduler limits, RSI bottleneck weights.
 - The hard-before-soft and Pareto-before-ranking discipline DUAL needs already exists in omega's capability query and in the Arena spec. DUAL must reuse it, not shadow it.
-- ESTIMATION is not ready to feed production prices: EST-3 is FAILED on `main` (v1 `aien-dev/omega#105`, v2 `#118`, v3 `#129`); v4 INCONCLUSIVE (`#153`); v5 `#170` is open and interim. EST-4 onward is blocked.
+- ESTIMATION is not ready to feed production prices: EST-3 is FAILED on `main` (v1 `aien-dev/omega#105`, v2 `#118`, v3 `#129`); v4 INCONCLUSIVE (`#153`); v5 `#170` was CLOSED unmerged on 2026-10-04T00:38:42Z (interim only, no calibration verdict; branch kept as a record; estimation program parked; checked with `gh pr view 170 -R aien-dev/omega`). EST-4 onward is blocked.
 
 ## 2. Concept inventory
 
