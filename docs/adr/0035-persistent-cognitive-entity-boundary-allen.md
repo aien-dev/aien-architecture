@@ -108,12 +108,19 @@ Status vocabulary: IMPLEMENTED / TESTED / QUALIFIED / SPECIFIED / PROPOSED / PLA
 | format refusals, replay, supersession, mismatch | unknown version, corruption, truncation, trailing bytes, origin refused; same bytes = same subject; one ACTIVE per slot; agent B is another subject | TESTED (host) | omega run.sh; aienos 150-check test; 4 mutants red |
 | OS reboot | | NOT_RUN | |
 | machine migration | | NOT_RUN, not claimed | |
-| QEMU cold restart over NVMe, hardware qualification | | NOT_RUN | |
-| production path (kernel commits the object at a generation barrier; organism boot resolves it) | | PLANNED | v0 proves the contract on the host rig |
+| G7 native genesis | the AIENOS kernel creates the genesis subject inside the identity provisioning Store transaction (one `ss_transact`: AgentRoot, AgentState, Manifest 1, subject) and one standing intent as sequence 2; no host tool creates it | TESTED (QEMU) | aienos `M4_ALLEN` G7; host `test_continuity_subject_provision` |
+| G8 exactly once | provisioning a provisioned Store is refused, image unchanged; restores never mint | TESTED (QEMU) | aienos `M4_ALLEN` G8, G11c |
+| G9 QEMU cold restart | two restores, each a new `qemu-system-aarch64` process over the same emulated NVMe image: same subject, intent and lineage | TESTED (QEMU) | aienos `M4_ALLEN` G9 |
+| G10 native persistence path | the restore request carries only the mode; ESP and UEFI vars rebuilt per boot; another image restores another subject; an independent reader decodes the head from the sealed Store; omega `allen publish` of that head drives the AIEN goal | TESTED (QEMU) | aienos `M4_ALLEN` G10; receipt omega cross-check |
+| G11 corruption does not re-provision | forked chain, flipped envelope, missing subject: refused or reported, nothing minted, image unchanged | TESTED (QEMU) | aienos `M4_ALLEN` G11; mutant `subject_restore_mints` KILLED |
+| G12 foreign identity does not re-provision | another installation's subject chain is refused, never adopted | TESTED (QEMU) | aienos `M4_ALLEN` G12; mutant `subject_accept_foreign` KILLED |
+| power loss during genesis | SIGKILL at all 9 Store checkpoints, then a cold boot: unprovisioned or identity with its genesis subject, never one alone | TESTED (QEMU + host) | aienos `M4_ALLEN` FI rows; host power cuts at every block boundary |
+| hardware qualification (physical Spark NVMe, physical cold reboot) | | NOT_RUN | QEMU is not hardware |
+| production path (kernel commits the object at a generation barrier; organism boot resolves it) | | PARTIAL | the kernel writes and restores the subject in the TEST continuity image (QEMU); the default image provisions no identity yet; organism boot does not yet read the subject from the kernel |
 | multi-subject | | FUTURE, NOT IMPLEMENTED | |
 | creed, §1.2 / §1.3 / §2.8 edits | | BLOCKED_OPERATOR (acceptance) | |
 
-Receipt: omega `evidence/ALLEN/83c62a41f0252d4b00de78dcad280b78827821c1181e0b02a0690403b8b4f085.json` (candidate `cda7609`, clean tree, all gates PASS, aienos lock `cd4b089`).
+Receipts (immutable; earlier ones unchanged): host v0 omega `evidence/ALLEN/83c62a41f0252d4b00de78dcad280b78827821c1181e0b02a0690403b8b4f085.json` (candidate `cda7609`, aienos lock `cd4b089`); host v0 after reconciliation omega `evidence/ALLEN/18cfa250cee91ce5abe4cba21fa9fb70da4df36b9b593924b86538dcdfdfabef.json` (candidate `6b78165`, aienos lock = merged aienos#259 `71d5b32`; merged as omega `b544d81`, same tree); native and QEMU aienos `evidence/allen_native_qemu_cfe9aecffb8b20e0c1ff51fad54c46c522ec7d6c56c6cba7661e4b8cda1ee25a.json` with `evidence/ck_gates_1ecf5bcd303bf88422dd0542f14851c931f5d52276838fa182c812f3c73f3c1b.json` (code commit `640522a`, aienos#260, merged as `9d41efc`). `ALLEN_V0_HOST`, `ALLEN_NATIVE_PROVISIONING` and `ALLEN_QEMU_COLD_RESTART` are separate results; QEMU is not a physical cold reboot.
 
 ## 10. Authority implications
 
@@ -121,7 +128,7 @@ None to the root. The AIENOS capability authority remains the only mint. ALLEN h
 
 ## 11. Persistence implications
 
-ALLEN is continuity kind 24 (aienos ADR 0018). Kinds 16 to 23 are unchanged; the resolver gains one pass per kind-24 object. ADR 0015's live-authority rule is unchanged: the in-memory copy is authoritative while running; storage is recovery material. The manifest link to the subject head and display of kind 24 by the recovery tools are FUTURE.
+ALLEN is continuity kind 24 (aienos ADR 0018). Kinds 16 to 23 are unchanged; the resolver gains one pass per kind-24 object. ADR 0015's live-authority rule is unchanged: the in-memory copy is authoritative while running; storage is recovery material. The first subject object is written by the kernel inside the identity provisioning transaction (aienos ADR 0018 §2.7), so no crash leaves an identity without its subject; restore resolves it read-only and never mints. The manifest link to the subject head and display of kind 24 by the recovery tools are FUTURE.
 
 ## 12. Interplane implications
 
@@ -145,4 +152,4 @@ The ADR is withdrawn if any of these holds: a standing intent survives restart a
 
 ## 16. One next step
 
-Call `cs_commit` from the AIENOS provisioning path at a verified generation barrier so the kernel, not a host tool, writes the first subject object; then rerun G2 as a QEMU cold restart over NVMe (ADR 0016 shape) and upgrade the G2 row from host to QEMU.
+Done in QEMU (G7 to G12, aienos `M4_ALLEN`). Next: give the default (production) AIENOS image an operator-approved identity provisioning path that calls `cs_provision`, so the same genesis and restore can run outside the TEST continuity image and then on the Spark's physical NVMe.
