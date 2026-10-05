@@ -18,6 +18,7 @@ Status words: IMPLEMENTED, PARTIAL, EXPERIMENTAL, PLANNED, MISSING, CONFLICTING,
 - No belief state, state estimate, covariance, innovation or Kalman code exists in any of the four repositories (grep for `kalman`, `covariance`, `innovation`, `BeliefState`: zero hits). The layer is **MISSING** and must be built.
 - Three existing pieces already do part of the job and must be reused, not shadowed: the Omega cost model (a Bayesian predictor with calibrated intervals), the TURING PRD1 prediction file plus qint.v1 scorer (a predicted Gaussian per held-out point, scored in bits), and the TURING CAL-0 freeze and blinding machinery.
 - R16 was recorded CLOSED (correction 2026-10-05: historical PASS at `850fc54` only; requalification at `3108fc2` recorded R16 FAIL; NOT requalified on CAND-0; omega `evidence/REQUAL-3108fc2/`): gates G1-G8 passed then, PR #112 merged (`3dd5eaa`), receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` recorded. The `src/runtime/` edit hold is lifted; EST-4 onward is unblocked.
+- Calibration (2026-10-05): v5 ended **HELD_OUT_FAIL** on its sealed held-out run (section 10); EST-3 stays FAILED, EST-4 and EST-5 stay blocked, and no estimator output may be treated as calibrated.
 
 ## 2. Concept inventory
 
@@ -130,3 +131,14 @@ v4 ends **INCONCLUSIVE**. All three data collections the frozen protocol allows 
 - The PASS numbers of attempts 1 and 2 (G1 held-out cov95 0.9476 and 0.9570, ten-step cov95 0.9321 and 0.9534) are on record only and are **not** evidence of calibration. Each void was decided on machine load alone, and voiding never moved a result toward PASS.
 - Finding for a v5 (from the contamination record, not tuning): the blocker is measurement isolation, not the model. Keep the v4 families and rules; change only the collection to a machine-enforced exclusive window (host builds and tests refuse while the flag is held, or an operator-reserved slot), with the "no foreign build or test" rule written into the frozen protocol.
 - **EST-4 and EST-5: still NOT_RUN, blocked** (v4 section 10 unblocks them only on a v4 PASS). No estimator output may be treated as calibrated.
+
+## 10. Calibration record v5 (update 2026-10-05, omega `30c65a3`)
+
+v5 ends **HELD_OUT_FAIL**. The sealed held-out run D2 was collected once in a clean window and scored once; the selected family was not calibrated on it. EST-3 stays FAILED (v1-v3), v4 stays INCONCLUSIVE. Record: omega #170 (merged `30c65a3`), `docs/estimation/receipts/est-v5/RESULT.md`, receipt `receipt-7f0bb7018d066bc438e7a8a9bf87c0d45615f60be2d029b6ab5194168e3db3d1.json`, tag `est-v5-d2-heldout-fail` (`14fc76a`).
+
+- Protocol `docs/estimation/protocols/est-v5.md`, sha256 `275cd5b72570d5182ef73d635e16775026e9d911e818b8e12f8300a701187af5`, frozen at omega `b37e34b`, unchanged. v5 kept the v4 families and rules and changed only window protection (section 9's finding).
+- D1 (2026-10-01): `WINDOW_CLEAN samples=1317 foreign=0` on the second attempt; Phase A PASS, G1 (first-order lag) selected; params sha256 `6be2b579980f22b48d8224b36dec39b6154cc82c15a85979291672b2c5c2aa3a`.
+- D2 (2026-10-05 11:28:38Z, seed `0xD2E5C6`): `WINDOW_CLEAN samples=1312 foreign=0`, pre-check VALID; raw data and `d2.sha256` committed (`eec20d2`) before the single `est5 recorded` run.
+- Score on 2651 steps: G1 mean one-step log score -1.80307, ahead of E0 (-2.10541) and F1 (-2.97852). G1 passed 22 of 23 gated statistics (coverage50 0.533, coverage80 0.822, coverage95 0.953, PIT bins 1-9, quarters, regimes, ten-step, bias, lag-1) and failed one: PIT bin 0 = 0.0681 against the band 0.07-0.13. One failed gated statistic means not calibrated (protocol section 6), so the verdict is HELD_OUT_FAIL. The small margin is description only.
+- Finding for a v6 (from the receipt, not tuning): window isolation now works (both v5 windows clean), so the open issue is back in the model; the lowest PIT tenth is under-filled (too much predictive weight on low temperatures). A v6 needs its own frozen protocol, fit and sealed held-out run; nothing in v5 may be re-scored or retuned.
+- **EST-4 and EST-5: still NOT_RUN, blocked.** No estimator output may be treated as calibrated.
