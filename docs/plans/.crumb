@@ -53,8 +53,8 @@
           "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
         },
         {
-          "digest": "249f11b7840e460dfc39b2ac10211d8e9ae6351624570cb68496d55034e1930c",
-          "last_commit": "9201869",
+          "digest": "5288bb90200689608557093b6ce9978a07d567ff4eeb035225d954e630f7c1b5",
+          "last_commit": "d2a49e0",
           "name": "belief-estimation",
           "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human."
         },
@@ -89,15 +89,15 @@
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:07b0cf40f3714f385c2a1e3c8c069c84c09099090419c5a72d725858474a9916",
-      "compiled_at": "2026-10-05T12:33:13Z",
+      "children_root": "sha256:271e2e49becefa621679f111701f1097c861f247f54a44c53035ec2da350d849",
+      "compiled_at": "2026-10-05T12:34:11Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:e4869f663b9ec20009f43957555779d447708b8b75a5d9e1c2ddf1bdf1e3b4b4",
+      "digest": "sha256:2812aeb880835afae274e0a164ed976362b191717bd958d54a4c5c5f48ed05af",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 28,
-      "generated_at_commit": "ca270eee93f83838d3de2c7c7e89945a9194a7e0",
-      "source_tree": "sha256:dabb19cb345b3f556dbbd73bbcc410433f5d06ca4e104689493463a473ac4e89"
+      "generated_at_commit": "d2a49e0fb4dac777271bf7c184ff048d5c63b4ba",
+      "source_tree": "sha256:2fd06c3e82cb579447d1bcd5533a3608cce32cca29ecd2663cc8491014c2a797"
     },
     "owner_lane": "",
     "provenance": {

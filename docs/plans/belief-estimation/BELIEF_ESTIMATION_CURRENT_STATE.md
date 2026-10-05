@@ -17,7 +17,7 @@ Status words: IMPLEMENTED, PARTIAL, EXPERIMENTAL, PLANNED, MISSING, CONFLICTING,
 
 - No belief state, state estimate, covariance, innovation or Kalman code exists in any of the four repositories (grep for `kalman`, `covariance`, `innovation`, `BeliefState`: zero hits). The layer is **MISSING** and must be built.
 - Three existing pieces already do part of the job and must be reused, not shadowed: the Omega cost model (a Bayesian predictor with calibrated intervals), the TURING PRD1 prediction file plus qint.v1 scorer (a predicted Gaussian per held-out point, scored in bits), and the TURING CAL-0 freeze and blinding machinery.
-- R16 was recorded CLOSED (correction 2026-10-05: historical PASS at `850fc54` only; requalification at `3108fc2` recorded R16 FAIL; NOT requalified on CAND-0; omega `evidence/REQUAL-3108fc2/`): gates G1-G8 passed then, PR #112 merged (`3dd5eaa`), receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` recorded. The `src/runtime/` edit hold is lifted; EST-4 onward is unblocked.
+- R16 was recorded CLOSED (correction 2026-10-05: historical PASS at `850fc54` only; requalification at `3108fc2` recorded R16 FAIL; NOT requalified on CAND-0; omega `evidence/REQUAL-3108fc2/`): gates G1-G8 passed then, PR #112 merged (`3dd5eaa`), receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` recorded. The `src/runtime/` edit hold is lifted, so R16 no longer blocks EST-4; EST-4 and EST-5 stay blocked on calibration (next line).
 - Calibration (2026-10-05): v5 ended **HELD_OUT_FAIL** on its sealed held-out run (section 10); EST-3 stays FAILED, EST-4 and EST-5 stay blocked, and no estimator output may be treated as calibrated.
 
 ## 2. Concept inventory
