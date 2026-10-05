@@ -81,7 +81,8 @@ omega #290 (the R15 sampler no longer leaves a 24 h `sleep` holding the quiet fl
   back to the original reproduced the CAND-1 digest, so that path alone makes the difference). FAIL for
   omegatool; fixing it changes the binary and needs a new candidate.
 - **Clean reconstruction** 2026-10-05 (`CAND1-RECON-2eec75b`): fresh `git clone` of all four repos from GitHub at the
-  CAND-1 commits, an empty CARGO_HOME filled by `cargo fetch --locked`, then the same double build. Same result as
+  CAND-1 commits, a new CARGO_HOME filled by `cargo fetch --locked` (cold: the
+  fetch downloaded 487 crates; the script does not itself check that the directory was empty), then the same double build. Same result as
   the second path: 8 of 9 match the CAND-1 digests and each item builds identically twice; omegatool differs only by
   the embedded physics path. So the candidate rebuilds from the public GitHub sources (with this machine's toolchain), except omegatool.
 - **EST v5 D2** ran 2026-10-05 (clean window) and scored HELD_OUT_FAIL (PIT bin 0 = 0.0681, below 0.07; 22 of 23 statistics passed). It ran from omega branch `lane44/est-v5` and measures the machine's temperature forecasting, not the CAND-1 build, so it is not a CAND-1 gate result. Record: `docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md` section 10.
