@@ -86,3 +86,26 @@ reader (operator action).
 - **TRUST-1 M5:** attended hardware boots and owner-key ceremonies are blocked on the operator; Secure Boot is off.
 - **Physical machine:** every AIENOS result is QEMU. Nothing here qualifies the Spark booting AIENOS.
 - **Toolchain:** no rust-toolchain file pins the compiler (gap G4); both roots used the same installed toolchain.
+
+## 5. Published evidence (added 2026-10-05 after publication; nothing above changed)
+
+The original bytes of the four Spark directories are published, immutable, in omega `evidence/` at
+c8463fd (omega #304), following the CAND-1 convention (#288, #292):
+
+| Spark directory | Published copy |
+|---|---|
+| `CAND2-BUILD-A` | [`evidence/CAND2-BUILD-A`](https://github.com/aien-dev/omega/tree/c8463fdd8b834a713500344f34d6fb2e94c233f6/evidence/CAND2-BUILD-A) |
+| `CAND2-BUILD-B` | [`evidence/CAND2-BUILD-B`](https://github.com/aien-dev/omega/tree/c8463fdd8b834a713500344f34d6fb2e94c233f6/evidence/CAND2-BUILD-B) |
+| `CAND2-ATTN-IDENTITY` | [`evidence/CAND2-ATTN-IDENTITY`](https://github.com/aien-dev/omega/tree/c8463fdd8b834a713500344f34d6fb2e94c233f6/evidence/CAND2-ATTN-IDENTITY) |
+| `CAND2-LIVING-79a805d` | [`evidence/CAND2-LIVING-79a805d`](https://github.com/aien-dev/omega/tree/c8463fdd8b834a713500344f34d6fb2e94c233f6/evidence/CAND2-LIVING-79a805d) |
+
+[`evidence/CAND2-AUDIT-20261005`](https://github.com/aien-dev/omega/tree/c8463fdd8b834a713500344f34d6fb2e94c233f6/evidence/CAND2-AUDIT-20261005)
+holds the index (each claim to its file), `SHA256SUMS` of the originals taken before copying,
+`PUBLICATION-NOTES.md` and the list of compiled programs left out by the CAND-1 convention (sizes and
+digests recorded). A7 (R15 NOT_RUN, harness defect) and A7b (R15 BLOCKED_INSTRUMENT) stay separate. CHIPWAIT:
+each soak is 100,000 cycles in about 41 to 43 seconds, not an endurance run; its run files carry no commit field,
+so its link to CAND-2 is through the recorded commands, binary hashes and machine snapshots.
+
+Independent reconstruction (2026-10-05, reviewer working only from the published files): all 13 statuses in §1
+to §3 agree with this page; `sha256sum -c` passes for all 530 listed files; 20 random files match the Spark
+originals byte for byte; no existing evidence file was changed.
