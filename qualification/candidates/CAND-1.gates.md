@@ -57,4 +57,4 @@ built, hashed, deleted and built again. Evidence: `CAND1-BUILD-2eec75b/summary.t
 - **Physical machine:** every AIENOS result is QEMU. Nothing here qualifies the Spark booting AIENOS.
 - **Path independence** of aien-cli is inferred (no home or registry path in the binary), not tested by a build at
   a second path.
-- **EST v5 D2** estimation has not run on CAND-1; it waits for the interplane campaign to end.
+- **EST v5 D2** ran 2026-10-05 (clean window) and scored HELD_OUT_FAIL (PIT bin 0 = 0.0681, below 0.07; 22 of 23 statistics passed). It ran from omega branch `lane44/est-v5` and measures the machine's temperature forecasting, not the CAND-1 build, so it is not a CAND-1 gate result. Record: `docs/plans/belief-estimation/BELIEF_ESTIMATION_CURRENT_STATE.md` section 10.

@@ -53,8 +53,8 @@
           "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
         },
         {
-          "digest": "dfb39a89233de90470e6bbdb3eefe379e25bdfc604eee79d93a4f39039eb1fe5",
-          "last_commit": "2ff40e9",
+          "digest": "5288bb90200689608557093b6ce9978a07d567ff4eeb035225d954e630f7c1b5",
+          "last_commit": "d2a49e0",
           "name": "belief-estimation",
           "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human."
         },
@@ -78,7 +78,7 @@
         },
         {
           "digest": "7ffa1dc4ad0fae755f27df990dde732ed3be44409653e841c6a0c71f83462cee",
-          "last_commit": "e89ba94",
+          "last_commit": "9201869",
           "name": "mixed-algebra",
           "purpose": "Directory docs/plans/mixed-algebra. Purpose not yet described by a human."
         },
@@ -89,15 +89,15 @@
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:474665167479528b637e3854c683041c19c0dcf2ad832db578dbab511f3d5d96",
-      "compiled_at": "2026-10-05T04:05:39Z",
+      "children_root": "sha256:271e2e49becefa621679f111701f1097c861f247f54a44c53035ec2da350d849",
+      "compiled_at": "2026-10-05T12:34:11Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:50126ef1ed015e412b344d09f06ea8319a4693bdba26db308d3f2e8d7c847d8d",
+      "digest": "sha256:2812aeb880835afae274e0a164ed976362b191717bd958d54a4c5c5f48ed05af",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 28,
-      "generated_at_commit": "a44d5daf045697c328bf141eca4cd149b215e3fa",
-      "source_tree": "sha256:f6bb17ca0eeead6761652894daf0d816e34676678854f7259e9ca5301ad96787"
+      "generated_at_commit": "d2a49e0fb4dac777271bf7c184ff048d5c63b4ba",
+      "source_tree": "sha256:2fd06c3e82cb579447d1bcd5533a3608cce32cca29ecd2663cc8491014c2a797"
     },
     "owner_lane": "",
     "provenance": {
