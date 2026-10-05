@@ -11,7 +11,8 @@ cat > "$stub" <<'S'
 [ "$2" != "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef" ]
 S
 chmod +x "$stub"; export CAND_SHA_CHECK="$stub"
-good="$here/../qualification/candidates/CAND-0.toml"
+good="$here/testdata/cand-draft-fixture.toml"   # the 2026-10-01 draft, kept as a fixture so these tests do not depend on the live manifest
+live="$here/../qualification/candidates/CAND-0.toml"
 pass=0; bad=0
 expect() { # expect <0|1> <label> <file>
   "$chk" "$3" >/dev/null 2>&1; rc=$?
@@ -70,6 +71,17 @@ grep -q 'api repos/aien-dev/crumb-spec/commits/10b825133580f7a4388ce78aca64b5db5
 ghexpect 1 "gh path: 404 sha rejected" "$tmp/d.toml"
 ghexpect 1 "gh path: 404 contract sha rejected" "$tmp/k3.toml"
 
+
+# --- live candidate manifest (CAND-0 is frozen): valid, 9 pins checked through the gh path, and its optional pins bite.
+expect 0 "live CAND-0 valid" "$live"
+grep -q '^status = "frozen"' "$live" && pass=$((pass+1)) || { bad=$((bad+1)); echo "TEST FAIL: live CAND-0 is not frozen"; }
+: > "$log"
+ghexpect 0 "gh path: live CAND-0 valid" "$live"
+[ "$(wc -l < "$log")" -eq 9 ] && pass=$((pass+1)) || { bad=$((bad+1)); echo "TEST FAIL: expected 9 gh calls for the live manifest, got $(wc -l < "$log")"; }
+sed 's/^physics = .*/physics = "abc123"/' "$live" > "$tmp/p1.toml";   expect 1 "short physics sha" "$tmp/p1.toml"
+sed 's/^interplane = .*/interplane = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"/' "$live" > "$tmp/p2.toml"; expect 1 "nonexistent interplane sha" "$tmp/p2.toml"
+sed 's/^omega-runtime = .*/omega-runtime = "UNBUILT"/' "$live" > "$tmp/p3.toml"; expect 1 "frozen live manifest with UNBUILT" "$tmp/p3.toml"
+
 # --- new: mutants. Each broken copy of the checker must wrongly accept the bad input,
 # proving the new test above really depends on the new check.
 mutant() { # mutant <label> <sed-expr> <input-file>
@@ -81,5 +93,7 @@ mutant() { # mutant <label> <sed-expr> <input-file>
 mutant "no zero-digest check" '/all zero/d' "$tmp/z.toml"
 mutant "old # truncation" 's/^while IFS= read -r line; do$/while IFS= read -r line; do line="${line%%#*}"/' "$tmp/h.toml"
 mutant "contracts not required" 's/ contracts.crumb-spec contracts.spark-crumbs;/;/' "$tmp/k1.toml"
+mutant "optional pins not checked" 's/for r in commits.physics commits.interplane; do/for r in; do/' "$tmp/p1.toml"
+mutant "optional pin sha existence not checked" '/^for r in commits.physics/,/^done$/s/sha_exists "\$repo" "\$s" || err .*$/true/' "$tmp/p2.toml"
 echo "passed=$pass failed=$bad"
 [ "$bad" -eq 0 ]

@@ -45,6 +45,15 @@ for r in commits.omega commits.aienos commits.aien-sovereign-core commits.aien-p
   sha_exists "$repo" "$s" || err "commit $s not found in aien-dev/$repo"
 done
 
+# Optional pins for repos that are part of a candidate but were not in the first schema (CAND-0 adds
+# physics and interplane). When present they get the same checks as the required ones.
+for r in commits.physics commits.interplane; do
+  s="${kv[$r]:-}"; repo="${r#*.}"
+  [ -n "$s" ] || continue
+  [[ "$s" =~ ^[0-9a-f]{40}$ ]] || { err "commit for $r is not 40 lowercase hex: $s"; continue; }
+  sha_exists "$repo" "$s" || err "commit $s not found in aien-dev/$repo"
+done
+
 nexe=0
 for k in "${!kv[@]}"; do
   [[ "$k" == executables.* ]] || continue

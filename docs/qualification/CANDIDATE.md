@@ -9,7 +9,7 @@ Scope: how one exact integrated AIEN build is named, frozen, and judged.
 
 ## Reuse, no parallel format
 
-Results are `EvidenceReceiptV1` receipts from `aien-sovereign-core/crates/aien-proof` (`src/evidence.rs`: fields `repo`, `commit`, `dirty`, `toolchain`, `procedure`, `machine`, `env_class`, `input_artifacts`, `output_artifacts`, `assertions`, `output_digest`, `result`). Formal proofs use the `formal-oracle-binding` receipt kind (`src/formal.rs`, `KIND`). This spec adds only the candidate manifest and the rules below. It does not define a new receipt.
+Results are `EvidenceReceiptV1` receipts from `aien-sovereign-core/crates/aien-proof` (`src/evidence.rs`: fields `repo`, `commit`, `dirty`, `toolchain`, `procedure`, `machine`, `env_class`, `input_artifacts`, `output_artifacts`, `assertions`, `output_digest`, `result`). Formal proofs use the `formal-oracle-binding` receipt kind (`src/formal.rs`, `KIND`). This spec adds only the candidate manifest and the rules below. It does not define a new receipt. CAND-0 was frozen on 2026-10-05 and replaced the never-frozen 2026-10-01 draft of the same id.
 
 ## The candidate manifest
 
@@ -19,6 +19,7 @@ A candidate is a TOML file `qualification/candidates/CAND-<n>.toml`, schema `Can
 - `[commits]`: one full 40-hex commit per repo: `omega`, `aienos`, `aien-sovereign-core` (FORGE and `aien-proof`), `aien-protocols`, `aien-architecture`. The contracts and wire schemas live in `aien-protocols`, so its pin is the contracts pin. The crumb contracts are pinned separately in `[contracts]`.
 - `[executables]`: a content digest for every built binary or image under test. `UNBUILT` is allowed only while status begins with `draft`.
 - `[contracts]`: one full 40-hex commit for each contract repo: `crumb-spec` (the Crumb Protocol specification) and `spark-crumbs` (its event ledger implementation). Orchestrator decision 2026-10-01: both are contracts and are pinned in every candidate. Both repos are archived on GitHub, so the pins are stable.
+- Optional `[commits]` keys `physics` and `interplane` (added for CAND-0): validated like the others when present. Informational sections the checker ignores: `[consumed_pins]` (pins the pinned repos themselves hold, so a mismatch with `[commits]` is visible), `[model]`, `[toolchain]`, `[build]`, `[env]`, `[hardware]`. A candidate may carry a companion `CAND-<n>.gates.md` next to its manifest with the build recipe, the reproducibility gaps and the required gate list (see `CAND-0.gates.md`); it defines no new format and no new receipt.
 
 `status` is one of: `draft, not frozen`, `frozen`, `superseded`. Only a `frozen` candidate may be qualified.
 
@@ -56,4 +57,4 @@ Promotion checks (for example `evidence-immutable`) are mandatory. A bypass need
 
 ## Checker
 
-`scripts/check_candidate.sh <manifest.toml>` verifies that all required fields are present, that each pinned commit (`[commits]` and `[contracts]`) is 40 hex digits and exists in its repo (checked with `gh api`), that executable digests are 64 hex and not all zero, that a `#` inside a quoted value is kept (only a trailing comment is dropped), and that a non-draft manifest has real executable digests. Test: `scripts/test_check_candidate.sh` (offline: a fake `gh` on PATH exercises the real `gh` code path, and mutant copies of the checker prove each check bites). Wiring into CI is not done and needs Drake's approval.
+`scripts/check_candidate.sh <manifest.toml>` verifies that all required fields are present, that each pinned commit (`[commits]` and `[contracts]`) is 40 hex digits and exists in its repo (checked with `gh api`), that executable digests are 64 hex and not all zero, that a `#` inside a quoted value is kept (only a trailing comment is dropped), and that a non-draft manifest has real executable digests. Test: `scripts/test_check_candidate.sh` (the 2026-10-01 draft is kept as `scripts/testdata/cand-draft-fixture.toml`; offline: a fake `gh` on PATH exercises the real `gh` code path, and mutant copies of the checker prove each check bites). Wiring into CI is not done and needs Drake's approval.
