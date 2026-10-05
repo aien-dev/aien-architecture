@@ -49,8 +49,9 @@ one quiet window, 2026-10-05 18:04:14Z to 18:23:25Z, under `quietlock hold` (own
 map-only harness commit c62f47b (code-identical to 79a805d) and physics 6d7cf0d, under declared attempts:
 `DECLARED-ATTEMPTS.md` sha256 `8a6e06dac775ed2e5c17b3a5c5ba96d80f457654803755f00c840110a56585cf`, announced before
 the window. Each attempt ran once; nothing was rerun or replaced. Evidence: `~/workspace/evidence-out/CAND2-LIVING-79a805d/`;
-its `CLAIM-INDEX.md` ties every claim below to a file copied under its sha256 in `receipts/`. An independent reader
-re-derived every status from the raw files before this page changed and agreed with each one.
+its `CLAIM-INDEX.md` ties every claim below to a file copied under its sha256 in `receipts/`. An independent reader (its notes are the
+"Conditions and limits" section of `CLAIM-INDEX.md`) re-derived every status from the raw files before this page
+changed and agreed with each one.
 
 | Attempt | Gate | Status | Evidence (sha256 prefix) |
 |---|---|---|---|
@@ -63,7 +64,7 @@ re-derived every status from the raw files before this page changed and agreed w
 | A6 | M18 full qualification | PASS: 18/18 M18 gates (36 evaluated with the regression gates) | log `7317ef22` |
 | A7 | R15 silicon performance acceptance | NOT_RUN, harness defect: the window's r15 lane never built the R15 programs (absent after the chipwait lane). Not an instrument refusal and not a performance result | `R15-silicon/run-dir-progress.log` |
 | A7b | R15 silicon, declared after A7 and before it ran (`DECLARED-ATTEMPT-A7b.md` sha256 `f56a97d6`), rebuilt then run once at 18:26Z | BLOCKED_INSTRUMENT: no `aien_spbm` hwmon (the signed SPBM reader is not loaded), as declared. R15 is not PASS, so R16 G7 cannot pass | `A7b-R15/` |
-| - | INTERPLANE offline gates, GitHub checks at the pinned commit 2049968 | PASS: 9/9 checks completed success (recorded 18:06Z) | GitHub check runs |
+| - | INTERPLANE offline gates, GitHub checks at the pinned commit 2049968 | PASS: 9/9 check runs completed success, 17:57Z to 17:59Z (read from GitHub at 18:06Z; not copied into the evidence directory) | GitHub check runs at 2049968 |
 
 Machine conditions: Xid count 0 before and after every step. Present throughout and not stopped (not ours): another
 account's idle GPU process (18408 MiB) and an idle ollama server with no model loaded. 1-minute load 0.60 to 2.42.
