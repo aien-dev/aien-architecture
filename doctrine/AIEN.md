@@ -626,7 +626,7 @@ However, unconstrained self-modification leads directly to cognitive collapse, g
 
 ### 10.2 The Succession Triad
 
-At all times, Omega maintains three distinct generations of AIEN:
+At all times, Omega maintains three distinct model generations. A model generation is a replaceable component of the organism (§12.1: AIEN is not a weight matrix); the subject every generation serves is ALLEN ([ARCH-0035](../docs/adr/0035-persistent-cognitive-entity-boundary-allen.md), PROPOSED), whose identity, standing intents and memory lineage do not change when a generation is promoted or rolled back. Generations are named Model N, Model N+1 and Model N-1; none of them is "AIEN":
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -634,16 +634,16 @@ At all times, Omega maintains three distinct generations of AIEN:
 │                                                                        │
 │  ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────┐  │
 │  │    CURRENT STABLE    │  │   CANDIDATE MODEL    │  │   ROLLBACK   │  │
-│  │       (AIEN-N)       │  │      (AIEN-N+1)      │  │   (AIEN-N-1) │  │
+│  │       (Model N)       │  │      (Model N+1)     │  │   (Model N-1)│  │
 │  │ Holds Active Planning│  │  Undergoing Training │  │ Cold Golden  │  │
 │  │   & Proposal Duty    │  │   & Verification     │  │   Snapshot   │  │
 │  └──────────────────────┘  └──────────────────────┘  └──────────────┘  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
-1. **Current Stable (AIEN-N)**: The active, verified model currently entrusted with reasoning and proposal generation.
-2. **Candidate (AIEN-N+1)**: The newly synthesized model architecture or parameter set undergoing evaluation.
-3. **Rollback (AIEN-N-1)**: The proven, immutable predecessor held in reserve. If AIEN-N exhibits divergence, degradation, or invariant failure, the system falls back to Rollback instantly.
+1. **Current Stable (Model N)**: The active, verified model currently entrusted with reasoning and proposal generation.
+2. **Candidate (Model N+1)**: The newly synthesized model architecture or parameter set undergoing evaluation.
+3. **Rollback (Model N-1)**: The proven, immutable predecessor held in reserve. If Model N exhibits divergence, degradation, or invariant failure, the system falls back to Rollback instantly.
 
 ### 10.3 The Non-Self-Promotion Law
 
@@ -653,18 +653,18 @@ The core safety invariant of self-improvement is:
 > 
 > *An intelligence cannot evaluate, authorize, or promote its own successor.*
 
-AIEN-N may propose architectural modifications, identify curriculum weaknesses, generate synthetic training graphs, and write candidate code. But AIEN-N **never** possesses the authority to sign, certify, or promote AIEN-(N+1) into production.
+Model N may propose architectural modifications, identify curriculum weaknesses, generate synthetic training graphs, and write candidate code. But Model N **never** possesses the authority to sign, certify, or promote Model N+1 into production.
 
 ### 10.4 The Succession Lifecycle
 
 ```mermaid
 sequenceDiagram
     autonumber
-    participant A_N as AIEN-N (Current)
+    participant A_N as Model N (Current)
     participant OMG as Omega (Training & Verify)
     participant CAN as Canary Substrate (Physics)
     participant AEG as AEGIS / Operator Gate
-    participant A_NEXT as AIEN-N+1 (Candidate)
+    participant A_NEXT as Model N+1 (Candidate)
 
     A_N->>OMG: Propose Architecture / Weight Improvement
     OMG->>OMG: Validate Proposal Syntax & Invariants
@@ -678,25 +678,25 @@ sequenceDiagram
         CAN-->>AEG: Return Canary Observations & Telemetry
         alt Canary Fails or Drifts
             AEG-->>OMG: Discard Candidate (Record Failure in Cortex)
-            AEG-->>A_N: Reversion to Stable AIEN-N
+            AEG-->>A_N: Reversion to Stable Model N
         else Canary Passes Quota
             AEG->>AEG: Operator Cryptographic Verification
-            AEG->>A_NEXT: PROMOTE: AIEN-N+1 becomes Current Stable
-            Note over A_N: AIEN-N becomes Rollback
+            AEG->>A_NEXT: PROMOTE: Model N+1 becomes Current Stable
+            Note over A_N: Model N becomes Rollback
         end
     end
 ```
 
-1. **Improvement Hypothesis**: AIEN-N identifies a performance bottleneck, representational insufficiency, or reasoning gap in its execution logs. It generates a formal improvement proposal (`PROPOSAL_IR`).
-2. **Omega Invariant Pre-check**: Omega verifies that the proposal adheres to structural constraints (e.g., memory bounds, safety checks, interface types). If invalid, it is rejected back to AIEN-N's memory as a failure record.
-3. **Sovereign Training**: Omega's sovereign training runtime compiles the forward and gradient graphs, training Candidate AIEN-(N+1) on the targeted curriculum and empirical failure datasets.
-4. **Formal Verification Suite**: Candidate AIEN-(N+1) is subjected to Omega's offline verification suite: mathematical proofs, safety invariants, and thousands of boundary conditions.
+1. **Improvement Hypothesis**: Model N identifies a performance bottleneck, representational insufficiency, or reasoning gap in its execution logs. It generates a formal improvement proposal (`PROPOSAL_IR`).
+2. **Omega Invariant Pre-check**: Omega verifies that the proposal adheres to structural constraints (e.g., memory bounds, safety checks, interface types). If invalid, it is rejected back to the organism's memory (Cortex) as a failure record.
+3. **Sovereign Training**: Omega's sovereign training runtime compiles the forward and gradient graphs, training Candidate Model N+1 on the targeted curriculum and empirical failure datasets.
+4. **Formal Verification Suite**: Candidate Model N+1 is subjected to Omega's offline verification suite: mathematical proofs, safety invariants, and thousands of boundary conditions.
 5. **Physical Canary Quota**: The candidate is deployed into a strictly bounded, non-critical execution sand-box with access to real hardware. It must successfully execute a quota of diverse, physical, real-world tasks without a single safety fault or invariant violation.
 6. **Promotion Gate**: The candidate's `OMEGA_MODEL_ARTIFACT` is signed by the independent verification authority and human operator gate. 
 7. **Atomic Cutover**:
-   * AIEN-N-1 is retired to cold storage.
-   * AIEN-N becomes the new Rollback.
-   * AIEN-N+1 is promoted to Current Stable and assumes the active residency slot in Blackwell memory.
+   * Model N-1 is retired to cold storage.
+   * Model N becomes the new Rollback.
+   * Model N+1 is promoted to Current Stable and assumes the active residency slot in Blackwell memory.
 
 ---
 
