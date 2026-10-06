@@ -139,3 +139,5 @@ resident and not stopped (atlas image server holding 18408 MiB GPU memory at 0 %
 CAND-3 stays NOT QUALIFIED as a whole: R16 needs a G7 attempt with R11 exercised, and the G8 merge step.
 
 Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-A7c/` (omega #317, head a39e44a): [`CAND3-LIVING-f816473-A7c`](https://github.com/aien-dev/omega/tree/a39e44a0029d63a93b090c7bdc783f5582f4683a/evidence/CAND3-LIVING-f816473-A7c).
+
+**Note 2026-10-06 (afternoon; nothing above changed):** the A7c R15 PASS is classified CONDITIONAL, a measured PASS under a declared deviation from C2, in `qualification/exceptions/0002-r15-secure-boot-off.md`. It is NOT unconditional compliance and must not be cited as C2-conformant. It becomes compliant only by a new declared R15 silicon run with Secure Boot ON and the reader module signed by an enrolled key (no kernel taint). Changing machine security settings needs Drake's authorization.
