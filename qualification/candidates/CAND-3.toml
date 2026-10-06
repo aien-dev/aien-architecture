@@ -15,6 +15,8 @@ aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
 aien-architecture = "dcca843cb6e25867e9ff5ab6a6244bd6044e82ee"
 physics = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
 interplane = "9129936b0704b1378a6bfe742c80f67baa25925c"
+# Harness (informational, not a code pin): the window runs from omega 97ee27584cda0d8eaca136f31a44293cd36c9b02, an R16-map-only descendant of f816473 (#312);
+# the ladder guard checks it is code-identical to f816473 before any lane starts.
 
 # The revisions the candidate code consumes (aien-sovereign-core 80e071a3ef700dbe31b1b081a957eebdcbf5ffc3 Cargo.lock, git dependencies; checked by
 # scripts/check_candidate_pins.sh). Read from sovereign-core 80e071a Cargo.lock on 2026-10-06.
