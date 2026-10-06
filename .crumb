@@ -22,13 +22,13 @@
       "children": [
         {
           "digest": "bbb8c62856f508d48363b3af78d17bdbfcc7e01407b240b05b9c49744d79381a",
-          "last_commit": "4478c1a",
+          "last_commit": "bd56a27",
           "name": "docs",
           "purpose": "Directory docs. Purpose not yet described by a human."
         },
         {
           "digest": "13f821ffbb29de08ad51cb47da54e26663ad212577bff88fe94b8c9169eb680b",
-          "last_commit": "ca270ee",
+          "last_commit": "bd56a27",
           "name": "doctrine",
           "purpose": "Directory doctrine. Purpose not yet described by a human."
         },
@@ -46,14 +46,14 @@
         }
       ],
       "children_root": "sha256:f8802eeb1369361294ef3d900001124a39bdb87b5c227c89e527b958544df10b",
-      "compiled_at": "2026-10-06T22:45:38Z",
+      "compiled_at": "2026-10-06T23:53:07Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:571c7b267446d901c01abeb9a498bb379e4da6a0762c7d678aee88e1e4fadef0",
+      "digest": "sha256:ce725b7ce854fae552d4b6ce7866d084eb321bdb28981dc772f6f98eb0d1dd60",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 229,
-      "generated_at_commit": "969813b6f112dbf149618835acc1bf850087e849",
-      "source_tree": "sha256:d0367f5941c0baf9d343dc42c9b6611c36b6e8ddaacfcb31a41546079a27a7ae"
+      "generated_at_commit": "bd56a2762dc76226f7ceaf1982a24ac0ce69c80b",
+      "source_tree": "sha256:f9a408773cc3ad6e8a7d28c17d78f1faa2cb729487799b2b8b7440662fcd2eae"
     },
     "owner_lane": "",
     "provenance": {
