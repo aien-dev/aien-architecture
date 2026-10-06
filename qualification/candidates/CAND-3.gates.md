@@ -140,6 +140,7 @@ CAND-3 stays NOT QUALIFIED as a whole: R16 needs a G7 attempt with R11 exercised
 
 Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-A7c/` (omega #317, head a39e44a): [`CAND3-LIVING-f816473-A7c`](https://github.com/aien-dev/omega/tree/a39e44a0029d63a93b090c7bdc783f5582f4683a/evidence/CAND3-LIVING-f816473-A7c).
 
+<<<<<<< HEAD
 ## 7. G7b: replacement attempt of R16 G7 (added 2026-10-06; nothing above changed)
 
 Declared before it ran in `DECLARED-ATTEMPT-G7b.md` (sha256 80c411806d1f628f2e722c5ab31331a1d78718b48f0fce9b3b52193f649d680b), a new attempt that replaces nothing recorded in section 6 (A7c stays as written). Reason: A7c G7 was NOT_RUN only because the R11 living part refused at 1-minute load 2.11; afterwards Drake approved turning off all other AI models (record `~/workspace/r15-practice/ai-services-off-20261006.txt`) and the GPU had no compute apps. Run once, under quietlock owner cand3-campaign (20 minutes), started at 1-minute load 0.72 (14:05:16Z), never killed, on omega code f816473, harness 97ee275, physics 6d7cf0d, aienos bbad5e4. R15 was not rerun: the A7c receipt `90fdebb8bd2c8ff988c6d93afb764c3466bd6c3575cd8176fc605378fdb53fdd` was consumed by the R16 script.
@@ -157,3 +158,6 @@ R16 receipt (untracked by the script, kept in the evidence): `9dfb29957368bcc0ac
 CAND-3 is still not R16-complete: G7 is PASS, G8 (merge commit) remains.
 
 Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-G7b/` (omega #318).
+=======
+**Note 2026-10-06 (afternoon; nothing above changed):** the A7c R15 PASS is classified CONDITIONAL, a measured PASS under a declared deviation from C2, in `qualification/exceptions/0002-r15-secure-boot-off.md`. It is NOT unconditional compliance and must not be cited as C2-conformant. It becomes compliant only by a new declared R15 silicon run with Secure Boot ON and the reader module signed by an enrolled key (no kernel taint). Changing machine security settings needs Drake's authorization.
+>>>>>>> origin/main
