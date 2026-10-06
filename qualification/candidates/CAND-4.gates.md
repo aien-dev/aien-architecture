@@ -33,3 +33,20 @@ production images; every worktree clean after the build.
   so updating the pin needs either a fixture or a gate change.
 - Distribution: internal-only until an open-licence model passes (Drake decision 2026-10-06, Option 3).
 - Chip results: none; the build is host only.
+
+## Amendment 1 (2026-10-06): oracle fixture recorded
+
+Additive evidence only; the candidate is unchanged (same commits, executables, model and model digests). At freeze
+`[model] oracle-fixture` said none was recorded for this model. An independent Hugging Face Transformers FP32 CPU
+reference fixture for unsloth/Llama-3.2-1B-Instruct snapshot 5a8abab now exists, made with the CAND-3 generator
+(`scripts/generate_tinyllama_oracle.py` from sovereign-core `d2cacfa^`, constants-only changes, run as scratch
+outside every repository). The single `oracle-fixture` line in `CAND-4.toml` is replaced by its two digests:
+
+- `llama32_1b_oracle.safetensors` sha256 `bf1d83edc1b802ad25cfbbce7a043658d3d4797bd67955447ce8630b51f515ed` (50834760 bytes)
+- `llama32_1b_oracle_manifest.json` sha256 `6df1b39eb351db7f8626734e8de882b572c8678bab924b932640621b21235e82`
+
+Two runs gave byte-identical files. The files and their provenance (command, environment, diff) are in
+sovereign-core `crates/aien-inference-abi/fixtures/` and `docs/release/ORACLE-FIXTURE-CAND4.md` (release pin PR).
+Independence check: the CAND-4 aien-cli (ad6b7eb5..., GB10 native backend) greedy 16 tokens on the same prompt gave
+the same text as the oracle ("An operating system (OS) is a software layer that manages computer hardware resources,");
+text level only, aien-cli exposes no token ids or logits.
