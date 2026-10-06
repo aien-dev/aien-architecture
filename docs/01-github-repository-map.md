@@ -108,6 +108,8 @@ https://github.com/aien-dev/benchmarks
 
 Canonical performance/provenance benchmark work should be linked from this repo rather than copied into architecture docs.
 
+Prime Drag Race suite: lives in `aien-dev/benchmarks` under `prime-drag-race/` (contract, runner, receipts). The native GB10 implementation is in `aien-dev/omega` under `bench/prime_race/` (PR #303). The outside CUDA yardstick is in `aien-dev/aien-yardsticks` under `yardsticks/prime-drag-race-cuda/` (PR #5). Environment measured so far: Linux-hosted GB10, not AIENOS.
+
 ## Local composition
 
 ### `aien-dev/aien-local-stack` (ARCHIVED, read-only)
