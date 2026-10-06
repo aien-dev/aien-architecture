@@ -82,6 +82,33 @@ sed 's/^physics = .*/physics = "abc123"/' "$live" > "$tmp/p1.toml";   expect 1 "
 sed 's/^interplane = .*/interplane = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"/' "$live" > "$tmp/p2.toml"; expect 1 "nonexistent interplane sha" "$tmp/p2.toml"
 sed 's/^omega-runtime = .*/omega-runtime = "UNBUILT"/' "$live" > "$tmp/p3.toml"; expect 1 "frozen live manifest with UNBUILT" "$tmp/p3.toml"
 
+# --- amendments: <stem>.amendment-<n>.toml next to the manifest is read; a frozen manifest edit is refused.
+amd="$tmp/amd"; mkdir -p "$amd"; frozen "$amd/CX.toml"; printf '\n[model]\nmodel-id = "m"\n' >> "$amd/CX.toml"
+amend() { # amend <n> <manifest-sha> [extra line...] : write CX.amendment-<n>.toml
+  local n="$1" s="$2"; shift 2
+  { printf 'schema = "CandidateAmendmentV1"\ncandidate = "CAND-0"\namendment = "%s"\ndate = "2026-10-06"\nreason = "test"\nmanifest-sha256 = "%s"\n\n[model]\n' "$n" "$s"
+    printf 'oracle-fixture-safetensors-sha256 = "%s"\n' "$H64a"; for l in "$@"; do printf '%s\n' "$l"; done; } > "$amd/CX.amendment-$n.toml"
+}
+MSHA=$(sha256sum "$amd/CX.toml" | cut -d' ' -f1)
+amend 1 "$MSHA";                                                expect 0 "amendment: valid amendment accepted" "$amd/CX.toml"
+"$chk" "$amd/CX.toml" 2>/dev/null | grep -q '(amendments: 1)' && pass=$((pass+1)) || { bad=$((bad+1)); echo "TEST FAIL: amendment file not picked up"; }
+amend 1 "$MSHA" "tokenizer-json-sha256 = \"$Z64\"";             expect 1 "amendment: all-zero digest in amendment refused (file is read)" "$amd/CX.toml"
+cp "$amd/CX.toml" "$amd/CX.orig"; amend 1 "$MSHA"
+echo '# edited after the freeze' >> "$amd/CX.toml";              expect 1 "amendment: frozen manifest edited after amendment refused" "$amd/CX.toml"
+cp "$amd/CX.orig" "$amd/CX.toml"
+amend 1 "$MSHA" "[executables]" "omega-runtime = \"$H64b\"";     expect 1 "amendment: [executables] cannot be amended" "$amd/CX.toml"
+amend 1 "$MSHA" "[commits]" "physics = \"0123456789012345678901234567890123456789\""; expect 1 "amendment: [commits] cannot be amended" "$amd/CX.toml"
+amend 1 "$MSHA" "model-id = \"other\"";                       expect 1 "amendment: a key already in the manifest is not overridden" "$amd/CX.toml"
+cp -r "$amd" "$tmp/amdov"   # kept for the override mutant below
+amend 1 "$MSHA"; sed -i 's/^candidate = .*/candidate = "CAND-9"/' "$amd/CX.amendment-1.toml"; expect 1 "amendment: wrong candidate refused" "$amd/CX.toml"
+amend 1 "$MSHA"; sed -i 's/^amendment = .*/amendment = "2"/' "$amd/CX.amendment-1.toml";        expect 1 "amendment: number must match file name" "$amd/CX.toml"
+amend 1 "$MSHA"
+live4="$here/../qualification/candidates/CAND-4.toml"
+expect 0 "live CAND-4 with Amendment 1 valid" "$live4"
+"$chk" "$live4" 2>/dev/null | grep -q '(amendments: 1)' && pass=$((pass+1)) || { bad=$((bad+1)); echo "TEST FAIL: live CAND-4 amendment not picked up"; }
+[ -z "$(cd "$here/.." && git diff 7f99d7ee4221bb3cd8b3bc23bf167a64baac24e4 -- qualification/candidates/CAND-4.toml 2>/dev/null)" ] && pass=$((pass+1)) || { bad=$((bad+1)); echo "TEST FAIL: frozen CAND-4.toml differs from 7f99d7e"; }
+echo '# edited' >> "$amd/CX.toml"   # left edited for the mutant below
+
 # --- new: mutants. Each broken copy of the checker must wrongly accept the bad input,
 # proving the new test above really depends on the new check.
 mutant() { # mutant <label> <sed-expr> <input-file>
@@ -91,9 +118,11 @@ mutant() { # mutant <label> <sed-expr> <input-file>
   if [ "$rc" = 0 ]; then pass=$((pass+1)); else bad=$((bad+1)); echo "TEST FAIL: mutant '$1' still rejected (rc=$rc), test does not bite"; fi
 }
 mutant "no zero-digest check" '/all zero/d' "$tmp/z.toml"
-mutant "old # truncation" 's/^while IFS= read -r line; do$/while IFS= read -r line; do line="${line%%#*}"/' "$tmp/h.toml"
+mutant "old # truncation" 's/^  while IFS= read -r line; do$/  while IFS= read -r line; do line="${line%%#*}"/' "$tmp/h.toml"
 mutant "contracts not required" 's/ contracts.crumb-spec contracts.spark-crumbs;/;/' "$tmp/k1.toml"
 mutant "optional pins not checked" 's/for r in commits.physics commits.interplane; do/for r in; do/' "$tmp/p1.toml"
 mutant "optional pin sha existence not checked" '/^for r in commits.physics/,/^done$/s/sha_exists "\$repo" "\$s" || err .*$/true/' "$tmp/p2.toml"
+mutant "manifest pin not checked" 's/^  \[ "\${am\[manifest-sha256\]:-}" = "\$mf_sha" \] \\$/  true \\/' "$amd/CX.toml"
+mutant "amendment may override" '/is already in the manifest; an amendment only adds keys/d' "$tmp/amdov/CX.toml"
 echo "passed=$pass failed=$bad"
 [ "$bad" -eq 0 ]

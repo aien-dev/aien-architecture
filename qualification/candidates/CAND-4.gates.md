@@ -36,17 +36,24 @@ production images; every worktree clean after the build.
 
 ## Amendment 1 (2026-10-06): oracle fixture recorded
 
-Additive evidence only; the candidate is unchanged (same commits, executables, model and model digests). At freeze
-`[model] oracle-fixture` said none was recorded for this model. An independent Hugging Face Transformers FP32 CPU
-reference fixture for unsloth/Llama-3.2-1B-Instruct snapshot 5a8abab now exists, made with the CAND-3 generator
-(`scripts/generate_tinyllama_oracle.py` from sovereign-core `d2cacfa^`, constants-only changes, run as scratch
-outside every repository). The single `oracle-fixture` line in `CAND-4.toml` is replaced by its two digests:
+Additive evidence only; the candidate is unchanged (same commits, executables, model and model digests), and the frozen
+`CAND-4.toml` is not edited (byte-identical to 7f99d7e). The machine-readable record is
+`CAND-4.amendment-1.toml`, which pins the sha256 of the frozen manifest (5f1cf9d7...) and adds two `[model]` digests;
+`scripts/check_candidate.sh` reads it with the manifest and refuses a later manifest edit.
+
+At freeze `[model] oracle-fixture` said none was recorded for this model. An independent reference fixture for
+unsloth/Llama-3.2-1B-Instruct snapshot 5a8abab now exists:
 
 - `llama32_1b_oracle.safetensors` sha256 `bf1d83edc1b802ad25cfbbce7a043658d3d4797bd67955447ce8630b51f515ed` (50834760 bytes)
-- `llama32_1b_oracle_manifest.json` sha256 `6df1b39eb351db7f8626734e8de882b572c8678bab924b932640621b21235e82`
+- `llama32_1b_oracle_manifest.json` sha256 `6df1b39eb351db7f8626734e8de882b572c8678bab924b932640621b21235e82` (23139 bytes)
 
-Two runs gave byte-identical files. The files and their provenance (command, environment, diff) are in
-sovereign-core `crates/aien-inference-abi/fixtures/` and `docs/release/ORACLE-FIXTURE-CAND4.md` (release pin PR).
+Provenance: Hugging Face Transformers runs the model on the CPU in FP32 (generator: CAND-3's
+`scripts/generate_tinyllama_oracle.py` from sovereign-core `d2cacfa^`, constants-only changes; torch 2.14.0+cu130,
+transformers 5.17.0, safetensors 0.8.0; `python3 -I`). It is an outside yardstick, made as scratch outside every
+repository; AIEN does not depend on it at build, test or run time, and no Python is committed. Two runs gave
+byte-identical files. Files and full record: sovereign-core `crates/aien-inference-abi/fixtures/` and
+`docs/release/ORACLE-FIXTURE-CAND4.md` (release pin PR sovereign-core#238).
+
 Independence check: the CAND-4 aien-cli (ad6b7eb5..., GB10 native backend) greedy 16 tokens on the same prompt gave
-the same text as the oracle ("An operating system (OS) is a software layer that manages computer hardware resources,");
-text level only, aien-cli exposes no token ids or logits.
+the same text as the oracle ("An operating system (OS) is a software layer that manages computer hardware resources,").
+Text level only: aien-cli exposes no token ids or logits, so the fixture's logits and activations were not compared.
