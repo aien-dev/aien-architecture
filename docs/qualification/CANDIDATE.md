@@ -51,6 +51,19 @@ A result with a missing field, a dirty tree, or a commit not in the manifest is 
 
 Receipts for earlier code stay valid history. They prove what they bound. They never qualify new code: a receipt counts toward a candidate only if its `commit` and executable digest match that candidate's manifest.
 
+## Carry-forward of evidence by executable identity
+
+"Old receipts" says a receipt never qualifies new code. One exception exists: an executable that did not change may carry its earlier result into a new candidate, under all of these rules. Precedent: `qualification/candidates/CAND-2.gates.md` section 2 ("Results carried from CAND-1 by executable identity (not rerun)").
+
+1. Identity: the executable's SHA-256 in the new manifest `[executables]` equals the digest in the earlier frozen manifest. A digest that differs by one bit does not carry.
+2. Inputs: every input the gate consumed is unchanged. That covers model inputs (sha256 in `[model]`), fixtures, and the test sources and flags listed in the gate's declaration. If a gate builds its own test binary, the new candidate shows that binary byte-identical to the earlier one, as CAND-2 did for `gpu_attention_test`.
+3. Environment and labelling: the environment class (host build, QEMU, or silicon) is the same as the original run. The carried result is recorded with the earlier candidate id, the earlier receipt sha256, and the words "carried from CAND-N by executable identity (not rerun)". The receipt keeps naming the earlier candidate; it is not rewritten.
+4. Gate definition: a result never carries across a change of the gate script, the harness, or the declared thresholds. A changed definition is a new gate and is rerun.
+5. Status: `BLOCKED`, `NOT_RUN`, `FAIL` and `NOT_QUALIFIED` carry only as the same status. They are never upgraded by carrying, and a carried `PASS` does not clear a `BLOCKED` item.
+6. Silicon performance: performance results measured on silicon (for example R15) do not carry. They are rerun on the new candidate.
+
+A result that meets rules 1 to 6 is reported as carried, in its own table section, apart from results rerun on the candidate. A result that fails any rule is rerun.
+
 ## Promotion checks and exceptions
 
 Promotion checks (for example `evidence-immutable`) are mandatory. A bypass needs a written exception under `qualification/exceptions/`, committed before or in the same change as the bypass. See `qualification/exceptions/0001-r16-immutability.md`.
