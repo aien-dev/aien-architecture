@@ -717,3 +717,60 @@ The ADR 0031 workstream runs as Lane 8 and does not reorder these gates; its pro
 ## Addendum 2026-10-01: language course correction (ADR 0024)
 
 By operator decision of 2026-10-01, [ADR 0024](docs/adr/0024-rust-scaffolding-omega-destination.md) supersedes the Rust-to-C migration plan. Rust is scaffolding, Omega is the destination, and C stays only where hardware, boot, ABI or freestanding-kernel reasons justify it. Wherever this plan says the "Rust-to-C port" or "no new Rust", read it as superseded by that ADR. No merged work is reverted; the C kernel and its gates stay. This addendum changes no gate order.
+
+## Addendum 2026-10-06: next implementation phase (NEXT-PHASE-1 to NEXT-PHASE-5)
+
+This addendum orders the next implementation work. It adds no master plan (`PLAN_AUTHORITY.md`), changes no gate order in section 17 and raises no milestone status; milestone status changes only in `doctrine/ROADMAP.md`, which this addendum does not touch. The five slices below are not roadmap milestones. All five are NOT STARTED.
+
+### Baseline
+
+- CAND-2 is the frozen candidate: `qualification/candidates/CAND-2.toml`, `id = "CAND-2"`, `status = "frozen"`, `created = "2026-10-05"`.
+- Its `[commits]` table: omega `79a805d162bfded8c5ce5a4c14f7c29e79025f39`; aienos `bbad5e4250e57f8cbd1be4cf1390109aa65ef92c`; aien-sovereign-core `286fa9b7afbc71f06ed7e1dd29f68f36714fd92a`; aien-protocols `7ac6facb630ca7e9a6ab4125b292203fe2bb6687`; aien-architecture `7390f5d963c54984b89c8a3d6dee4ab0e990b6c5`; physics `6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf`; interplane `204996832b1810673644169716518d42dcda3e0a`.
+- Its nine `[executables]`: omega-runtime, omega-gpu-engine-lib, aien-cli-native-release, aien-proof, aien-test, aienos-boot-image, aienos-ck-core-image, physics-boot-bin, atlas-m2-boot-bin (digests in the manifest).
+- Model inputs (`[model]`): `model-id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"`, `model-safetensors-sha256 = "6e6001da2106d4757498752a021df6c2bdc332c650aae4bae6b0c004dcf14933"`.
+- CAND-2 verdict in `CAND-2.gates.md` section 3: "not qualified".
+- No CAND-3 manifest exists on main as of 2026-10-06T00:30Z (checked: `qualification/candidates/` holds CAND-0, CAND-1 and CAND-2 only). The cand3-integ lane expects to freeze CAND-3 after omega #309 (operator emergency stop) and the CAND-3 double build. Until then CAND-2 is the baseline, and every result recorded under this addendum binds to CAND-2 or to a later named, frozen candidate, never to an unfrozen tree.
+
+### Environments, kept separate
+
+- Linux-hosted execution: sovereign-core `aien-cli` with `OmegaGb10Backend` on the Spark, and the omega R13 production program on the host. These are results about Linux processes.
+- Emulator results: every AIENOS gate is QEMU. `CAND-2.gates.md` section 4: "every AIENOS result is QEMU. Nothing here qualifies the Spark booting AIENOS."
+- Native hardware qualification: none exists for AIENOS booting the Spark. GB10 chip receipts are hardware results for omega kernels, not for AIENOS.
+
+### Limitations carried from CAND-2.gates.md section 4
+
+- R16 G6: the operator emergency stop exists in the runtime (omega #300, host-tested) but the production program does not wire it and has no operator entry point; the item reads MISSING_IMPLEMENTATION. No silicon run exercises a stop.
+- R15 and R16 G7: the SPBM energy reader is not loaded (operator action), so R15 refuses to start (BLOCKED_INSTRUMENT) and G7 cannot pass. CAND-1's R15 FAIL (G15 residency 0.849, one stalled trial) is unexplained; a later 30-trial diagnostic is "a clue, not a verdict".
+- AIENOS: no USB keyboard driver in the C kernel; C loader A/B and rollback are parked (MISSING_IMPLEMENTATION).
+- TRUST-1 M5: attended hardware boots and owner-key ceremonies are blocked on the operator; Secure Boot is off.
+- Physical machine: every AIENOS result is QEMU.
+- Toolchain: no rust-toolchain file pins the compiler (gap G4).
+
+### Known architectural split (OBSERVED 2026-10-06, sovereign-core 286fa9b and omega main)
+
+- The real model, tokenizer, daemon, skills, `spark-aegis` effect membrane, hashed World-effect receipts and idempotency ledger live in sovereign-core. Its 10-step gate is `docs/NATIVE_GOLDEN_PATH.md` run by `scripts/golden_path.sh` (both files confirmed present at 286fa9b).
+- The canonical causal path World -> J-Space -> AEGIS -> commit -> Cortex (`rx_compose`, COMPOSITION-2) and the ADR 0022 canonical Cortex (omega `rx_cortex`) live in omega `src/runtime` and the R13 production program, which runs no model.
+- Sovereign-core has no J-Space and no World-commit code, and its Cortex client talks HTTP to cortex-rs on 127.0.0.1:18080. ADR 0022 (`docs/adr/0022-canonical-cortex-owner.md`) lists cortex-rs as non-authoritative and says adding a caller to it is a violation.
+- UNVERIFIED (confidence: medium-high): the absence claims (no J-Space, no World-commit code, the HTTP client and port, the composition of the R13 program) come from the 2026-10-06 observation by the lanes, not from a source search made for this addendum. NEXT-PHASE-1 must re-confirm them.
+- This is a discrepancy to resolve in NEXT-PHASE-1. The bridge decision is pending a scout report and is not decided here.
+
+### Slices, in dependency order
+
+**NEXT-PHASE-1: single-machine useful workflow on the production path.** NOT STARTED.
+One workflow with: a real local model and tokenizer with production inference; skill and capability resolution; J-Space exploration with speculative effects contained; AEGIS authorization at the actual effect boundary; World commit and canonical Cortex persistence; a result that cites recorded evidence; restart and recall under the same durable identity (`AienMachineId`). Exit criteria: acceptance criteria are frozen before the campaign starts; measured are task completion, correctness, latency, resource use and required human interventions, with expected approvals counted separately from operator rescues. It reuses existing components and must not be demonstrated from disconnected fixtures.
+
+**NEXT-PHASE-2: continuity under failure.** NOT STARTED.
+Cases: kill before and after durable commit; interruption between an external effect and its recorded acknowledgment; accelerator unavailable; operator stop during in-flight work followed by authorized resume; stale or revoked capabilities; corrupted or partially written state. Exit criteria: no unauthorized effects, no silent duplicate effects, no false success, committed identity and memory preserved. An external operation whose outcome cannot be determined stays in an explicit unresolved state and is reconciled; no universal exactly-once promise is made. It uses the existing receipt format and failure vocabulary.
+
+**NEXT-PHASE-3: native AIENOS path.** NOT STARTED.
+Close in this order: operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
+
+**NEXT-PHASE-4: reproducible, maintainable release.** NOT STARTED.
+Pin the toolchain (a `rust-toolchain` file closes gap G4); document the build and verify the install (sovereign-core `install.sh` release mode, `scripts/repro-build.sh`, both present at 286fa9b). Artifacts bind to the candidate, the executable digests, the model inputs and the receipts. CI enforces candidate consistency and evidence immutability. An explicit carry-forward rule covers an unchanged executable; `CAND-2.gates.md` section 2 is the precedent (identical digest and unchanged inputs). Status documents are reconciled. Exit criteria: install, execute, upgrade and rollback are demonstrated.
+
+**NEXT-PHASE-5: after the single-machine workflow is dependable.** NOT STARTED.
+(a) Smallest two-machine Fabric slice: authenticated membership, capability advertisement, one placed task, disconnect detection, recovery without unauthorized or duplicate effects; J-Space transport only as needed. (b) Predictive behaviour only within demonstrated calibration limits or under fresh preregistered evaluation. (c) One bounded learning experiment (tensor, autodiff, optimizer, evaluation, promotion) that must show fresh held-out improvement, preserved capabilities and a demonstrated rollback before any promotion.
+
+### Coordination
+
+No merge to sovereign-core main until the CAND-3 FROZEN whisper from cand3-integ (requested 2026-10-06). Omega PRs #303, #307, #309 and #310 are held by their owners. This addendum changes no gate order in section 17 and raises no milestone status.
