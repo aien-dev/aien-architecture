@@ -25,7 +25,7 @@ Superseded plans are kept only under [docs/archive/plans](docs/archive/plans/REA
 ## How the repositories fit together
 
 ```text
-ATLAS AWAKENS.  AIEN PROPOSES.  OMEGA DEFINES.  FORGE REALIZES.
+ATLAS AWAKENS.  ALLEN INTENDS.  AIEN PROPOSES.  OMEGA DEFINES.  FORGE REALIZES.
 AEGIS VERIFIES.  HARDWARE ACTS.  EVIDENCE TEACHES.
 ```
 

@@ -54,7 +54,7 @@ Historical identifiers such as `PHYSICS_BOOT`, `PHYSICS_EFFECTS`, `PHYSICS_ACCEL
 
 Current architecture uses:
 
-`ATLAS AWAKENS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.`
+`ATLAS AWAKENS. ALLEN INTENDS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.`
 
 This sentence is responsibilities and causal dependencies, not a turn order and not the way a reaction result is accepted. FORGE is a realization and memory policy; the accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02).
 

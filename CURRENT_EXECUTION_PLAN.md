@@ -16,6 +16,7 @@ Canonical execution doctrine:
 
 ```text
 ATLAS AWAKENS.
+ALLEN INTENDS.
 AIEN PROPOSES.
 OMEGA DEFINES.
 FORGE REALIZES.

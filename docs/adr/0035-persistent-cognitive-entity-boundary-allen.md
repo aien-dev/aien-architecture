@@ -1,8 +1,8 @@
 # ADR 0035: Persistent Cognitive Entity Boundary (ALLEN)
 
-**Status:** PROPOSED (2026-10-04). NOT ACCEPTED. The creed line, `doctrine/ARCHITECTURE.md` §1.2 / §1.3 / §2.8 and the aienos Blueprint keep their present wording until the operator accepts this record. What is already true on branches is marked IMPLEMENTED / TESTED below; nothing in this ADR is QUALIFIED on hardware.
+**Status:** ACCEPTED (2026-10-06, by the operator, Drake Stapleton: "Yes I accept Allen", accepted as written including the creed line). Proposed 2026-10-04. The creed line and `doctrine/ARCHITECTURE.md` §1.2 / §1.3 / §2.8 were updated on acceptance (see §3 item 8 and §5). The aienos Blueprint is not changed by this record (no Blueprint sentence is named in §3 or §5); aienos ADR 0018 keeps its own status until its own format-freeze approval. What is already true on branches is marked IMPLEMENTED / TESTED below; nothing in this ADR is QUALIFIED on hardware.
 **Author:** Claude (Fable 5.1) for Drake Stapleton. Investigation: `~/handoffs/2026-10-04-allen-architecture-investigation.md`; drift re-audit before implementation: `~/handoffs/2026-10-04-allen-phase-a-delta.md`.
-**Supersedes:** nothing. **Amends (if accepted):** `doctrine/ARCHITECTURE.md` §1.2 gloss of AIEN PROPOSES ("initiates intent" moves to ALLEN), §1.3 creed, §2.8 ownership table (new rows). **Already changed in companion PRs (no acceptance needed; they state facts about code):** `doctrine/AIEN.md` §10 model-generation naming (this PR, second commit); aienos `docs/ARCHITECTURE.md` §10 and `CONTEXT.md` "AIEN Agent" (aien-dev/aienos#259); omega `spec/allen.md` (aien-dev/omega#276).
+**Supersedes:** nothing. **Amends (on acceptance, applied 2026-10-06):** `doctrine/ARCHITECTURE.md` §1.2 gloss of AIEN PROPOSES ("initiates intent" moves to ALLEN), §1.3 creed, §2.8 ownership table (new rows). **Already changed in companion PRs (no acceptance needed; they state facts about code):** `doctrine/AIEN.md` §10 model-generation naming (this PR, second commit); aienos `docs/ARCHITECTURE.md` §10 and `CONTEXT.md` "AIEN Agent" (aien-dev/aienos#259); omega `spec/allen.md` (aien-dev/omega#276).
 **Related:** ARCH-0007 (J-Space effect boundary), ARCH-0011 (inference context is model state), ARCH-0015 (resident semantic store), ARCH-0016 (resident reaction system; readiness, not turn order), ARCH-0020 (belief / estimation), ARCH-0022 (Cortex owner), ARCH-0024 (Rust scaffolding, Omega destination), ARCH-0028 (aien-test), omega R16 (orchestrator retirement); aienos ADR 0006, 0007, 0015, 0016, 0017, **0018 (ALLEN subject state object, PROPOSED)**.
 **Evidence base:** GitHub `main` on 2026-10-04: aien-architecture 6c95697, aienos fbbfc9c, omega e5593ae, aien-sovereign-core 6c28524, aegis-runtime f4e8709, aien-protocols 3a4cdbe, interplane 59bb72b. Branches: aienos `feat/allen-subject-state` (cd4b089, PR #259), omega `feat/allen-v0` (7151e45, PR #276). Code beats plans.
 **Name:** ALLEN is a proper name, not an acronym. It echoes Alan Turing (spelled Alan), whose measurement line the project already carries, and the project creator's first best friend. It is not changed to ALAN and no five words are manufactured for it.
@@ -31,7 +31,7 @@ Until now the word AIEN meant four things: the whole living system, the thinking
 | 3. the one durable subject that survives restarts and model swaps | renamed | **ALLEN** |
 | 4. a model generation ("AIEN-N") | corrected | model generation N (`doctrine/AIEN.md` §10) |
 
-## 3. Decision (proposed)
+## 3. Decision (accepted 2026-10-06)
 
 ```text
 AIEN IS THE ORGANISM. ALLEN IS THE SUBJECT IT SUSTAINS.
@@ -47,7 +47,7 @@ IDENTITY-TO-MEMORY BINDING. EVERYTHING ELSE KEEPS ITS PRESENT OWNER.
 5. **Standing intent (IMPLEMENTED, one kind).** v0 defines `GOAL_LATENCY` (regime, target ns), the one goal shape `rx_aien` reads today. ALLEN publishes each ACTIVE intent as the goal mutation through `rx_world_publish_external`; the EXTERNAL crumb carries the intent id's first 64 bits. The World's dependency machinery wakes `aien.assess`. Other kinds are FUTURE.
 6. **AIEN keeps PROPOSES.** Proposing, hypothesis formation, prediction, explanation, planning, search, synthesis, cost modelling and the Turing measurement remain faculty work under their present owners. The one gloss word that moves is "initiates intent" (ARCHITECTURE §1.2), which becomes ALLEN's on acceptance.
 7. **Position.** ALLEN is inside the AIEN organism, not above it. The layer order in ARCHITECTURE §1.1 does not change.
-8. **Creed (evaluated, not applied).** `ATLAS AWAKENS. ALLEN INTENDS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.` The line reads correctly against the implemented boundary: ALLEN's object says what is intended; AIEN's faculty proposes what to do about it. It is applied only on acceptance.
+8. **Creed (applied on acceptance, 2026-10-06).** `ATLAS AWAKENS. ALLEN INTENDS. AIEN PROPOSES. OMEGA DEFINES. FORGE REALIZES. AEGIS VERIFIES. HARDWARE ACTS. EVIDENCE TEACHES.` The line reads correctly against the implemented boundary: ALLEN's object says what is intended; AIEN's faculty proposes what to do about it. It is applied on acceptance.
 9. **Model naming (applied in this PR).** `doctrine/AIEN.md` §10 names model generations "Model N / N+1 / N-1" serving ALLEN; the succession triad and the non-self-promotion law are unchanged.
 
 ## 4. Alternatives considered and rejected
@@ -66,7 +66,7 @@ IDENTITY-TO-MEMORY BINDING. EVERYTHING ELSE KEEPS ITS PRESENT OWNER.
 
 | concept | from | to |
 |---|---|---|
-| "initiates intent" | AIEN (gloss, §1.2) | ALLEN (on acceptance) |
+| "initiates intent" | AIEN (gloss, §1.2) | ALLEN (accepted 2026-10-06) |
 | standing goal source in the living runtime | unowned ("external, human") | ALLEN object, published through the existing external path |
 | held-knowledge set (which promotions are the subject's own) | unnamed | ALLEN (by digest; records stay in Cortex) |
 | identity <-> Cortex journal <-> World subject binding | absent | ALLEN (binding record); the mechanisms stay with AIENOS and omega |
@@ -118,7 +118,7 @@ Status vocabulary: IMPLEMENTED / TESTED / QUALIFIED / SPECIFIED / PROPOSED / PLA
 | hardware qualification (physical Spark NVMe, physical cold reboot) | | NOT_RUN | QEMU is not hardware |
 | production path (kernel commits the object at a generation barrier; organism boot resolves it) | | PARTIAL | the kernel writes and restores the subject in the TEST continuity image (QEMU); the default image provisions no identity yet; organism boot does not yet read the subject from the kernel |
 | multi-subject | | FUTURE, NOT IMPLEMENTED | |
-| creed, §1.2 / §1.3 / §2.8 edits | | BLOCKED_OPERATOR (acceptance) | |
+| creed, §1.2 / §1.3 / §2.8 edits | | APPLIED (operator acceptance 2026-10-06) | |
 
 Receipts (immutable; earlier ones unchanged): host v0 omega `evidence/ALLEN/83c62a41f0252d4b00de78dcad280b78827821c1181e0b02a0690403b8b4f085.json` (candidate `cda7609`, aienos lock `cd4b089`); host v0 after reconciliation omega `evidence/ALLEN/18cfa250cee91ce5abe4cba21fa9fb70da4df36b9b593924b86538dcdfdfabef.json` (candidate `6b78165`, aienos lock = merged aienos#259 `71d5b32`; merged as omega `b544d81`, same tree); native and QEMU aienos `evidence/allen_native_qemu_cfe9aecffb8b20e0c1ff51fad54c46c522ec7d6c56c6cba7661e4b8cda1ee25a.json` with `evidence/ck_gates_1ecf5bcd303bf88422dd0542f14851c931f5d52276838fa182c812f3c73f3c1b.json` (code commit `640522a`, aienos#260, merged as `9d41efc`). `ALLEN_V0_HOST`, `ALLEN_NATIVE_PROVISIONING` and `ALLEN_QEMU_COLD_RESTART` are separate results; QEMU is not a physical cold reboot.
 
