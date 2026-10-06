@@ -729,7 +729,7 @@ This addendum orders the next implementation work. It adds no master plan (`PLAN
 - Its nine `[executables]`: omega-runtime, omega-gpu-engine-lib, aien-cli-native-release, aien-proof, aien-test, aienos-boot-image, aienos-ck-core-image, physics-boot-bin, atlas-m2-boot-bin (digests in the manifest).
 - Model inputs (`[model]`): `model-id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"`, `model-safetensors-sha256 = "6e6001da2106d4757498752a021df6c2bdc332c650aae4bae6b0c004dcf14933"`.
 - CAND-2 verdict in `CAND-2.gates.md` section 3: "not qualified".
-- No CAND-3 manifest exists on main as of 2026-10-06T00:30Z (checked: `qualification/candidates/` holds CAND-0, CAND-1 and CAND-2 only). The cand3-integ lane expects to freeze CAND-3 after omega #309 (operator emergency stop) and the CAND-3 double build. Until then CAND-2 is the baseline, and every result recorded under this addendum binds to CAND-2 or to a later named, frozen candidate, never to an unfrozen tree.
+- No CAND-3 manifest exists on main as of 2026-10-06T00:30Z (checked: `qualification/candidates/` holds CAND-0, CAND-1 and CAND-2 only). The cand3-integ lane expects to freeze CAND-3 after omega #309 (R16 G6 operator stop/status/resume, open) and the CAND-3 double build. Until then CAND-2 is the baseline, and every result recorded under this addendum binds to CAND-2 or to a later named, frozen candidate, never to an unfrozen tree.
 
 ### Environments, kept separate
 
@@ -746,13 +746,24 @@ This addendum orders the next implementation work. It adds no master plan (`PLAN
 - Physical machine: every AIENOS result is QEMU.
 - Toolchain: no rust-toolchain file pins the compiler (gap G4).
 
-### Known architectural split (OBSERVED 2026-10-06, sovereign-core 286fa9b and omega main)
+### Known architectural split (OBSERVED 2026-10-06, sovereign-core 286fa9b and omega main 21092e0; verified by a scout)
 
-- The real model, tokenizer, daemon, skills, `spark-aegis` effect membrane, hashed World-effect receipts and idempotency ledger live in sovereign-core. Its 10-step gate is `docs/NATIVE_GOLDEN_PATH.md` run by `scripts/golden_path.sh` (both files confirmed present at 286fa9b).
-- The canonical causal path World -> J-Space -> AEGIS -> commit -> Cortex (`rx_compose`, COMPOSITION-2) and the ADR 0022 canonical Cortex (omega `rx_cortex`) live in omega `src/runtime` and the R13 production program, which runs no model.
-- Sovereign-core has no J-Space and no World-commit code, and its Cortex client talks HTTP to cortex-rs on 127.0.0.1:18080. ADR 0022 (`docs/adr/0022-canonical-cortex-owner.md`) lists cortex-rs as non-authoritative and says adding a caller to it is a violation.
-- UNVERIFIED (confidence: medium-high): the absence claims (no J-Space, no World-commit code, the HTTP client and port, the composition of the R13 program) come from the 2026-10-06 observation by the lanes, not from a source search made for this addendum. NEXT-PHASE-1 must re-confirm them.
-- This is a discrepancy to resolve in NEXT-PHASE-1. The bridge decision is pending a scout report and is not decided here.
+Sovereign-core (the Linux stack with the real model):
+
+- No J-Space: "JSpace" appears only in `crates/aien-cli/src/nesting.rs`, `walkthrough.rs`, `commands.rs` (prose) and `crates/aien-replay/src/lib.rs`. No World-commit code on the live path.
+- The effect receipt is `record_effect_receipt` in `crates/aien-cli/src/tools.rs` (l.440), which writes sha256 digests to `$AIEN_PROVENANCE_DIR`.
+- `scripts/golden_path.sh` step 8 runs unit tests of `crates/aien-runtime/src/world.rs` `commit_draft`, not a live daemon call. Step 9's idempotency ledger is `crates/aien-runtime/src/control.rs` l.97-130 (`processed_operations.json`), checked in `spine.rs` `handle_control_command` l.341-348. The gate is `docs/NATIVE_GOLDEN_PATH.md`.
+- `spark-aegis` is a scanner and audit subprocess: no crate depends on it, and it is invoked from `commands::handle_aegis_command` (l.1727). The effect membrane is `crates/aien-cli/src/safety.rs` `validate_path` plus policy rules, not `spark-aegis`.
+- `skills.rs` is markdown prompt-skill discovery, not executable AG_SKILL nodes.
+- `crates/aien-cli/src/cortex.rs` talks HTTP to 127.0.0.1:18080, served by `crates/cortex-rs` (SQLite `~/.config/cortex/cortex.db`); its README says non-authoritative, and ADR 0022 (`docs/adr/0022-canonical-cortex-owner.md`) says adding a caller to it is a violation.
+
+Omega (the canonical causal path World -> J-Space -> AEGIS -> commit -> Cortex, `rx_compose`, COMPOSITION-2, and the ADR 0022 canonical Cortex `rx_cortex`):
+
+- `src/runtime` is not in `libomega_gpu.a` (Makefile SRCS l.15-26, GPU_API_OBJS l.2205-2208), and `crates/aien-omega-gpu/src/ffi.rs` declares only GPU symbols.
+- The R13 production program `tests/runtime/rx_r13_living.c` `main` (l.1826-1834) accepts only `--argus-probe` and has no stdin, socket or task input. It runs no model.
+- `rx_compose.h` provides `rx_compose_open/run/close` (l.243-251); skills are `RxcContract` callbacks (l.128). The Cortex journal is `<dir>/cortex.cx` (`rx_compose.c` l.870) with exclusive-lock open, replay, per-record digest and torn-tail repair, and it survives process restart.
+
+This is the discrepancy NEXT-PHASE-1 resolves. Bridge decision (2026-10-06, orchestrator under Drake's standing rule): NEXT-PHASE-1 builds the omega composition sources as a C static library (`librx_compose.a`) with a thin host ABI, bound from a new sovereign-core crate; inference stays in Rust; the omega R13 program is not modified; the sovereign-core PR stays draft until `omega.lock` can pin a merged omega commit that contains the library.
 
 ### Slices, in dependency order
 
@@ -773,4 +784,4 @@ Pin the toolchain (a `rust-toolchain` file closes gap G4); document the build an
 
 ### Coordination
 
-No merge to sovereign-core main until the CAND-3 FROZEN whisper from cand3-integ (requested 2026-10-06). Omega PRs #303, #307, #309 and #310 are held by their owners. This addendum changes no gate order in section 17 and raises no milestone status.
+No merge to sovereign-core main until the CAND-3 FROZEN whisper from cand3-integ (requested 2026-10-06). Omega PRs #303, #307, #309 (R16 G6 operator stop, open) and #310 are held by their owners. This addendum changes no gate order in section 17 and raises no milestone status.
