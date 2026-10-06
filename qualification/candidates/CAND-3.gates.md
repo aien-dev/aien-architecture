@@ -138,4 +138,4 @@ resident and not stopped (atlas image server holding 18408 MiB GPU memory at 0 %
 
 CAND-3 stays NOT QUALIFIED as a whole: R16 needs a G7 attempt with R11 exercised, and the G8 merge step.
 
-Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-A7c/` (omega #317, head 18cb0b7): [`CAND3-LIVING-f816473-A7c`](https://github.com/aien-dev/omega/tree/18cb0b7bcca8e43df493f4f59a0429fed9fd765d/evidence/CAND3-LIVING-f816473-A7c).
+Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-A7c/` (omega #317, head a39e44a): [`CAND3-LIVING-f816473-A7c`](https://github.com/aien-dev/omega/tree/a39e44a0029d63a93b090c7bdc783f5582f4683a/evidence/CAND3-LIVING-f816473-A7c).
