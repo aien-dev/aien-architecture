@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# check_candidate.sh: validate a candidate manifest (docs/qualification/CANDIDATE.md).
+# check_candidate.sh: validate a candidate manifest (docs/qualification/CANDIDATE.md) and its amendments.
 # Usage: scripts/check_candidate.sh <manifest.toml>
 # Exit 0 = valid, 1 = invalid. Pure bash; sha existence is checked with
 # `gh api repos/aien-dev/<repo>/commits/<sha>`. Override with env var
 # CAND_SHA_CHECK (a command run as: $CAND_SHA_CHECK <repo> <sha>) for tests.
+# Amendments: every <manifest-stem>.amendment-<n>.toml next to the manifest is read and checked too (see below).
 set -u
 # Commit pins: [commits] (5 repos) and [contracts] (crumb-spec, spark-crumbs).
 f="${1:-}"
@@ -16,19 +17,21 @@ sha_exists() {
   else gh api "repos/aien-dev/$1/commits/$2" -q .sha >/dev/null 2>&1; fi
 }
 
-# Parse: "section.key" -> value, for lines `key = "value"`.
+# parse <file> <assoc-array-name>: "section.key" -> value, for lines `key = "value"`.
+parse() {
+  local -n out="$2"; local sec="" line
+  while IFS= read -r line; do
+    # A quoted value may contain #; only a trailing comment after the closing quote is dropped.
+    if [[ "$line" =~ ^[[:space:]]*([A-Za-z0-9_.-]+)[[:space:]]*=[[:space:]]*\"([^\"]*)\"[[:space:]]*(#.*)?$ ]]; then
+      out["${sec}${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"; continue
+    fi
+    line="$(echo "$line" | sed -e 's/^[[:space:]]*#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+    [ -z "$line" ] && continue
+    if [[ "$line" =~ ^\[([A-Za-z0-9_.-]+)\][[:space:]]*(#.*)?$ ]]; then sec="${BASH_REMATCH[1]}."; continue; fi
+  done < "$1"
+}
 declare -A kv
-sec=""
-while IFS= read -r line; do
-  # A quoted value may contain #; only a trailing comment after the closing quote is dropped.
-  if [[ "$line" =~ ^[[:space:]]*([A-Za-z0-9_.-]+)[[:space:]]*=[[:space:]]*\"([^\"]*)\"[[:space:]]*(#.*)?$ ]]; then
-    kv["${sec}${BASH_REMATCH[1]}"]="${BASH_REMATCH[2]}"; continue
-  fi
-  line="$(echo "$line" | sed -e 's/^[[:space:]]*#.*//' -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
-  [ -z "$line" ] && continue
-  if [[ "$line" =~ ^\[([A-Za-z0-9_.-]+)\][[:space:]]*(#.*)?$ ]]; then sec="${BASH_REMATCH[1]}."; continue; fi
-done < "$f"
-
+parse "$f" kv
 for k in schema id status created; do
   [ -n "${kv[$k]:-}" ] || err "missing field: $k"
 done
@@ -68,5 +71,40 @@ for k in "${!kv[@]}"; do
 done
 [ "$nexe" -gt 0 ] || err "no [executables] entries"
 
-[ "$fail" -eq 0 ] && echo "OK: $f" && exit 0
+
+# Amendments. A frozen manifest is never edited; evidence recorded after the freeze goes in
+# <manifest-stem>.amendment-<n>.toml next to it, with the dated note in <id>.gates.md. Each amendment must:
+# have schema CandidateAmendmentV1, name this candidate, carry its own number, a date and a reason; pin the
+# sha256 of the manifest it amends (so a later edit of the frozen manifest is refused); and only ADD keys, never
+# in [commits], [contracts], [executables] or [consumed_pins] (those define what the candidate is). Added
+# *-sha256 values must be real digests.
+mf_sha="$(sha256sum "$f" | cut -d' ' -f1)"
+stem="${f%.toml}"; namend=0
+for a in "$stem".amendment-*.toml; do
+  [ -f "$a" ] || continue
+  n="${a#"$stem".amendment-}"; n="${n%.toml}"
+  unset am; declare -A am=(); parse "$a" am
+  [ "${am[schema]:-}" = "CandidateAmendmentV1" ] || err "$a: schema must be CandidateAmendmentV1"
+  [ "${am[candidate]:-}" = "${kv[id]:-}" ] || err "$a: candidate '${am[candidate]:-}' is not the manifest id '${kv[id]:-}'"
+  [ "${am[amendment]:-}" = "$n" ] || err "$a: amendment '${am[amendment]:-}' does not match its file name ($n)"
+  { [ -n "${am[date]:-}" ] && [ -n "${am[reason]:-}" ]; } || err "$a: date and reason are required"
+  [ "${am[manifest-sha256]:-}" = "$mf_sha" ] \
+    || err "$a: pins manifest sha256 '${am[manifest-sha256]:-}' but $f is $mf_sha (frozen manifests are not edited)"
+  nk=0
+  for k in "${!am[@]}"; do
+    case "$k" in schema|candidate|amendment|date|reason|manifest-sha256) continue ;; esac
+    case "$k" in *.*) ;; *) err "$a: unknown top-level key '$k'"; continue ;; esac
+    case "$k" in commits.*|contracts.*|executables.*|consumed_pins.*)
+      err "$a: $k cannot be amended (it would change what the candidate is)"; continue ;; esac
+    [ -z "${kv[$k]+x}" ] || err "$a: $k is already in the manifest; an amendment only adds keys"
+    if [[ "$k" == *-sha256 ]]; then
+      { [[ "${am[$k]}" =~ ^[0-9a-f]{64}$ ]] && ! [[ "${am[$k]}" =~ ^0{64}$ ]]; } || err "$a: $k is not a real sha256"
+    fi
+    nk=$((nk+1))
+  done
+  [ "$nk" -gt 0 ] || err "$a: adds no keys"
+  namend=$((namend+1))
+done
+
+[ "$fail" -eq 0 ] && echo "OK: $f (amendments: $namend)" && exit 0
 exit 1
