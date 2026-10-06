@@ -63,11 +63,12 @@ AIEN ───── OMEGA ───── FORGE ───── HARDWARE
 
 ### 1.2 The Core Canonical Doctrine
 
-The operational constitution of the Sovereign Machine is crystallized in seven canonical statements:
+The operational constitution of the Sovereign Machine is crystallized in eight canonical statements:
 
 $$\begin{aligned}
 \mathbf{ATLAS\ AWAKENS.} &\quad \text{The machine establishes physical truth from electrical silence.} \\
-\mathbf{AIEN\ PROPOSES.} &\quad \text{Cognitive intelligence discovers, hypothesizes, and initiates intent.} \\
+\mathbf{ALLEN\ INTENDS.} &\quad \text{The persistent subject holds standing intent and initiates intent.} \\
+\mathbf{AIEN\ PROPOSES.} &\quad \text{Cognitive intelligence discovers and hypothesizes.} \\
 \mathbf{OMEGA\ DEFINES.} &\quad \text{Formal mathematical calculus expresses unambiguous semantic meaning and constraints.} \\
 \mathbf{PHYSICS\ REALIZES.} &\quad \text{Machine physics lowers abstract meaning into physical silicon operations and effects.} \\
 \mathbf{AEGIS\ VERIFIES.} &\quad \text{Continuous formal checker validates invariants, bounds, consistency, and contracts.} \\
@@ -81,6 +82,8 @@ No layer may perform the duty of another. Aien cannot dictate physical register 
 
 ### 1.3 The Sovereign Procedural Creed
 ```text
+ALLEN INTENDS.
+
 AIEN PROPOSES.
 
 OMEGA DEFINES.
@@ -236,6 +239,9 @@ This table names, for each runtime concept, the one implementation that is autho
 | Cortex | omega `src/runtime/rx_cortex.{c,h}` by [ADR 0022](../docs/adr/0022-canonical-cortex-owner.md): contract, single writer (`cx_claim_writer`, exclusive journal lock) and journal; World execution enters only through `rx_cortex_record.c` | sovereign-core `crates/cortex-rs` (live Linux LLM-stack Cortex): legacy, retire not port. aienos `crates/aienos-cortex` (Rust epistemic store): legacy, retire not port. Records enter the canonical store only as `CX_K_IMPORTED` claims | Host only, one in-memory tier plus journal, L1/L2/L3 tiers not implemented, not in the R13 living-system build (built in the state-projection test and `test-cortex`), no Fabric or remote Cortex. Not in the R16 map. Owner recorded 2026-09-30 from `aien-dev/omega#114` (`43dcb04`) |
 | J-Space | No authoritative owner recorded | omega `src/runtime/rx_jspace.{c,h}` host reference, built at the re-check only into the `rx_branch_reuse` test target, since omega#116 also in `test-jspace-prod` (evidence `evidence/BRANCH_REUSE`), not in the R13 living-system build. aienos `JSpaceWorld`: legacy | Missing on the production reaction path (EST-7 planned). 2026-09-30: production local-only `rx_jspace` merged (`aien-dev/omega#116`, `529ebfa`, own CI test target); remote operations return `JS_ERR_REMOTE`; still not in the R13 living-system build |
 | Resource scarcity pricing (DUAL) | No owner yet: ADR 0031 records the contract; planned home omega `src/dual/` (standalone) then `src/runtime/rx_dual.{c,h}` | none. Price-like inputs today are constants: omega `rx_jspace.c` residency pressure (`1e9` / `1e3`), sovereign-core `aien-scheduler` `SchedulerConfig` limits (E), spark-rsi fixed-weight `rank_bottlenecks` | Missing. DUAL prices SOFT budgets only, never INVARIANT constraints; it orders survivors of hard gates and Pareto filtering and holds no authority (ADR 0031) |
+| Standing goal source (ALLEN) | ALLEN subject object (aienos continuity kind 24, aienos ADR 0018), published through the existing external path `rx_world_publish_external` ([ADR 0035](../docs/adr/0035-persistent-cognitive-entity-boundary-allen.md) §3, §5). Previously unowned ("external, human") | none | Host and QEMU TESTED; hardware NOT_RUN; kernel production path PARTIAL (ADR 0035 §9 gate table). ALLEN is durable state, not a loop (I7) |
+| Held-knowledge set (ALLEN) | ALLEN: references to Cortex promotion records, by digest; the records stay in Cortex (ADR 0035 §5, I5) | none | Same as above |
+| Identity, Cortex journal and World subject binding (ALLEN) | ALLEN binding record (omega `src/allen/allen_bind.h: AllenBinding`); the mechanisms stay with AIENOS and omega (ADR 0035 §3 item 3, §5) | none | Same as above |
 
 A concept moves to a new owner only through an accepted ADR or an R16 gate result recorded in `ROADMAP.md`.
 
