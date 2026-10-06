@@ -1,0 +1,111 @@
+# Candidate manifest, schema CandidateManifestV1. See docs/qualification/CANDIDATE.md.
+
+# Required gates, build recipe and known reproducibility gaps: qualification/candidates/CAND-0.gates.md; results: CAND-3.gates.md
+schema = "CandidateManifestV1"
+id = "CAND-3"
+status = "frozen"
+created = "2026-10-06"
+note = "CAND-2 plus the 2026-10-05/06 cand3 campaign fixes; supersedes CAND-2 (CANDIDATE.md freeze rule 1: CAND-2.toml is not edited). Frozen 2026-10-06 from GitHub mains and the lock chain (sovereign-core omega.lock -> omega; omega physics.lock, aienos.lock, argus.lock). Omega changes since CAND-2 (79a805d..f816473df391bc4fbcf99df722edd70ed26ebef1): #301 (R16 map re-pin), #312 (map re-pin to CAND-3, map only), #304 (evidence only), #305 (R15 energy preflight tools), #306 (R15 seat completion marker uncached, semaphore uncached: changes src/runtime/rx_resident_gpu.c and therefore the silicon R12/R13/R14/R15 binaries), #309 (R16 G6 operator stop/status/resume of the production program: new src/runtime/rx_operator.[ch], tools/rx_operator.c, changes to rx_world, rx_living and rx_r13_living.c, r16_qualify.sh). The CAND-2 omegatool and libomega_gpu.a digests are unchanged: their sources are untouched by these (their source lists contain no src/runtime file, Makefile SRCS, lines 15-25 at the #309 head b2ca115); confirmed by the double build, all nine CAND-2 digests are byte-identical in CAND-3, and eight of the nine new executables are new items. Sovereign-core changes only omega.lock (bump PR #218) and rust-toolchain.toml (#216, toolchain pin, gap G4). [contracts] and [consumed_pins] are the revisions sovereign-core 80e071a3ef700dbe31b1b081a957eebdcbf5ffc3 Cargo.lock and omega's lock files consume, read from those files at freeze (not heads). Executable digests: two clean double builds from different roots (CAND3-BUILD-A, CAND3-BUILD-B), 18 required artifacts identical in every build and across roots; recipe and results in CAND-3.gates.md."
+
+[commits]
+omega = "f816473df391bc4fbcf99df722edd70ed26ebef1"
+aienos = "bbad5e4250e57f8cbd1be4cf1390109aa65ef92c"
+aien-sovereign-core = "80e071a3ef700dbe31b1b081a957eebdcbf5ffc3"
+aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
+aien-architecture = "dcca843cb6e25867e9ff5ab6a6244bd6044e82ee"
+physics = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
+interplane = "9129936b0704b1378a6bfe742c80f67baa25925c"
+# Harness (informational, not a code pin): the window runs from omega 97ee27584cda0d8eaca136f31a44293cd36c9b02, an R16-map-only descendant of f816473 (#312);
+# the ladder guard checks it is code-identical to f816473 before any lane starts.
+
+# The revisions the candidate code consumes (aien-sovereign-core 80e071a3ef700dbe31b1b081a957eebdcbf5ffc3 Cargo.lock, git dependencies; checked by
+# scripts/check_candidate_pins.sh). Read from sovereign-core 80e071a Cargo.lock on 2026-10-06.
+[contracts]
+crumb-spec = "24194d1b7917ef19244aae6bcaff510686b75fef"
+spark-crumbs = "9355a92bc9adfe95a6ec5f8ac926f38a0b6e7db2"
+
+# Pins that the pinned repos themselves hold; scripts/check_candidate_pins.sh checks the first five against the lock files.
+# Read from omega f816473 on 2026-10-06 (physics.lock, aienos.lock, argus.lock, crumb.lock). NOTE: aien-protocols head is 3a4cdbe, NOT consumed; the consumed revision is 7ac6fac (Cargo.lock).
+[consumed_pins]
+sovereign-core-omega-lock = "f816473df391bc4fbcf99df722edd70ed26ebef1"
+sovereign-core-cargo-lock-aien-protocols = "7ac6facb630ca7e9a6ab4125b292203fe2bb6687"
+omega-physics-lock = "6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf"
+omega-aienos-lock = "bbad5e4250e57f8cbd1be4cf1390109aa65ef92c"
+omega-argus-lock = "b375dcaa2887d53cda407d773c2e4e489a0b1365"
+omega-and-aienos-crumb-lock-aien-architecture = "d0f0b95d344b4c6628c3d868346932fd247ce168"
+
+# SHA-256 of each built binary or image under test (digests.txt of CAND3-BUILD-A == CAND3-BUILD-B, 18 entries).
+# The first nine are the CAND-2 list (CAND-2 values in the comments; expected unchanged except where the carry check says so).
+# The last nine are NEW in CAND-3 (cand3_build.sh): the operator client, the production R13 program for host and silicon,
+# and the executables the window runs.
+[executables]
+omega-runtime = "5a3084278ce62868b3655978bc161a0c635b368bddc588963849dd2c5cb343cd"                 # CAND-2: 5a3084278ce62868b3655978bc161a0c635b368bddc588963849dd2c5cb343cd
+omega-gpu-engine-lib = "a4af088104203c9ce1b92b6787f140d822a8039ac86349a0438fb7a379c0fc5c"          # CAND-2: a4af088104203c9ce1b92b6787f140d822a8039ac86349a0438fb7a379c0fc5c
+aien-cli-native-release = "3a17ee79a238ad223fd59f4436d98906a0144b8d5ac47809da194a9ac1d493db"       # CAND-2: 3a17ee79a238ad223fd59f4436d98906a0144b8d5ac47809da194a9ac1d493db
+aien-proof = "a37247a121eb96f56a637d5edf0712a636b341b9c02478dce5c119b559db5430"                    # CAND-2: a37247a121eb96f56a637d5edf0712a636b341b9c02478dce5c119b559db5430
+aien-test = "34ae31e5b16b078c6e41ca219c12e7895269542480c1b3509618ea3cd2c576ef"                     # CAND-2: 34ae31e5b16b078c6e41ca219c12e7895269542480c1b3509618ea3cd2c576ef
+aienos-boot-image = "8b1595cc8e6729d7531a08f2ff19ceb9cddc6eba731f4efb1543a2ee37da5a07"             # CAND-2: 8b1595cc8e6729d7531a08f2ff19ceb9cddc6eba731f4efb1543a2ee37da5a07
+aienos-ck-core-image = "a21218dc1df890274e1b90f9f8e4a3f3d374fd161b274836abcd462e3a195a82"          # CAND-2: a21218dc1df890274e1b90f9f8e4a3f3d374fd161b274836abcd462e3a195a82
+physics-boot-bin = "4b22a08cd408b5cf90258af13b833b97a5211b4d2480fa74be357228f4aed3bd"              # CAND-2: 4b22a08cd408b5cf90258af13b833b97a5211b4d2480fa74be357228f4aed3bd
+atlas-m2-boot-bin = "1d6d75a6881bb9d9b17a777ec7dee885780386c4699d776adc7cc1c277b09012"             # CAND-2: 1d6d75a6881bb9d9b17a777ec7dee885780386c4699d776adc7cc1c277b09012
+omega-rx-operator = "460c6d8a1787176027e7306121ed84c5d0567c2a3d2655564cf50010fed15079"             # NEW: operator client, tools/rx_operator.c (omega #309)
+omega-rx-r13-living-host = "605054a7aafaebb5482340ad8eaa7181649e832852c90eca81872258b4d857b7"      # NEW: production R13 program, host (operator entry point wired)
+omega-rx-r13-living-silicon = "9f48df860344c81f46b90be4ff47956824cc928fe79a8ee20a1a1fd6b892eb86"   # NEW: production R13 program, GB10 resident seat
+omega-rx-r13-living-testbuild-silicon = "4a8430fcbd5a843ba334b934b23608304d9f2f8b3de37a14288afb2ccb7fdfd6"  # NEW: R13 test build (window attempt A2)
+omega-rx-r11-aien-test = "42ffcbadd64a1c1058f334cdaa9216b75733d527df271b5047b7eb8d690161e6"        # NEW: R11 living test (A1b); CAND-2 window build was 37c15f75... (not a build-root digest)
+omega-rx-composition-gate-gpu = "a3fa43e8718228922c7f5057acedc0d35101edd369e56084d52dc582e222a91b" # NEW: COMPOSITION-2 GPU gate (A4)
+omega-rx-r15-perf-silicon = "b8fe26eae8ee81e9ba92d56db279e11b40cebf2a752b72e4415239ab3699913e"     # NEW: R15 performance program (later attempt); CAND-2 A7b window build f4f4acb4...
+omega-rx-r15-perf-silicon-nodigest = "c58d34667e815b4586c5a071ac79fe3691d81bb4334e1120cbea9d01ea2bac5e"  # NEW: R15; CAND-2 A7b window build 60477b83...
+omega-r15-reduce = "27ef41d4f755ab9c577ca3b1fb79989751620f9a4c1a7c70646693c498cbd1b0"              # NEW: R15 reducer; CAND-2 A7b window build 27ef41d4...
+
+# Model inputs for the real-model gates (inputs, never executables): unchanged from CAND-2.
+[model]
+model-id = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+format = "safetensors, torch_dtype bfloat16"
+model-safetensors-sha256 = "6e6001da2106d4757498752a021df6c2bdc332c650aae4bae6b0c004dcf14933"
+model-safetensors-bytes = "2200119864"
+tokenizer-json-sha256 = "bcd04f0eadf90287bd26e1a183ac487d8a141b09b06aecb7725bbdd343640f2e"
+config-json-sha256 = "486bedda3a6988332e60d9638a09ca4b260d34ebcf1b19e22cf3b140b63d8fe9"
+geometry = "LlamaForCausalLM: layers 22, hidden 2048, heads 32, kv heads 4, head_dim 64 (hidden/heads), intermediate 5632, vocab 32000, max positions 2048, rope_theta 10000.0, rms_norm_eps 1e-05"
+oracle-fixture-safetensors-sha256 = "4707e3ba5c75f6c953217235528b38b3dffa334f68b8356f7356f9a5f6a6a6ea"
+oracle-fixture-manifest-sha256 = "d9871e7834513dfff5d453e6915440e4976098a7e84bc75086a3ab7833dcefd9"
+
+[toolchain]
+rustc = "rustc 1.98.1 (48a229cea 2026-09-01), LLVM 22.1.8, host aarch64-unknown-linux-gnu"
+cargo = "cargo 1.98.1 (797e8a9bc 2026-08-05)"
+cc = "cc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0"
+make = "GNU Make 4.3"
+binutils = "GNU ld and ar 2.42 (Ubuntu)"
+cross-cc = "aarch64-linux-gnu-gcc, for physics m2_build.sh and the aienos C kernel (host is aarch64)"
+mojo = "not used by the default build (spark-max-cabi is opt-in since sovereign-core #212)"
+rust-toolchain-file = "aien-sovereign-core rust-toolchain.toml (sovereign-core #216, in 80e071a): channel 1.98.1, profile minimal, components rustfmt and clippy; sha256 887f9be066a15585a2c583578e84b0fcb541126d81546276bad3d2ff00d61167. Closes gap G4 for sovereign-core; omega, aienos and physics build with C and make and have no Rust toolchain file"
+
+# What was built and how. Script: ~/workspace/cand3-campaign/cand3/cand3_build.sh (copy in each evidence directory).
+[build]
+physics = "./m2_build.sh (physics has no Makefile; omega compiles physics m16/nvrm sources directly). physics.bin and atlas_m2.bin rebuild byte for byte equal to the committed files."
+omega = "make -j6 PHYSICS_DIR=<physics worktree> OUT_DIR=build/rb all libomega_gpu; then, one make per target with ARGUS_REPO and AIENOS_LOCK_REPO set: build/rb/{rx_operator,rx_r13_living_host,rx_r13_living_silicon,rx_r13_living_testbuild_silicon,rx_r11_aien_test,rx_composition_gate_gpu,rx_r15_perf_silicon,rx_r15_perf_silicon_nodigest,r15_reduce}"
+aien-sovereign-core = "cargo fetch --locked into a fresh CARGO_HOME, then scripts/repro-build.sh --offline (cargo build --release --locked with --remap-path-prefix for CARGO_HOME and the repo root) -p aien-cli -p aien-proof -p aien-test, default features (dev-fallback off), AIEN_OMEGA_DIR and AIEN_PHYSICS_DIR set, AIEN_DEV_FALLBACK and AIEN_FORCE_CPU_STUB unset"
+release-profile = "opt-level 3, lto true, codegen-units 1, panic abort, strip true (workspace Cargo.toml)"
+aienos = "make -C native/kernel -j4, then make -C native/kernel -j4 full (core image and full image)"
+aien-cli-target-dir = "<root>/wt-sc/target-rb (root A and root B)"
+native-engine-linked = "cargo:rustc-cfg=has_omega_gpu printed by crates/aien-omega-gpu/build.rs; aien-cli carries the string OmegaGb10Backend (native Omega engine, no CUDA, NVIDIA GB10 sm_121)"
+
+# Environment of the production configuration: unchanged from CAND-2.
+[env]
+AIEN_DEV_FALLBACK = "unset (production strict); CI sets 1 for host test runs, which a strict receipt rejects"
+AIEN_FORCE_CPU_STUB = "unset (would force the CPU stub library)"
+AIEN_OMEGA_DIR = "omega checkout at omega.lock, required for the native engine link"
+AIEN_PHYSICS_DIR = "physics checkout at omega physics.lock, required when physics is not at <omega>/../physics"
+AIEN_OMEGA_GPU_LIB = "unset (would link a prebuilt archive without a sha check)"
+AIEN_GPU_BACKEND = "omega demands the native backend at run time; AIEN_REQUIRE_BLACKWELL does the same"
+AIEN_E2E_CHECKPOINT = "directory of the TinyLlama checkpoint for the real-model gates"
+AIEN_MODEL_PATH = "safetensors file for aien-cli; with AIEN_TOKENIZER_PATH, AIEN_MODEL_DIR, AIEN_REQUIRE_CHECKPOINT=1 (no fallback to reference weights)"
+
+[hardware]
+machine = "spark-b87b, NVIDIA DGX Spark (GB10)"
+gpu = "NVIDIA GB10, Blackwell, part 2E12-275-A1, VBIOS 9A.0B.2D.00.00, driver 580.173.02"
+kernel = "Linux 7.0.0-1019-nvidia, aarch64"
+os = "Ubuntu 24.04.5 LTS"
+cpu = "20 cores: Cortex-X925 and Cortex-A725"
+memory = "127598528 kB"
+gpu-load-note = "Builds were host only. Chip results state the load they ran under (CAND-3.gates.md)."
