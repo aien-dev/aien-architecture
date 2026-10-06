@@ -774,28 +774,72 @@ One workflow with: a real local model and tokenizer with production inference; s
 
 *Status 2026-10-06 (afternoon).* Campaigns v1 to v4 have run and are recorded in sovereign-core under `docs/campaigns/next-phase-1/` (PR #223, open, branch `next-phase/compose-v4`, head `eecfb2c`). The index lists seven receipts: six with verdict FAIL and the v4 receipt with verdict PASS (8 of 8 rows). `VERDICT-v4.md` records the v4 campaign verdict as FAIL by reviewer judgement: the reply named the wrong path (not `NOTES.md`), contained the chat marker `<|user|>` and a half sentence, and was cut off at the 48-token limit. The receipt passed because its frozen rows compared digests only (the proposal equals what is on disk) and never checked what the content says; the receipt is not edited. A v5 is in progress (inference diagnostic, task-correctness rows, negative cases, possibly a stronger local model); that is UNVERIFIED here, not on main. The composition bridge exists: omega #311 (merged) adds `librx_compose.a` and a host ABI, and sovereign-core #217 (merged) adds the compose crate; sovereign-core main `omega.lock` pins `62b6a2899fa230e57fcf7855ea7e2c26404514b6`. The slice is not complete.
 
+*Status 2026-10-06 (evening).* The v5 campaign PASSED (sovereign-core #225) and v6, a wider correctness campaign, FAILED 52 of 73 rows on record (#235, merge `d6e102b`; long content, edit, refusal and budget rows; a `// null` boolean defect in its row script is disclosed in the PR). The composition bridge is pinned end to end: sovereign-core `omega.lock` -> omega `c0369e6` (#232, merge `d5b78ff`), omega `aienos.lock` -> aienos `b84c0a6` (omega #322). CAND-4 qualification Q1 reran the v5 tasks 3 times each on the GB10: 9 of 9 PASS under the frozen record-mark reading (see the CAND-4 addendum below). The slice is still not complete: the model is the only one that passes, it is not open-licence, and v6 fails.
+
 **NEXT-PHASE-2: continuity under failure.** NOT STARTED.
 Cases: kill before and after durable commit; interruption between an external effect and its recorded acknowledgment; accelerator unavailable; operator stop during in-flight work followed by authorized resume; stale or revoked capabilities; corrupted or partially written state. Exit criteria: no unauthorized effects, no silent duplicate effects, no false success, committed identity and memory preserved. An external operation whose outcome cannot be determined stays in an explicit unresolved state and is reconciled; no universal exactly-once promise is made. It uses the existing receipt format and failure vocabulary.
 
 *Status 2026-10-06 (afternoon).* The pre-registered acceptance document is merged: sovereign-core #219 (merge commit `cf34162`), `docs/campaigns/next-phase-2/ACCEPTANCE.md`. Implementation has not started. An amendment to fix assumptions in that document is pending (UNVERIFIED: not on main when checked).
+
+*Status 2026-10-06 (evening).* NEXT-PHASE-2 v2, v3 and v4 are merged (sovereign-core #227, #228, #229); v4 PASS with stated limits. The scoring contract v5 enforces every declared case times repetitions (#231, merge `44b73d7`), closing the fail-open shape found in the v4 review. CAND-4 qualification Q2 (NEXT-PHASE-2 v4 cases, 3 reps, fixture F0 on the GB10) PASS: 34 rows PASS, C6d NOT_APPLICABLE (no spilled data, so recovery case 4 is NOT COVERED). Cases 2 and 5 are covered only at the harness side (Q2w). See the CAND-4 addendum below.
 
 **NEXT-PHASE-3: native AIENOS path.** NOT STARTED.
 Close in this order: operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
 
 *Status 2026-10-06 (afternoon).* Merged in aienos, all QEMU or host only, none physical: #267 (`04cf78b`, operator keyboard input and recovery-access hook, cut 1), #268 (`6da9d58`, platform xHCI discovery from ACPI, cut 2), #269 (`2dffd97`, IORT stream ids per PCI segment, cut 3a), #270 (`3df181c`, two-level SMMU stream table, cut 3b). Remaining, in the order above: C loader boot selection and rollback, PCI discovery through to storage, real-device storage, the attended TRUST-1 hardware boots and key ceremonies, and native inference.
 
+*Status 2026-10-06 (evening).* aienos #273 (merge `61bd76a`): the C kernel image is the one-time BootNext rollback candidate, 8 QEMU rollback cases PASS (37 checks, 0 fail); hooks are TEST-only behind `#error` guards, no A/B slots. CI toolchain pinned to rustc 1.98.1 because 1.99.0 cannot link the UEFI rollback mock (aienos issue #274). Physical Spark rollback NOT_RUN; the recovery stick entry was not listed in the Spark firmware on 2026-10-06 (preflight). aienos main is `61bd76a`; CAND-4 pins aienos `b84c0a6` (the rollback cases are QEMU evidence outside the CAND-4 build).
+
 **NEXT-PHASE-4: reproducible, maintainable release.** NOT STARTED.
 Pin the toolchain (a `rust-toolchain` file closes gap G4); document the build and verify the install (sovereign-core `install.sh` release mode, `scripts/repro-build.sh`, both present at 286fa9b). Artifacts bind to the candidate, the executable digests, the model inputs and the receipts. CI enforces candidate consistency and evidence immutability. An explicit carry-forward rule covers an unchanged executable; `CAND-2.gates.md` section 2 is the precedent (identical digest and unchanged inputs). Status documents are reconciled. Exit criteria: install, execute, upgrade and rollback are demonstrated.
 
 *Status 2026-10-06 (afternoon).* sovereign-core #222 is open (head `a57da19`): atomic upgrade, one-version rollback, reproducible packages and a candidate-way release build. Its description says it supersedes #220. Its `release.yml` workflow has not been run in CI (stated in the PR). #220 is still open and is not closed by #222; closing it is pending. Not complete.
+
+*Status 2026-10-06 (evening).* The release gate fails closed on pin, digest, model and signature mismatches and has a dry-run mode (sovereign-core #230, merge `296c4ac`). `release/candidate.toml` names CAND-4 with its 25 digests, model, licence, internal-only distribution and the oracle fixture (#238, merge `7291fc1`). A local release demo PASSED on the Spark (reproducible package, local sign and verify, clean install of CAND-3, interrupted copy leaves the live release intact, upgrade to CAND-4, reinstall, rollback both ways, wrong digest and missing signature refused, installed binary gives the oracle sentence on GB10, NEXT-PHASE-1 driver S1 to S8 PASS; receipt in #238). Not done: `release.yml` has not run in CI; nothing is published; no signing key is on GitHub (Drake decision pending). UNVERIFIED: that the gate refuses a package built from sovereign-core main after `d5b78ff`. See the CAND-4 addendum below.
 
 **NEXT-PHASE-5: after the single-machine workflow is dependable.** NOT STARTED.
 (a) Smallest two-machine Fabric slice: authenticated membership, capability advertisement, one placed task, disconnect detection, recovery without unauthorized or duplicate effects; J-Space transport only as needed. (b) Predictive behaviour only within demonstrated calibration limits or under fresh preregistered evaluation. (c) One bounded learning experiment (tensor, autodiff, optimizer, evaluation, promotion) that must show fresh held-out improvement, preserved capabilities and a demonstrated rollback before any promotion.
 
 *Status 2026-10-06 (afternoon).* Unchanged: NOT STARTED. Its prerequisite, a dependable single-machine workflow, is not met (NEXT-PHASE-1 verdict FAIL so far).
 
+*Status 2026-10-06 (evening).* Still NOT STARTED. Its prerequisite now has evidence on both sides: NEXT-PHASE-1 v5 PASS and v6 FAIL (52 of 73 rows) on the same code, and CAND-4 qualification Q1 PASS on the v5 tasks. See the CAND-4 addendum below.
+
 ### Coordination
 
 No merge to sovereign-core main until the CAND-3 FROZEN whisper from cand3-integ (requested 2026-10-06). Omega PRs #303, #307, #309 (R16 G6 operator stop, open) and #310 are held by their owners. This addendum changes no gate order in section 17 and raises no milestone status.
 
 *Update 2026-10-06 (afternoon).* Merge authority is now held by the orchestrator session. The "no merge until the CAND-3 FROZEN whisper" note above is historical: CAND-3 was frozen by arch #144 and sovereign-core #217 and #219 have since merged. Omega #303, #307, #309 and #310 are merged.
+
+## Addendum 2026-10-06 (evening): CAND-4 consolidation
+
+Reconciliation of this plan against the merges of 2026-10-06 evening (UTC). Every PR below was checked with `gh pr view`; status words are the receipts' own. This addendum changes no gate order in section 17 and raises no milestone status.
+
+### Candidate
+
+CAND-4 is frozen (`qualification/candidates/CAND-4.toml`, #151, merge `7f99d7e`): omega `c0369e6705a4b0cb800978846e78915126a1b7f7`, aienos `b84c0a67590a934f3f3e001b12ec85ebc086a9eb`, aien-sovereign-core `d5b78ff7a6be14d23e3cb00d3f9c4b4751442ffa`, physics `6d7cf0d4d8eb2cda7b512100ff6058e25dbb3ddf`. 25 artifact digests, reproduced in two clean-worktree builds (CAND4-BUILD-REAL3, 25 of 25 identical; `aien-cli` `ad6b7eb5...`). Model: unsloth/Llama-3.2-1B-Instruct snapshot `5a8abab`, Llama 3.2 Community License (not OSI open source); distribution internal-only until an open-licence model passes its own frozen campaign (Drake, Option 3). Amendment 1 (#152, merge `4478c1a`) records the oracle fixture (`bf1d83ed...`, `6df1b39e...`) in `CAND-4.amendment-1.toml`; the frozen manifest is byte-identical to `7f99d7e`.
+
+Merged into the candidate before the freeze: omega #321 (`a9ef42a`, lane receipt guard wired), omega #322 (`c0369e6`, aienos pin: the operator control capability can no longer operate the authority), sovereign-core #231 (`44b73d7`, scoring contract v5), #230 (`296c4ac`, release gate fails closed), #232 (`d5b78ff`, omega pin).
+
+### Results on CAND-4
+
+- Qualification (sovereign-core #234, open at the time of writing, head `93786e9`, docs only): VERDICT PASS on digests, hygiene, Q1, Q2 and Q2w. Q1: 9 of 9 launches (v5 tasks T1 to T3, 3 reps) plus two negative controls. All 9 underlying v5 receipts are FAIL on "Containment: workspace" and A1 only, because the daemon's own Cortex record mark (`compose.cortex-mark`, NEXT-PHASE-2 v3) sits outside the authorized path; they are kept unchanged, and Q1 is PASS only under the pre-registered record-mark reading (ACCEPTANCE 4.1), which checks the mark is the sole outside file, well formed, and the sentinel unchanged. Q2: 34 rows PASS, C6d NOT_APPLICABLE. Q2w: 3 controls, W2 3 of 3, W5 40 trials with 5 window hits and 0 inconsistent restarts. GPU work ran under the quiet lock in four holds (20:29 to 20:40Z), none overlapping other holds.
+- Release demo: PASS locally (see NEXT-PHASE-4 status above; receipt in sovereign-core #238, merge `7291fc1`).
+- Native rollback: 8 QEMU cases PASS (aienos #273, merge `61bd76a`), outside the CAND-4 build.
+
+### Open-licence model (SmolLM2-1.7B-Instruct, Apache-2.0)
+
+Campaign v1 on the CAND-4 code plus the ChatML template change: FAIL on record (sovereign-core #237, merge `5d13e61`, tag `campaign/smollm2-v1-run2`): T1 NOT_RUN (GB10 daemon crash at warm-up, driver status 0x51, issue #236), T2 FAIL (wrong path), T3 FAIL (heading list and the 64-token limit). A traced repro of #236 (21:02 to 21:05Z, quiet lock held, nothing else on the GPU) did not reproduce the crash: Llama control clean (peak 17.4 GB), SmolLM2 twice clean (peak 61.1 GB, a 51.1 GiB fixed-size KV pool mapping). Cause UNVERIFIED; #236 stays open "cause unknown, not reproduced"; issue #239 lists four fixes (size the KV pool from the model, free-memory pre-check, bounded retry of session open, log the allocation size), none implemented. The template change itself (#233, open, head `3773052`, approved on content by the merge-queue owner) keeps the Llama3 and Zephyr prefix byte-identical (9 of 9 identity tests). No open-licence model passes yet; CAND-4 stays internal-only.
+
+### Limits (none of these is raised by this addendum)
+
+- Recovery cases 1 (GPU loss), 3 (capability-root revocation) and 6 (coordinated rollback): OUT OF SCOPE of Q2. Case 4: NOT COVERED. Case 2: covered as W2 only. Case 5: non-deterministic coverage only. UNVERIFIED: that a real device loss reaches the strict failure path.
+- Q2 cases and Q2w run on the CPU fault build; only F0 and the C3 control ran on the GB10.
+- Release: `release.yml` not run in CI; nothing published; no signing key on GitHub; gate refusal of a post-`d5b78ff` package UNVERIFIED.
+- Physical Spark rollback NOT_RUN; recovery stick not listed in firmware (2026-10-06 preflight).
+- NEXT-PHASE-1 v6 FAIL (52 of 73) stands against the same code; "useful workflow" is PASS on the v5 tasks only.
+- No chip performance result (R15) exists for CAND-4; R15 and R16 results belong to CAND-3 (`CAND-3.gates.md` section 8).
+- Toolchain: rustc 1.99.0 cannot link the aienos UEFI rollback mock (aienos #274); CI pinned to 1.98.1.
+
+### Lesson recorded
+
+Two CAND-4 double builds (REAL, REAL2) were voided when another lane raised the quiet flag mid-build and the GPU-library make steps refused (QUIETLOCK_REFUSED). Builds and campaigns now take their own hold or wait for a flag-free window; the build script should check the flag before starting.
