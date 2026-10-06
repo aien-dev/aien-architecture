@@ -1,6 +1,6 @@
 # ALLEN continuity across model replacement: pre-registered campaign v0
 
-**NOT A MASTER PLAN.** Finite workstream document for ARCH-0035 (PROPOSED) and aienos ADR 0018 (Proposed). `CURRENT_EXECUTION_PLAN.md` owns sequencing; `doctrine/ROADMAP.md` owns milestone status. This document accepts no ADR, freezes no format, changes no creed, and raises no status. It is subordinate to the active CAND-4 freeze and the NEXT-PHASE-1/2 campaigns and must not take the GPU from them.
+**NOT A MASTER PLAN.** Finite workstream document for ARCH-0035 (ACCEPTED 2026-10-06 by the operator, arch#155 merge bd56a27) and aienos ADR 0018 (Proposed; its format freeze needs its own operator approval). `CURRENT_EXECUTION_PLAN.md` owns sequencing; `doctrine/ROADMAP.md` owns milestone status. This document accepts no ADR, freezes no format, changes no creed, and raises no status. It is subordinate to the active CAND-4 freeze and the NEXT-PHASE-1/2 campaigns and must not take the GPU from them.
 
 **Written:** 2026-10-06. Scope: one durable subject, two separately pinned model artifacts, the same runtime authority boundary, separately recorded results. Dependencies: a production integration seam that does not exist yet (section 3).
 
@@ -52,7 +52,7 @@ Each step records PASS/FAIL/NOT_RUN with a receipt. Three verdicts are scored se
 
 | Item | Status | Owner |
 |---|---|---|
-| ALLEN bound into the sovereign-core compose path | MISSING_IMPLEMENTATION | sovereign-core merge queue; ADR 0035 acceptance is Drake's |
+| ALLEN bound into the sovereign-core compose path | MISSING_IMPLEMENTATION | sovereign-core merge queue (ADR 0035 accepted, arch#155 bd56a27; the binding itself is still unbuilt) |
 | Format acceptance (aienos ADR 0018) | PROPOSED | Drake |
 | Physical Spark reboot, attended provisioning | NOT_RUN | Drake (operator boundary) |
 | GPU window for model A/B legs | BLOCKED by CAND-4 / NP1 v6 / Lane Q sequence | quiet-flag holders |
