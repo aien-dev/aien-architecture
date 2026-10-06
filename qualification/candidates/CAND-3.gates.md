@@ -117,3 +117,25 @@ including silicon, for the first time. Physical AIENOS boot, owner-key ceremony 
 stay BLOCKED_OPERATOR; every AIENOS result is QEMU.
 
 omega #303, #307 (prime race) and #310 (GPU reconvergence) merged after the freeze; they are not part of CAND-3.
+
+## 6. A7c: R15 silicon and the R16 G7/G8 attempt (added 2026-10-06; nothing above changed)
+
+Declared before it ran in `DECLARED-ATTEMPT-A7c.md` (sha256 70824bb8b6c116a72a047c61e424169338b7dc8eb0ded9c8b65260e73ecdeec9; script `cand3_r15c.sh`
+sha256 cdbff59d5ac40acf90da47ada9f4e7d985957db4a6d1a3828f98fdbe14013005). Run once each, under quietlock owner cand3-campaign with Drake's approval token, on
+omega code f816473, harness 97ee275, physics 6d7cf0d, aienos bbad5e4, boot of 2026-10-06 11:32Z. The W2 rows for A7 (NOT_RUN) and R16 G7/G8 (NOT_RUN) in section 5 stay as written.
+
+| Attempt | Result |
+|---|---|
+| A7c R15 silicon | **PASS.** Receipt outcome PASS (`90fdebb8...fdd`, schema AIEN_RX_R15_REACTION_PERFORMANCE_V1; the same raw run without notes is `1b525c90...6224`): 16 of 16 gates, 0 failed processes, 0 Xid, candidate-bound, clean tree, silicon observed, 13 correctness reruns PASS. G2 throughput RES-1/SEQ 1.066, G5 p50 7392 ns / p99 9952 ns, G9 net energy per operation RES-1/SEQ 0.880, G10 3.0 vs 4.0 synchronization events, G15 residency 1.0, X925 clock 3.897 GHz in the preflight |
+| R16 G7 | **NOT_RUN.** R15 acceptance part PASS, but ladder rung R11 was NOT_RUN: its living part refused at 1-minute load 2.11 (limit 2). Every other rung PASS. Not rerun; a replacement is a new declaration |
+| R16 G8 | **NOT_RUN.** Needs the PR merged with a merge commit; none exists. The script reports its receipt preconditions as met |
+| R16 G1-G6 (observed again) | PASS |
+
+**Stated deviation:** Secure Boot was OFF for this run (Drake's decision), against R15 spec clarification C2 (Secure Boot and integrity lockdown stay on). The signed SPBM reader
+loaded with "module verification failed: signature and/or required key missing - tainting kernel", so the kernel was tainted. **Machine conditions:** other users' boot-time services were
+resident and not stopped (atlas image server holding 18408 MiB GPU memory at 0 % utilisation, a caption server, a MAX Llama serve, two auto-restarting services). The run is reported as measured.
+**Receipt limit:** spec section 11 regression itemisation is not in the receipt (said in its notes); the gates are all PASS. **UNVERIFIED:** which process raised the load above 2 for R11; that every restart resets the energy counter.
+
+CAND-3 stays NOT QUALIFIED as a whole: R16 needs a G7 attempt with R11 exercised, and the G8 merge step.
+
+Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-A7c/` (omega #317, head 18cb0b7): [`CAND3-LIVING-f816473-A7c`](https://github.com/aien-dev/omega/tree/18cb0b7bcca8e43df493f4f59a0429fed9fd765d/evidence/CAND3-LIVING-f816473-A7c).
