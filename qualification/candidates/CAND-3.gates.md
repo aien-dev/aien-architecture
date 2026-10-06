@@ -161,3 +161,25 @@ Published evidence (original bytes): omega `evidence/CAND3-LIVING-f816473-G7b/` 
 =======
 **Note 2026-10-06 (afternoon; nothing above changed):** the A7c R15 PASS is classified CONDITIONAL, a measured PASS under a declared deviation from C2, in `qualification/exceptions/0002-r15-secure-boot-off.md`. It is NOT unconditional compliance and must not be cited as C2-conformant. It becomes compliant only by a new declared R15 silicon run with Secure Boot ON and the reader module signed by an enrolled key (no kernel taint). Changing machine security settings needs Drake's authorization.
 >>>>>>> origin/main
+
+## 8. R16 G8 and the CAND-3 verdict (added 2026-10-06; nothing above changed)
+
+Section 7 is closed. It still carries unresolved merge-conflict markers on main (from #148); they are left as they are here, and nothing above is edited.
+
+**R16 G8: PASS.** R16-G8 is defined in omega `spec/r16-orchestrator-retirement.md`, gate table row R16-G8: the receipt is `evidence/R16/<sha256>.json`, named by the SHA-256 of its own bytes, schema `AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`, committed unchanged; candidate_commit == run_commit; candidate_bound true; tree_dirty false; silicon_observed true; the PR is merged with a merge commit, not squash. Checked 2026-10-06 against GitHub:
+
+| Item | Value |
+|---|---|
+| Receipt | omega `evidence/R16/9dfb29957368bcc0acd8ac600f55efdd4ec31221d44ea4e52fbcf987b3cc4adc.json`; sha256 of its bytes equals its file name; bytes equal the copy committed by omega #318 under `evidence/CAND3-LIVING-f816473-G7b/R16-G7/raw/receipts/` |
+| PR | omega #319, merged 2026-10-06T14:52:30Z |
+| Merge commit | `6500517017e6ac10e4f46f1723a311ac37684c03`, 2 parents (merge commit, not squash) |
+| schema / schema_revision | AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1 / 2 |
+| candidate_commit, run_commit | both `97ee27584cda0d8eaca136f31a44293cd36c9b02` (the R16-map-only descendant of the pinned omega `f816473`, per `CAND-3.toml`) |
+| candidate_bound, tree_dirty, silicon_observed | true, false, true |
+| Gates in the receipt | R16-G1 to G7 PASS; R16-G8 NOT_RUN (the script cannot see the merge, `g8_scope` says so); r15_acceptance_still_passing true |
+
+The receipt's own G8 field and its overall line stay NOT_RUN because the merge-commit step is outside the script (section 4). The receipt is not edited. The G8 conditions are met by the merge of #319 as listed. R16 G1 to G8 are therefore all PASS on CAND-3, G7 from section 7 and G8 from this section.
+
+**CAND-3 verdict (2026-10-06, after G8), by this document's own rule.** Sections 5 and 6 held CAND-3 at NOT QUALIFIED because R15 was pending, R16 G7 was NOT_RUN and the G8 merge step was missing. All three are now cleared. This document defines no status called QUALIFIED, so none is invented. Stated exactly:
+
+**CAND-3: R16 COMPLETE (G1 to G8 PASS). R15 is a CONDITIONAL PASS under declared exception 0002 (Secure Boot was OFF, against R15 clarification C2; `qualification/exceptions/0002-r15-secure-boot-off.md`); it is not C2-conformant. The "not qualified" condition of sections 5 and 6 is lifted for R15, G7 and G8 only. A full-candidate QUALIFIED status is NOT asserted, because section 4 lists what CAND-3 does not prove and those items stand: AIENOS results are QEMU only, TRUST-1 M5 NOT_QUALIFIED and its hardware boots and owner-key ceremonies BLOCKED_OPERATOR, USB keyboard driver and C loader A/B and rollback MISSING_IMPLEMENTATION, CHIPWAIT is not endurance, gcc and binutils unpinned.** Milestone status in `doctrine/ROADMAP.md` is not changed by this record.
