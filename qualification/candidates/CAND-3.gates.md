@@ -69,3 +69,51 @@ A3 production hygiene, A4 COMPOSITION-2 GPU, A5 CHIPWAIT 3/3, A6 M18. A7 R15 is 
 - **CHIPWAIT:** each soak is 100,000 cycles in about 41 to 43 s, not hours of endurance.
 - **Known intermittent host failures** under heavy load (omega #313): R13 mode-E wall-clock goal check, mutant-suite log loss, R13 failure reason only on stderr. The window declares full capture and no retry of a FAIL.
 - **Open omega PRs not in CAND-3:** #310 (GPU reconvergence), #303, #307 (prime race).
+
+## 5. Results of the qualification window (added 2026-10-06; nothing above changed)
+
+Two windows were declared; section 3 above is left as written. **W1** (`CAND3-LIVING-f816473`) is **INVALID**: every lane
+stopped before any test because the per-root worktrees had not been set up (the orchestrator's defect). It is kept
+unchanged and counts as no result. **W2** was declared separately before it ran (`DECLARED-ATTEMPTS.md` sha256
+9f4b8b91...f184 and `DECLARED-ATTEMPTS-w2.md` ef42d9c8...2ba1), under quietlock hold q57951-1791251173-2972b958,
+2026-10-06T01:46:13Z to 02:09:58Z, at omega code f816473, harness 97ee275 (map-only descendant), physics 6d7cf0d.
+Each attempt ran once; no FAIL was retried.
+
+| Attempt | Gate | Result on CAND-3 (W2) |
+|---|---|---|
+| A1 | R16 ladder | NOT_RUN overall, as declared: G1 to G6 PASS, G7 NOT_RUN (no R15 acceptance receipt), G8 NOT_RUN (merge-commit step) |
+| A1/G6 | operator emergency control by execution | **PASS**: host, mutants (25, 0 failures) and silicon in the same run; both binaries match the double build |
+| A1b | R11 living under load | PASS: checks 436, failures 0, living run exercised (A725 to X925) |
+| A2 | R13 test build on silicon | PASS, receipt candidate_bound true, tree_dirty false |
+| A3 | production hygiene on silicon | PASS |
+| A4 | COMPOSITION-2 on the GPU | PASS, failures 0 |
+| A5 | M19 / CHIPWAIT, 3/3 rule | PASS: 3 usable, 0 invalid, 0 failed (each soak about 41 to 43 s, not endurance) |
+| A6 | M18 matmul gates | PASS: 18/18 |
+| A7 | R15 silicon performance | NOT_RUN: not attempted (declared); SPBM energy reader not loaded |
+| A8 | correctness reruns for carried results | none needed (declared): section 2 rests on identical executables |
+
+Xid count 0 before and after every step.
+
+Published evidence, original bytes, immutable, in omega `evidence/` at a7e626a (omega #316):
+[`CAND3-BUILD-A`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-BUILD-A), [`CAND3-BUILD-B`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-BUILD-B),
+[`CAND3-ATTN-IDENTITY`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-ATTN-IDENTITY), [`CAND3-CARRY-79a805d`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-CARRY-79a805d),
+[`CAND3-LIVING-f816473`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-LIVING-f816473) (W1, INVALID),
+[`CAND3-LIVING-f816473-w2`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-LIVING-f816473-w2) (W2, with `CLAIM-INDEX.md`), and
+[`CAND3-AUDIT-20261006`](https://github.com/aien-dev/omega/tree/a7e626a55f39b94a60393c66805b6a9496940e3c/evidence/CAND3-AUDIT-20261006) (index, commands, `ORIGINAL-SHA256SUMS` of 527 originals taken
+before copying, `SHA256SUMS` of the published set, 10 compiled programs left out by the CAND-1 convention with their digests).
+
+Independent reconstruction (2026-10-06, reviewer working only from the published files): 13 of 14 claim rows agree.
+The one disagreement is a count: the claim index names two R13 receipts with gate FAIL written by mutated copies;
+there are three (015915Z, 015956Z, 020018Z, binaries 5ff99c0c..., 4259b1f7..., 1c612eef..., none a production
+binary, all inside the mutant run). Corrected additively in `PUBLICATION-NOTES.md`; no verdict changes.
+
+Limits found in the window, which change no result: mutant runs write receipts into the real `build/qual-runs`
+(omega #314); the R11 receipt file is not kept, the pass rule reads exit code and stdout (omega #315); CHIPWAIT
+`hashes.sha256` checks fail only for the three unpublished ELF files.
+
+**Verdict: CAND-3 is NOT QUALIFIED overall. R15 is pending** (needs the SPBM energy reader, an operator step), and
+with it R16 G7; G8 follows the merge commit. G6 operator emergency control is proven by execution on the candidate,
+including silicon, for the first time. Physical AIENOS boot, owner-key ceremony and TRUST-1 hardware qualification
+stay BLOCKED_OPERATOR; every AIENOS result is QEMU.
+
+omega #303, #307 (prime race) and #310 (GPU reconvergence) merged after the freeze; they are not part of CAND-3.
