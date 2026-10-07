@@ -54,7 +54,7 @@
         },
         {
           "digest": "5288bb90200689608557093b6ce9978a07d567ff4eeb035225d954e630f7c1b5",
-          "last_commit": "d2a49e0",
+          "last_commit": "9403e34",
           "name": "belief-estimation",
           "purpose": "Directory docs/plans/belief-estimation. Purpose not yet described by a human."
         },
@@ -90,14 +90,14 @@
         }
       ],
       "children_root": "sha256:271e2e49becefa621679f111701f1097c861f247f54a44c53035ec2da350d849",
-      "compiled_at": "2026-10-05T12:34:11Z",
+      "compiled_at": "2026-10-07T01:25:35Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:2812aeb880835afae274e0a164ed976362b191717bd958d54a4c5c5f48ed05af",
+      "digest": "sha256:530dfdc15ca03bcf74dfa322c28ce2aa2a31fdf3195bae1040092ea1c8ca94d1",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 28,
-      "generated_at_commit": "d2a49e0fb4dac777271bf7c184ff048d5c63b4ba",
-      "source_tree": "sha256:2fd06c3e82cb579447d1bcd5533a3608cce32cca29ecd2663cc8491014c2a797"
+      "files": 29,
+      "generated_at_commit": "6769d01bf1eae5f98cdafc606245a3f4d7645b20",
+      "source_tree": "sha256:2a00fd0e6dd8022618ac3ad11f0c27b0db142916f79ee400c3f0b2e643941ff8"
     },
     "owner_lane": "",
     "provenance": {
