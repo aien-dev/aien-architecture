@@ -880,3 +880,38 @@ The operator (Drake) decided the three items left open by the CAND-4 consolidati
 ### Public-release gate summary (additive to section 15)
 
 A first public release additionally requires: (a) D1 dedicated offline signing key, valid; (b) D2 physical Spark rollback PASS with receipt; (c) an open-licence model that passed the complete qualification suite, shipped with its upstream licence and notices.
+
+## Addendum 2026-10-07 (overnight): status reconciliation
+
+Append-only status snapshot as of 2026-10-07 ~04:30Z. Sources: the merged PRs named below (GitHub main). Evidence labels: CPU = host tests on the Spark CPU; GB10 = Linux-hosted GPU launches on the DGX Spark; QEMU = emulated. Nothing here is native-hardware (AIENOS on the Spark) evidence.
+
+### GPU reconvergence
+
+omega #310 (merged 2026-10-06T02:13Z) implements structured reconvergence (BSSY/BSYNC regions, `omega_bw_reconv.h`, warp simulator, GB10 T1 to T4 PASS); tracking issue omega #308 is closed. Reconvergence is implemented on omega main. It is not part of CAND-3 or CAND-4 (both pin omega before #310). The attention kernels stay branchless by choice and do not use regions; stale comments saying the IR has no reconvergence instruction are corrected in omega #326 (open, comment-only).
+
+### NEXT-PHASE-1 and the open-model path
+
+- NEXT-PHASE-1 v8 (Llama, GB10): FAIL 99 of 115 (sovereign-core #264, merge `4f2380e`). Approval binding passed on every committed launch; held-out T6 was cut at 256 tokens and refused (nothing committed); T7-N wrote the wrong heading.
+- SmolLM2-1.7B-Instruct (Apache-2.0) on the CAND-4 suite: FAIL at Q1 (T2 wrong path, T3 cut at the 64-token limit), Q2 PASS; the memory-sizing fix held (sovereign-core #252, merge `845f58f`; #256, merge `0e81bd8`). Under D3 above, Qwen3-4B is evaluated next.
+- Qwen3-4B-Instruct-2507 (Hugging Face rev `cdbee75f`, Apache-2.0, weights not relabelled):
+  - CPU loader with Qwen3 config and per-head q/k norm: merged (sovereign-core #265, merge `bdc1aa1`).
+  - Real-weights CPU forward parity against transformers 5.17.0 float32: PASS on sovereign-core `bdc1aa1`, clean tree, max abs diff over the reference top-20 logits 4.96e-5 (tolerance 5e-3, set before the run), same argmax. CPU evidence only.
+  - GB10 attention at head_dim 128: omega #323 (merge `b564bf4`), GB10 parity PASS (126 checks, 0 failed) at omega `7dd92dc` (`evidence/FB1-CUT5-HD128-7dd92dc`). The first hd128 attempt stalled; the cause was instruction prefetch past the end of the kernel code buffer (GB10 Xid 31), fixed by omega #324 (merge `917e8b9`, red/green receipts in `evidence/CODEPAD-PREFETCH-f1d57c5`).
+  - Open, in review: chat template recognition (sovereign-core #269), KV context cap so the 262144-token default does not reserve 72 GiB (#270), sovereign-core `omega.lock` bump to omega `c7d98f3` with the GB10 refusal reason corrected (#268; the GB10 engine still refuses Qwen3 because the per-head q/k norm has no engine op), real-model test fails instead of passing when the model is absent (#272).
+  - Not started: a declared, frozen Qwen3 qualification campaign (a candidate after CAND-4 with its own digests), and the GB10 Qwen3 path.
+- Answer for this snapshot: there is NOT yet a dependable open-model workflow. No frozen candidate runs an open-licence model through the qualification suite.
+
+### Release gate
+
+sovereign-core #255 (merge `a86b662`) proves the gate refuses non-candidate revisions and runs a secret-free CI dry run. Because that gate also ran on every pull request, any `omega.lock` move past CAND-4 failed PR checks. Merge control chose to split the two: sovereign-core #271 (open, approved) keeps the tag-push release gate fail-closed (guarded by `scripts/test-release-gate-wiring.sh`, eight self-check mutants) and makes the per-PR tree gate a report. No public release, signing key or publish is involved.
+
+### Other merged work (2026-10-07)
+
+- sovereign-core #258 (`75b16e2`): aien-drive in Rust replaces `scripts/aien_drive.py`; #266 (`735c97a`) refuses non-loopback endpoints.
+- sovereign-core #259 (`4441cef`) plain-model chat warm-up; #260 (`7d37da1`) two-phase approval spend (reserve, commit, release; fails closed without a clock).
+- sovereign-core #263 (`4f4ca68`): ALLEN identity gate (ADR 0035), host-side; native hardware NOT_RUN.
+- aienos #275 (`3761935`): UEFI boot links with rustc 1.99 (closes #274). QEMU/CI only.
+
+### Unchanged
+
+Fabric and learning/promotion experiments remain NOT STARTED: the single-machine prerequisites are unmet. Physical Spark rollback (D2) and the offline signing key (D1) remain owed and need the operator present.
