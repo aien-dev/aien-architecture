@@ -845,3 +845,38 @@ Campaign v1 on the CAND-4 code plus the ChatML template change: FAIL on record (
 ### Lesson recorded
 
 Two CAND-4 double builds (REAL, REAL2) were voided when another lane raised the quiet flag mid-build and the GPU-library make steps refused (QUIETLOCK_REFUSED). Builds and campaigns now take their own hold or wait for a flag-free window; the build script should check the flag before starting.
+
+## Addendum 2026-10-06 (late): operator decisions on public-release gates and the open-model path
+
+The operator (Drake) decided the three items left open by the CAND-4 consolidation addendum above. Decided in session "Can you coordinate all of the merges..." on 2026-10-06, accepting the three recommendations, with these terms recorded as given.
+
+### D1. Release signing key
+
+- The operator's home-server or login key is NOT used for release signing.
+- Releases are signed with a dedicated release-signing key kept offline.
+- The key is generated when the first public release is being prepared, not before.
+- A valid dedicated release-signing key is a MANDATORY gate for any public release.
+
+### D2. Physical rollback
+
+- The native rollback test runs on the real DGX Spark when the operator is physically at the machine (attended reboot, recovery stick plugged in and listed in firmware).
+- A successful physical rollback is a MANDATORY gate before the first public release. The QEMU result (aienos #273, 8 cases PASS) is not sufficient for the final release claim.
+- The test evidence and receipt are preserved in the repository like other qualification receipts.
+
+### D3. Open-model path
+
+- Finish the daemon memory-sizing fix (sovereign-core issue #239, PR #246) first, then retest SmolLM2-1.7B-Instruct.
+- Do not move to a larger model to bypass a memory-allocation bug that would affect the next model too.
+- If SmolLM2 passes the complete AIEN qualification suite, it becomes the next open-model candidate.
+- If SmolLM2 fails for a reason unrelated to the corrected memory sizing, Qwen3-4B is evaluated next.
+- The SmolLM2 retest starts automatically once the memory-sizing fix is merged.
+
+### Licensing clarification
+
+- AIEN code remains AGPL-3.0-or-later.
+- Third-party model weights keep their own upstream licence and required notices. They are not relabelled as AGPL.
+- CAND-4 stays the tested internal Llama-based reference release, used for comparison. It does not become the public AGPL/open-model release.
+
+### Public-release gate summary (additive to section 15)
+
+A first public release additionally requires: (a) D1 dedicated offline signing key, valid; (b) D2 physical Spark rollback PASS with receipt; (c) an open-licence model that passed the complete qualification suite, shipped with its upstream licence and notices.
