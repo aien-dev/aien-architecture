@@ -915,3 +915,13 @@ sovereign-core #255 (merge `a86b662`) proves the gate refuses non-candidate revi
 ### Unchanged
 
 Fabric and learning/promotion experiments remain NOT STARTED: the single-machine prerequisites are unmet. Physical Spark rollback (D2) and the offline signing key (D1) remain owed and need the operator present.
+
+### Update 2026-10-07 ~05:50Z (supersedes the "Open, in review" and "Not started" lines above)
+
+- Merged since the 04:30Z snapshot (sovereign-core): #269 Qwen3-4B-Instruct-2507 chat template (`6decd0a`); #270 KV context cap (`5e08c6c`) and its test-collision fix #276 (`7b8cafd`, issue #275 stays open for the process-wide `AIEN_RUNTIME_STATE_DIR` hazard in tests); #268 `omega.lock` to omega `8887454` (merge `b5dba3b`; linked build and test against omega `8887454` on GB10: 351 passed, 0 failed); #272 real-weights Qwen3 test cannot pass silently (`61b5347`).
+- Release gate: sovereign-core #271 merged (`07e447c`). A tagged release stays fail-closed on the CAND-4 tree gate; on pull requests the tree check only reports. Main is not releasable as CAND-4 while its `omega.lock` differs from the candidate.
+- Also merged: sovereign-core #262 (`8bcd79b`), authenticated approval of composed proposals with durable replay protection (closes #249; merge-owner linked runs 170 passed, 0 failed, 4 ignored; fault-hold runs 176 passed, 0 failed, 6 ignored). interplane #77 (`0ff60f2`), the adapter writes files through AIEN's durable effect ledger (CPU); interplane #75 closed as superseded.
+- Qwen3 on GB10 (sovereign-core #274, draft, q/k norm as a GB10 engine op):
+  - Declared attempt 1, Linux-hosted GB10: element ops at Qwen3 shapes PASS; the full Qwen3-4B prefill FAIL. The driver refused the channel with NV_ERR_NO_MEMORY right after the f32 weight load, while MemFree was at a trough of about 2.5 GB and about 87 GB sat in clean page cache. Not rerun.
+  - Declared attempt 2, Linux-hosted GB10, same frozen binary, one change (clean page cache dropped once before the run): PASS. Max abs logit difference over the reference top-20 is 1.76e-2 (bound 0.15), same argmax, 0 chip errors, 0 CPU fallbacks, all ten tensor ops native. This is labelled "with page cache dropped, not a product fix". The product fix (GPU allocations before the host f32 copy grows, or no host f32 copy once the weights are resident) needs its own change and its own declared attempt without the cache drop.
+- Answer for this update: there is still NOT a dependable open-model workflow. Qwen3-4B now matches the reference on the CPU and, with the cache dropped, on GB10 for one prefill. No frozen candidate after CAND-4 runs an open-licence model through the qualification suite, and no Qwen3 qualification campaign has been declared.
