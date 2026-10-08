@@ -28,7 +28,7 @@
         },
         {
           "digest": "f7e4204c5cac8c5dff1cd9d24c4ab1ca7adb83d5863092f1a04348fe08656bf7",
-          "last_commit": "22be5d8",
+          "last_commit": "7bfbb63",
           "name": "doctrine",
           "purpose": "Directory doctrine. Purpose not yet described by a human."
         },
@@ -46,14 +46,14 @@
         }
       ],
       "children_root": "sha256:c5b1ad7a3b4b024ae51960723c6a4d57dc7e9f610e06d5e93a061d6c3f9ff54b",
-      "compiled_at": "2026-10-08T02:25:27Z",
+      "compiled_at": "2026-10-08T03:34:39Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:f9f26c1459e7568885b638df77899038e10ef6c7d9a8f58d2f5d98c854026e75",
+      "digest": "sha256:cf270d4b6b6c9e0731fce9ee7948c3c2a1dc301499426d217a0ad27289b028f8",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 233,
-      "generated_at_commit": "57a6c9b2984e45b3b8543f5ad8ccf276eddc17aa",
-      "source_tree": "sha256:86fc8e0770ee41072fe0940bc9d3241a0f9c7e39afc00ada3b0e793234cd6cfe"
+      "generated_at_commit": "76231a8c4240128b385382be1ea38e528ece37fe",
+      "source_tree": "sha256:2e0b13f047e063a347eb1a25cc0796717a86d807e9658875168f011716a40edf"
     },
     "owner_lane": "",
     "provenance": {

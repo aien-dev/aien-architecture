@@ -946,3 +946,9 @@ Open (proposed, NOT merged) as of 2026-10-08:
 - aien-sovereign-core [#302](https://github.com/aien-dev/aien-sovereign-core/pull/302) ALLEN persona profile v1; [#303](https://github.com/aien-dev/aien-sovereign-core/pull/303) ALLEN scoped memory store; [#304](https://github.com/aien-dev/aien-sovereign-core/pull/304) optional approval-desk MAC for ComposeAuthorize (#297). Sovereign-core issue [#267](https://github.com/aien-dev/aien-sovereign-core/issues/267) (effect ack/reconcile, confine_target) is open, in progress.
 - interplane [#76](https://github.com/aien-dev/interplane/pull/76) (draft), in progress, owned by session e3d035. interplane issue #78 (re-pin sovereign-core, update the client_minted test) is CLOSED, closed by interplane [#81](https://github.com/aien-dev/interplane/pull/81), merged 2026-10-08.
 - OSH (arch #158), owned by ee6210: omega [#335](https://github.com/aien-dev/omega/pull/335) and [#336](https://github.com/aien-dev/omega/pull/336), aien-protocols [#16](https://github.com/aien-dev/aien-protocols/pull/16), aien-architecture [#161](https://github.com/aien-dev/aien-architecture/pull/161); all drafts.
+
+Correction, checked on GitHub at 2026-10-08T03:40Z (the list above is kept as written):
+
+- MERGED since that list: interplane #76 (2026-10-08T01:38Z); aien-sovereign-core #302 (`37039ec`, 01:27Z), #303 (`72f0d0d`, 02:27Z), #304 (`007afab`, 02:42Z) and [#314](https://github.com/aien-dev/aien-sovereign-core/pull/314) ALLEN memory wiring (`3acc2cb`, 03:26Z); omega #335 (`5227b88`, 02:48Z).
+- Sovereign-core issue #267 is CLOSED. A follow-up for the confinement race is in progress as a separate PR.
+- Still open: omega #336, aien-protocols #16, aien-architecture #161.
