@@ -1,0 +1,19 @@
+{
+  "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-08T19:37:25Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:2e9e7416b8833df7d7f114f1761386a2a9ab8a16fa17f0db71c094096b7ea485",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 1,
+      "generated_at_commit": "b580972c4fefc510324e00847edcfbc02e69f56d",
+      "source_tree": "sha256:06df50f595d18caba724edbf205446350df80e9d9aafa909a16aebcb41146396"
+    }
+  },
+  "name": "vac",
+  "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN.",
+  "schema_version": "1.0.0"
+}
