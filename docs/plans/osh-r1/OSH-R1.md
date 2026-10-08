@@ -39,7 +39,7 @@ R1 is not "AIENOS shell done". R1.1 is still required by the issue and is not dr
 
 All of these must have recorded evidence before R1 is called done. Skipped checks are not passes.
 
-1. **Pinned reference.** One Bash version, locale (`LC_ALL=C`), environment and fixture set, recorded with the receipt. Set 2026-10-08: GNU bash 5.2.21, `LC_ALL=C` (omega `tests/osh/vectors/bash_verify.sh` refuses any bash other than 5.2.x).
+1. **Pinned reference.** One Bash version, locale (`LC_ALL=C`), environment and fixture set, recorded with the receipt. Version set 2026-10-08: GNU bash 5.2.21 (omega `tests/osh/vectors/bash_verify.sh` refuses any bash other than 5.2.x). The locale, environment and fixture set are NOT yet pinned by the harness (it does not set `LC_ALL`); open.
 2. **Differential categories** (issue): argument boundaries; relevant stdout and stderr; exit status; cwd and environment; filesystem effects; pipeline completion and cancellation. Supported-feature comparisons only; refusals are compared to the refusal table, not to bash.
 3. **Hostile cases:** empty and quoted arguments, hostile filenames (spaces, leading dash, newline, non-UTF-8 bytes), malformed syntax, oversized input (line cap, token cap, workspace cap), large streams, early pipe-reader exit, failed redirections, partial launch failure, descriptor and child cleanup, Ctrl-C, EOF. Denied, revoked and stale capabilities are R1.1 for the native path and an adapter test on Linux through the binding check.
 4. **Interpreter versus native ARM64:** the same core, same vectors, same results in both modes. Adapter tested independently of the core.
@@ -94,7 +94,7 @@ The existing recovery path stays model-independent and read-only; osh is not the
 
 ## 7. Status
 
-Original record pinned above. **Status update 2026-10-08** (GitHub, omega `main` after #339). "DONE" requires a link to evidence; the shell is not done.
+Original record pinned above. **Status update 2026-10-08** (GitHub, omega `main` after #343, `ed7cbf3`). "DONE" requires a link to evidence; the shell is not done.
 
 | Item | Status |
 |---|---|
@@ -103,12 +103,12 @@ Original record pinned above. **Status update 2026-10-08** (GitHub, omega `main`
 | OSC-EXT-BYTES implementation | DONE, merged [omega#335](https://github.com/aien-dev/omega/pull/335) `5227b88` (bytes and cells parameters) |
 | First-release acceptance frozen | This file; frozen when merged |
 | Platform ABI v1 and vectors | IN PROGRESS: DRAFT [aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16), not frozen; implementation deltas folded in; 20 vectors, all run by the omega lexer, parser and expander tests |
-| Shell core `.osc` | Lexer merged [omega#336](https://github.com/aien-dev/omega/pull/336) `da40e53`; parser merged [omega#339](https://github.com/aien-dev/omega/pull/339) `baedadc`; expander [omega#340](https://github.com/aien-dev/omega/pull/340) OPEN. Each unit is checked against an independent C reference |
-| Linux adapter | Execution service merged [omega#337](https://github.com/aien-dev/omega/pull/337) `06b0f07`; driver loop and `osh` program in omega#340 OPEN; capability enforcement [omega#341](https://github.com/aien-dev/omega/pull/341) OPEN |
-| Differential and hostile suite, pinned bash | IN PROGRESS: GNU bash 5.2.21, `LC_ALL=C`; lexer expectations proved against real bash (`bash_verify.sh`); hostile bash differential review of omega#340 (about 1500 cases), fixes in #340, remaining differences listed in [omega#344](https://github.com/aien-dev/omega/issues/344) |
-| Interpreter versus native ARM64 run | IN PROGRESS: lexer and parser tests compare interpreter, native ARM64 and C reference on the same inputs (merged); expander in omega#340 |
+| Shell core `.osc` | Lexer merged [omega#336](https://github.com/aien-dev/omega/pull/336) `da40e53`; parser merged [omega#339](https://github.com/aien-dev/omega/pull/339) `baedadc`; expander merged [omega#340](https://github.com/aien-dev/omega/pull/340) `fe73157`. Each unit is checked against an independent C reference |
+| Linux adapter | Execution service merged [omega#337](https://github.com/aien-dev/omega/pull/337) `06b0f07`; driver loop and `osh` program (`-c`, script, interactive) merged in omega#340; capability enforcement, fail closed without a policy, merged [omega#341](https://github.com/aien-dev/omega/pull/341) `cb8b549` |
+| Differential and hostile suite, pinned bash | IN PROGRESS: GNU bash 5.2.21 (locale not yet pinned); lexer expectations proved against real bash (`bash_verify.sh`); hostile bash differential review of omega#340 (about 1500 cases), fixed in #340 (merged; local evidence: expand 478,635 checks, parse 2,879,236, lex 2,928,338, host 1439, e2e 104 cases and 317 checks, all 0 failures), remaining differences listed in [omega#344](https://github.com/aien-dev/omega/issues/344) |
+| Interpreter versus native ARM64 run | IN PROGRESS: lexer, parser and expander tests compare interpreter, native ARM64 and C reference on the same inputs (merged); e2e runs every case native and interpreted |
 | Real script run (`run_builds.sh`) | NOT STARTED |
-| Core-only step trace for AIENOS | [omega#343](https://github.com/aien-dev/omega/pull/343) OPEN |
+| Core-only step trace for AIENOS | Linux side merged [omega#343](https://github.com/aien-dev/omega/pull/343) `ed7cbf3` (20 fixtures, native == interpreter == committed trace); AIENOS side not merged |
 | AIENOS native services (section 6) | NOT STARTED as merged code |
 | Native QEMU acceptance | NOT STARTED |
 | Attended hardware validation | NOT STARTED; needs separate authorization |
