@@ -125,7 +125,7 @@ AIENOS TRUST + IDENTITY
     ↓
 OMEGA NUMERICS / TENSORS / AUTODIFF / OPTIMIZER
     ↓
-AIENOS NETWORKING + NATIVE INFERENCE + PERSISTENT AGENT
+AIENOS NATIVE PATH (NEXT-PHASE-3 order) -> NATIVE INFERENCE -> PERSISTENT AGENT (networking runs beside it, not before it; decided 2026-10-08)
     ↓
 BELIEF / ESTIMATION FOUNDATION (ADR 0020: EST-0..EST-3 calibrated, then EST-4..EST-5 into World and the cost model after R16)
     ↓
@@ -256,6 +256,8 @@ Order inside the existing sequence: V2 contract landed early in physics#16, but 
 ## 7. Phase D — AIENOS trusted substrate
 
 Continue the AIENOS component roadmap without redefining this plan.
+
+**Order (decided by Drake 2026-10-08):** D1 to D4 below are requirement lists, not a sequence. The order in which they are closed is the NEXT-PHASE-3 order. The old sequence M5 -> M6 -> M7 -> M8 is SUPERSEDED. See the addendum "2026-10-08 (late): native work order decided" for the order, where each D item lands in it, and the authorization boundaries.
 
 ### D1. M5 encryption and identity
 
@@ -653,7 +655,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 - Done: M19R Foundation Repair PASSED / CLOSED (`aien-dev/omega#111` `5517d22`); FORGE v1 realize/verify seam closed (`aien-dev/physics#13` `5969159`). See §2 addenda.
 
-**Lane 2 (AIENOS):** M5 trust/encryption -> M6 network -> M7 inference -> M8 persistent agent. (Order conflict: see the 2026-10-08 note at the end of section 17.)
+**Lane 2 (AIENOS):** the NEXT-PHASE-3 order (decided 2026-10-08): operator input + recovery -> boot selection + rollback -> PCI discovery + native storage -> physical memory, identity, trust -> native CPU inference -> native GB10 compute -> GPU inference. M6 networking runs beside it in host and QEMU and is not in the chain to first native inference. The old order (M5 trust -> M6 network -> M7 inference -> M8) is SUPERSEDED; its items are mapped in the addendum "2026-10-08 (late): native work order decided".
 
 **Lane 3 — Omega training:** FP32 numerics -> M20 tensor -> M21 autodiff -> M22 optimizer.
 
@@ -707,15 +709,17 @@ Do not start another master plan. Execute these:
 1. Merge plan-authority consolidation and Forge naming ADR. Done: `PLAN_AUTHORITY.md` (`38c7cc2`) and ADR 0014 FORGE rename (accepted 2026-09-27).
 2. Complete M19 corrective qualification. Done: M19R Foundation Repair PASSED / CLOSED (`aien-dev/omega#111` `5517d22`; roadmap M19 COMPLETE / CORRECTIVELY REQUALIFIED).
 3. Establish the typed Omega/Forge boundary.
-4. Finish and qualify AIENOS M5 trust/encryption.
+4. Close the native AIENOS path in the NEXT-PHASE-3 order (decided 2026-10-08, see the addendum "2026-10-08 (late): native work order decided"). AIENOS M5 trust/encryption is its step 4.
 5. Finish Omega general FP32 numerical support.
-6. Proceed to AIENOS M6 and Omega M20 (`OMEGA_TENSOR`) in parallel.
+6. Proceed with Omega M20 (`OMEGA_TENSOR`). AIENOS M6 networking continues in host and QEMU beside the native path; it is not a prerequisite for first native inference.
 
 The ADR 0018 workstream runs as Lane 6 and does not reorder these gates.
 
 The ADR 0020 workstream runs as Lane 7 and does not reorder these gates; its EST-4 and later stages follow R16 closure.
 
 The ADR 0031 workstream runs as Lane 8 and does not reorder these gates; its production influence follows EST-4, EST-5 and EST-7.
+
+Resolved 2026-10-08 (late) by Drake: NEXT-PHASE-3 governs. The one native order, the mapping of the old M5 to M8 items and the authorization boundaries are in the addendum "2026-10-08 (late): native work order decided". The note below is kept as the record of the conflict.
 
 Open conflict noted 2026-10-08 (no decision made here): two native AIENOS orders are recorded in this file. Section 16 Lane 2 and this section: AIENOS M5 trust -> M6 network -> M7 inference -> M8. NEXT-PHASE-3 (addendum 2026-10-06, newer): operator input -> boot selection and rollback -> PCI discovery -> real-device storage -> owner identity and trust (TRUST-1) -> native inference. Drake resolves which governs; until then neither is revised. Recommendation (not a decision): let NEXT-PHASE-3 govern. It is the newer record, the Campaign 3 brief of 2026-10-08 lists the same order (operator input and recovery, boot selection and rollback, PCI, NVMe, journal, physical memory authority, hardware identity and trust, native CPU inference, later GPU), and on the physical Spark trust, network and inference all depend on operator input, a tested rollback path and real-device storage (the kernel's only model source today is the QEMU fw_cfg channel, which the Spark does not have). Under this reading AIENOS M6 network moves after native inference.
 
@@ -788,8 +792,8 @@ Cases: kill before and after durable commit; interruption between an external ef
 
 *Status 2026-10-06 (evening).* NEXT-PHASE-2 v2, v3 and v4 are merged (sovereign-core #227, #228, #229); v4 PASS with stated limits. The scoring contract v5 enforces every declared case times repetitions (#231, merge `44b73d7`), closing the fail-open shape found in the v4 review. CAND-4 qualification (sovereign-core #234, merge `328a7e9`) Q2 (NEXT-PHASE-2 v4 cases, 3 reps, fixture F0 on the GB10) PASS with limits: 34 rows PASS, C6d NOT_APPLICABLE (no spilled data, so recovery case 4 is NOT COVERED). Cases 2 and 5 are covered only at the harness side (Q2w). See the CAND-4 addendum below.
 
-**NEXT-PHASE-3: native AIENOS path.** NOT STARTED.
-Close in this order: operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
+**NEXT-PHASE-3: native AIENOS path.** IN PROGRESS in QEMU and on the host only; no step is physically qualified (header corrected 2026-10-08; the status lines below already recorded merged QEMU work). This order GOVERNS the native AIENOS work (Drake, 2026-10-08); the full seven-step order is in the addendum "2026-10-08 (late): native work order decided".
+Close in this order (2026-10-06 wording, shorter than the governing seven-step order in the addendum "2026-10-08 (late): native work order decided"): operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
 
 *Status 2026-10-06 (afternoon).* Merged in aienos, all QEMU or host only, none physical: #267 (`04cf78b`, operator keyboard input and recovery-access hook, cut 1), #268 (`6da9d58`, platform xHCI discovery from ACPI, cut 2), #269 (`2dffd97`, IORT stream ids per PCI segment, cut 3a), #270 (`3df181c`, two-level SMMU stream table, cut 3b). Remaining, in the order above: C loader boot selection and rollback, PCI discovery through to storage, real-device storage, the attended TRUST-1 hardware boots and key ceremonies, and native inference.
 
@@ -938,7 +942,7 @@ Corrections made in place today (evidence beats planning claims):
 
 - Section 2 claimed "native DGX Spark boot evidence" without limits. Physical evidence is only the M2 first boot (2026-09-24) and the recovery USB boot; all else is QEMU or host only (aienos ROADMAP at `c63d6db`). The 2026-10-06 line "Physical machine: every AIENOS result is QEMU" is recorded here as too broad (it omits the M2 first boot and the recovery USB boot) and is left unedited.
 - NEXT-PHASE-1 header said NOT STARTED while its status lines record campaigns v1 to v8. NEXT-PHASE-3 header also still reads NOT STARTED although its status lines record merged QEMU work (not physical); not edited here.
-- Two native orders and the AIENOS M5 versus Omega M5 name collision are marked, not resolved.
+- Two native orders and the AIENOS M5 versus Omega M5 name collision are marked, not resolved. (The order was decided later the same day: see the addendum "2026-10-08 (late): native work order decided".)
 - The 2026-10-06 status of NEXT-PHASE-1 calls sovereign-core #223 open; it is MERGED (merge `96d97af`, 2026-10-06). Not edited in place.
 
 Open (proposed, NOT merged) as of 2026-10-08:
@@ -952,3 +956,31 @@ Correction, checked on GitHub at 2026-10-08T03:40Z (the list above is kept as wr
 - MERGED since that list: interplane #76 (2026-10-08T01:38Z); aien-sovereign-core #302 (`37039ec`, 01:27Z), #303 (`72f0d0d`, 02:27Z), #304 (`007afab`, 02:42Z) and [#314](https://github.com/aien-dev/aien-sovereign-core/pull/314) ALLEN memory wiring (`3acc2cb`, 03:26Z); omega #335 (`5227b88`, 02:48Z).
 - Sovereign-core issue #267 is CLOSED. A follow-up for the confinement race is in progress as a separate PR.
 - Still open: omega #336, aien-protocols #16, aien-architecture #161.
+
+## Addendum 2026-10-08 (late): native work order decided
+
+Drake decided the conflict marked by arch #163 (decision (e) of 2026-10-08, recorded by the coordinator session): **NEXT-PHASE-3 governs the native AIENOS work.** This is the one order. The old sequence AIENOS M5 trust -> M6 network -> M7 inference -> M8 persistent agent is SUPERSEDED as a sequence; its items keep their requirements and are mapped below.
+
+| Step | What closes | Old item mapped here | Where it stands 2026-10-08 (QEMU or host only) |
+|---|---|---|---|
+| 1 | Operator input and recovery access | D4 point 9 (recovery stays possible with the model unavailable) | Keyboard input and recovery-access hook merged in QEMU (aienos #267) |
+| 2 | Boot selection and rollback | (new; the physical rollback is also a public-release gate, addendum 2026-10-06 late, D2) | One-time BootNext rollback candidate, 8 QEMU cases PASS (aienos #273); physical NOT_RUN |
+| 3 | PCI discovery and native storage | From D2, only "device ownership and discovery" and "bounded driver authority" (they apply to every device, so they close here; the rest of D2 is outside the chain, below) | xHCI discovery, IORT, SMMU stream tables merged in QEMU (aienos #268, #269, #270); real-device storage not done |
+| 4 | Physical memory, identity, trust | D1 (AIENOS M5) entirely: key hierarchy, sealed volume keys, envelopes, anti-rollback anchors, migration authorization, production/test separation, deterministic recovery, owner-signed trust chain | NOT_QUALIFIED; TRUST-1 package HOST VALIDATION ONLY (aienos #265) |
+| 5 | Native CPU inference | D3 (AIENOS M7) entirely | QEMU only; the kernel's model source today is the QEMU fw_cfg channel, which the Spark does not have |
+| 6 | Native GB10 compute | (new) | aienos #286 open, "Native GB10: replace Linux RM/UVM dependency with an AIENOS backend, through first compute" (title and state checked on GitHub 2026-10-08) |
+| 7 | GPU inference | (new) | No status recorded in this file |
+
+Outside the chain:
+
+- **The rest of D2 (AIENOS M6) networking is OUT of the prerequisite chain for first native inference:** Ethernet/IP and routing, secure transport, service discovery, network failure and recovery. Host and QEMU network work continues. Physical NIC qualification and the two-machine Fabric slice (NEXT-PHASE-5) need it later.
+- **D4 (AIENOS M8) persistent-agent proof** is not placed by the decision. Its own steps (section 7, D4: power on, AIENOS boots without Linux, the local model starts, ...) need native boot, storage, identity and native inference, so it cannot close before step 5. It is not a prerequisite for first native inference.
+
+Rules that come with the order:
+
+- The order is the order in which steps are closed (qualified). Host and QEMU work on any step continues at the same time.
+- Each of these is operator-attended and needs Drake's separate authorization every time: a physical Spark boot, a device-mutating operation, a firmware change, a rollback experiment. QEMU is never counted as physical.
+
+Unblocked by this decision, within the rules above: C3-9 (named in the decision record; the Campaign 3 brief of 2026-10-08 describes it as the native continuity demo in QEMU) and the later cuts of aienos #286 (named by the coordinator session when it relayed the decision).
+
+Changed in this file to match: the phase diagram (section 3), the order note in Phase D (section 7), Lane 2 (section 16), gates 4 and 6 and the conflict note (section 17), and the NEXT-PHASE-3 header. The header now reads IN PROGRESS, QEMU and host only, as its status lines already recorded. No merged work is reverted and no milestone status is raised.
