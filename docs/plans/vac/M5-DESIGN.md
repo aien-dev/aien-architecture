@@ -79,3 +79,29 @@ existing paths.
 ## Done conditions
 
 Unchanged from PLAN.md section D, row M5, items (a) to (f).
+
+## Addendum, 2026-10-08: feasibility probe and three more gaps
+
+Probe (spark-rsi `origin/main` e5aab9a, release build, no lock file): `spark-rsi-judge` ran with a
+throwaway key file, two holdout suites copied from the built-in cases, and the engine as both parent
+and candidate. It produced a signed receipt (`tpm2-p256:` label, software key) with
+`admitted: false` (the candidate equals the parent, so nothing improved). Bubblewrap 0.9.0 is
+present, so the jail runs on this host. `spark-rsi propose <path>` is a deterministic unslop scan
+(src/main.rs:277-287) that prints one `ImprovementProposal`; it needs no model server.
+
+| id | gap | evidence | consequence |
+|---|---|---|---|
+| R6 | The judge evaluates a candidate **executable**: each holdout case runs `<candidate> holdout <input>` in the jail and compares stdout (src/actor/judge.rs:220-247). The correctness layer runs `cargo check` and `cargo test` only (src/evaluator/layers/correctness.rs:112, :153). | probe; code | The C fixture `fix_the_test` cannot be judged. M5 needs a small Rust fixture whose binary answers `holdout <input>`. |
+| R7 | `HoldoutSuite::load_from_dir` skips any file that does not parse and continues if one suite remains (judge.rs:117-145). | code | A corrupted or removed holdout file shrinks the holdout silently; with R1 the receipt does not show it. |
+| R8 | spark-rsi has no committed `Cargo.lock`; `cargo build --locked` refuses. | probe | Builds of the judge are not pinned, so a receipt's evaluator cannot be rebuilt bit for bit. |
+
+Recommended M5 slice shape (session decision, recorded): a new Rust fixture with one user-facing
+file containing banned dashes and a `holdout` subcommand; `spark-rsi propose` yields the change;
+the standalone judge, run as its own process with its own key file and a holdout directory outside
+both repositories, signs the receipt; the change lands through the approved path as in M3b. RSI does
+not target its own repository in M5, because that puts the evaluator's own files in reach.
+
+How the verifier treats the receipt depends on the open decision (receipt version 2). With a yes, the
+verifier requires `subject_sha256` to equal the grant's content digest. With a no, a version 1 receipt
+can only be checked for signature and threshold, and the verdict must carry the label
+`missing=link:evaluation_subject`.

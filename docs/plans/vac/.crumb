@@ -3,14 +3,14 @@
     "generated": {
       "children": [],
       "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "compiled_at": "2026-10-08T20:35:41Z",
+      "compiled_at": "2026-10-08T20:43:46Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:d110ad33ecfb3126ce43bb5749d68f8583844523c88755876b998bc9d8e00705",
+      "digest": "sha256:3b897ab85b6a7c565a0e543f5d0ff3b01aaedde167a11e834aaf4e903d27c5af",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 2,
-      "generated_at_commit": "7df616f5495dd629d6ddb93f7752fa70e8672b36",
-      "source_tree": "sha256:a15d10274dd51e6e83ec4c25bb11fd191990d07a85fcfba7e982c5116ea9a777"
+      "generated_at_commit": "1d97c3eca1243aef7508536723e1ee8e5b02f5f0",
+      "source_tree": "sha256:54cd90119b2c990b6c9ccaf825cd2110bb01c06effe662d889143e51bde8db7e"
     }
   },
   "name": "vac",
