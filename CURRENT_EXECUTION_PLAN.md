@@ -793,7 +793,7 @@ Cases: kill before and after durable commit; interruption between an external ef
 *Status 2026-10-06 (evening).* NEXT-PHASE-2 v2, v3 and v4 are merged (sovereign-core #227, #228, #229); v4 PASS with stated limits. The scoring contract v5 enforces every declared case times repetitions (#231, merge `44b73d7`), closing the fail-open shape found in the v4 review. CAND-4 qualification (sovereign-core #234, merge `328a7e9`) Q2 (NEXT-PHASE-2 v4 cases, 3 reps, fixture F0 on the GB10) PASS with limits: 34 rows PASS, C6d NOT_APPLICABLE (no spilled data, so recovery case 4 is NOT COVERED). Cases 2 and 5 are covered only at the harness side (Q2w). See the CAND-4 addendum below.
 
 **NEXT-PHASE-3: native AIENOS path.** IN PROGRESS in QEMU and on the host only; no step is physically qualified (header corrected 2026-10-08; the status lines below already recorded merged QEMU work). This order GOVERNS the native AIENOS work (Drake, 2026-10-08); the full seven-step order is in the addendum "2026-10-08 (late): native work order decided".
-Close in this order: operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
+Close in this order (2026-10-06 wording, shorter than the governing seven-step order in the addendum "2026-10-08 (late): native work order decided"): operator input and recovery access (USB keyboard driver); boot selection and rollback (C loader A/B); real-device storage; owner identity and trust (TRUST-1 attended package, aienos #265, merged as "HOST VALIDATION ONLY"); native inference integration. Exit criteria: reproducible images, preflight checks, recovery procedures and explicit success criteria exist before any attended hardware work. Authorization boundaries for firmware, key ceremonies, destructive storage and reboots are respected. QEMU is never counted as physical.
 
 *Status 2026-10-06 (afternoon).* Merged in aienos, all QEMU or host only, none physical: #267 (`04cf78b`, operator keyboard input and recovery-access hook, cut 1), #268 (`6da9d58`, platform xHCI discovery from ACPI, cut 2), #269 (`2dffd97`, IORT stream ids per PCI segment, cut 3a), #270 (`3df181c`, two-level SMMU stream table, cut 3b). Remaining, in the order above: C loader boot selection and rollback, PCI discovery through to storage, real-device storage, the attended TRUST-1 hardware boots and key ceremonies, and native inference.
 
@@ -965,22 +965,22 @@ Drake decided the conflict marked by arch #163 (decision (e) of 2026-10-08, reco
 |---|---|---|---|
 | 1 | Operator input and recovery access | D4 point 9 (recovery stays possible with the model unavailable) | Keyboard input and recovery-access hook merged in QEMU (aienos #267) |
 | 2 | Boot selection and rollback | (new; the physical rollback is also a public-release gate, addendum 2026-10-06 late, D2) | One-time BootNext rollback candidate, 8 QEMU cases PASS (aienos #273); physical NOT_RUN |
-| 3 | PCI discovery and native storage | D2 "device ownership and discovery" and "bounded driver authority" (they apply to every device) | xHCI discovery, IORT, SMMU stream tables merged in QEMU (aienos #268, #269, #270); real-device storage not done |
+| 3 | PCI discovery and native storage | From D2, only "device ownership and discovery" and "bounded driver authority" (they apply to every device, so they close here; the rest of D2 is outside the chain, below) | xHCI discovery, IORT, SMMU stream tables merged in QEMU (aienos #268, #269, #270); real-device storage not done |
 | 4 | Physical memory, identity, trust | D1 (AIENOS M5) entirely: key hierarchy, sealed volume keys, envelopes, anti-rollback anchors, migration authorization, production/test separation, deterministic recovery, owner-signed trust chain | NOT_QUALIFIED; TRUST-1 package HOST VALIDATION ONLY (aienos #265) |
 | 5 | Native CPU inference | D3 (AIENOS M7) entirely | QEMU only; the kernel's model source today is the QEMU fw_cfg channel, which the Spark does not have |
-| 6 | Native GB10 compute | (new) | aienos #286 open (AIENOS backend replacing the Linux RM/UVM dependency, through first compute) |
-| 7 | GPU inference | (new) | Not started |
+| 6 | Native GB10 compute | (new) | aienos #286 open, "Native GB10: replace Linux RM/UVM dependency with an AIENOS backend, through first compute" (title and state checked on GitHub 2026-10-08) |
+| 7 | GPU inference | (new) | No status recorded in this file |
 
 Outside the chain:
 
-- **D2 (AIENOS M6) networking is OUT of the prerequisite chain for first native inference.** Host and QEMU network work continues. Physical NIC qualification and the two-machine Fabric slice (NEXT-PHASE-5) need it later.
-- **D4 (AIENOS M8) persistent-agent proof** needs steps 1 to 5 (native boot, native storage, identity, native inference). It follows step 5 and is not a prerequisite for it. Its QEMU rehearsal may run now.
+- **The rest of D2 (AIENOS M6) networking is OUT of the prerequisite chain for first native inference:** Ethernet/IP and routing, secure transport, service discovery, network failure and recovery. Host and QEMU network work continues. Physical NIC qualification and the two-machine Fabric slice (NEXT-PHASE-5) need it later.
+- **D4 (AIENOS M8) persistent-agent proof** is not placed by the decision. Its own steps (section 7, D4: power on, AIENOS boots without Linux, the local model starts, ...) need native boot, storage, identity and native inference, so it cannot close before step 5. It is not a prerequisite for first native inference.
 
 Rules that come with the order:
 
 - The order is the order in which steps are closed (qualified). Host and QEMU work on any step continues at the same time.
 - Each of these is operator-attended and needs Drake's separate authorization every time: a physical Spark boot, a device-mutating operation, a firmware change, a rollback experiment. QEMU is never counted as physical.
 
-Unblocked by this decision, within the rules above: C3-9 (the native continuity demo in QEMU) and the later cuts of aienos #286.
+Unblocked by this decision, within the rules above: C3-9 (named in the decision record; the Campaign 3 brief of 2026-10-08 describes it as the native continuity demo in QEMU) and the later cuts of aienos #286 (named by the coordinator session when it relayed the decision).
 
 Changed in this file to match: the phase diagram (section 3), the order note in Phase D (section 7), Lane 2 (section 16), gates 4 and 6 and the conflict note (section 17), and the NEXT-PHASE-3 header. The header now reads IN PROGRESS, QEMU and host only, as its status lines already recorded. No merged work is reverted and no milestone status is raised.
