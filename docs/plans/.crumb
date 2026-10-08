@@ -89,21 +89,21 @@
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         },
         {
-          "digest": "3b897ab85b6a7c565a0e543f5d0ff3b01aaedde167a11e834aaf4e903d27c5af",
-          "last_commit": "1d97c3e",
+          "digest": "416c6cf3067550e72f2b8f2f02b5a0e12d7b73f7db2b80f514e4829dbbf69999",
+          "last_commit": "7fcf799",
           "name": "vac",
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:9dba410004a3b5d7b6cb9fc632279503317bbb7d14c54234c456a0414a8c2872",
-      "compiled_at": "2026-10-08T20:43:46Z",
+      "children_root": "sha256:9a6b6c739fc2c210bd9ff341c5a98ff681bd5e953a5a26a3f5a3938674cdae8b",
+      "compiled_at": "2026-10-08T23:41:16Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:1029c7a26ce20337727f93aaadf3ec22463208a3f31522744e09b8b4680bbd03",
+      "digest": "sha256:7342bf7050309b776e85fefa24cc81edbfdcd0d14c41589e8fa5863d0d3d66bd",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 35,
-      "generated_at_commit": "1d97c3eca1243aef7508536723e1ee8e5b02f5f0",
-      "source_tree": "sha256:df85b71a339fa6f7b7d47141a4acd90e9f59f0127bf7f28c9154d112d99db2c7"
+      "generated_at_commit": "7fcf799018e76c4ee8f7810f9c0a78a45dc5fc9d",
+      "source_tree": "sha256:87ff7cb9e684263858080186081f6d3e7f23adf81eae1b797483153f7d43d426"
     },
     "owner_lane": "",
     "provenance": {
