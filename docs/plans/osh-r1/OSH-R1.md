@@ -12,7 +12,7 @@ R1 is what the Linux adapter must run. This section freezes the language so the 
 
 **R1 additions** (queen engineering decision, 2026-10-08, from the script syntax inventory): `2>&1` and `N>&M` with N and M in 0..2 (applied left to right, so `>o 2>&1` and `2>&1 >o` differ), `$?`, `#` comments, backslash-newline continuation, `$0` to `$9`, `$#`, `"$@"` (and unquoted `$@`, `$*`; `"$*"` joins with one space).
 
-**Refused by name** (each has its own refusal code, never a silent fallback): command substitution and backticks, `$((`, parameter operators such as `${A:-y}`, `$$ $! $-`, tilde, unquoted globbing characters in the source, and any unquoted expansion result containing `*`, `?` or `[` (`VALUE_GLOB`), background `&`, subshells, here-documents, `;;`, other redirections (`>|`, `<>`, descriptors above 2), `if for while until case function { } !`, builtins outside the six (`set eval exec . source trap shift read return break continue local readonly alias wait`), assigning `IFS`, empty commands, redirections without target, ambiguous redirections, NUL bytes in source or variable values.
+**Refused by name** (each has its own refusal code, never a silent fallback): command substitution and backticks, `$((`, parameter operators such as `${A:-y}`, `$$ $! $- $_`, `${10}` and other positionals past 9, brace expansion (`{a,b}`, `{1..3}`), `NAME+=` assignments, `{NAME}` descriptor variables before a redirection, input that ends inside a quote, tilde, unquoted globbing characters in the source, and any unquoted expansion result containing `*`, `?` or `[` (`VALUE_GLOB`), background `&`, subshells, here-documents, `;;`, other redirections (`>|`, `<>`, descriptors above 2), `if for while until case function { } !`, bash builtins outside the six, decided on the command name after expansion (`set eval exec . source trap shift read return break continue local readonly alias wait : declare typeset let command type umask hash ulimit getopts jobs pushd popd dirs history unalias fg bg builtin enable shopt mapfile times caller disown suspend logout bind help compgen complete fc compopt`; names longer than 8 bytes such as `readarray` are not yet caught, omega#344), assigning `IFS`, empty commands, redirections without target, ambiguous redirections, NUL bytes in source or variable values.
 
 **Rules:**
 1. A syntax error or any refusal ends that list with exit status 2 and resets the session. Durable state (variables, location, `$?`) survives.
@@ -21,6 +21,8 @@ R1 is what the Linux adapter must run. This section freezes the language so the 
 4. IFS is fixed to space, tab and newline. Unset variables expand to empty. No `set -u`.
 5. Paths and arguments are bytes; NUL is refused. Native storage locations are not POSIX paths (ABI section 8.2).
 6. The language engine is never `bash -c`, `sh -c`, `system()` or equivalent.
+7. (added 2026-10-08 from the bash differential review, omega#340) When `export` is the literal unquoted command word, its `NAME=value` arguments expand like assignments: no field splitting, `$@` joined. A quoted `"export"` or one reached through a variable splits, as in bash.
+8. (same source) `osh -c` text ends at the true end of input, so a final backslash is literal (`osh -c 'echo a\'` prints `a\`); script files and standard input end their last line as bash does. `exit` with two or more arguments does not exit: status 1 and the rest of that list is dropped (under `-c` bash drops the rest of the whole string; known difference, omega#344).
 
 ## 2. Release ladder
 
@@ -37,7 +39,7 @@ R1 is not "AIENOS shell done". R1.1 is still required by the issue and is not dr
 
 All of these must have recorded evidence before R1 is called done. Skipped checks are not passes.
 
-1. **Pinned reference.** One Bash version, locale (`LC_ALL=C`), environment and fixture set, recorded with the receipt. UNSET today: the version is not yet chosen.
+1. **Pinned reference.** One Bash version, locale (`LC_ALL=C`), environment and fixture set, recorded with the receipt. Set 2026-10-08: GNU bash 5.2.21, `LC_ALL=C` (omega `tests/osh/vectors/bash_verify.sh` refuses any bash other than 5.2.x).
 2. **Differential categories** (issue): argument boundaries; relevant stdout and stderr; exit status; cwd and environment; filesystem effects; pipeline completion and cancellation. Supported-feature comparisons only; refusals are compared to the refusal table, not to bash.
 3. **Hostile cases:** empty and quoted arguments, hostile filenames (spaces, leading dash, newline, non-UTF-8 bytes), malformed syntax, oversized input (line cap, token cap, workspace cap), large streams, early pipe-reader exit, failed redirections, partial launch failure, descriptor and child cleanup, Ctrl-C, EOF. Denied, revoked and stale capabilities are R1.1 for the native path and an adapter test on Linux through the binding check.
 4. **Interpreter versus native ARM64:** the same core, same vectors, same results in both modes. Adapter tested independently of the core.
@@ -92,23 +94,24 @@ The existing recovery path stays model-independent and read-only; osh is not the
 
 ## 7. Status
 
-Honest as of the pins above. "DONE" requires a link to evidence; none of the shell itself is done.
+Original record pinned above. **Status update 2026-10-08** (GitHub, omega `main` after #339). "DONE" requires a link to evidence; the shell is not done.
 
 | Item | Status |
 |---|---|
-| Audit of compiler, Visor, AIENOS, scripts, parser design | DONE as read-only notes (not committed evidence); compiler quick tests 47/47 and 116/116 on `main` by the audit host run, UNVERIFIED by independent rerun |
+| Audit of compiler, Visor, AIENOS, scripts, parser design | DONE as read-only notes (not committed evidence) |
 | OSC-EXT-BYTES design | DONE, merged [omega#169](https://github.com/aien-dev/omega/pull/169) (design only) |
-| First-release acceptance frozen | This file (draft, PR pending merge); NOT frozen until merged |
-| Platform ABI v1 and vectors | IN PROGRESS: DRAFT [aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16); not frozen; expected outputs unrun |
-| OSC-EXT-BYTES implementation | IN PROGRESS: local uncommitted work on omega branch `osh/osc-ext-bytes` in a working clone; nothing pushed, no PR; no test result recorded |
-| Shell core `.osc` | NOT STARTED as production code; a lexer prototype exists in the audit notes and compiled with `oscc` against `b980783` (6 functions), not committed, not an implementation |
-| Linux adapter | NOT STARTED |
-| Differential and hostile suite, pinned bash | NOT STARTED |
+| OSC-EXT-BYTES implementation | DONE, merged [omega#335](https://github.com/aien-dev/omega/pull/335) `5227b88` (bytes and cells parameters) |
+| First-release acceptance frozen | This file; frozen when merged |
+| Platform ABI v1 and vectors | IN PROGRESS: DRAFT [aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16), not frozen; implementation deltas folded in; 20 vectors, all run by the omega lexer, parser and expander tests |
+| Shell core `.osc` | Lexer merged [omega#336](https://github.com/aien-dev/omega/pull/336) `da40e53`; parser merged [omega#339](https://github.com/aien-dev/omega/pull/339) `baedadc`; expander [omega#340](https://github.com/aien-dev/omega/pull/340) OPEN. Each unit is checked against an independent C reference |
+| Linux adapter | Execution service merged [omega#337](https://github.com/aien-dev/omega/pull/337) `06b0f07`; driver loop and `osh` program in omega#340 OPEN; capability enforcement [omega#341](https://github.com/aien-dev/omega/pull/341) OPEN |
+| Differential and hostile suite, pinned bash | IN PROGRESS: GNU bash 5.2.21, `LC_ALL=C`; lexer expectations proved against real bash (`bash_verify.sh`); hostile bash differential review of omega#340 (about 1500 cases), fixes in #340, remaining differences listed in [omega#344](https://github.com/aien-dev/omega/issues/344) |
+| Interpreter versus native ARM64 run | IN PROGRESS: lexer and parser tests compare interpreter, native ARM64 and C reference on the same inputs (merged); expander in omega#340 |
 | Real script run (`run_builds.sh`) | NOT STARTED |
-| Interpreter versus native ARM64 run | NOT STARTED |
-| AIENOS native services (section 6) | NOT STARTED |
+| Core-only step trace for AIENOS | [omega#343](https://github.com/aien-dev/omega/pull/343) OPEN |
+| AIENOS native services (section 6) | NOT STARTED as merged code |
 | Native QEMU acceptance | NOT STARTED |
 | Attended hardware validation | NOT STARTED; needs separate authorization |
-| Compatibility and limits matrix | NOT STARTED |
+| Compatibility and limits matrix | NOT STARTED as a matrix; known differences tracked in omega#344 |
 
-Verification performed so far is limited to the issue's own compile check and the audit notes above. No generated ARM64 code from this workstream has run. No milestone status changes.
+No full-bash, hardware or performance claim. No milestone status changes.

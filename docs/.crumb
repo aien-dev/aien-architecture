@@ -55,7 +55,7 @@
           "purpose": "Directory docs/errata. Purpose not yet described by a human."
         },
         {
-          "digest": "4d4d5a35a10f56d2b40587a3c9966339b77659fcf9ee04fa983badb0b5bbf9f9",
+          "digest": "028529d686ee29ba5765c24ac26260db0850ff2e22fc30193292afc39bec9de7",
           "last_commit": "3497968",
           "name": "plans",
           "purpose": "Directory docs/plans. Purpose not yet described by a human."
@@ -73,15 +73,15 @@
           "purpose": "Directory docs/specs. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:dc942d94a67842985e0aa5a22ab34f82490434fe9f6f6472d07a310bc09cc5b5",
-      "compiled_at": "2026-10-08T00:31:19Z",
+      "children_root": "sha256:96eb1300fe8f568bde0a3423cfe5c1e988a181dd4c6813d04181b4bdb7481281",
+      "compiled_at": "2026-10-08T12:12:45Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:205ddeebc8b6d29a4dba41fd1963569867502a18012dc7f7de8809ec5cf03ea6",
+      "digest": "sha256:80efa6deaef05ebb0a9c01698dce6d2ca47ff0c67c02111de42bcd4bd3dc6379",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 123,
-      "generated_at_commit": "3497968cfa144309b5dfbb23291ef3394153de4e",
-      "source_tree": "sha256:0b4807ff3459e00272c7490981445e868a8fcb37ad124b8f35ef29d9fd54aded"
+      "files": 128,
+      "generated_at_commit": "eea49a2d682bc84fe38d9c96f4a6adb126e541d7",
+      "source_tree": "sha256:33c248e7a77bc6ae25e07b04993b4f4634b749778b9e5593d3e4834a312d9478"
     },
     "owner_lane": "",
     "provenance": {
