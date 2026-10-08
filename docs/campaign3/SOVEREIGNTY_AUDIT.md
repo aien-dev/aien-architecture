@@ -2,7 +2,7 @@
 
 Date: 2026-10-08. Subject: the internal candidate CAND-4 ([release/candidate.toml](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/release/candidate.toml), [manifest](../../qualification/candidates/CAND-4.toml)). CAND-4 is internal only. No release of CAND-4 is published, physical Spark rollback has not been run, and this audit proposes no key creation and no publication.
 
-Snapshot read on GitHub main: aien-sovereign-core `f5ba66b`, aienos `8641977`, aien-architecture `78770cc`. Every claim below links to a merged file or commit on main, or is marked UNVERIFIED or NOT_RUN. One piece of evidence comes from an unmerged branch and is labelled as such.
+Snapshot read on GitHub main: aien-sovereign-core `f5ba66b` (updated 2026-10-08 for the Campaign 2 merges up to `6bbe2ec`), aienos `8641977`, aien-architecture `78770cc`. Every claim below links to a merged file or commit on main, or is marked UNVERIFIED or NOT_RUN. Evidence from main after CAND-4 is labelled as such; it is not evidence about the CAND-4 package.
 
 ## Reading the table
 
@@ -23,9 +23,9 @@ Status values: PASS, FAIL, PARTIAL, NOT_RUN, UNVERIFIED, N/A. Verdicts: YES, PAR
 | 2 | Boot without a cloud dependency | N/A | PASS | N/A | PARTIAL | PARTIAL | UEFI firmware; the C kernel has never booted on the Spark; Linux stays the installed OS |
 | 3 | Retain and recover user identity and data | PARTIAL | PASS | NOT_RUN | NOT_RUN | PARTIAL | Linux filesystem on every live path; native disk path is QEMU only |
 | 4 | Execute authorized local computations | PASS | PARTIAL | PASS | NOT_RUN | PARTIAL | Linux plus the NVIDIA driver for real inference; native inference is a QEMU load and probe only |
-| 5 | Replace the model without replacing identity | PARTIAL | NOT_RUN | NOT_RUN | NOT_RUN | PARTIAL | Linux host; evidence is on an unmerged branch and the demo overall FAILED |
+| 5 | Replace the model without replacing identity | PASS (main after CAND-4) | NOT_RUN | NOT_RUN | NOT_RUN | PARTIAL | Linux host; GB10 and native swap not run |
 | 6 | Recover from interrupted updates | PASS | PASS | N/A | NOT_RUN | PARTIAL | Linux install script; UEFI BootNext; kill -9 is not power loss |
-| 7 | Refuse unauthorized effects | PARTIAL | PARTIAL | NOT_RUN | NOT_RUN | PARTIAL | Linux daemon; open defect sovereign-core #320 (double effect) |
+| 7 | Refuse unauthorized effects | PARTIAL | PARTIAL | NOT_RUN | NOT_RUN | PARTIAL | Linux daemon; the double-effect defect #320 found after CAND-4 is fixed on main (#321) and was never in CAND-4 |
 | 8 | Operate without a mandatory external control service | UNVERIFIED | N/A | PASS | NOT_RUN | PARTIAL | Local services only found (loopback Cortex, local vault); full source audit not done |
 
 Overall: CAND-4 is not shown to be sovereign. Parts of it work offline on Linux, parts are proven in an emulator, and the native path has no physical evidence beyond a 2026-09-24 first boot and an attended recovery USB boot. See "Essential paths that still depend on Linux or another external system".
@@ -65,7 +65,7 @@ Limits:
 Evidence:
 - Design record: [ADR 0035](../adr/0035-persistent-cognitive-entity-boundary-allen.md) (ALLEN, accepted). Persona profile bound to the existing identity: sovereign-core #302 (merged, `37039ec`). Identity crates on main: `crates/aien-allen`, `aien-allen-profile`, `aien-allen-memory` ([identity_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-allen/tests/identity_test.rs)). Environment: host.
 - QEMU: gates M4_STORE_CRASH, M4_CONTINUITY, M4_RECOVERY and M4_ALLEN are PASS in the [receipt above](https://github.com/aien-dev/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json). aienos #260 (merged): ALLEN native genesis at provisioning and QEMU cold restore.
-- Branch evidence only (not on main): sovereign-core branch `c2/e2e-demo`, [RESULT-v2.md](https://github.com/aien-dev/aien-sovereign-core/blob/c2/e2e-demo/docs/campaigns/allen-e2e/RESULT-v2.md): S1 one identity, S2 profile and memory, S5 restart kept the identity, profile, notes and goal, S6 forget removed a note from every state file. Environment: real CPU, Linux host. The demo overall verdict is FAIL (S3 and S8).
+- Main after CAND-4: sovereign-core #322 (`6bbe2ec`), [RESULT-v3.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md), ALLEN end-to-end demo v3 PASS 10/10: S1 one identity, S2 profile and memory, S5 kill -9 restart kept the identity, profile, notes, goal and the DONE result without re-executing it, S6 forget removed a note from every state file. Environment: real CPU, Linux host. Earlier runs v1 and v2 FAILED and stay recorded.
 
 Limits:
 - No physical result. TRUST-1 and M5 are NOT_QUALIFIED; the owner key ceremony and TPM sealing are BLOCKED_OPERATOR ([plan](../../CURRENT_EXECUTION_PLAN.md) §2 lines on TRUST-1; aienos issue #32 open).
@@ -88,14 +88,14 @@ Limits:
 ## 5. Replace the model without replacing identity
 
 Evidence:
-- Branch evidence only, not main: `c2/e2e-demo` [RESULT-v2.md](https://github.com/aien-dev/aien-sovereign-core/blob/c2/e2e-demo/docs/campaigns/allen-e2e/RESULT-v2.md), S7 PASS: after kill -9 and a restart on a second model, the `Model:` line and model digest changed (f55217be to 75311d91) while ID0, profile, work note and goal stayed unchanged. Environment: real CPU, Linux host. S6 PASS (forget). Overall FAIL because S3 and S8 were refused by the requirement reader (heading rule not recognized).
+- Main after CAND-4: [RESULT-v3.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md) (sovereign-core #322, `6bbe2ec`), S7 PASS: after kill -9 and a restart on a second model, the `Model:` line and model digest changed (f55217be to 75311d91) while ID0, profile, work note and goal stayed unchanged; S8 PASS: the second model then wrote a checked document whose provenance names the new model digest and the same ALLEN id. Environment: real CPU, Linux host.
 - Main: the persona profile is bound to the existing identity (sc #302). ADR 0035 records that ALLEN is the agent the AgentRoot already names ("There is no `AllenId`") and that the model is identified only by a digest in the boot handoff ("there is no ModelId type", as of the 2026-10-04 audit). I did not check the Rust crates for a model field: UNVERIFIED.
 
 Limits:
-- The model-swap result is not on main. Sovereign-core #307 (recovery matrix including model change and foreign identity) is OPEN, not merged.
+- Sovereign-core #307 (recovery matrix) MERGED 2026-10-08 as `2a83095`: R7 (restart on a different model keeps the ALLEN agent) PASS in both desk-MAC modes, real processes, CPU-reference, Linux host.
 - The swap was tested between two CPU models on Linux. GB10 and native: NOT_RUN.
-- The demo did not show either model writing a document after the swap (S8 FAIL), so "works after swap" is only shown for identity and state, not for task output.
-- Sovereign-core #319 (heading requirement) is OPEN; until it merges the v2 request shape is refused.
+- Shown on main after CAND-4, not on the CAND-4 package itself.
+- Sovereign-core #319 (first-line heading requirement) MERGED 2026-10-08 as `3eaa060`; the v2 request shape is now recognized and checked.
 
 ## 6. Recover from interrupted updates
 
@@ -115,12 +115,12 @@ Limits:
 
 Evidence:
 - Host: the approved-effect path in [crates/aien-runtime/src/effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs). The ledger honours only grants the daemon wrote itself (approved or minted); a corrupt ledger record refuses the whole ledger; refusals are named (`EFFECT_REFUSED <name>`); stop is durable; one grant per desk-MAC nonce. Test: [minted_grant_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/tests/minted_grant_test.rs).
-- Branch evidence: `c2/e2e-demo` RESULT-v2 shows the runtime refusing a task whose requirement it cannot check, with no file written and no grant spent. That is a refusal of a task, not of an effect, and it is on a branch.
+- Main after CAND-4: the demo's v2 run ([RESULT-v2.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v2.md)) shows the runtime refusing a task whose requirement it cannot check, with no file written and no grant spent. That is a refusal of a task, not of an effect.
 - QEMU: gate ARGUS1_REVOKE is PASS (revocation at the Store level) in the cb14 receipt.
 
 Limits:
-- Known open defect on main: sovereign-core issue #320, "authorize mints a second grant after DONE when a stop/resume follows (double effect)". The fix, PR #321, is OPEN and not merged. Until it merges, this audit lists #320 as an unrepaired defect in CAND-4's source line.
-- Sovereign-core #307 (recovery matrix: stale grants, corrupted state, foreign identity) is OPEN. Coverage of those cases on main is UNVERIFIED.
+- Defect found during Campaign 2 on main, not in CAND-4: sovereign-core issue #320 (a stop and resume after a DONE effect let the same committed proposal get a second grant and a second DONE effect). Fixed by #321, MERGED 2026-10-08 as `05e9028` (independent review: no refusal on main weakened). CAND-4's source `d5b78ff` predates the daemon-minted grant path (`effects.rs` there has no `minted_by_commit`), so CAND-4 does not carry it. Follow-up question open: #323.
+- Sovereign-core #307 (recovery matrix) MERGED as `2a83095`: 13/13 PASS with the desk MAC off and on (stale, spent, revoked and after-stop grants refused incl. no second grant after DONE; corrupted state refused; foreign identity refused; unreconcilable outcomes stay UNRESOLVED), at commit 5073656, Linux host, CPU-reference. This is main after CAND-4, not CAND-4 itself.
 - No native or GB10 effect test. The effect membrane is a Linux process.
 
 ## 8. Operate without a mandatory external control service
@@ -143,7 +143,7 @@ Limits:
 - The install, upgrade and rollback script is a Linux shell script. The native boot rollback exists only as QEMU evidence.
 - Real model inference and every demo of the working agent: Linux processes, CPU or GB10 through the Linux NVIDIA driver. Native inference (aienos #34) is open.
 - Identity and data persistence for the working agent: Linux filesystem. The native Store runs on QEMU disks only and uses TEST keys.
-- Effect refusal: a Linux daemon with an open double-effect defect (#320).
+- Effect refusal: a Linux daemon; the double-effect defect found on main (#320) is fixed (#321) and was not in CAND-4.
 - Cortex: a local HTTP service and a local vault.
 - Third-party inputs: the Llama 3.2 model weights and its licence (internal-only distribution), cargo crates, and GitHub for pinned sources.
 
