@@ -19,7 +19,7 @@ Status values: PASS, FAIL, PARTIAL, NOT_RUN, UNVERIFIED, N/A. Verdicts: YES, PAR
 
 | # | Question | host | QEMU | Linux-hosted GB10 | native physical Spark | verdict | essential external dependency |
 |---|---|---|---|---|---|---|---|
-| 1 | Build and verify offline from supported inputs | PARTIAL | N/A | PASS | NOT_RUN | PARTIAL | Linux, a cargo cache filled online first, pinned git sources; network denial not enforced |
+| 1 | Build and verify offline from supported inputs | PARTIAL | N/A | N/A | NOT_RUN | PARTIAL | Linux, a cargo cache filled online first, pinned git sources; network denial not enforced |
 | 2 | Boot without a cloud dependency | N/A | PASS | N/A | PARTIAL | PARTIAL | UEFI firmware; the C kernel has never booted on the Spark; Linux stays the installed OS |
 | 3 | Retain and recover user identity and data | PARTIAL | PASS | NOT_RUN | NOT_RUN | PARTIAL | Linux filesystem on every live path; native disk path is QEMU only |
 | 4 | Execute authorized local computations | PASS | PARTIAL | PASS | NOT_RUN | PARTIAL | Linux plus the NVIDIA driver for real inference; native inference is a QEMU load and probe only |
@@ -34,7 +34,7 @@ Overall: CAND-4 is not shown to be sovereign. Parts of it work offline on Linux,
 
 Evidence:
 - [Offline build receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-07-final-switch-kill-and-offline-build.md) (sovereign-core #308, merged): `cargo fetch --locked` then `--offline --locked`, 7 crates, 170 s, PASS. Environment: host Linux on the Spark.
-- [CAND-4 release demo receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md): fresh clones and fresh CARGO_HOME, `release-build.sh --offline`, all 7 binaries equal the CAND-4 digests, the package built twice gave identical bytes, signature and digest checks ran from `file://` URLs. Environment: Spark, Linux.
+- [CAND-4 release demo receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md): fresh clones and fresh CARGO_HOME, `release-build.sh --offline`, all 7 binaries equal the CAND-4 digests, the package built twice gave identical bytes, signature and digest checks ran from `file://` URLs. Environment: Spark, Linux.  This is a host result (CPU build on Linux), so the GB10 column is N/A.
 - [CAND-4 manifest](../../qualification/candidates/CAND-4.toml) note: clean-worktree double build, 25 of 25 digests identical (CAND4-BUILD-REAL3, VERDICT PASS).
 - Fail-closed tamper checks in the demo: a changed `release.toml` and a missing signature were both refused (steps S9, S10).
 
@@ -160,5 +160,5 @@ Limits:
 - NEXT-PHASE-3 header reads NOT STARTED while its status lines record merged QEMU work ([plan](../../CURRENT_EXECUTION_PLAN.md) addendum).
 - Two native AIENOS orders (M5 to M6 to M7, versus NEXT-PHASE-3) are both recorded; the operator has not chosen ([plan](../../CURRENT_EXECUTION_PLAN.md) "Open conflict noted 2026-10-08").
 - The newest ck_gates receipt on main (cb14, 20 gates) lists M0_ROLLBACK NOT_RUN, while aienos #273 merged later with QEMU PASS for the same gate family and GATES.md rows 42 to 46 say QEMU PASS; no newer committed gate receipt joins them.
-- The release brief says no production signing key exists; sovereign-core main holds `docs/release/allowed_signers` with a pinned `aien-release` key, a published GitHub release v0.1.1 (2026-10-04), and the CAND-4 demo signed with "the local key whose public half is already in allowed_signers". Whether this is the production key is UNVERIFIED.
+- Two different keys are in play. An existing `aien-release` key is pinned in sovereign-core `docs/release/allowed_signers` (added by sovereign-core #186, `ffc5555`, 2026-10-04) and hand-signed the published GitHub releases v0.1.0 (2026-09-20) and v0.1.1 (2026-10-04); the CAND-4 demo was signed with "the local key whose public half is already in allowed_signers". The operator decision D1 (2026-10-06, [plan](../../CURRENT_EXECUTION_PLAN.md) addendum "operator decisions on public-release gates", aien-architecture #156) requires a dedicated offline signing key, generated only when preparing the first public release; that key does not exist yet. Both releases predate D1. Whether the existing `aien-release` key may count as the D1 key, and what happens to v0.1.0 and v0.1.1, is an operator decision, recorded here and not decided.
 - The CAND-4 demo was run from a release branch at `d5b78ff`; main has since moved on, so main is not what was packaged.
