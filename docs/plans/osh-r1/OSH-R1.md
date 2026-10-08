@@ -8,7 +8,7 @@
 
 R1 is what the Linux adapter must run. This section freezes the language so the ABI vectors and the differential suite have one target. Details of codes and offsets live in the platform ABI draft ([aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16), `specs/osh-platform/OSH_PLATFORM_ABI.md`).
 
-**In R1** (issue list): words, single and double quotes, backslash escapes, empty arguments; variable assignment and expansion with the documented field-splitting rule; `;`, `&&`, `||`, pipelines; `<`, `>`, `>>`; exit statuses; builtins `cd`, `pwd`, `printf`, `export`, `unset`, `exit`; interactive input, `osh -c`, and script files.
+**In R1** (issue list): words, single and double quotes, backslash escapes, empty arguments; variable assignment and expansion with the documented field-splitting rule; `;`, `&&`, `||`, pipelines; `<`, `>`, `>>`, and the stderr forms `2>` and `2>>` (generally `N<`, `N>`, `N>>` with N in 0..2); exit statuses; builtins `cd`, `pwd`, `printf`, `export`, `unset`, `exit`; interactive input, `osh -c`, and script files.
 
 **R1 additions** (queen engineering decision, 2026-10-08, from the script syntax inventory): `2>&1` and `N>&M` with N and M in 0..2 (applied left to right, so `>o 2>&1` and `2>&1 >o` differ), `$?`, `#` comments, backslash-newline continuation, `$0` to `$9`, `$#`, `"$@"` (and unquoted `$@`, `$*`; `"$*"` joins with one space).
 
