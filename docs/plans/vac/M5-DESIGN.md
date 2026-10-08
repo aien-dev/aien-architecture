@@ -91,7 +91,7 @@ present, so the jail runs on this host. `spark-rsi propose <path>` is a determin
 
 | id | gap | evidence | consequence |
 |---|---|---|---|
-| R6 | The judge evaluates a candidate **executable**: each holdout case runs `<candidate> holdout <input>` in the jail and compares stdout (src/actor/judge.rs:218-240). The correctness layer runs `cargo check` and `cargo test` only (src/evaluator/layers/correctness.rs:112, :153). | probe; code | The C fixture `fix_the_test` cannot be judged. M5 needs a small Rust fixture whose binary answers `holdout <input>`. |
+| R6 | The judge evaluates a candidate **executable**: each holdout case runs `<candidate> holdout <input>` in the jail and compares stdout (src/actor/judge.rs:220-247). The correctness layer runs `cargo check` and `cargo test` only (src/evaluator/layers/correctness.rs:112, :153). | probe; code | The C fixture `fix_the_test` cannot be judged. M5 needs a small Rust fixture whose binary answers `holdout <input>`. |
 | R7 | `HoldoutSuite::load_from_dir` skips any file that does not parse and continues if one suite remains (judge.rs:117-145). | code | A corrupted or removed holdout file shrinks the holdout silently; with R1 the receipt does not show it. |
 | R8 | spark-rsi has no committed `Cargo.lock`; `cargo build --locked` refuses. | probe | Builds of the judge are not pinned, so a receipt's evaluator cannot be rebuilt bit for bit. |
 
