@@ -653,7 +653,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 - Done: M19R Foundation Repair PASSED / CLOSED (`aien-dev/omega#111` `5517d22`); FORGE v1 realize/verify seam closed (`aien-dev/physics#13` `5969159`). See §2 addenda.
 
-**Lane 2 — AIENOS:** M5 trust/encryption -> M6 network -> M7 inference -> M8 persistent agent. (Order conflict: see the 2026-10-08 note at the end of section 17.)
+**Lane 2 (AIENOS):** M5 trust/encryption -> M6 network -> M7 inference -> M8 persistent agent. (Order conflict: see the 2026-10-08 note at the end of section 17.)
 
 **Lane 3 — Omega training:** FP32 numerics -> M20 tensor -> M21 autodiff -> M22 optimizer.
 
@@ -936,12 +936,13 @@ This addendum changes no decision, gate order or milestone status. Tracking: aie
 
 Corrections made in place today (evidence beats planning claims):
 
-- Section 2 claimed "native DGX Spark boot evidence" without limits. Physical evidence is only the M2 first boot (2026-09-24) and the recovery USB boot; all else is QEMU or host only (aienos ROADMAP at `c63d6db`). The 2026-10-06 line "Physical machine: every AIENOS result is QEMU" is also too broad: it should read "every result except the M2 first boot and the recovery USB boot".
+- Section 2 claimed "native DGX Spark boot evidence" without limits. Physical evidence is only the M2 first boot (2026-09-24) and the recovery USB boot; all else is QEMU or host only (aienos ROADMAP at `c63d6db`). The 2026-10-06 line "Physical machine: every AIENOS result is QEMU" is recorded here as too broad (it omits the M2 first boot and the recovery USB boot) and is left unedited.
 - NEXT-PHASE-1 header said NOT STARTED while its status lines record campaigns v1 to v8. NEXT-PHASE-3 header also still reads NOT STARTED although its status lines record merged QEMU work (not physical); not edited here.
 - Two native orders and the AIENOS M5 versus Omega M5 name collision are marked, not resolved.
+- The 2026-10-06 status of NEXT-PHASE-1 calls sovereign-core #223 open; it is MERGED (merge `96d97af`, 2026-10-06). Not edited in place.
 
 Open (proposed, NOT merged) as of 2026-10-08:
 
 - aien-sovereign-core [#302](https://github.com/aien-dev/aien-sovereign-core/pull/302) ALLEN persona profile v1; [#303](https://github.com/aien-dev/aien-sovereign-core/pull/303) ALLEN scoped memory store; [#304](https://github.com/aien-dev/aien-sovereign-core/pull/304) optional approval-desk MAC for ComposeAuthorize (#297). Sovereign-core issue [#267](https://github.com/aien-dev/aien-sovereign-core/issues/267) (effect ack/reconcile, confine_target) is open, in progress.
-- interplane [#76](https://github.com/aien-dev/interplane/pull/76) (draft) and [#78](https://github.com/aien-dev/interplane/pull/78), in progress, owned by session e3d035.
+- interplane [#76](https://github.com/aien-dev/interplane/pull/76) (draft), in progress, owned by session e3d035. interplane issue #78 (re-pin sovereign-core, update the client_minted test) is CLOSED, closed by interplane [#81](https://github.com/aien-dev/interplane/pull/81), merged 2026-10-08.
 - OSH (arch #158), owned by ee6210: omega [#335](https://github.com/aien-dev/omega/pull/335) and [#336](https://github.com/aien-dev/omega/pull/336), aien-protocols [#16](https://github.com/aien-dev/aien-protocols/pull/16), aien-architecture [#161](https://github.com/aien-dev/aien-architecture/pull/161); all drafts.
