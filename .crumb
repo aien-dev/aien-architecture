@@ -22,38 +22,38 @@
       "children": [
         {
           "digest": "41c8df4b1da3cd30107797a143e16ffaa08dbfb2c017650b6b5c076bb88ddee3",
-          "last_commit": "36e488d",
+          "last_commit": "5164e20",
           "name": "docs",
           "purpose": "Directory docs. Purpose not yet described by a human."
         },
         {
-          "digest": "a7344a71b02446fd44824dab5065cf03373e9ac63e1447e98c4afeb648683953",
-          "last_commit": "36e488d",
+          "digest": "f7e4204c5cac8c5dff1cd9d24c4ab1ca7adb83d5863092f1a04348fe08656bf7",
+          "last_commit": "22be5d8",
           "name": "doctrine",
           "purpose": "Directory doctrine. Purpose not yet described by a human."
         },
         {
           "digest": "c34f88bb1ba323a3712efd9fd12cbefa5d0b8d92b3ea66375c5b0b916cfdebd7",
-          "last_commit": "4478c1a",
+          "last_commit": "6b25403",
           "name": "scripts",
           "purpose": "Directory scripts. Purpose not yet described by a human."
         },
         {
           "digest": "cdd14c4842f34bc96327321a87f1cd8a17a074966e0e25421da072bdbc249f8c",
-          "last_commit": "d0f0b95",
+          "last_commit": "6b25403",
           "name": "tools",
           "purpose": "Directory tools. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:a23e0d6a9cbe5ecaba227ba6ab3e64afff718161066e345a98e1840f79aff8b8",
-      "compiled_at": "2026-10-08T00:24:39Z",
+      "children_root": "sha256:c5b1ad7a3b4b024ae51960723c6a4d57dc7e9f610e06d5e93a061d6c3f9ff54b",
+      "compiled_at": "2026-10-08T02:25:27Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:72937f346b254959608343c86f15a804d3fb42d76df906e9ef85ac252104fe73",
+      "digest": "sha256:f9f26c1459e7568885b638df77899038e10ef6c7d9a8f58d2f5d98c854026e75",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 233,
-      "generated_at_commit": "36e488d44708c58c03dd9fdedf2da9e8ba543946",
-      "source_tree": "sha256:3c8c23c5004239c7669464653523a54ec18ff6679ad86f4a8c30a2d12fcae549"
+      "generated_at_commit": "57a6c9b2984e45b3b8543f5ad8ccf276eddc17aa",
+      "source_tree": "sha256:86fc8e0770ee41072fe0940bc9d3241a0f9c7e39afc00ada3b0e793234cd6cfe"
     },
     "owner_lane": "",
     "provenance": {

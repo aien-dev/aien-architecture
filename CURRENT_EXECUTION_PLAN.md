@@ -32,7 +32,7 @@ AIENOS owns the trusted operating substrate beneath this loop.
 As of 2026-09-27:
 
 - Atlas M1 is qualified in QEMU with historical bootstrap evidence preserved.
-- AIENOS has native DGX Spark boot evidence, QEMU-qualified isolation/capability work, Store/continuity/recovery work, and active M5 encryption/identity implementation.
+- AIENOS has two pieces of physical DGX Spark evidence: the M2 first native boot of 2026-09-24 (early boot code at EL2, report read back by Linux; [evidence](https://github.com/aien-dev/aienos/blob/c63d6db8/evidence/m2_first_boot_2026-09-24.md), GB10 identity merged in aienos PR #11) and the recovery USB attended boot ([evidence](https://github.com/aien-dev/aienos/blob/c63d6db8/evidence/recovery_boot_machine1.md)). Everything else is QEMU or host only: the C kernel has never booted physically, and boot rollback, storage, input, isolation and network are not physically qualified ([aienos ROADMAP status](https://github.com/aien-dev/aienos/blob/c63d6db8/ROADMAP.md): "Nothing in AIENOS is physically qualified"). Store/continuity/recovery work is QEMU-qualified, and AIENOS M5 encryption/identity implementation is active (this is AIENOS M5, not the Omega M5 in the roadmap). Correction 2026-10-08; see the addendum at the end of this file.
 - Omega has completed the semantic/synthesis line through M18 and has a merged M19 resident-accelerator implementation with a 175-gate qualification run.
 - An independent M19 review found evidence-integrity and runtime-correctness issues that require corrective qualification before M20 is trusted.
 - The old PHYSICS architectural role has been superseded by FORGE: machine realization/lowering, not a security gatekeeper.
@@ -258,6 +258,8 @@ Order inside the existing sequence: V2 contract landed early in physics#16, but 
 Continue the AIENOS component roadmap without redefining this plan.
 
 ### D1. M5 encryption and identity
+
+(Naming note 2026-10-08: this is AIENOS M5. The roadmap's M5 in `doctrine/ROADMAP.md` is Omega `OMEGA_AARCH64`, a different milestone. Say "AIENOS M5" or "Omega M5" when it is not clear from context.)
 
 Finish and qualify:
 
@@ -651,7 +653,7 @@ The release campaign must include destructive/adversarial recovery tests: stale 
 
 - Done: M19R Foundation Repair PASSED / CLOSED (`aien-dev/omega#111` `5517d22`); FORGE v1 realize/verify seam closed (`aien-dev/physics#13` `5969159`). See §2 addenda.
 
-**Lane 2 — AIENOS:** M5 trust/encryption -> M6 network -> M7 inference -> M8 persistent agent.
+**Lane 2 (AIENOS):** M5 trust/encryption -> M6 network -> M7 inference -> M8 persistent agent. (Order conflict: see the 2026-10-08 note at the end of section 17.)
 
 **Lane 3 — Omega training:** FP32 numerics -> M20 tensor -> M21 autodiff -> M22 optimizer.
 
@@ -715,13 +717,15 @@ The ADR 0020 workstream runs as Lane 7 and does not reorder these gates; its EST
 
 The ADR 0031 workstream runs as Lane 8 and does not reorder these gates; its production influence follows EST-4, EST-5 and EST-7.
 
+Open conflict noted 2026-10-08 (no decision made here): two native AIENOS orders are recorded in this file. Section 16 Lane 2 and this section: AIENOS M5 trust -> M6 network -> M7 inference -> M8. NEXT-PHASE-3 (addendum 2026-10-06, newer): operator input -> boot selection and rollback -> PCI discovery -> real-device storage -> owner identity and trust (TRUST-1) -> native inference. Drake resolves which governs; until then neither is revised. Recommendation (not a decision): let NEXT-PHASE-3 govern. It is the newer record, the Campaign 3 brief of 2026-10-08 lists the same order (operator input and recovery, boot selection and rollback, PCI, NVMe, journal, physical memory authority, hardware identity and trust, native CPU inference, later GPU), and on the physical Spark trust, network and inference all depend on operator input, a tested rollback path and real-device storage (the kernel's only model source today is the QEMU fw_cfg channel, which the Spark does not have). Under this reading AIENOS M6 network moves after native inference.
+
 ## Addendum 2026-10-01: language course correction (ADR 0024)
 
 By operator decision of 2026-10-01, [ADR 0024](docs/adr/0024-rust-scaffolding-omega-destination.md) supersedes the Rust-to-C migration plan. Rust is scaffolding, Omega is the destination, and C stays only where hardware, boot, ABI or freestanding-kernel reasons justify it. Wherever this plan says the "Rust-to-C port" or "no new Rust", read it as superseded by that ADR. No merged work is reverted; the C kernel and its gates stay. This addendum changes no gate order.
 
 ## Addendum 2026-10-06: next implementation phase (NEXT-PHASE-1 to NEXT-PHASE-5)
 
-This addendum orders the next implementation work. It adds no master plan (`PLAN_AUTHORITY.md`), changes no gate order in section 17 and raises no milestone status; milestone status changes only in `doctrine/ROADMAP.md`, which this addendum does not touch. The five slices below are not roadmap milestones. All five are NOT STARTED.
+This addendum orders the next implementation work. It adds no master plan (`PLAN_AUTHORITY.md`), changes no gate order in section 17 and raises no milestone status; milestone status changes only in `doctrine/ROADMAP.md`, which this addendum does not touch. The five slices below are not roadmap milestones. Status 2026-10-08: NEXT-PHASE-1 is IN PROGRESS (campaigns have run; see its status lines). The other four are NOT STARTED unless their status lines say otherwise.
 
 ### Baseline
 
@@ -770,7 +774,7 @@ This is the discrepancy NEXT-PHASE-1 resolves. Bridge decision (2026-10-06, orch
 
 ### Slices, in dependency order
 
-**NEXT-PHASE-1: single-machine useful workflow on the production path.** NOT STARTED.
+**NEXT-PHASE-1: single-machine useful workflow on the production path.** IN PROGRESS. Latest recorded verdict: v8 FAIL 99 of 115 (sovereign-core [#264](https://github.com/aien-dev/aien-sovereign-core/pull/264), merge `4f2380e`; see section "NEXT-PHASE-1 and the open-model path" below). Earlier: v5 PASS, v6 FAIL. (Header corrected 2026-10-08; it read NOT STARTED.)
 One workflow with: a real local model and tokenizer with production inference; skill and capability resolution; J-Space exploration with speculative effects contained; AEGIS authorization at the actual effect boundary; World commit and canonical Cortex persistence; a result that cites recorded evidence; restart and recall under the same durable identity (`AienMachineId`). Exit criteria: acceptance criteria are frozen before the campaign starts; measured are task completion, correctness, latency, resource use and required human interventions, with expected approvals counted separately from operator rescues. It reuses existing components and must not be demonstrated from disconnected fixtures.
 
 *Status 2026-10-06 (afternoon).* Campaigns v1 to v4 have run and are recorded in sovereign-core under `docs/campaigns/next-phase-1/` (PR #223, open, branch `next-phase/compose-v4`, head `eecfb2c`). The index lists seven receipts: six with verdict FAIL and the v4 receipt with verdict PASS (8 of 8 rows). `VERDICT-v4.md` records the v4 campaign verdict as FAIL by reviewer judgement: the reply named the wrong path (not `NOTES.md`), contained the chat marker `<|user|>` and a half sentence, and was cut off at the 48-token limit. The receipt passed because its frozen rows compared digests only (the proposal equals what is on disk) and never checked what the content says; the receipt is not edited. A v5 is in progress (inference diagnostic, task-correctness rows, negative cases, possibly a stronger local model); that is UNVERIFIED here, not on main. The composition bridge exists: omega #311 (merged) adds `librx_compose.a` and a host ABI, and sovereign-core #217 (merged) adds the compose crate; sovereign-core main `omega.lock` pins `62b6a2899fa230e57fcf7855ea7e2c26404514b6`. The slice is not complete.
@@ -925,3 +929,20 @@ Fabric and learning/promotion experiments remain NOT STARTED: the single-machine
   - Declared attempt 1, Linux-hosted GB10: element ops at Qwen3 shapes PASS; the full Qwen3-4B prefill FAIL. The driver refused the channel with NV_ERR_NO_MEMORY right after the f32 weight load, while MemFree was at a trough of about 2.5 GB and about 87 GB sat in clean page cache. Not rerun.
   - Declared attempt 2, Linux-hosted GB10, same frozen binary, one change (clean page cache dropped once before the run): PASS. Max abs logit difference over the reference top-20 is 1.76e-2 (bound 0.15), same argmax, 0 chip errors, 0 CPU fallbacks, all ten tensor ops native. This is labelled "with page cache dropped, not a product fix". The product fix (GPU allocations before the host f32 copy grows, or no host f32 copy once the weights are resident) needs its own change and its own declared attempt without the cache drop.
 - Answer for this update: there is still NOT a dependable open-model workflow. Qwen3-4B now matches the reference on the CPU and, with the cache dropped, on GB10 for one prefill. No frozen candidate after CAND-4 runs an open-licence model through the qualification suite, and no Qwen3 qualification campaign has been declared.
+
+## Addendum 2026-10-08: Campaign 2/3 status and plan-currency corrections
+
+This addendum changes no decision, gate order or milestone status. Tracking: aien-architecture [#162](https://github.com/aien-dev/aien-architecture/issues/162) (Campaign 2: ALLEN end-to-end workflow, INTERPLANE integration, security fixes; open).
+
+Corrections made in place today (evidence beats planning claims):
+
+- Section 2 claimed "native DGX Spark boot evidence" without limits. Physical evidence is only the M2 first boot (2026-09-24) and the recovery USB boot; all else is QEMU or host only (aienos ROADMAP at `c63d6db`). The 2026-10-06 line "Physical machine: every AIENOS result is QEMU" is recorded here as too broad (it omits the M2 first boot and the recovery USB boot) and is left unedited.
+- NEXT-PHASE-1 header said NOT STARTED while its status lines record campaigns v1 to v8. NEXT-PHASE-3 header also still reads NOT STARTED although its status lines record merged QEMU work (not physical); not edited here.
+- Two native orders and the AIENOS M5 versus Omega M5 name collision are marked, not resolved.
+- The 2026-10-06 status of NEXT-PHASE-1 calls sovereign-core #223 open; it is MERGED (merge `96d97af`, 2026-10-06). Not edited in place.
+
+Open (proposed, NOT merged) as of 2026-10-08:
+
+- aien-sovereign-core [#302](https://github.com/aien-dev/aien-sovereign-core/pull/302) ALLEN persona profile v1; [#303](https://github.com/aien-dev/aien-sovereign-core/pull/303) ALLEN scoped memory store; [#304](https://github.com/aien-dev/aien-sovereign-core/pull/304) optional approval-desk MAC for ComposeAuthorize (#297). Sovereign-core issue [#267](https://github.com/aien-dev/aien-sovereign-core/issues/267) (effect ack/reconcile, confine_target) is open, in progress.
+- interplane [#76](https://github.com/aien-dev/interplane/pull/76) (draft), in progress, owned by session e3d035. interplane issue #78 (re-pin sovereign-core, update the client_minted test) is CLOSED, closed by interplane [#81](https://github.com/aien-dev/interplane/pull/81), merged 2026-10-08.
+- OSH (arch #158), owned by ee6210: omega [#335](https://github.com/aien-dev/omega/pull/335) and [#336](https://github.com/aien-dev/omega/pull/336), aien-protocols [#16](https://github.com/aien-dev/aien-protocols/pull/16), aien-architecture [#161](https://github.com/aien-dev/aien-architecture/pull/161); all drafts.
