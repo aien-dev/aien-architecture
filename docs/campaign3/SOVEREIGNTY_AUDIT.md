@@ -28,6 +28,8 @@ Status values: PASS, FAIL, PARTIAL, NOT_RUN, UNVERIFIED, N/A. Verdicts: YES, PAR
 | 7 | Refuse unauthorized effects | PARTIAL | PARTIAL | NOT_RUN | NOT_RUN | PARTIAL | Linux daemon; the double-effect defect #320 found after CAND-4 is fixed on main (#321) and was never in CAND-4 |
 | 8 | Operate without a mandatory external control service | UNVERIFIED | N/A | PASS | NOT_RUN | PARTIAL | Local services only found (loopback Cortex, local vault); full source audit not done |
 
+Where a cell rests on code that landed on main after CAND-4 was packaged (rows 3, 4, 5 and 7, host column), the section says so; that is evidence about the current source line, not about the CAND-4 package.
+
 Overall: CAND-4 is not shown to be sovereign. Parts of it work offline on Linux, parts are proven in an emulator, and the native path has no physical evidence beyond a 2026-09-24 first boot and an attended recovery USB boot. See "Essential paths that still depend on Linux or another external system".
 
 ## 1. Build and verify offline from supported inputs
@@ -63,7 +65,7 @@ Limits:
 ## 3. Retain and recover user identity and data
 
 Evidence:
-- Design record: [ADR 0035](../adr/0035-persistent-cognitive-entity-boundary-allen.md) (ALLEN, accepted). Persona profile bound to the existing identity: sovereign-core #302 (merged, `37039ec`). Identity crates on main: `crates/aien-allen`, `aien-allen-profile`, `aien-allen-memory` ([identity_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-allen/tests/identity_test.rs)). Environment: host.
+- Design record: [ADR 0035](../adr/0035-persistent-cognitive-entity-boundary-allen.md) (ALLEN, accepted). Persona profile bound to the existing identity: sovereign-core #302 (merged, `37039ec`). Identity crates on main after CAND-4 (not in the CAND-4 package): `crates/aien-allen`, `aien-allen-profile`, `aien-allen-memory` ([identity_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-allen/tests/identity_test.rs)). Environment: host.
 - QEMU: gates M4_STORE_CRASH, M4_CONTINUITY, M4_RECOVERY and M4_ALLEN are PASS in the [receipt above](https://github.com/aien-dev/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json). aienos #260 (merged): ALLEN native genesis at provisioning and QEMU cold restore.
 - Main after CAND-4: sovereign-core #322 (`6bbe2ec`), [RESULT-v3.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md), ALLEN end-to-end demo v3 PASS 10/10: S1 one identity, S2 profile and memory, S5 kill -9 restart kept the identity, profile, notes, goal and the DONE result without re-executing it, S6 forget removed a note from every state file. Environment: real CPU, Linux host. Earlier runs v1 and v2 FAILED and stay recorded.
 
@@ -77,7 +79,7 @@ Limits:
 
 Evidence:
 - Linux-hosted GB10: in the [CAND-4 release demo](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md) the installed CAND-4 `aien` ran one GB10 StreamTurn (rc 0, 16 tokens) and the NP1 workflow steps S1 to S8 all returned `ok:true`. The same receipt reports text-level agreement with a Hugging Face oracle (token ids and logits not exposed, so only decoded text was compared).
-- Host: the golden path and effect ledger tests in sovereign-core ([effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs)).
+- Host, main after CAND-4 (not the CAND-4 source d5b78ff): the golden path and effect ledger tests in sovereign-core ([effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs)).
 - QEMU: gate INFER is PASS. Per [GATES.md rows 129 to 134](https://github.com/aien-dev/aienos/blob/8641977/native/kernel/GATES.md) it checks that the kernel ingests the model file, hashes it, and probes tensor count and vocabulary. It is not token generation.
 
 Limits:
@@ -114,7 +116,7 @@ Limits:
 ## 7. Refuse unauthorized effects
 
 Evidence:
-- Host: the approved-effect path in [crates/aien-runtime/src/effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs). The ledger honours only grants the daemon wrote itself (approved or minted); a corrupt ledger record refuses the whole ledger; refusals are named (`EFFECT_REFUSED <name>`); stop is durable; one grant per desk-MAC nonce. Test: [minted_grant_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/tests/minted_grant_test.rs).
+- Host, main after CAND-4 (not the CAND-4 source d5b78ff, which predates the minted-grant path and `minted_grant_test.rs`): the approved-effect path in [crates/aien-runtime/src/effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs). The ledger honours only grants the daemon wrote itself (approved or minted); a corrupt ledger record refuses the whole ledger; refusals are named (`EFFECT_REFUSED <name>`); stop is durable; one grant per desk-MAC nonce. Test: [minted_grant_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/tests/minted_grant_test.rs).
 - Main after CAND-4: the demo's v2 run ([RESULT-v2.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v2.md)) shows the runtime refusing a task whose requirement it cannot check, with no file written and no grant spent. That is a refusal of a task, not of an effect.
 - QEMU: gate ARGUS1_REVOKE is PASS (revocation at the Store level) in the cb14 receipt.
 
