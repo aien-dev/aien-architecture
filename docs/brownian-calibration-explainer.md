@@ -38,6 +38,8 @@ A claim is limited by the highest rung that passed. A later success never erases
 | sensitivity | verdicts are stable under preset variants | BLOCKED |
 | independent replication | independent implementation (in-house), not external lab | BLOCKED |
 
+Update 2026-10-09 (development only, outside the ladder): EXP-002D stays INCOMPLETE; its last development mismatch was diagnosed as a statistical edge, not a code fault (omega#348). A separate development demonstration, BRW-ACT, has a hand-coded reference candidate choose its next noisy measurement and compares it with random and fixed schedules under equal measurement budgets. See omega `docs/turing/BRW_ACT_RESULTS.md`. It is self-run, unsealed and has no independent evaluator, so it does not count toward EXP-003, which stays BLOCKED.
+
 ## Departures from the plan, in full
 
 1. **EXP-001 failed, and was replaced.** The first compression-bridge run failed one audit: a single sealed test item was identical, in its visible part, to one development item. The cause was a small space of possible items in one category, not a leak of answers. The failure stands and is published (omega #95). A successor, EXP-001R, ran with the same candidates and criteria, a tightened and documented overlap rule and new seeds, and passed (omega #99).
