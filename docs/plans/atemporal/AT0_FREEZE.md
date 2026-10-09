@@ -12,7 +12,7 @@ sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1
 |---|---|---|---|
 | AT0_CASE_V1 | `docs/plans/atemporal/AT0_CASE_V1.md` | `d90af74bf818598d28114a73e618f5073706797d7d92d472acc2df404cd663d9` | on merge of the pull request adding this file |
 | AT0_RESULT_V1 | `docs/plans/atemporal/AT0_RESULT_V1.md` | `dc52c5730dc52b155ab3c72afac9a26f8db01370804cf25fe6af23dcd0ed90a0` | on merge of the pull request adding this file |
-| AT0_API_V1 | omega `src/at0/at0_api.h` | not written | NOT_WRITTEN; frozen by Agent 0 after Agent 1's draft |
+| (no C header) | none | none | the two text contracts are the only shared interfaces (charter section 8); oracle, model and evaluator each carry their own parser |
 
 Known-answer digests published inside AT0_CASE_V1 section 6 (computed with `sha256sum` over the exact byte rule of AT0_CASE_V1 section 5):
 
