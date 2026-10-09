@@ -53,8 +53,8 @@
           "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
         },
         {
-          "digest": "48ae65b56ee95830df47d7180df42059a283914573938878986db0b9b1254dca",
-          "last_commit": "ed2c86b",
+          "digest": "a86cfceb96d86d4fc7f0ece6995075f8804a305c7a9c96d5c1699aa0614f37a1",
+          "last_commit": "11aa2b7",
           "name": "atemporal",
           "purpose": "AT-0 Clock-Free Universe research program: charter, frozen AT0_CASE_V1 and AT0_RESULT_V1 contrac"
         },
@@ -101,15 +101,15 @@
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:a68578a244c8681d7a134ed84a3640f30a9325631829d603ceb5b328a733cc9c",
-      "compiled_at": "2026-10-09T22:38:45Z",
+      "children_root": "sha256:42f64c9268ca65f194e943a269d3f7f22a44dff6d48a143e770bd8e2851cc7a1",
+      "compiled_at": "2026-10-09T22:41:01Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:1c3367c40243691423ba53254712f2d74c816feba528fc018baabbb765a24858",
+      "digest": "sha256:39c9a31b93b988778e4011064db3ca54db34bb4edf17b12843dccd634ff55d6c",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 40,
-      "generated_at_commit": "ed2c86b6b0fd417a763e0524d9a3982ed14feff9",
-      "source_tree": "sha256:0879fe5f0a8b1740cabe872d8239e5fc05d95cdc05c5a66a91a85a40e56fb5d6"
+      "generated_at_commit": "11aa2b78d19d1983a42637c2c6e1284edcc9e76b",
+      "source_tree": "sha256:24e5a03561309fcd55b851b542a04d218b7cb6dd9c2bd08a1a196db106409cd3"
     },
     "owner_lane": "",
     "provenance": {
