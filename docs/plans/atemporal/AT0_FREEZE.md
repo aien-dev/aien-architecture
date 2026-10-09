@@ -5,7 +5,7 @@ This file lists every frozen AT-0 interface with the SHA-256 of its file bytes. 
 Verify at any time from the aien-architecture root:
 
 ```
-sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1.md
+sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1.md docs/plans/atemporal/AT0_RESULT_V2.md
 ```
 
 | Interface | File | SHA-256 of file bytes | Frozen |
