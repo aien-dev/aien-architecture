@@ -3,14 +3,14 @@
     "generated": {
       "children": [],
       "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "compiled_at": "2026-10-09T22:38:45Z",
+      "compiled_at": "2026-10-09T22:41:01Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:48ae65b56ee95830df47d7180df42059a283914573938878986db0b9b1254dca",
+      "digest": "sha256:a86cfceb96d86d4fc7f0ece6995075f8804a305c7a9c96d5c1699aa0614f37a1",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 5,
-      "generated_at_commit": "ed2c86b6b0fd417a763e0524d9a3982ed14feff9",
-      "source_tree": "sha256:36db44817ccb750bf5cbaa70341b2ee19676c350d9d77e073872d9fe5f9c9833"
+      "generated_at_commit": "11aa2b78d19d1983a42637c2c6e1284edcc9e76b",
+      "source_tree": "sha256:440ea5c675570133ed8c60a7689d7f07e4dceef036b43c0ce5b0c28a2cf30b32"
     }
   },
   "name": "atemporal",
