@@ -186,6 +186,27 @@ echo 'int b3;' > src/deep/b.c; git add -A; st=$("$C" verify . | grep '^STALE' | 
 "$C" compile . >/dev/null; [ "$(cat src/deep/.crumb)" = "$ev0" ] && ok "C3 D10 ignored crumb still untouched after that compile" || bad "C3 D10 ignored crumb touched"
 rm .crumbignore; "$C" compile . >/dev/null; "$C" verify . >/dev/null && ok "C3 D10 removing .crumbignore and recompiling returns to OK" || bad "C3 D10 remove ignore"
 git add -A; git -c user.name=t -c user.email=t@t commit -qm "post-ignore"
+# sovereign-core#355: generated build directories never take part in compile/verify/status (one shared policy)
+SAVE=$(pwd); cd "$T" || exit 1; rm -rf g355; mkdir g355 && cd g355 && git init -q -b main .
+mkdir -p src target/debug/build/x/out/auth node_modules/pkg out/cache keep/target
+echo 'int main(void){return 0;}' > src/a.c; echo 'fn x(){}' > target/debug/build/x/out/auth/a.rs; echo 'y' > node_modules/pkg/i.js; echo 'z' > out/cache/o.c; echo 's' > keep/target/real.c
+for d in . src target/debug/build/x/out/auth node_modules/pkg out/cache keep/target; do printf '{"schema_version":1,"purpose":"p %s"}\n' "$d" > "$d/.crumb"; done
+printf 'out/\n' > .gitignore
+git add .gitignore .crumb src keep; git -c user.name=t -c user.email=t@t commit -qm init   # target/ and node_modules/ stay untracked and NOT gitignored: the built-in names must suffice
+tgt0=$(sha256sum target/debug/build/x/out/auth/.crumb node_modules/pkg/.crumb out/cache/.crumb)
+"$C" compile . >/dev/null
+[ "$(sha256sum target/debug/build/x/out/auth/.crumb node_modules/pkg/.crumb out/cache/.crumb)" = "$tgt0" ] && ok "355 .crumb under target/, node_modules/ and a gitignored dir are byte-identical after compile" || bad "355 build-dir crumbs rewritten"
+jq -e '.extensions.generated' src/.crumb >/dev/null && jq -e '.extensions.generated' .crumb >/dev/null && ok "355 source crumbs are still compiled" || bad "355 source crumb not compiled"
+jq -e '.extensions.generated' keep/target/.crumb >/dev/null && ok "355 a directory named target that holds tracked files is real source and is still compiled" || bad "355 tracked target skipped"
+"$C" status . | grep -Eq 'target/debug|node_modules|out/cache' && bad "355 status lists a build dir" || ok "355 status ignores the build dirs"
+"$C" verify . | grep -Eq 'target/debug|node_modules|out/cache' && bad "355 verify lists a build dir" || ok "355 verify ignores the build dirs"
+"$C" status . | grep -q 'keep/target' && ok "355 status still lists the tracked target dir" || bad "355 status lost tracked target"
+jq -e '[.extensions.generated.children[].name] | (index("node_modules") == null and index("out") == null and index("target") == null)' .crumb >/dev/null && ok "355 build dirs are not children of the root crumb" || bad "355 build dir listed as child"
+git add .gitignore .crumb src keep; git -c user.name=t -c user.email=t@t commit -qm compiled
+"$C" verify . >/dev/null && ok "355 verify OK after compile" || bad "355 verify after compile"
+echo 'int q;' >> target/debug/build/x/out/auth/a.rs; echo 'more' > out/cache/more.c
+"$C" verify . >/dev/null && ok "355 changing files inside build dirs does not stale anything" || bad "355 build-dir change staled crumbs"
+cd "$SAVE" || exit 1
 # differential vs the shell reference (needs jq, git, sha256sum)
 REF="$HERE/crumb-compile.sh"
 if command -v jq >/dev/null 2>&1 && [ -f "$REF" ]; then
