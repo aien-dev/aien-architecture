@@ -246,21 +246,21 @@ Every test names the quantity, the expected result, and what it would miss if om
 | T9 | evaluation order: labels evaluated `N-1 .. 0` | bit-identical values block (section 6, item 2) |
 | T10 | wall-clock independence: same case run twice | identical `case_id`, `acceptance_id`, `verdict_id`, values block; different `evidence_digest` |
 
-### 9.2 Negative controls (must fail, and only for the stated reason)
+### 9.2 Negative controls (must fail, and only for the stated reason; unit-level ids U1 to U11, distinct from the charter case classes N1 to N5 of section 13.3)
 
 | Id | Mutation | Expected | What X alone would miss |
 |---|---|---|---|
-| N1 | uncovered spectrum: clock energies `+1, +2` | kernel dimension 0; `FAIL TRIVIAL_PHYSICAL_STATE`; check 5 still runs on the clock alone and passes; checks 4 and 6 to 10 `NOT_EVALUATED` (section 13.3 N1) | |
-| N2 | half-covered spectrum: clock energies `0, +1` with `H_S = diag(0, +1)`; kernel is `|00>` only | residuals pass; conditional state is `|0>` for all `k` while the oracle, started in `|X+>`, rotates; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` on X and Y (Z also: `P(Z+) = 1` vs `1/2`) | |
-| N3 | wrong weight: `E_k = (1/N)|theta_k><theta_k|` | `sum_k E_k = I/2`, so `povm_residual = ||I/2||_F = 1/sqrt2` exactly; `sum_k p_k = 1/2`; `FAIL POVM_NORMALIZATION_EXCEEDED, PROBABILITY_SUM_EXCEEDED`; conditional probabilities unchanged (they are ratios), so check 10 passes | |
-| N4 | broken clock: labels `theta_k = phi + 2 pi k / N` for `k = 0 .. N-2` only (one effect dropped) | `sum_k E_k = I - E_{N-1}`, `povm_residual = 2/N`, `sum_k p_k = 1 - 1/N`; `FAIL POVM_NORMALIZATION_EXCEEDED, PROBABILITY_SUM_EXCEEDED`; the surviving conditional probabilities still match the oracle | |
-| N5 **Y** | missing complex conjugate: engine uses `|theta_k>` where it should use `<theta_k|` (equivalently conditions on `theta_k -> -theta_k`) | X and Z agree with the oracle; `P(Y+)` becomes `(1 + sin theta_k)/2`; deviation `|sin theta_k|` is at least `cos(pi/N) >= 1/2` for some `k` when `N >= 3`; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` raised by Y only | everything: this bug is invisible to X and Z (Lemma 4.1) |
-| N6 **Y** | reversed reference evolution: oracle uses `exp(+i H_S t)` (or `hz` with the wrong sign) | engine unchanged; oracle's Y reference flips; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` by Y only. Note (section 12): in an engine that hard-codes the clock states of Definition 1.3, flipping the Hamiltonian signs changes nothing; in a V1 engine that derives `|t_k>` from `clock_energies`, flipping every energy sign conjugates the clock states and is the engine-side form of this mutant, also visible on Y only | everything |
-| N7 **Y** | Y-sign swap in the engine: `PLUS` and `MINUS` of Y exchanged | X, Z pass; Y fails on every `k` with `sin theta_k != 0` | everything |
-| N8 | axis swap: engine exchanges X and Y results (charter control) | fails on X and Y wherever `cos theta_k != -sin theta_k`; proves oracle independence | |
-| N9 | `N = 2`, `phi = 0`, with the N5 mutation | all checks PASS although the engine is wrong: `sin theta_k = 0` for both labels. This is a documented false negative and the reason `N >= 3` is required; it is kept as an engine unit test, not as a V1 case | |
-| N10 | precision demand: `min_bound_kind RIGOROUS` against an `ESTIMATED` engine | `FAIL BOUND_KIND_INSUFFICIENT` | |
-| N11 | hidden clock read: a mutant engine that calls `clock_gettime` | caught by the isolation gate, never run | |
+| U1 | uncovered spectrum: clock energies `+1, +2` | kernel dimension 0; `FAIL TRIVIAL_PHYSICAL_STATE`; check 5 still runs on the clock alone and passes; checks 4 and 6 to 10 `NOT_EVALUATED` (section 13.3 N1) | |
+| U2 | half-covered spectrum: clock energies `0, +1` with `H_S = diag(0, +1)`; kernel is `|00>` only | residuals pass; conditional state is `|0>` for all `k` while the oracle, started in `|X+>`, rotates; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` on X and Y (Z also: `P(Z+) = 1` vs `1/2`) | |
+| U3 | wrong weight: `E_k = (1/N)|theta_k><theta_k|` | `sum_k E_k = I/2`, so `povm_residual = ||I/2||_F = 1/sqrt2` exactly; `sum_k p_k = 1/2`; `FAIL POVM_NORMALIZATION_EXCEEDED, PROBABILITY_SUM_EXCEEDED`; conditional probabilities unchanged (they are ratios), so check 10 passes | |
+| U4 | broken clock: labels `theta_k = phi + 2 pi k / N` for `k = 0 .. N-2` only (one effect dropped) | `sum_k E_k = I - E_{N-1}`, `povm_residual = 2/N`, `sum_k p_k = 1 - 1/N`; `FAIL POVM_NORMALIZATION_EXCEEDED, PROBABILITY_SUM_EXCEEDED`; the surviving conditional probabilities still match the oracle | |
+| U5 **Y** | missing complex conjugate: engine uses `|theta_k>` where it should use `<theta_k|` (equivalently conditions on `theta_k -> -theta_k`) | X and Z agree with the oracle; `P(Y+)` becomes `(1 + sin theta_k)/2`; deviation `|sin theta_k|` is at least `cos(pi/N) >= 1/2` for some `k` when `N >= 3`; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` raised by Y only | everything: this bug is invisible to X and Z (Lemma 4.1) |
+| U6 **Y** | reversed reference evolution: oracle uses `exp(+i H_S t)` (or `hz` with the wrong sign) | engine unchanged; oracle's Y reference flips; `FAIL SCHRODINGER_DEVIATION_EXCEEDED` by Y only. Note (section 12): in an engine that hard-codes the clock states of Definition 1.3, flipping the Hamiltonian signs changes nothing; in a V1 engine that derives `|t_k>` from `clock_energies`, flipping every energy sign conjugates the clock states and is the engine-side form of this mutant, also visible on Y only | everything |
+| U7 **Y** | Y-sign swap in the engine: `PLUS` and `MINUS` of Y exchanged | X, Z pass; Y fails on every `k` with `sin theta_k != 0` | everything |
+| U8 | axis swap: engine exchanges X and Y results (charter control) | fails on X and Y wherever `cos theta_k != -sin theta_k`; proves oracle independence | |
+| U9 | `N = 2`, `phi = 0`, with the U5 mutation | all checks PASS although the engine is wrong: `sin theta_k = 0` for both labels. This is a documented false negative and the reason `N >= 3` is required; it is kept as an engine unit test, not as a V1 case | |
+| U10 | precision demand: `min_bound_kind RIGOROUS` against an `ESTIMATED` engine | `FAIL BOUND_KIND_INSUFFICIENT` | |
+| U11 | hidden clock read: a mutant engine that calls `clock_gettime` | caught by the isolation gate, never run | |
 
 Every negative control succeeds only when its failure codes equal the expected set exactly (AT0_RESULT_V1 section 5). A control that fails for an extra reason is a defect in the control or the implementation, not a pass.
 
@@ -271,12 +271,12 @@ An implementation claiming to realize this specification must show, with evidenc
 | Id | Obligation | Discharged by |
 |---|---|---|
 | O1 | The engine builds `H_total`, `Psi`, `{E_k}` from the case text and nothing else; no wall-clock, no `t` applied to `Psi` | code review plus gate G2 and tests T9, T10 |
-| O2 | `physical_state_kernel_dim` is computed exactly from rationals, and equals 2 for the reference model | T1, N1, N2 |
-| O3 | `constraint_residual`, `povm_residual`, `clock_probability`, `pauli` are computed as section 8.1 defines, each `pauli` directly from `rho_k`, never as `1 - other` | code review; T6 (purity would still pass if one sign were derived, so T6 is necessary but not sufficient); N7 |
-| O4 | The oracle shares no code with the engine and computes `exp(-i H_S t_k)` from `H_S` and `t_k` only | gate G3; N5, N6, N8 |
-| O5 | The stated `bound_kind` is honest: `ESTIMATED` cites an error analysis like section 8.3; `RIGOROUS` cites an interval method | Agent 2 and 3 notes; N10 |
+| O2 | `physical_state_kernel_dim` is computed exactly from rationals, and equals 2 for the reference model | T1, U1, U2 |
+| O3 | `constraint_residual`, `povm_residual`, `clock_probability`, `pauli` are computed as section 8.1 defines, each `pauli` directly from `rho_k`, never as `1 - other` | code review; T6 (purity would still pass if one sign were derived, so T6 is necessary but not sufficient); U7 |
+| O4 | The oracle shares no code with the engine and computes `exp(-i H_S t_k)` from `H_S` and `t_k` only | gate G3; U5, U6, U8 |
+| O5 | The stated `bound_kind` is honest: `ESTIMATED` cites an error analysis like section 8.3; `RIGOROUS` cites an interval method | Agent 2 and 3 notes; U10 |
 | O6 | Every negative control fails with exactly its expected codes | gate G5 |
-| O7 | Pauli Y is measured and compared on every label | the contract fixes `observables PAULI_X,PAULI_Y,PAULI_Z`; N5 to N7 |
+| O7 | Pauli Y is measured and compared on every label | the contract fixes `observables PAULI_X,PAULI_Y,PAULI_Z`; U5 to U7 |
 
 ## 11. What follows from the construction, and what would need an experiment
 
