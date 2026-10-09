@@ -21,20 +21,20 @@
     "generated": {
       "children": [
         {
-          "digest": "ec6a60523b4f14d41da25e484bc4c8ce8b5921bfea1f2edf1efaf7ecb90758a7",
-          "last_commit": "72d0211",
+          "digest": "697942182b7814eeca03ae90b044c7d319e598f076f556514b7bcc78f06a45ae",
+          "last_commit": "27f3b71",
           "name": "docs",
           "purpose": "Directory docs. Purpose not yet described by a human."
         },
         {
           "digest": "f7e4204c5cac8c5dff1cd9d24c4ab1ca7adb83d5863092f1a04348fe08656bf7",
-          "last_commit": "fa0ec91",
+          "last_commit": "7bfbb63",
           "name": "doctrine",
           "purpose": "Directory doctrine. Purpose not yet described by a human."
         },
         {
           "digest": "c34f88bb1ba323a3712efd9fd12cbefa5d0b8d92b3ea66375c5b0b916cfdebd7",
-          "last_commit": "fa0ec91",
+          "last_commit": "4478c1a",
           "name": "scripts",
           "purpose": "Directory scripts. Purpose not yet described by a human."
         },
@@ -45,14 +45,14 @@
           "purpose": "Directory tools. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:031de46af544178b6c8a3248b607b17db2ab87851db57eb59b2bab67f153bb18",
-      "compiled_at": "2026-10-09T16:22:56Z",
+      "children_root": "sha256:2054b76bcb5a39e0e017b85b4035c6bb411588d8a7a2b62bec857d767ce3c7eb",
+      "compiled_at": "2026-10-09T22:10:50Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:3ff605421b7e0b7f6044e19e88cf042344ba403807fd531b2b2261cc6e13d415",
+      "digest": "sha256:0843c45793dae7238b29eceae8dcda305048da3ae0e91c5c9b03dfec5fd17c11",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 238,
-      "generated_at_commit": "72d02119abd4b531057852a48bf6a7a6488d6ca9",
+      "generated_at_commit": "27f3b717947ea48917a7b9623fad6ac58253e3ab",
       "source_tree": "sha256:24abc872e7426cfed248fdd9a0dc3348208eace7eb0aece53ec4dcc715d1e517"
     },
     "owner_lane": "",

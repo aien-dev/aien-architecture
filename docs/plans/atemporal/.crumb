@@ -1,0 +1,19 @@
+{
+  "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-09T22:10:50Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:efd255e2f34f0d748191680f6935cf20166b7b14e99a58c581dc817906f983e7",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 0,
+      "generated_at_commit": "27f3b717947ea48917a7b9623fad6ac58253e3ab",
+      "source_tree": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "name": "atemporal",
+  "purpose": "AT-0 Clock-Free Universe research program: charter, frozen AT0_CASE_V1 and AT0_RESULT_V1 contracts, freeze record. Status NOT_RUN.",
+  "schema_version": "1.0.0"
+}
