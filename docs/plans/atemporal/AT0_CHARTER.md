@@ -72,7 +72,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 | Exact text encodings | omega `research/dirac-oracle/CORPUS-FORMAT.md` section 2 | Adopted by restatement in AT0_CASE_V1 section 2. There is no Dirac code to reuse: the oracle is NOT_BUILT (E12). |
 | binary64 canonicalization rule | omega `src/estimation/est_types.c`, `src/dual/rx_dual.c` | Re-implement the rule (a few lines); do not link those modules (E8). |
 | Fragment, flags and sanitizer pattern | omega `mk/physics0.mk` | Copy and adapt into `mk/at0.mk`; do not edit `mk/physics0.mk` (E3). |
-| Symbol-isolation method | omega `tests/physics0/isolation.sh` | Copy and adapt into `tests/at0/gates/` (E4). |
+| Symbol-isolation method | omega `tests/physics0/isolation.sh` | Copy and adapt into `research/atemporal/at0/integration/` (E4). |
 | Evidence immutability | omega `.github/workflows/evidence-immutable.yml` | Already covers `evidence/AT0/` with no change (E10). |
 | Crumb tooling | `crumb` CLI; `crumb.yml` CI in omega and aien-architecture | Every new directory gets compiled crumbs; compiling is the last step before push. |
 | Host tools | `gcc`, `make`, `nm`, `sha256sum` | Build, isolation checks, digest cross-checks. |
@@ -82,7 +82,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 
 ## 6. Cases and gates
 
-**Case classes Agent 4 must supply** (each with a short hand derivation of the expected outcome and failure codes):
+**Case classes** (Agent 1 derives the expected outcome and failure codes by hand in `AT0_SPEC.md`; Agent 4 writes the case files from those derivations):
 
 | Class | Example of the mechanism | Expected |
 |---|---|---|
@@ -95,7 +95,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 | N5 precision demand | `min_bound_kind RIGOROUS` against an `ESTIMATED` engine | `FAIL BOUND_KIND_INSUFFICIENT` |
 | R1 to R6 refusals | non-canonical rational, wrong header, out-of-range dimension, irrational spectrum, wrong `case_id`, bad expected-code list | `AT0_CASE_REFUSED <code>`, one file per refusal code |
 
-**Postulate-derived controls** (implementation level, owned by Agent 5 unless noted):
+**Postulate-derived controls** (implementation level, built by Agent 4 in `at0/evaluator/`, run by Agent 5):
 
 - *Hidden clock read:* a deliberately built mutant engine that calls `clock_gettime` must be caught by the isolation gate.
 - *Wall-clock independence:* the same case run twice at different times gives equal `case_id`, `acceptance_id`, `verdict_id` and values block, and different `evidence_digest`.
@@ -106,43 +106,44 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 
 | Gate | Pass condition | Owner |
 |---|---|---|
-| AT0-G0 contract freeze | this charter and both contracts merged; `AT0_FREEZE.md` digests match the merged files | Agent 0 |
-| AT0-G1 codec | the section 6 example round-trips byte for byte with the published digests; every refusal case gives its exact code; clean under ASan/UBSan | Agent 1 |
-| AT0-G2 isolation | symbol check passes on engine and oracle objects and fails on the hidden-clock mutant; `mk/at0.mk` builds with `PHYSICS_DIR=/nonexistent PHYSICS_LOCK_CHECK=0`; `make -n all` and `make -n test` print the same commands with and without `mk/at0.mk` | Agent 5 |
-| AT0-G3 oracle calibration | the oracle reproduces the section 6 hand table within its stated bounds on all 24 Pauli values and 4 clock probabilities; oracle objects share no symbols with engine objects | Agent 3 |
-| AT0-G4 positive arm | every P case: `outcome PASS`, `expectation_met YES` | Agents 2, 5 |
-| AT0-G5 negative arm | every N case: `outcome FAIL` with exactly its expected codes, `expectation_met YES`; the axis-swap mutant is caught | Agents 4, 5 |
-| AT0-G6 independent verification | Agent 6's verifier, sharing no code with `src/at0/` except `src/sha256.c`, re-derives every check, outcome, `verdict_id` and `evidence_digest` from the result files alone and agrees; the wall-clock independence control holds; evidence is committed to a new `evidence/AT0/` folder | Agent 6 |
+| AT0-G0 contract freeze | this charter and both contracts merged; `AT0_FREEZE.md` digests match the merged files; `AT0_SPEC.md` merged | Agents 0, 1 |
+| AT0-G1 codec conformance | each of the oracle, the model and the evaluator parses and re-emits the AT0_CASE_V1 section 6 example byte for byte and reproduces its published digests; every refusal case gives its exact code; C code clean under ASan/UBSan | Agents 2, 3, 4 (each for its own parser) |
+| AT0-G2 isolation | symbol check passes on model objects and fails on the hidden-clock mutant; `mk/at0.mk` builds with `PHYSICS_DIR=/nonexistent PHYSICS_LOCK_CHECK=0`; `make -n all` and `make -n test` print the same commands with and without `mk/at0.mk` | Agent 5 |
+| AT0-G3 oracle calibration | the oracle reproduces the `AT0_SPEC.md` hand tables within its stated bounds on all Pauli values and clock probabilities; oracle shares no source, object or numerical routine with the model | Agent 2 |
+| AT0-G4 positive arm | every P case: `outcome PASS`, `expectation_met YES` | Agent 5 runs; Agent 3 answers |
+| AT0-G5 negative arm | every N case: `outcome FAIL` with exactly its expected codes, `expectation_met YES`; the axis-swap and hidden-clock mutants are caught | Agent 5 runs; Agent 4 answers |
+| AT0-G6 independent verification | the evaluator's verifier, sharing no code with `model/` or `oracle/` except omega `src/sha256.c`, re-derives every check, outcome, `verdict_id` and `evidence_digest` from the result files alone and agrees; the wall-clock independence control holds; evidence is committed to a new `evidence/AT0/` folder with source and toolchain digests | Agent 5 runs; Agent 4 answers |
+| AT0-G7 scientific review | `AT0_RESULTS.md` merged with PASS, FAIL or INCONCLUSIVE per claim, limitations stated, and a decision on whether an AT-1 proposal is justified | Agent 6 |
 
-AT-0 V1 is complete when G0 to G6 all pass on one omega commit. A divergence between engine and oracle is first treated as an implementation fault until both are shown to follow the contract (Postulate v1.1, paper.tex line 211).
+AT-0 V1 is complete when G0 to G7 all pass on one omega commit. A divergence between engine and oracle is first treated as an implementation fault until both are shown to follow the contract (Postulate v1.1, paper.tex line 211).
 
 ## 7. Ownership matrix
 
-One owner per path. An agent edits only its own paths; reading anything is allowed. Owners claim their paths through Crumb before editing (`crumb` sniff, claim, whisper, close). Omega paths are relative to the omega repository root.
+Agent numbering, roles, paths and execution order follow the tracking issue aien-dev/omega#358, which is authoritative. One owner per path. An agent edits only its own paths; reading anything is allowed. Owners claim their paths through Crumb before editing (`crumb` sniff, claim, whisper, close). Omega paths are relative to the omega repository root; `at0/` below means `research/atemporal/at0/`.
 
-| Agent | Role | Owns (may create and edit) | Must not touch |
-|---|---|---|---|
-| 0 | Coordinator, contract owner | aien-architecture `docs/plans/atemporal/` (charter, contracts, freeze record, status page) | any omega path |
-| 1 | Contract codec and shared C API | `src/at0/codec/`, `src/at0/at0_api.h`, `tests/at0/codec/` | engine, oracle, cases, build, verifier |
-| 2 | Relational engine (Page-Wootters numerics) | `src/at0/engine/`, `tests/at0/engine/` | oracle sources and headers, codec, cases |
-| 3 | Independent oracle (Schrodinger reference and bounds) | `src/at0/oracle/`, `tests/at0/oracle/` | engine sources and headers (may not include or link them) |
-| 4 | Case corpus and hand derivations | `tests/at0/cases/` (`positive/`, `negative/`, `refuse/`, `README.md`) | all code |
-| 5 | Build, runner, gates and controls | `mk/at0.mk`, `tools/at0/`, `tests/at0/gates/`, `tests/at0/contract.lock` | engine and oracle internals (mutants are built from copies inside `tests/at0/gates/`) |
-| 6 | Independent verifier and evidence | `tools/at0-verify/`, `tests/at0/verify/`, `evidence/AT0/` (append-only) | everything under `src/at0/` (may not include or link it) |
+| Agent | Role | Order | Owns (may create and edit) | Must not touch |
+|---|---|---|---|---|
+| 0 | Coordinator, contract owner | serial, first | aien-architecture `docs/plans/atemporal/AT0_CHARTER.md`, `AT0_CASE_V1.md`, `AT0_RESULT_V1.md`, `AT0_FREEZE.md` | any omega path |
+| 1 | Mathematical specification | serial, after 0 | aien-architecture `docs/plans/atemporal/AT0_SPEC.md`: proofs of the constraint, POVM completeness and conditional probabilities; X, Y, Z tests that detect phase-sign errors; assumptions, idealizations, tolerances, invariants; the hand-derived case tables of section 6 | contracts, all code |
+| 2 | Independent reference oracle | parallel, after 1 | `at0/oracle/` (own parser, direct complex-matrix reference values with bounds, deterministic tests) | `at0/model/`, `at0/evaluator/` (no imports, calls or shared numerical routines) |
+| 3 | Candidate model engine | parallel, after 1 | `at0/model/` (own parser, explicit state, Hamiltonian, constraint, clock POVM, conditional density matrix, X/Y/Z probabilities; fail-closed on malformed input) | `at0/oracle/`, `at0/evaluator/` |
+| 4 | Independent adversarial evaluator | parallel, after 1 | `at0/evaluator/` (own parser; verifier; the case corpus `cases/positive/`, `cases/negative/`, `cases/refuse/` derived from `AT0_SPEC.md`; mutants built from copies inside `at0/evaluator/`) | `at0/model/`, `at0/oracle/` |
+| 5 | Integrator | serial, after 2 to 4 | `mk/at0.mk`, `at0/integration/` (runner, `make at0-check`, clean-checkout execution, receipts, source and toolchain digests, repeatability, qualification report), `evidence/AT0/` (append-only) | `at0/oracle/`, `at0/model/`, `at0/evaluator/` (read-only; request changes from their owners) |
+| 6 | Independent scientific reviewer | serial, after 5 | aien-architecture `docs/plans/atemporal/AT0_RESULTS.md` | all code, contracts |
 
-Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/`, `tools/`, `evidence/` or `.github/` paths, or any other repository, under this charter. `tests/at0/` and `src/at0/` parent directories and their crumbs are created by the first agent to need them and are shared only as containers.
+Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/`, `tools/`, `evidence/` or `.github/` paths, or any other repository, under this charter. `research/atemporal/` and `at0/` parent directories and their crumbs are created by the first agent to need them and are shared only as containers. Agents 2, 3 and 4 work on separate branches or worktrees with disjoint files; 0, 1, 5 and 6 are never run in parallel with their prerequisites.
 
 ## 8. Interface change rule
 
-1. The shared interfaces are: `AT0_CASE_V1` text, `AT0_RESULT_V1` text, and the C header `src/at0/at0_api.h` once Agent 0 freezes it as `AT0_API_V1`.
-2. A frozen interface is never edited, including typo fixes. Any change, however small, is a new version: new file (`AT0_CASE_V2.md`, `AT0_RESULT_V2.md`, `at0_api_v2.h`), new header line and domain tags (`omega.at0.case.v2` and so on), new entry in `AT0_FREEZE.md`. Old versions stay readable and their evidence stays valid under the version it was written against.
+1. The shared interfaces are exactly two: `AT0_CASE_V1` text and `AT0_RESULT_V1` text. The oracle, the model and the evaluator exchange nothing else: no shared C header, no shared library, no shared numerical routine. Each implements its own parser and proves it on the AT0_CASE_V1 section 6 example (gate G1).
+2. A frozen interface is never edited, including typo fixes. Any change, however small, is a new version: new file (`AT0_CASE_V2.md`, `AT0_RESULT_V2.md`), new header line and domain tags (`omega.at0.case.v2` and so on), new entry in `AT0_FREEZE.md`, and re-review of every consumer. Old versions stay readable and their evidence stays valid under the version it was written against.
 3. Only Agent 0 creates a new contract version. Other agents raise a contract question as a GitHub issue in aien-architecture with label `needs-triage`, naming the contract and section, and keep working against the frozen version.
 4. Private code inside one owner's paths may change freely.
-5. Every result names its `contract_commit`; every omega pull request touching AT-0 names the frozen contract commit it implements; `tests/at0/contract.lock` pins that commit and the contract file digests.
+5. Every result names its `contract_commit`; every omega pull request touching AT-0 names the frozen contract commit it implements; `research/atemporal/at0/integration/contract.lock` (Agent 5) pins that commit and the contract file digests.
 
 ## 9. Handoff instructions
 
-**Order.** Agents 4 and 6 start immediately: they need only the two text contracts. Agent 1 starts immediately and first publishes a draft `src/at0/at0_api.h` (parsed case, values, reference values, engine and oracle entry points, status codes) for Agent 0 to freeze as `AT0_API_V1`. Agents 2, 3 and 5 start once `AT0_API_V1` is frozen. Agent 5 runs G4 and G5 when 1 to 4 have merged; Agent 6 runs G6 last.
+**Order** (omega#358). Agent 1 starts now: it needs only the merged charter and the two frozen contracts, and its `AT0_SPEC.md` is the input for everyone after it. Agents 2, 3 and 4 start in parallel once `AT0_SPEC.md` is merged. Agent 5 starts once 2, 3 and 4 have merged and runs G2, G4, G5 and G6. Agent 6 starts once Agent 5's qualification report is merged and runs G7. Every milestone (contract change, gate result, pull request opened or merged) is reported as a comment on omega#358.
 
 **Every agent:**
 1. Read this charter, `AT0_CASE_V1.md`, `AT0_RESULT_V1.md` and `AT0_FREEZE.md` at the frozen aien-architecture commit, and the Postulate v1.1 sections cited in section 2.
@@ -157,27 +158,29 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 
 | Agent | First deliverable | Done means |
 |---|---|---|
-| 1 | Case and result codec (parse, validate, emit, identities) and draft `at0_api.h` | AT0-G1 passes |
-| 2 | Engine: kernel projection, clock states, POVM residual, constraint residual, conditional probabilities, with stated `bound_kind` | engine unit tests pass; values for the section 6 example within its own bounds of the hand table |
-| 3 | Oracle: Schrodinger reference probabilities with `RIGOROUS` bounds if achievable, otherwise `ESTIMATED` stated plainly | AT0-G3 passes |
-| 4 | Case corpus covering every class in section 6, each with a hand derivation | every case file passes the codec; derivations reviewed by Agent 0 |
-| 5 | `mk/at0.mk`, runner `tools/at0/`, gates and controls | AT0-G2 passes; G4 and G5 runnable |
-| 6 | Independent verifier with its own parser and exact rational comparison | verifier agrees with hand-made result files, including deliberately wrong ones; then AT0-G6 |
+| 1 | `AT0_SPEC.md`: proofs, tolerances, invariants, and a hand-derived answer table for every case class in section 6 | merged; Agent 0 has checked the AT0_CASE_V1 section 6 example against it |
+| 2 | Oracle: Schrodinger reference probabilities with `RIGOROUS` bounds if achievable, otherwise `ESTIMATED` stated plainly; own parser | AT0-G1 for its parser; AT0-G3 passes |
+| 3 | Model: kernel projection, clock states, POVM residual, constraint residual, conditional probabilities, with stated `bound_kind`; own parser; fail-closed input handling | AT0-G1 for its parser; model unit tests pass; values for the section 6 example within its own bounds of the `AT0_SPEC.md` table |
+| 4 | Evaluator: own parser, verifier with exact rational comparison, full case corpus (positive, negative, refusal) with expected codes taken from `AT0_SPEC.md`, mutants and controls | AT0-G1 for its parser; verifier agrees with hand-made result files, including deliberately wrong ones |
+| 5 | `mk/at0.mk`, `make at0-check`, clean-checkout runner, receipts, evidence folder, qualification report | AT0-G2, G4, G5, G6 results recorded in `evidence/AT0/` and reported on omega#358 |
+| 6 | `AT0_RESULTS.md`: review of source and raw receipts; PASS, FAIL or INCONCLUSIVE per claim; limitations; AT-1 decision | AT0-G7 |
 
 ## 10. Discrepancies and open items
 
 - **"Milestone" wording.** The AT-0 brief calls AT-0 a research milestone. `doctrine/ROADMAP.md` owns milestone identifiers and does not list AT-0 (E13). This charter therefore treats AT-0 as a research program label. Registering it, or placing it under Physics Zero (M27 to M35), is a roadmap decision outside this charter.
 - **No complex type in Omega** (DIRAC-0 current state). AT-0 does not need one: it uses C11 `<complex.h>` inside its own isolated code and never touches the Omega language.
-- **`AT0_API_V1` does not exist yet.** It is frozen after Agent 1's draft; until then Agents 2, 3 and 5 wait.
+- **Oracle language.** omega#358 says the Agent 2 oracle is "preferably Python standard-library"; the standing project rule (no Python in any repo, build, CI or tooling) and section 3 of this charter say C11 only. This charter keeps C11 until Drake decides; whichever way it goes, the oracle must share no code with the model, which is the property that matters.
 - **Independent review.** The contracts were self-reviewed against the sources in section 2. An outside review before the first G1 run is recommended.
+- **Charter history.** The first merged charter (aien-architecture#174, `044c9d1`) numbered the agents and placed omega paths differently from omega#358; sections 6, 7, 9 and 11 were realigned to the issue in the following pull request. The two frozen contracts were not touched.
 
 ## 11. Status
 
 | Item | Status |
 |---|---|
 | Program AT-0 | NOT_RUN |
-| AT0_CASE_V1, AT0_RESULT_V1 | FROZEN on merge |
-| AT0_API_V1 | NOT_WRITTEN |
-| Gates AT0-G0 to AT0-G6 | NOT_RUN |
+| AT0_CASE_V1, AT0_RESULT_V1 | FROZEN (aien-architecture#174, `044c9d1`) |
+| AT0_SPEC.md (Agent 1) | NOT_WRITTEN |
+| AT0_RESULTS.md (Agent 6) | NOT_WRITTEN |
+| Gates AT0-G0 to AT0-G7 | NOT_RUN |
 | Code in omega | none |
 | Evidence | none |
