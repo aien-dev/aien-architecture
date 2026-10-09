@@ -1,10 +1,10 @@
 # AT0_SPEC: Mathematical contract for the AT-0 reference model
 
 **Status:** DRAFT for independent review. Not a frozen interface (charter section 8). No code implements it yet; program status is NOT_RUN.
-**Written:** 2026-10-09 by Agent 1 (mathematical correctness), against the charter and the frozen contracts at aien-architecture `044c9d1`.
+**Written:** 2026-10-09 by Agent 1 (mathematical correctness), against the frozen contracts at aien-architecture `044c9d1` and the amended charter at `d390939`.
 **Scope:** the minimal Page-Wootters-style model named in the AT-0 Agent 1 brief: a two-level clock, a two-level system, one stationary global state, and a finite covariant clock POVM. Everything here is derived by hand and checked numerically in a scratch C program (section 12); nothing here is a physical claim.
 
-**Reading guide.** Sections 1 to 6 are the mathematics (definitions, theorems, proofs). Sections 7 to 10 turn the mathematics into invariants, tolerances, negative controls and tests. Section 11 says which conclusions follow from the construction and which would need an experiment. Section 12 lists discrepancies and the mapping onto `AT0_CASE_V1`.
+**Reading guide.** Sections 1 to 6 are the mathematics (definitions, theorems, proofs). Sections 7 to 10 turn the mathematics into invariants, tolerances, negative controls and tests. Section 11 says which conclusions follow from the construction and which would need an experiment. Section 12 lists discrepancies and the mapping onto `AT0_CASE_V1`. Section 13 holds the hand-derived answer table for every case class of charter section 6.
 
 ## 0. Conventions
 
@@ -303,7 +303,7 @@ A passing AT-0 run is evidence that an implementation reproduces the mathematics
 
 **Discrepancies found while writing this specification (recorded, not resolved; resolution belongs to Agent 0 under charter section 8):**
 
-1. Charter section 7 lists `docs/plans/atemporal/` under Agent 0 and assigns Agent 1 the C codec. The AT-0 Agent 1 brief of 2026-10-09 assigns Agent 1 mathematical correctness and this single file. This file is added under the brief; the charter's ownership table should name it.
+1. RESOLVED. The charter at `044c9d1` listed `docs/plans/atemporal/` under Agent 0 and gave Agent 1 the C codec; the amended charter (aien-architecture#177, `d390939`) names Agent 1 the owner of this file and requires the hand-derived tables of section 13.
 2. The brief's reference model fixes the sign convention `H_S = diag(0, +omega)` (`hz < 0`); the frozen example uses `hz > 0`. Not a contradiction (Remark 5.2), but Agent 4's hand derivations must carry the sign of `<Y>` per case.
 3. Flipping the sign of `omega` inside the engine's Hamiltonians is not a negative control for the engine: the engine's values do not depend on `H_C` or `H_S` once `Psi` is fixed (Theorem 3). The brief's "Pauli Y must distinguish reversed phase evolution" is satisfied by N5 (engine conjugation bug) and N6 (oracle reversal), both of which Y detects and X does not. Found by the scratch run below.
 4. The brief's general `phi` is expressible in a V1 case only as `phi = -2 pi r / N` through `reference_clock_label r` (the conditional state is evolved by `t_k - t_r`). A general `phi` is an engine unit-test parameter in V1, not a case field.
@@ -337,3 +337,86 @@ observables PAULI_X,PAULI_Y,PAULI_Z
 ```
 
 Derivation of the mapping: the contract orders clock energies increasingly, so `|E_0> = |1>_C` (energy `-omega`) and `|E_1> = |0>_C` (energy `0`); its clock state `|t_k> = 2^{-1/2} sum_j exp(-2 pi i E_j k tau)|E_j> = (|0>_C + exp(2 pi i omega k tau)|1>_C)/sqrt2` equals `|theta_k>` with `theta_k = 2 pi omega k tau`, so `tau = 1/(N omega)`; the effect weight is `w = clock_dim / M = 2/N`; the kernel projection of `|t_0> (x) (|0>+|1>)` is `(|00> + |11>)/sqrt2` up to normalization, which is `|Psi>`; and the oracle's `exp(-i H_S (t_k - t_0))|X+>` with `t_k = 2 pi k tau` is `|psi_k>` of Theorem 3. Expected table for this block: `P(X+) = 1, 1/2, 0, 1/2`; `P(Y+) = 1/2, 0, 1/2, 1`; `P(Z+) = 1/2`; `p_k = 1/4` (contrast the frozen example's `P(Y+) = 1/2, 1, 1/2, 0`: opposite `hz`, opposite Y, as Remark 5.2 says).
+
+## 13. Hand-derived answer tables for the charter section 6 case classes
+
+These tables are the input for Agent 4's case files and for Agent 2's oracle calibration (gate G3). They cover the contract's general model, of which section 1 is the two-level instance. Every number was derived by hand as shown and reproduced by a second scratch C11 program implementing AT0_CASE_V1 section 3 literally (clock energies, Pauli `h`, kernel projection, covariant clock states, effects `F_k = w|t_k><t_k|`), with agreement to `1e-15` or better.
+
+### 13.1 General formulas (derived once, used by every row)
+
+Notation: clock energies `E_j` (`j < N`, strictly increasing), system eigenvalues `e_+ = h0 + |h|`, `e_- = h0 - |h|` with eigenvectors `|e_+>, |e_->`, components `c_s = <e_s|psi_0>`, readings `t_k = 2 pi k tau`, reference label `r`, `M` labels, weight `w`.
+
+- **Kernel.** `K = {(j, s) : E_j + e_s = 0}`. Because the `E_j` are distinct, each `s` is matched by at most one `j`, so `physical_state_kernel_dim = |K|` is `0`, `1` or `2`. When `|h| = 0` the two eigenvalues coincide and both share one clock energy; that degenerate case is excluded from these tables.
+- **Physical state.** `Psi = sum_K N^{-1/2} exp(-2 pi i E_j r tau) c_s |E_j>|e_s>`. `Psi = 0` exactly when every matched `c_s` is `0`. `||Psi||^2 = (1/N) sum_K |c_s|^2`.
+- **Conditional vector.** `phi_k = (<t_k| (x) I) Psi = (1/N) sum_K exp(-i e_s (t_k - t_r)) c_s |e_s> = (1/N) exp(-i H_S (t_k - t_r)) Pi_K psi_0`, where `Pi_K` projects onto the matched eigenvectors. Proof: `<t_k|E_j> = N^{-1/2} exp(+2 pi i E_j k tau)` and `E_j = -e_s` on `K`.
+- **Clock marginal.** `p_k = w ||phi_k||^2 / ||Psi||^2 = w / N` for every `k`, whenever `Psi != 0`, because the phases have modulus one and the matched eigenvectors are orthogonal. Hence `sum_k p_k = w M / N`, independent of the clock being well formed.
+- **Conditional probabilities.** Those of the normalized `exp(-i H_S (t_k - t_r)) Pi_K psi_0`. They equal the oracle's reference (which evolves `psi_0` itself) exactly when `Pi_K psi_0` is proportional to `psi_0`: full cover, or `psi_0` an eigenvector of `H_S`.
+- **POVM sum.** `sum_k F_k = (w/N) sum_{j,j'} S_{jj'} |E_j><E_j'|` with `S_{jj'} = sum_{k=0}^{M-1} exp(-2 pi i (E_j - E_j') k tau)`. Diagonal: `S = M`. Off-diagonal with gap `D = E_j - E_j'`: `S = M` if `D tau` is an integer; `S = 0` if `D tau M` is an integer and `D tau` is not; otherwise `S = (1 - exp(-2 pi i D tau M)) / (1 - exp(-2 pi i D tau))`. So `sum_k F_k = (w M / N) I` exactly when every gap satisfies the second condition, and the residual is then `|w M / N - 1| sqrt(N)`.
+- **Bloch rotation** (for tilted `h`): `exp(-i H_S t)` rotates the Bloch vector right-handedly about `n = h/|h|` by angle `alpha = 2 |h| t`; `r(alpha) = r cos(alpha) + (n x r) sin(alpha) + n (n . r)(1 - cos(alpha))`, and `P(A+) = (1 + r_A)/2`. Check against section 5: `h = (0,0,-omega/2)`, `r(0) = (1,0,0)` gives `r_Y = -sin(omega t)`.
+
+### 13.2 Positive classes
+
+**P1, the frozen example** (`N = 4`, `E = -3/2, -1/2, 1/2, 3/2`, `H_S = Z/2`, `psi_0 = |+>`, `r = 0`, `tau = 1/4`, `w = 1`, `M = 4`). Kernel `{(1, +), (2, -)}`, dimension 2, full cover. Gaps `D` in `{1, 2, 3}`: `D tau M = D` integer, `D tau = D/4` not integer, so `sum F_k = I` exactly. `t_k = k pi / 2`, Bloch vector `(cos t_k, sin t_k, 0)`.
+
+| k | p_k | P(X+) | P(Y+) | P(Z+) | expected |
+|---|---|---|---|---|---|
+| 0 | 1/4 | 1 | 1/2 | 1/2 | `PASS` |
+| 1 | 1/4 | 1/2 | 1 | 1/2 | |
+| 2 | 1/4 | 0 | 1/2 | 1/2 | |
+| 3 | 1/4 | 1/2 | 0 | 1/2 | |
+
+This agrees with the table in AT0_CASE_V1 section 6. Residuals: constraint `0`, POVM `0`, probability sum `1`. Codes: none.
+
+**P1b, other `N`, `M`, `tau`** (`N = 2`, `E = -1/2, 1/2`, `H_S = Z/2`, `psi_0 = |+>`, `r = 0`, `tau = 1/3`, `w = 2/3`, `M = 3`). Single gap `D = 1`: `D tau M = 1`, `D tau = 1/3`, so `sum F_k = I`. `t_k = 2 pi k / 3`.
+
+| k | p_k | P(X+) | P(Y+) | P(Z+) | expected |
+|---|---|---|---|---|---|
+| 0 | 1/3 | 1 | 1/2 | 1/2 | `PASS` |
+| 1 | 1/3 | 1/4 | (2 + sqrt3)/4 | 1/2 | |
+| 2 | 1/3 | 1/4 | (2 - sqrt3)/4 | 1/2 | |
+
+`(2 + sqrt3)/4` is about `0.9330127`; this row is the first with an irrational expected value, so it is compared numerically.
+
+**P1c, the section 1 reference model as a case** (section 12 block: `N = 2`, `E = -1, 0`, `h = (1/2, 0, 0, -1/2)`, `psi_0 = |+>`, `tau = 1/4`, `w = 1/2`, `M = 4`): `P(X+) = 1, 1/2, 0, 1/2`; `P(Y+) = 1/2, 0, 1/2, 1`; `P(Z+) = 1/2`; `p_k = 1/4`. Same X and Z as P1, opposite Y (Remark 5.2). `PASS`.
+
+**P2, nonzero `h0`, tilted `h` with rational norm** (`h0 = 1/10`, `hx = 3/10`, `hy = 0`, `hz = 2/5`; `|h| = 1/2`; `e_+ = 3/5`, `e_- = -2/5`; clock `N = 2`, `E = -3/5, 2/5`; `psi_0 = |0>`; `r = 0`; `tau = 1/4`; `w = 1/2`; `M = 4`). Kernel `{(0, +), (1, -)}`, full cover. Gap `D = 1`: `sum F_k = I`. `n = (3/5, 0, 4/5)`, `r(0) = (0, 0, 1)`, `alpha_k = 2 |h| t_k = k pi / 2`. `n . r = 4/5`, `n x r = (0, -3/5, 0)`, so `r(alpha) = (12/25 (1 - cos alpha), -3/5 sin alpha, cos alpha + 16/25 (1 - cos alpha))`.
+
+| k | alpha | Bloch vector | p_k | P(X+) | P(Y+) | P(Z+) | expected |
+|---|---|---|---|---|---|---|---|
+| 0 | 0 | (0, 0, 1) | 1/4 | 1/2 | 1/2 | 1 | `PASS` |
+| 1 | pi/2 | (12/25, -3/5, 16/25) | 1/4 | 37/50 | 1/5 | 41/50 | |
+| 2 | pi | (24/25, 0, 7/25) | 1/4 | 49/50 | 1/2 | 16/25 | |
+| 3 | 3pi/2 | (12/25, 3/5, 16/25) | 1/4 | 37/50 | 4/5 | 41/50 | |
+
+Every Bloch vector has unit norm (`144 + 225 + 256 = 625`; `576 + 0 + 49 = 625`), which is the purity check T6 in exact arithmetic. `h0` enters only through the clock energies that must cover `h0 +/- |h|`; it is a global phase in the dynamics. Codes: none.
+
+### 13.3 Negative classes (exact expected codes)
+
+| Class | Instance | Derivation | Expected codes (exact set) |
+|---|---|---|---|
+| N1 uncovered spectrum | P1 with `E = 1, 2, 3, 4` | No `E_j` equals `-1/2` or `+1/2`, so `K` is empty, `physical_state_kernel_dim 0`, `Psi = 0`. Check 3 fails. Checks 4 and 6 to 10 have no input and are `NOT_EVALUATED`. Check 5 still runs on the clock alone: gaps `1, 2, 3` with `tau = 1/4`, `M = 4` give `sum F_k = I`, so it passes. Caution: the charter's wording "clock energies all positive" is not sufficient; a positive energy equal to `+1/2` matches `e_- = -1/2` and gives class N2 instead. | `TRIVIAL_PHYSICAL_STATE` |
+| N2 half-covered spectrum | P1 with `E = 1/2, 3/2, 5/2, 7/2` | Only `E_0 = 1/2` matches `e_- = -1/2` (eigenvector `|1>`), kernel dimension 1, `Psi = (1/2)|E_0>|1>`, nonzero. Clock well formed (same gaps as P1), `p_k = 1/4`, sum `1`. Conditional state is `|1>` for every `k`: `P(X+) = 1/2`, `P(Y+) = 1/2`, `P(Z+) = 0`. Reference rotates: `P(X+) = 1, 1/2, 0, 1/2`; `P(Y+) = 1/2, 1, 1/2, 0`; `P(Z+) = 1/2`. Deviations: Z `1/2` on every label; X `1/2, 0, 1/2, 0`; Y `0, 1/2, 0, 1/2`. | `SCHRODINGER_DEVIATION_EXCEEDED` |
+| N3 broken clock | P1 with `tau = 1/3` (`M = 4`) | Gap `D = 3`: `D tau = 1` integer, `S = M = 4`. Gaps `1, 2`: `D tau M = 4/3, 8/3` not integers, `|S| = 1` (geometric sum of four cube roots of unity). Off-diagonal entries of `sum F_k`: `1/4` for the five pairs with `D = 1, 2` and `1` for the pair with `D = 3`, each twice; `povm_residual = sqrt(2 (5/16 + 1)) = sqrt(42)/4` about `1.6202`. `p_k = w/N = 1/4` regardless, sum `1`, conditional probabilities are those of `t_k = 2 pi k / 3`, which the reference uses too, so checks 6 to 10 pass. "Every code that follows" is therefore the empty set for a clock that is broken only in `tau`. | `POVM_NORMALIZATION_EXCEEDED` |
+| N4 wrong weight | P1 with `w = 1/2` | `sum F_k = (w M / N) I = I/2`, `povm_residual = (1/2) sqrt(4) = 1`. `p_k = w/N = 1/8`, sum `1/2`. Conditional probabilities unchanged (ratios), so check 10 passes; `p_k` within `[0, 1]`, so check 7 passes. In general check 7 also fails (`PROBABILITY_OUT_OF_RANGE`) exactly when `w > N`; and `CONDITIONAL_UNDEFINED` cannot occur in V1 because `w/N >= 1/(1048576 * 64)` exceeds any sensible `tol_zero_probability`. | `POVM_NORMALIZATION_EXCEEDED`, `PROBABILITY_SUM_EXCEEDED` |
+| N5 precision demand | P1 with `min_bound_kind RIGOROUS` run by an `ESTIMATED` engine | Check 1 fails; every other check is evaluated and passes as in P1. | `BOUND_KIND_INSUFFICIENT` |
+
+Each N case must carry `expected_failure_codes` equal to exactly the set shown, sorted bytewise; any extra code is a defect (AT0_RESULT_V1 section 5).
+
+### 13.4 Refusal classes (one defect per file, first failure in AT0_CASE_V1 section 4 order wins)
+
+| Class | Single defect in an otherwise valid P1 file | Code |
+|---|---|---|
+| R0 | a line removed, or a CRLF line ending | `CASE_PARSE_ERROR` |
+| R1 | `povm_tau_turns 2/8` | `CASE_NONCANONICAL` |
+| R2 | header `OMEGA-AT0-CASE v2` | `CASE_UNSUPPORTED_VERSION` |
+| R3 | `clock_dim 65` with 65 energies | `CASE_INVALID_PARAMETER` |
+| R4 | `system_hamiltonian_pauli 0/1,1/1,0/1,1/1` (`|h|^2 = 2`) | `CASE_IRRATIONAL_SPECTRUM` |
+| R5 | `case_id` with one hex digit changed | `CASE_ID_MISMATCH` |
+| R6 | `expected_outcome FAIL` with `expected_failure_codes none` | `CASE_INVALID_PARAMETER` |
+
+R3 and R6 share a code; the charter asks for one file per refusal code, so R0 to R5 give the six codes and R6 is an extra instance. Because validation stops at the first failure, a file with two defects reports only the earlier one; files must have exactly one.
+
+### 13.5 Contract notes arising from these derivations (for Agent 0)
+
+1. AT0_RESULT_V1 section 3 says how `constraint_residual` is written when the kernel is trivial (`undefined`) but not how `clock_probability`, `pauli` and label status lines are written when `Psi = 0` (N1). This specification expects `clock_probability` values `undefined` with bound `0@0`, every label `UNDEFINED`, and checks 6 to 10 `NOT_EVALUATED` with no `CONDITIONAL_UNDEFINED` code, so that N1 raises exactly `TRIVIAL_PHYSICAL_STATE`. A contract clarification or a V2 note should fix this reading.
+2. Charter section 6, class N1: "all positive" must be strengthened to "no clock energy equals the negative of any system eigenvalue".
