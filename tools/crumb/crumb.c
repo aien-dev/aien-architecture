@@ -898,6 +898,45 @@ static int ignored_subtree(const char *rel) {
     return 0;
 }
 static void reset_ignore(void) { for (size_t i = 0; i < g_nign; i++) free(g_ign[i]); free(g_ign); g_ign = NULL; g_nign = 0; }
+
+/* Traversal policy for compile/verify/status (issue sovereign-core#355). ONE function decides whether a directory
+ * takes part, and find_crumbs, the children list and the tracked-crumb pass all call it, so the three commands cannot
+ * disagree. A directory is excluded when it is (a) under a .crumbignore entry (D10), (b) a directory git itself
+ * ignores and that holds no tracked file (build output such as target/ listed in .gitignore), or (c) a conventional
+ * generated-output directory (target, node_modules, __pycache__) that holds no tracked file. A directory with any
+ * tracked file is real source and always takes part (except via .crumbignore), so no integrity check is weakened. */
+static char *shq(const char *s); static char *cap_cmd(const char *cmd, size_t *len);   /* defined with the compiler below */
+static char **g_trk; static size_t g_ntrk;    /* tracked paths (git ls-files) */
+static char **g_gign; static size_t g_ngign;  /* wholly untracked+ignored directories, "dir/" */
+static void policy_load(const char *top) {
+    for (size_t i = 0; i < g_ntrk; i++) free(g_trk[i]);
+    for (size_t i = 0; i < g_ngign; i++) free(g_gign[i]);
+    free(g_trk); free(g_gign); g_trk = NULL; g_gign = NULL; g_ntrk = g_ngign = 0;
+    char *tq = shq(top), cmd[PATH_MAX + 96]; size_t n; char *raw;
+    snprintf(cmd, sizeof cmd, "git -C %s ls-files -z 2>/dev/null", tq);
+    raw = cap_cmd(cmd, &n);
+    for (char *s = raw; s < raw + n; s += strlen(s) + 1) { g_trk = xrealloc(g_trk, (g_ntrk + 1) * sizeof *g_trk); g_trk[g_ntrk++] = xstrdup(s); }
+    snprintf(cmd, sizeof cmd, "git -C %s ls-files -z --others --ignored --exclude-standard --directory 2>/dev/null", tq);
+    raw = cap_cmd(cmd, &n);
+    for (char *s = raw; s < raw + n; s += strlen(s) + 1) {
+        size_t l = strlen(s); if (!l || s[l - 1] != '/') continue;   /* directories only */
+        g_gign = xrealloc(g_gign, (g_ngign + 1) * sizeof *g_gign); g_gign[g_ngign++] = xstrdup(s);
+    }
+}
+static int tracked_under(const char *rel) {
+    size_t n = strlen(rel);
+    for (size_t i = 0; i < g_ntrk; i++) if (!strncmp(g_trk[i], rel, n) && g_trk[i][n] == '/') return 1;
+    return 0;
+}
+static int skip_generated_dir(const char *rel) {   /* rel: repo-relative directory, no trailing slash */
+    if (ignored_subtree(rel)) return 1;
+    const char *b = strrchr(rel, '/'); b = b ? b + 1 : rel;
+    if (!strcmp(b, ".git")) return 1;
+    if (tracked_under(rel)) return 0;
+    size_t n = strlen(rel);
+    for (size_t i = 0; i < g_ngign; i++) if (strlen(g_gign[i]) == n + 1 && !strncmp(g_gign[i], rel, n)) return 1;
+    return !strcmp(b, "target") || !strcmp(b, "node_modules") || !strcmp(b, "__pycache__");
+}
 static Node *scan(const char *path, const char *rel, int isroot) {
     Node *n = xmalloc(sizeof *n); memset(n, 0, sizeof *n);
     n->path = xstrdup(path); n->rel = xstrdup(rel); n->name = xstrdup(base_of(path));
@@ -1715,7 +1754,7 @@ static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generate
     J *kids = jnew(JARR); Sha crs; sha_init(&crs);
     for (size_t i = 0; i < nn; i++) {
         char *kd = root ? xstrdup(names[i]) : pjoin(d, names[i]), *kc = pjoin(kd, ".crumb"), *kcf = pjoin(c->top, kc); struct stat sb;
-        if (ignored_subtree(kd)) continue;   /* D10 */
+        if (skip_generated_dir(kd)) continue;   /* D10 + #355: same policy as the walker */
         if (stat(kcf, &sb) || !S_ISREG(sb.st_mode)) continue;
         const char *kdig = dig_of(c, kd); char *kdig_own = NULL;
         if (!kdig) {   /* not compiled in this run: fall back to what the crumb says */
@@ -1761,11 +1800,11 @@ static void find_crumbs(const char *top, const char *rel, CDir **out, size_t *n,
         if (!strcmp(e->d_name, ".") || !strcmp(e->d_name, "..")) continue;
         char *r = *rel ? pjoin(rel, e->d_name) : xstrdup(e->d_name), *f = pjoin(top, r); struct stat st;
         if (lstat(f, &st) == 0) {
-            if (S_ISDIR(st.st_mode) && ignored_subtree(r)) { free(r); free(f); continue; }   /* D10 */
+            if (S_ISDIR(st.st_mode) && skip_generated_dir(r)) { free(r); free(f); continue; }   /* D10 + #355 */
             if (!strcmp(e->d_name, ".crumb") && !S_ISDIR(st.st_mode)) {
                 if (*n == *cap) { *cap = *cap ? *cap * 2 : 32; *out = xrealloc(*out, *cap * sizeof **out); }
                 (*out)[*n].d = *rel ? xstrdup(rel) : xstrdup("."); (*n)++;
-            } else if (S_ISDIR(st.st_mode) && strcmp(r, ".git")) find_crumbs(top, r, out, n, cap);
+            } else if (S_ISDIR(st.st_mode)) find_crumbs(top, r, out, n, cap);
         }
         free(r); free(f);
     }
@@ -1779,7 +1818,7 @@ static int compile_engine(char mode, const char *root, int quiet, int *total_out
     char *top = cap_cmd(cmd, NULL); chomp(top);
     if (!*top) die("crumb %s: not inside a git repository: %s", mode == 'c' ? "compile" : mode == 'v' ? "verify" : "status", root);
     c.top = top;
-    reset_ignore(); load_ignore(top);   /* D10: <root>/.crumbignore subtrees never participate */
+    reset_ignore(); load_ignore(top); policy_load(top);   /* D10: <root>/.crumbignore subtrees never participate */
     char *head = run_git(top, "rev-parse HEAD"); if (strlen(head) != 40) head = xstrdup("0000000000000000000000000000000000000000");
     if (head_out) strcpy(head_out, head);
     comp_load_files(&c);
