@@ -41,16 +41,29 @@ $GIT checkout -q -B "$B" "origin/$B" || { echo "checkout failed" >&2; exit 4; }
 
 rebasing() { [ -d "$($GIT rev-parse --git-path rebase-merge)" ] || [ -d "$($GIT rev-parse --git-path rebase-apply)" ]; }
 
+# Advance past the commit that was just resolved. `rebase --continue` (and --skip) also exit non-zero
+# when they stop at the NEXT commit's conflict; that is progress, not failure, so the loop must see it.
+# Returns 0 when the loop should look again, 1 on a real failure.
+advance() {
+  GIT_EDITOR=true $GIT rebase --continue >/dev/null 2>&1 && return 0
+  rebasing || return 0
+  [ -z "$($GIT diff --name-only --diff-filter=U)" ] || return 0
+  # A resolved commit that became empty cannot be continued; skip it.
+  if [ -z "$($GIT diff --cached --name-only)" ]; then
+    $GIT rebase --skip >/dev/null 2>&1 && return 0
+    rebasing || return 0
+    [ -z "$($GIT diff --name-only --diff-filter=U)" ] || return 0
+  fi
+  return 1
+}
+fail_rebase() { echo "rebase continue failed" >&2; $GIT status --short | head; $GIT rebase --abort; exit 4; }
+
 $GIT rebase -q origin/main >/dev/null 2>&1
 while rebasing; do
   C=$($GIT diff --name-only --diff-filter=U)
   if [ -z "$C" ]; then
-    GIT_EDITOR=true $GIT rebase --continue >/dev/null 2>&1 && continue
-    # A resolved commit that became empty cannot be continued; skip it.
-    if [ -z "$($GIT diff --cached --name-only)" ]; then
-      $GIT rebase --skip >/dev/null 2>&1 && continue
-    fi
-    echo "rebase continue failed" >&2; $GIT status --short | head; $GIT rebase --abort; exit 4
+    advance || fail_rebase
+    continue
   fi
   NONCRUMB=$(echo "$C" | grep -v '\.crumb$' || true)
   if [ -n "$NONCRUMB" ]; then
@@ -66,10 +79,7 @@ while rebasing; do
       $GIT rm -q -f -- "$f"
     fi
   done
-  GIT_EDITOR=true $GIT rebase --continue >/dev/null 2>&1 || {
-    if [ -z "$($GIT diff --cached --name-only)" ] && $GIT rebase --skip >/dev/null 2>&1; then continue; fi
-    echo "rebase continue failed" >&2; $GIT status --short | head; $GIT rebase --abort; exit 4
-  }
+  advance || fail_rebase
 done
 
 if $GIT ls-files '*.crumb' '**/.crumb' | grep -q .; then

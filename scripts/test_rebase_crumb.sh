@@ -156,5 +156,20 @@ check "t15 crumb is main's copy plus compile" test "$(cat "$W/.crumb")" = "$(pri
 check "t15 feat2 source change kept" test -f "$W/feat2.txt"
 check "t15 no rebase left in progress" test ! -d "$W/.git/rebase-merge"
 
+# 16 stacked branch: feat sits on a base branch (source commit + crumb commit); base is squash-merged into main
+mk t16
+( cd "$tmp/t16/w" && git checkout -q -B feat origin/main && echo b > base.txt && git add -A && git commit -q -m "base src" \
+  && echo basecrumb > .crumb && git add -A && git commit -q -m "crumb compile" \
+  && echo f3 > feat3.txt && git add -A && git commit -q -m "child src" \
+  && echo childcrumb > .crumb && git add -A && git commit -q -m "crumb compile" && git push -q -f origin feat )
+( cd "$tmp/t16/seed" && git checkout -q main && echo b > base.txt && echo squashcrumb > .crumb && git add -A && git commit -q -m "squash of base" && git push -q origin main )
+before=$(ohead)
+expect 0 "stacked branch after base squash rebases" "$W" feat
+check "t16 origin head moved" test "$(ohead)" != "$before"
+check "t16 base source not duplicated" test "$(git -C "$W" log --format=%s origin/main..HEAD | grep -c '^base src$')" = 0
+check "t16 child source kept" test -f "$W/feat3.txt"
+check "t16 last commit is fresh crumb compile" test "$(git -C "$W" log -1 --format=%s)" = "crumb compile (after rebase onto main)"
+check "t16 no old crumb compile commits left" test "$(git -C "$W" log --format=%s origin/main..HEAD | grep -c '^crumb compile$')" = 0
+
 echo "PASS $pass FAIL $bad"
 [ "$bad" -eq 0 ]
