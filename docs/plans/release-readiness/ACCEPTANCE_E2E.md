@@ -50,10 +50,10 @@ Output checks (used by the verifier, OBSERVED): `report.md` exists, UTF-8, first
 
 | run | machine | model path | counts as |
 |---|---|---|---|
-| RUN-1 | Spark, CPU-reference backend | the release model (default assumption: the CAND-4 model until Drake rules) | first measurement of E2 to E6 |
+| RUN-1 | Spark, CPU-reference backend | the internal model (Llama 3.2, CAND-4; Drake ruling 2 of 2026-10-10 keeps it internal-test only) | first measurement of E2 to E6 |
 | RUN-2 | Spark, GB10 through the native Omega engine, no CUDA, under a quiet hold | same | E3 with the accelerator backend line |
 | second-machine verdict | MacBook, verifier built from a clean checkout with `rustc` directly | n/a (verifier only) | E5 cross-machine agreement |
-| RUN-3 | Spark, installed from the release artifact into a clean user | same | E1 plus the whole chain |
+| RUN-3 | Spark, installed from the release artifact into a clean user | the qualified public model (Qwen3-4B-Instruct-2507 after a frozen qualification PASS, lane L10); a dry-run artifact with the internal model is RUN-3-internal and never a public-release claim | E1 plus the whole chain |
 
 Native AIENOS is NOT_RUN in v1 and is not a row here; v2 of this file adds it when NEXT-PHASE-3 step 5 closes.
 
