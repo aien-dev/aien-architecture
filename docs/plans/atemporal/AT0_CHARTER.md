@@ -3,7 +3,7 @@
 **NOT A MASTER PLAN.** `CURRENT_EXECUTION_PLAN.md` owns sequencing and `doctrine/ROADMAP.md` owns milestone identifiers and status (`PLAN_AUTHORITY.md`). AT-0 is a research program label, like DIRAC-0. It is not a registered roadmap milestone (section 10).
 
 **Program status: NOT_RUN.** No AT-0 code exists, no case has been executed, and no result exists. Every gate in section 6 is NOT_RUN.
-**Contract status:** `AT0_CASE_V1` and `AT0_RESULT_V1` are FROZEN on merge of the pull request that adds them (section 8, `AT0_FREEZE.md`).
+**Contract status:** `AT0_CASE_V1` and `AT0_RESULT_V1` FROZEN at aien-architecture#174 (`044c9d1`); `AT0_RESULT_V2` supersedes `AT0_RESULT_V1` and is FROZEN on merge of the pull request that adds it (section 8, `AT0_FREEZE.md`).
 **Written:** 2026-10-09 by Agent 0 (technical coordinator).
 **Snapshots inspected (GitHub default branches, 2026-10-09):** omega `19f73c7`, aien-architecture `27f3b71`, aien-sovereign-core `5b7861f`, physics `9f96f25`, physics0 `fe587d2`, aienos.com `cc389e3` (Atemporal AIEN Postulate v1.1 source).
 
@@ -45,10 +45,21 @@ Every decision below rests on code or files read at the snapshots above. "Line" 
 
 1. **Home.** AT-0 code lives in `aien-dev/omega` in new `at0` folders (section 7). Contracts, charter and status live here in `aien-architecture/docs/plans/atemporal/`.
 2. **Build.** One fragment `mk/at0.mk`, guarded by `ifndef AT0_MK`, defining only targets and variables prefixed `at0` or `AT0_`. It adds nothing to `SRCS`, `all`, `test`, `clean` or any existing target. Flags: `-std=c11 -Wall -Wextra -Werror -pedantic -O2 -D_POSIX_C_SOURCE=200809L`, link `-lm` only; a sanitizer build with `-O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all`. Interval code may add `-frounding-math`.
-3. **Isolation.** AT-0 objects link nothing from `physics/`, no GPU code, no `omegatool`, no estimation, DUAL or ANS objects. The only shared source is `src/sha256.c`. Compute objects (engine, oracle) contain no clock, random, file, process, socket or thread symbol.
+3. **Isolation.** AT-0 objects link nothing from `physics/`, no GPU code, no `omegatool`, no estimation, DUAL or ANS objects. The only shared source is `src/sha256.c` (C components only; the Rust oracle implements SHA-256 itself or avoids needing it). Compute objects (engine, oracle) contain no clock, random, file, process, socket or thread symbol beyond what reading the case file and writing the result file require, and that I/O lives in a thin outer layer, not in the compute code.
 4. **Execution.** Single-threaded CPU only, deterministic, no network, no external service, no Python, no GPU (`threads 1` in every result).
 5. **Evidence.** Each recorded run writes a new folder `evidence/AT0/<YYYYMMDDTHHMMSSZ>-<short omega commit>/` holding the case files, result files and a run log. Existing evidence is never modified (E10).
 6. **CI.** V1 adds no workflow. `make test` must be unaffected. Wiring AT-0 into CI is a later, separate pull request.
+7. **Agent 2 oracle language: Rust (Drake's ruling, Option 3, 2026-10-09; relayed by the session-observer-audit session and recorded on omega#358).** The ruling, verbatim:
+   1. Agent 2 uses Rust, confined to `omega/research/atemporal/at0/oracle/`.
+   2. Rust standard library only; no external crates, no network downloads, no Python build steps.
+   3. Quantum calculations implemented independently with explicit complex-number and matrix operations; no shared math routines, code or numerical libraries with Agent 3's C11 engine.
+   4. Independently parse and validate the frozen AT0_CASE_V1 and AT0_RESULT_V1 interfaces; verify the published known-answer examples.
+   5. Test the oracle against the mathematical specification: X/Y/Z probabilities, phase-sign controls, normalization, dephasing.
+   6. Pin the Rust compiler version and build flags in the evidence; reproducible execution from a clean checkout.
+   7. Agent 0 updates the charter for Agent 2 only and records this on #358; V1 contracts unchanged.
+   8. Agents 3 and 4 keep their existing boundaries; production Omega untouched.
+
+   Also ruled: the Rust oracle must satisfy the applicable isolation gates; any C-specific symbol-isolation check must be adapted and independently verified for Rust, never silently skipped. This is not authorization for a larger Rust framework: the oracle stays small, self-contained and purpose-built. Everything else in this charter (items 1 to 6 above, the C11 rules for Agents 3, 4 and 5, the no-Python rule) is unchanged. The oracle is built from `mk/at0.mk` by a direct `rustc` invocation with pinned flags (no package manager, no lockfile, no `[dependencies]`); Agent 5 records `rustc --version --verbose` and the exact flags in `evidence/AT0/`.
 
 ## 4. Serialization and identity policy
 
@@ -60,7 +71,7 @@ Every decision below rests on code or files read at the snapshots above. "Line" 
 - **Canonical text.** ASCII, LF, fixed line order, fixed key set, single spaces, canonical number forms; anything else is refused, never repaired.
 - **Hashes are evidence of equality, not its definition** (Postulate v1.1, paper.tex line 197).
 
-Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 to 7.
+Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V2.md` sections 0 to 7.
 
 ## 5. Reuse and dependencies
 
@@ -76,9 +87,10 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 | Evidence immutability | omega `.github/workflows/evidence-immutable.yml` | Already covers `evidence/AT0/` with no change (E10). |
 | Crumb tooling | `crumb` CLI; `crumb.yml` CI in omega and aien-architecture | Every new directory gets compiled crumbs; compiling is the last step before push. |
 | Host tools | `gcc`, `make`, `nm`, `sha256sum` | Build, isolation checks, digest cross-checks. |
-| C11 standard library | `<complex.h>`, `<fenv.h>`, `<math.h>`, `<stdint.h>` | Complex arithmetic, rounding control for interval bounds. |
+| C11 standard library | `<complex.h>`, `<fenv.h>`, `<math.h>`, `<stdint.h>` | Complex arithmetic, rounding control for interval bounds (Agents 3, 4, 5). |
+| Rust standard library | `std` only, pinned `rustc` | Agent 2 oracle (section 3 item 7): explicit complex and matrix arithmetic written in the oracle itself; no crates. |
 
-**Not used:** omega `omegatool` and its `SRCS`; the `physics` repo and GB10 GPU code; CUDA, MAX, Mojo; Python anywhere (AIEN rule); any network service or model; external numeric libraries (GMP, MPFR, LAPACK, Eigen); aien-sovereign-core crates (E16); `aien-sealed` (AT-0 has no hidden answers, so nothing is sealed and no agent reads that repo).
+**Not used:** omega `omegatool` and its `SRCS`; the `physics` repo and GB10 GPU code; CUDA, MAX, Mojo; Python anywhere (AIEN rule); any network service or model; external numeric libraries (GMP, MPFR, LAPACK, Eigen); external Rust crates, crates.io or any package download, `cargo` dependency resolution; aien-sovereign-core crates (E16); `aien-sealed` (AT-0 has no hidden answers, so nothing is sealed and no agent reads that repo).
 
 ## 6. Cases and gates
 
@@ -88,7 +100,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 |---|---|---|
 | P1 ideal clock, full cover | the AT0_CASE_V1 section 6 example; also other N, M, `h`, `tau` | `PASS` |
 | P2 nonzero `h0`, tilted `h` with rational norm (for example `hx = 3/10, hz = 2/5`) | clock energies chosen to cover `h0 +/- |h|` | `PASS` |
-| N1 uncovered spectrum | clock energies all positive, system eigenvalues `+/- 1/2` | `FAIL TRIVIAL_PHYSICAL_STATE` |
+| N1 uncovered spectrum | no clock energy equals the negative of any system eigenvalue (for eigenvalues `+/- 1/2`: no clock energy in `{+1/2, -1/2}`), so the kernel is empty | `FAIL TRIVIAL_PHYSICAL_STATE` |
 | N2 half-covered spectrum | only one system eigenvalue matched | `FAIL SCHRODINGER_DEVIATION_EXCEEDED` |
 | N3 broken clock | `tau` with `D tau M` not an integer for some energy gap `D` | `FAIL` with `POVM_NORMALIZATION_EXCEEDED` plus every code that follows (derived by hand) |
 | N4 wrong weight | `w != N / M` | `FAIL` with `POVM_NORMALIZATION_EXCEEDED`, `PROBABILITY_SUM_EXCEEDED` (and any other derived code) |
@@ -108,7 +120,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V1.md` sections 1 t
 |---|---|---|
 | AT0-G0 contract freeze | this charter and both contracts merged; `AT0_FREEZE.md` digests match the merged files; `AT0_SPEC.md` merged | Agents 0, 1 |
 | AT0-G1 codec conformance | each of the oracle, the model and the evaluator parses and re-emits the AT0_CASE_V1 section 6 example byte for byte and reproduces its published digests; every refusal case gives its exact code; C code clean under ASan/UBSan | Agents 2, 3, 4 (each for its own parser) |
-| AT0-G2 isolation | symbol check passes on model objects and fails on the hidden-clock mutant; `mk/at0.mk` builds with `PHYSICS_DIR=/nonexistent PHYSICS_LOCK_CHECK=0`; `make -n all` and `make -n test` print the same commands with and without `mk/at0.mk` | Agent 5 |
+| AT0-G2 isolation | symbol check passes on model objects and fails on the hidden-clock mutant; the same check, adapted for Rust (`nm` on the oracle's compiled objects for clock, random, socket, process and thread symbols outside the thin I/O layer; build log proves `std` only and no crate) passes on the oracle and fails on a Rust hidden-clock mutant, and the adaptation is verified independently by Agent 4, never skipped; `mk/at0.mk` builds with `PHYSICS_DIR=/nonexistent PHYSICS_LOCK_CHECK=0`; `make -n all` and `make -n test` print the same commands with and without `mk/at0.mk` | Agent 5 |
 | AT0-G3 oracle calibration | the oracle reproduces the `AT0_SPEC.md` hand tables within its stated bounds on all Pauli values and clock probabilities; oracle shares no source, object or numerical routine with the model | Agent 2 |
 | AT0-G4 positive arm | every P case: `outcome PASS`, `expectation_met YES` | Agent 5 runs; Agent 3 answers |
 | AT0-G5 negative arm | every N case: `outcome FAIL` with exactly its expected codes, `expectation_met YES`; the axis-swap and hidden-clock mutants are caught | Agent 5 runs; Agent 4 answers |
@@ -125,7 +137,7 @@ Agent numbering, roles, paths and execution order follow the tracking issue aien
 |---|---|---|---|---|
 | 0 | Coordinator, contract owner | serial, first | aien-architecture `docs/plans/atemporal/AT0_CHARTER.md`, `AT0_CASE_V1.md`, `AT0_RESULT_V1.md`, `AT0_FREEZE.md` | any omega path |
 | 1 | Mathematical specification | serial, after 0 | aien-architecture `docs/plans/atemporal/AT0_SPEC.md`: proofs of the constraint, POVM completeness and conditional probabilities; X, Y, Z tests that detect phase-sign errors; assumptions, idealizations, tolerances, invariants; the hand-derived case tables of section 6 | contracts, all code |
-| 2 | Independent reference oracle | parallel, after 1 | `at0/oracle/` (own parser, direct complex-matrix reference values with bounds, deterministic tests) | `at0/model/`, `at0/evaluator/` (no imports, calls or shared numerical routines) |
+| 2 | Independent reference oracle | parallel, after 1 | `at0/oracle/` (Rust, `std` only, section 3 item 7; own parser and validator for both contracts; explicit complex-matrix reference values with bounds; deterministic tests for X/Y/Z probabilities, phase-sign controls, normalization and dephasing) | `at0/model/`, `at0/evaluator/` (no imports, calls or shared numerical routines) |
 | 3 | Candidate model engine | parallel, after 1 | `at0/model/` (own parser, explicit state, Hamiltonian, constraint, clock POVM, conditional density matrix, X/Y/Z probabilities; fail-closed on malformed input) | `at0/oracle/`, `at0/evaluator/` |
 | 4 | Independent adversarial evaluator | parallel, after 1 | `at0/evaluator/` (own parser; verifier; the case corpus `cases/positive/`, `cases/negative/`, `cases/refuse/` derived from `AT0_SPEC.md`; mutants built from copies inside `at0/evaluator/`) | `at0/model/`, `at0/oracle/` |
 | 5 | Integrator | serial, after 2 to 4 | `mk/at0.mk`, `at0/integration/` (runner, `make at0-check`, clean-checkout execution, receipts, source and toolchain digests, repeatability, qualification report), `evidence/AT0/` (append-only) | `at0/oracle/`, `at0/model/`, `at0/evaluator/` (read-only; request changes from their owners) |
@@ -135,11 +147,14 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 
 ## 8. Interface change rule
 
-1. The shared interfaces are exactly two: `AT0_CASE_V1` text and `AT0_RESULT_V1` text. The oracle, the model and the evaluator exchange nothing else: no shared C header, no shared library, no shared numerical routine. Each implements its own parser and proves it on the AT0_CASE_V1 section 6 example (gate G1).
+1. The shared interfaces are exactly two: `AT0_CASE_V1` text and `AT0_RESULT_V2` text (`AT0_RESULT_V1` stays frozen but is superseded; see `AT0_FREEZE.md`). The oracle, the model and the evaluator exchange nothing else: no shared C header, no shared library, no shared numerical routine. Each implements its own parser and proves it on the AT0_CASE_V1 section 6 example (gate G1).
 2. A frozen interface is never edited, including typo fixes. Any change, however small, is a new version: new file (`AT0_CASE_V2.md`, `AT0_RESULT_V2.md`), new header line and domain tags (`omega.at0.case.v2` and so on), new entry in `AT0_FREEZE.md`, and re-review of every consumer. Old versions stay readable and their evidence stays valid under the version it was written against.
 3. Only Agent 0 creates a new contract version. Other agents raise a contract question as a GitHub issue in aien-architecture with label `needs-triage`, naming the contract and section, and keep working against the frozen version.
 4. Private code inside one owner's paths may change freely.
 5. Every result names its `contract_commit`; every omega pull request touching AT-0 names the frozen contract commit it implements; `research/atemporal/at0/integration/contract.lock` (Agent 5) pins that commit and the contract file digests.
+6. Component outputs are not interfaces. What the engine or the oracle writes for the runner (for example the engine's `OMEGA-AT0-ENGINE v1` block, or an oracle-written full result record marked `build_cc oracle ...`) is a private output of its owner, versioned by that owner. Its value lines must be byte-valid `AT0_RESULT_V2` values-block grammar, the runner (Agent 5) alone assembles the full result file, and the evaluator verifies full result files only (ruled on omega issue 358, 2026-10-09).
+7. A contract reading is not a contract change. When two implementations read frozen text differently, Agent 0 rules on the tracking issue against the frozen text, the losing implementation changes, and the ruling is recorded here. Rulings so far: (a) `AT0_RESULT_V2` checks 7, 8 and 10 are evaluated per input, on the DEFINED labels; `NOT_EVALUATED` only when an earlier check removed every input; a `pauli` line carrying `undefined` is not a written probability. (b) Shape before range: a token that violates the `AT0_CASE_V1` section 1 grammar (a fixed literal such as `model_family`, an enumeration such as `control_kind`, or a repeated block whose count does not match) is a step 1 refusal, `CASE_PARSE_ERROR`; `CASE_INVALID_PARAMETER` is reserved for the ranges and fixed values that section 3 states; `CASE_NONCANONICAL` is for a token that parses but is not canonical, decided after the whole shape pass.
+8. A reading that cannot be settled from the frozen text is a gap, and a gap is a new version (item 2), as `AT0_RESULT_V2` was for the trivial kernel.
 
 ## 9. Handoff instructions
 
@@ -150,7 +165,7 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 2. Start from current omega `origin/main`; pin the commit in your notes.
 3. Sniff and claim your paths with Crumb; whisper findings; compile crumbs as the last step before pushing; close the claim after the pull request.
 4. Branch `at0/agent<N>-<slug>`, one pull request per finishable cut into omega `main`. The pull request body names the frozen contract commit, the gate it serves, the commands run and their results.
-5. Plain C11 under section 3 rules. No Python, no GPU, no network, no new dependencies.
+5. Plain C11 under section 3 rules; Agent 2 only: Rust, standard library only, under section 3 item 7. No Python, no GPU, no network, no new dependencies.
 6. Never edit outside your paths, never edit a contract, never rewrite evidence. If you need any of those, stop and raise it (section 8 step 3).
 7. Report back: what was inspected, what changed, which tests ran with pass/fail, and anything UNKNOWN stated as such.
 
@@ -159,7 +174,7 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 | Agent | First deliverable | Done means |
 |---|---|---|
 | 1 | `AT0_SPEC.md`: proofs, tolerances, invariants, and a hand-derived answer table for every case class in section 6 | merged; Agent 0 has checked the AT0_CASE_V1 section 6 example against it |
-| 2 | Oracle: Schrodinger reference probabilities with `RIGOROUS` bounds if achievable, otherwise `ESTIMATED` stated plainly; own parser | AT0-G1 for its parser; AT0-G3 passes |
+| 2 | Rust oracle (`std` only): Schrodinger reference probabilities with `RIGOROUS` bounds if achievable, otherwise `ESTIMATED` stated plainly; own parser and validator; tests per section 3 item 7.5; pinned `rustc` version and flags | AT0-G1 for its parser; AT0-G2 Rust adaptation; AT0-G3 passes |
 | 3 | Model: kernel projection, clock states, POVM residual, constraint residual, conditional probabilities, with stated `bound_kind`; own parser; fail-closed input handling | AT0-G1 for its parser; model unit tests pass; values for the section 6 example within its own bounds of the `AT0_SPEC.md` table |
 | 4 | Evaluator: own parser, verifier with exact rational comparison, full case corpus (positive, negative, refusal) with expected codes taken from `AT0_SPEC.md`, mutants and controls | AT0-G1 for its parser; verifier agrees with hand-made result files, including deliberately wrong ones |
 | 5 | `mk/at0.mk`, `make at0-check`, clean-checkout runner, receipts, evidence folder, qualification report | AT0-G2, G4, G5, G6 results recorded in `evidence/AT0/` and reported on omega#358 |
@@ -169,18 +184,20 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 
 - **"Milestone" wording.** The AT-0 brief calls AT-0 a research milestone. `doctrine/ROADMAP.md` owns milestone identifiers and does not list AT-0 (E13). This charter therefore treats AT-0 as a research program label. Registering it, or placing it under Physics Zero (M27 to M35), is a roadmap decision outside this charter.
 - **No complex type in Omega** (DIRAC-0 current state). AT-0 does not need one: it uses C11 `<complex.h>` inside its own isolated code and never touches the Omega language.
-- **Oracle language.** omega#358 says the Agent 2 oracle is "preferably Python standard-library"; the standing project rule (no Python in any repo, build, CI or tooling) and section 3 of this charter say C11 only. This charter keeps C11 until Drake decides; whichever way it goes, the oracle must share no code with the model, which is the property that matters.
+- **Oracle language: DECIDED.** omega#358 originally said "preferably Python standard-library"; the no-Python rule and this charter said C11. Drake ruled Option 3, Rust, on 2026-10-09 (section 3 item 7). The property that matters, no shared code or numerical routine between oracle and model, is now also guaranteed by the language boundary.
 - **Independent review.** The contracts were self-reviewed against the sources in section 2. An outside review before the first G1 run is recommended.
 - **Charter history.** The first merged charter (aien-architecture#174, `044c9d1`) numbered the agents and placed omega paths differently from omega#358; sections 6, 7, 9 and 11 were realigned to the issue in the following pull request. The two frozen contracts were not touched.
+- **AT0_RESULT_V2 (2026-10-09).** Agent 1 found that AT0_RESULT_V1 does not say how `label` and `clock_probability` lines are written when the kernel is empty, and that the charter's N1 example ("all positive clock energies") did not guarantee an empty kernel. The first is a shared-interface gap and became `AT0_RESULT_V2.md` under section 8 (V1 stays frozen, no evidence was ever written under it; `case_contract` stays `AT0_CASE_V1`); the second was a charter wording fix in section 6. Ruling on omega#358. Section 3 item 7 quotes Drake's ruling verbatim and therefore still says `AT0_RESULT_V1`; read it as the current result contract.
 
 ## 11. Status
 
 | Item | Status |
 |---|---|
-| Program AT-0 | NOT_RUN |
-| AT0_CASE_V1, AT0_RESULT_V1 | FROZEN (aien-architecture#174, `044c9d1`) |
-| AT0_SPEC.md (Agent 1) | NOT_WRITTEN |
-| AT0_RESULTS.md (Agent 6) | NOT_WRITTEN |
-| Gates AT0-G0 to AT0-G7 | NOT_RUN |
-| Code in omega | none |
-| Evidence | none |
+| Program AT-0 | REVIEWED (2026-10-10): software conformance PASS on the tested classes; blinded qualification INCONCLUSIVE (UNISOLATED); physical claims NOT TESTED; AT-1 justified as a software and model step only |
+| AT0_CASE_V1, AT0_RESULT_V1 | FROZEN (aien-architecture#174, `044c9d1`); AT0_RESULT_V1 superseded by V2 |
+| AT0_RESULT_V2 | FROZEN (aien-architecture#180 `c7a7181`, freeze row #181 `fe86e43`); the current result contract |
+| AT0_SPEC.md (Agent 1) | MERGED (aien-architecture#176, `68f47e2`) |
+| AT0_RESULTS.md (Agent 6) | MERGED (aien-architecture#182, `21119a9`) |
+| Gates AT0-G0 to AT0-G7 | G0 to G6 PASS on the third run (omega#370 `bacc4b6`); G7 done by AT0_RESULTS.md; limits stated there |
+| Code in omega | `research/atemporal/at0/{oracle,model,evaluator,integration}` + `mk/at0.mk` (omega#359 `f08faa4`, #360 `84fd7ab`, #362 `216b817`, #363, #364, #365, #366, #367, #368, #369, #370) |
+| Evidence | `evidence/AT0/20261009T234832Z-a4ff532`, `20261010T003353Z-aaa2474`, `20261010T005447Z-712469d` (graded); hidden run `evaluator/results/hidden-run-bff4a428/` |
