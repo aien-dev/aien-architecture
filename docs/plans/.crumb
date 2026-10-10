@@ -42,19 +42,19 @@
       "children": [
         {
           "digest": "f84222360555f2020bb3600a9117850be252c82e616fa05e5578648e1215bc2b",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "analog-realization",
           "purpose": "Directory docs/plans/analog-realization. Purpose not yet described by a human."
         },
         {
           "digest": "eecb93fc776fe3c4d7f45f1755dc77d89cf4fb422e6542c8a6edb944f605a968",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "arena-x",
           "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
         },
         {
-          "digest": "11b7c20f2f5614e1f8a623d5fbec7d0a9bc5579075033da7e3422334cf9503e0",
-          "last_commit": "fd0612f",
+          "digest": "e3da24a5d37010d05f664b01c6ded1ca3ca982b74c27f397646a113aba4b97f5",
+          "last_commit": "16f108b",
           "name": "atemporal",
           "purpose": "AT-0 Clock-Free Universe research program: charter, frozen AT0_CASE_V1 and AT0_RESULT_V1 contrac"
         },
@@ -66,19 +66,19 @@
         },
         {
           "digest": "c0418daf92c5a7547db1d87af95d6de1936c4a632db812c3f66168b670dbef6c",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "dirac",
           "purpose": "Directory docs/plans/dirac. Purpose not yet described by a human."
         },
         {
           "digest": "694d1efaa7edd1dbbf4e2e5adb8a3942bd900ba5b7996e42f8788d5ac85c517d",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "discovery",
           "purpose": "Directory docs/plans/discovery. Purpose not yet described by a human."
         },
         {
           "digest": "f5e2891d09b853edee1bc6c977d83a3669f2ef02aab6322ba5e0fd3c54835011",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "fabric",
           "purpose": "Directory docs/plans/fabric. Purpose not yet described by a human."
         },
@@ -90,7 +90,7 @@
         },
         {
           "digest": "46a34ede9b6d7db75132c88223b963f4ac24dcb2f4620b0b4b3cc420121fe1f6",
-          "last_commit": "db90e28",
+          "last_commit": "6c95697",
           "name": "physics-zero",
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         },
@@ -101,15 +101,15 @@
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:92891de00af6399e9cbcf6132af83548b7eea40dea4d0cb86be87de48e1f6470",
-      "compiled_at": "2026-10-10T01:44:50Z",
+      "children_root": "sha256:18d8c4d979aabfbe88bf0d3535be0128c949190c8312dcf3505c6ab18ad9899f",
+      "compiled_at": "2026-10-10T02:14:42Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:b558be733aaa40f90e1af0c230594a77c4b54bd1733ee8afcb0de6a5ecb88266",
+      "digest": "sha256:f57e07eb374342664ff138bcdd08403e612592c436b643ab4fcf836edcf43cdb",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 45,
-      "generated_at_commit": "fd0612f022820a299d845e9d327247d8fb3a16a7",
-      "source_tree": "sha256:e26cf1c11e72e506935b5999af9489214048af9b86d9b04a23e4d073278b3001"
+      "files": 46,
+      "generated_at_commit": "16f108b679ecabd03ee275d1bd62d474dc505773",
+      "source_tree": "sha256:267f0193599e217cc5d0f667bdddfbdd843f58d84853af0cf599b1a5e2c214f7"
     },
     "owner_lane": "",
     "provenance": {
