@@ -54,7 +54,7 @@
         },
         {
           "digest": "b16af30032697fc6f3d372aacb96f9b7009790b353e9b8285cc9dba562629851",
-          "last_commit": "84d80a0",
+          "last_commit": "44252e5",
           "name": "atemporal",
           "purpose": "AT-0 Clock-Free Universe research program: charter, frozen AT0_CASE_V1 and AT0_RESULT_V1 contrac"
         },
@@ -95,8 +95,8 @@
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         },
         {
-          "digest": "9e5478d76be069bd0313c593c335ebb689821f8ab00bb5740e59f8f6a22e7662",
-          "last_commit": "3c584a4",
+          "digest": "a85392c1c018b0f8272795529f2760e0fa36aa4ab6c1d822c9c74f71fb2a033e",
+          "last_commit": "0d4c608",
           "name": "release-readiness",
           "purpose": "Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan an"
         },
@@ -107,15 +107,15 @@
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:e644d3129897cfc18e4def5a6c01b48aeb5ba9828d64c1d94a0ca55226248ee6",
-      "compiled_at": "2026-10-10T14:19:40Z",
+      "children_root": "sha256:bdb9b3f6691a9b85bcd6df5793b446bd83509bbc39323546da6f377fbdd5780a",
+      "compiled_at": "2026-10-10T14:28:20Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:28cc801ccff215a4abb419c15c06b3264e4f9c3c4996fda625298536e26937d3",
+      "digest": "sha256:476ca8e3cf8257376bcf010981a621b3c129f0724014ce4a443ed0d27efc8f27",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 51,
-      "generated_at_commit": "84d80a03874c4f78efc320d6ddaa246eaf926655",
-      "source_tree": "sha256:365c0a64695f11cff02f2290f1e84dc785210177c8bbf5f39ad03a4f0a42b50b"
+      "generated_at_commit": "0d4c60879e1694595020d13678f804e30cd316d8",
+      "source_tree": "sha256:019723ddf7370d1c4b0ebf3ab2df673f7492b19cee703dc9f5bd94b3298ba9ed"
     },
     "owner_lane": "",
     "provenance": {
