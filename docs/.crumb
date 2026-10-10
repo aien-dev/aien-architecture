@@ -50,38 +50,38 @@
         },
         {
           "digest": "0f9f110974f880c3527ac4f9bb755157a9e830080c7aff363e33d187bc22edc4",
-          "last_commit": "874dc62",
+          "last_commit": "db90e28",
           "name": "errata",
           "purpose": "Directory docs/errata. Purpose not yet described by a human."
         },
         {
-          "digest": "0ae2e9610b808674247418417eb4d9f64f8c40109dcece6c5c3ada3eb72de367",
-          "last_commit": "4d552a1",
+          "digest": "f09ccdf98e5f37f658805bd6e94fb02a78118aced1a2c6a22d45a30a6822175e",
+          "last_commit": "52db993",
           "name": "plans",
           "purpose": "Directory docs/plans. Purpose not yet described by a human."
         },
         {
           "digest": "6301e5dfed47f354392e2b2b175845f1135e348b71fa91fa925dd2775947afa8",
-          "last_commit": "12c6a57",
+          "last_commit": "db90e28",
           "name": "research",
           "purpose": "Directory docs/research. Purpose not yet described by a human."
         },
         {
           "digest": "187ee5c915158c24bdbcd58f548fd605eb73e9b9329ce7f36adabfecf80cf627",
-          "last_commit": "874dc62",
+          "last_commit": "db90e28",
           "name": "specs",
           "purpose": "Directory docs/specs. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:d905d4f9606ff50ecc326e53725d4b2c8757d490b3b4c1da798a15ae9baea37a",
-      "compiled_at": "2026-10-09T22:50:34Z",
+      "children_root": "sha256:3c448cdec41c5a6f21e21ea1277a0d01d12c8ca300ff4e4cc73c5b0ed3345af8",
+      "compiled_at": "2026-10-10T01:03:59Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:56e459351c97c323f3a70232a33089f1667bbf65e2c479cbc40d60587958dacd",
+      "digest": "sha256:c21f1920615a55531e30f9787bc4ee5a9d662320cf7e2ae1dc0e5506cd684e91",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 136,
-      "generated_at_commit": "4d552a1cefb3ee8959a3afd1970716a013b3ffcc",
-      "source_tree": "sha256:00c98d013890c65a414310d62faa95a783749beb2cb5eba31560df886fbbbee1"
+      "files": 137,
+      "generated_at_commit": "52db99396a75a92da7f391e6d2da6b131035a736",
+      "source_tree": "sha256:09bd940122e8a04777fa506f792582e5a2d72e3610ee02646f48136b54995746"
     },
     "owner_lane": "",
     "provenance": {
