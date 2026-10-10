@@ -984,3 +984,11 @@ Rules that come with the order:
 Unblocked by this decision, within the rules above: C3-9 (named in the decision record; the Campaign 3 brief of 2026-10-08 describes it as the native continuity demo in QEMU) and the later cuts of aienos #286 (named by the coordinator session when it relayed the decision).
 
 Changed in this file to match: the phase diagram (section 3), the order note in Phase D (section 7), Lane 2 (section 16), gates 4 and 6 and the conflict note (section 17), and the NEXT-PHASE-3 header. The header now reads IN PROGRESS, QEMU and host only, as its status lines already recorded. No merged work is reverted and no milestone status is raised.
+
+## Addendum 2026-10-10: release-readiness program and the whole-system acceptance test
+
+Drake's decision of 2026-10-10: AT-1 is closed as REVIEWED, no AT-2 is chartered, and the principal effort is finishing AIEN as one usable system. The program runs issue-first on aien-dev/aien-architecture#190 with a finite plan under `docs/plans/release-readiness/` (`GAP_ASSESSMENT.md`, `INTEGRATION_PLAN.md`; NOT A MASTER PLAN).
+
+The stage "INTEGRATED AIEN + CORTEX + RSI" of section 3 gains a gate on the host path: WHOLE-SYSTEM-E2E (E1 install, E2 objective, E3 execute, E4 memory, E5 verify, E6 recover; receipts and negative controls per step; `docs/plans/release-readiness/ACCEPTANCE_E2E.md` once frozen). Status 2026-10-10: NOT_RUN. The native order of the 2026-10-08 (late) addendum is unchanged; the native target takes version 2 of the test after its step 5.
+
+Current baseline corrections (code and receipts, read 2026-10-10): ALLEN demo v3 PASS 10/10 (CPU) and v4-gb10 PASS 10/10 (GB10, native Omega engine, no CUDA) at aien-sovereign-core `docs/campaigns/allen-e2e/`; NEXT-PHASE-2 ACCEPTANCE-v4 PASS (`docs/campaigns/next-phase-2/VERDICT-v4.md`); approval desk required by default (aien-sovereign-core#342); golden path PASS on the GB10 at `fefce80` (aien-sovereign-core#94). No signed release of any current main exists; CAND-4 is the only candidate manifest. The ten discrepancies of `GAP_ASSESSMENT.md` section 4 stand until closed by lane L7 of the integration plan.
