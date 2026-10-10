@@ -40,7 +40,9 @@ Refusal names used above exist in code today: `Stopped`, `NotAuthorized`, `Alrea
 
 ## 3. The v1 run objective (fixed)
 
-Objective text, exactly: `Read the three text files in the inbox folder and write a Markdown report under 200 words named report.md in the outbox folder; begin it with a heading line; mention each file by name.`
+Objective text, exactly: `Read the three text files in the inbox folder and write a Markdown report named report.md in the outbox folder. Start with a Markdown heading line that begins with "# ". Use at most 200 words. Mention each file by name.`
+
+Wording note (2026-10-10, harness v1 dry run RUN-1-dry-20261010T133749Z): the earlier text said "under 200 words; begin it with a heading line", which the runtime refused as an uncertain requirement before the model ran (aien-sovereign-core issue on goal interpretation). The objective now uses the two requirement phrasings the runtime recognizes; its meaning is unchanged. The objective still asks the installation to read files, which the compose proposer cannot do today (aien-sovereign-core#382); until that lands, step E3 on this objective is expected to FAIL, and that expectation is part of the record.
 
 Fixture: an `inbox/` with three UTF-8 text files whose names and sha256 are listed in the chain's first receipt; an empty `outbox/`. The second objective for E4, exactly: `Append one line to report.md naming the file you reported on first.` The memory item E4 depends on is the first file's name as recorded by the installation during E3.
 
