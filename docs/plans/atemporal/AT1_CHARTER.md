@@ -95,11 +95,11 @@ Each agent reads this charter, the two contracts, `AT1_SPEC.md` once merged, and
 
 | Item | Status |
 |---|---|
-| Program AT-1 | NOT_RUN |
+| Program AT-1 | RUN: G0 REFERENCE, G1 to G6 PASS on the Spark (omega run 2 on `f2b9e33`, record frozen at `ff81466`, PR 377), G7 PASS on the MacBook (omega `a392c39`, PR 381); G8 in progress (Agent 6). PASS means spec conformance only |
 | AT1_CASE_V1, AT1_RESULT_V1 | FROZEN, PR 184 squash `cbe4c8e` (digests in `AT0_FREEZE.md`) |
 | AT1_SPEC.md (Agent 1) | MERGED, aien-architecture PR 185, squash `81047f5` (Codex gpt-6-astra review applied; Agent 0 spot check) |
-| AT1_RESULTS.md (Agent 6) | NOT_WRITTEN |
-| Agent 7 commitment | NOT_POSTED |
-| Gates AT1-G0 to AT1-G8 | NOT_RUN |
-| Code in omega | none |
-| Evidence | none |
+| AT1_RESULTS.md (Agent 6) | IN_PROGRESS (assigned 2026-10-10 after G7) |
+| Agent 7 commitment | POSTED before Agent 5 run 1 (omega#371, MANIFEST sha256 `63b2edf0...`, 21 cases), REVEALED and recomputed at G7 (`evidence/AT1/replication-macbook/20261010T051932Z-ff81466-mac/hidden-set-reveal/`) |
+| Gates AT1-G0 to AT1-G8 | G0 REFERENCE; G1 to G6 PASS (Spark); G7 PASS (MacBook, 21/21 hidden); G8 IN_PROGRESS. Defects D1 FIXED (`f2b9e33`), D2 informational, fix HELD (omega PR 380) until G8 |
+| Code in omega | `research/atemporal/at1/{oracle,model,evaluator,integration}` and `mk/at1.mk`, frozen at `ff81466` |
+| Evidence | omega `evidence/AT1/` (Agent 5 run folders) and `evidence/AT1/replication-macbook/` (Agent 7) |
