@@ -53,8 +53,8 @@
           "purpose": "Directory docs/plans/arena-x. Purpose not yet described by a human."
         },
         {
-          "digest": "b3a7195c9c3006e08fa0868b749a56214ea3b25f872a7d9b645be137e21f3b57",
-          "last_commit": "319b248",
+          "digest": "b16af30032697fc6f3d372aacb96f9b7009790b353e9b8285cc9dba562629851",
+          "last_commit": "84d80a0",
           "name": "atemporal",
           "purpose": "AT-0 Clock-Free Universe research program: charter, frozen AT0_CASE_V1 and AT0_RESULT_V1 contrac"
         },
@@ -96,7 +96,7 @@
         },
         {
           "digest": "9e5478d76be069bd0313c593c335ebb689821f8ab00bb5740e59f8f6a22e7662",
-          "last_commit": "085d354",
+          "last_commit": "3c584a4",
           "name": "release-readiness",
           "purpose": "Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan an"
         },
@@ -107,15 +107,15 @@
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:01928363dc6bffa4237f366990a5932aa886b42e971c1debbbc628f7e87506de",
-      "compiled_at": "2026-10-10T13:40:33Z",
+      "children_root": "sha256:e644d3129897cfc18e4def5a6c01b48aeb5ba9828d64c1d94a0ca55226248ee6",
+      "compiled_at": "2026-10-10T14:19:40Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:87e56411c45d7db35e9f488e7c7680a61a15e0f6a7c0752113331dbc787e8cc9",
+      "digest": "sha256:28cc801ccff215a4abb419c15c06b3264e4f9c3c4996fda625298536e26937d3",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 50,
-      "generated_at_commit": "085d35471fe3783523fe54a7f163b1956d374143",
-      "source_tree": "sha256:4c71f61af3ef699d91ed8cce50aa89c9df4f523deb07aa10b8de3a082794c5d7"
+      "files": 51,
+      "generated_at_commit": "84d80a03874c4f78efc320d6ddaa246eaf926655",
+      "source_tree": "sha256:365c0a64695f11cff02f2290f1e84dc785210177c8bbf5f39ad03a4f0a42b50b"
     },
     "owner_lane": "",
     "provenance": {
