@@ -152,6 +152,9 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 3. Only Agent 0 creates a new contract version. Other agents raise a contract question as a GitHub issue in aien-architecture with label `needs-triage`, naming the contract and section, and keep working against the frozen version.
 4. Private code inside one owner's paths may change freely.
 5. Every result names its `contract_commit`; every omega pull request touching AT-0 names the frozen contract commit it implements; `research/atemporal/at0/integration/contract.lock` (Agent 5) pins that commit and the contract file digests.
+6. Component outputs are not interfaces. What the engine or the oracle writes for the runner (for example the engine's `OMEGA-AT0-ENGINE v1` block, or an oracle-written full result record marked `build_cc oracle ...`) is a private output of its owner, versioned by that owner. Its value lines must be byte-valid `AT0_RESULT_V2` values-block grammar, the runner (Agent 5) alone assembles the full result file, and the evaluator verifies full result files only (ruled on omega issue 358, 2026-10-09).
+7. A contract reading is not a contract change. When two implementations read frozen text differently, Agent 0 rules on the tracking issue against the frozen text, the losing implementation changes, and the ruling is recorded here. Rulings so far: (a) `AT0_RESULT_V2` checks 7, 8 and 10 are evaluated per input, on the DEFINED labels; `NOT_EVALUATED` only when an earlier check removed every input; a `pauli` line carrying `undefined` is not a written probability. (b) Shape before range: a token that violates the `AT0_CASE_V1` section 1 grammar (a fixed literal such as `model_family`, an enumeration such as `control_kind`, or a repeated block whose count does not match) is a step 1 refusal, `CASE_PARSE_ERROR`; `CASE_INVALID_PARAMETER` is reserved for the ranges and fixed values that section 3 states; `CASE_NONCANONICAL` is for a token that parses but is not canonical, decided after the whole shape pass.
+8. A reading that cannot be settled from the frozen text is a gap, and a gap is a new version (item 2), as `AT0_RESULT_V2` was for the trivial kernel.
 
 ## 9. Handoff instructions
 
@@ -190,11 +193,11 @@ Nobody edits omega's `Makefile`, other `mk/` fragments, existing `src/`, `tests/
 
 | Item | Status |
 |---|---|
-| Program AT-0 | NOT_RUN |
+| Program AT-0 | REVIEWED (2026-10-10): software conformance PASS on the tested classes; blinded qualification INCONCLUSIVE (UNISOLATED); physical claims NOT TESTED; AT-1 justified as a software and model step only |
 | AT0_CASE_V1, AT0_RESULT_V1 | FROZEN (aien-architecture#174, `044c9d1`); AT0_RESULT_V1 superseded by V2 |
-| AT0_RESULT_V2 | FROZEN on merge of the pull request that adds it; the current result contract |
-| AT0_SPEC.md (Agent 1) | NOT_WRITTEN |
-| AT0_RESULTS.md (Agent 6) | NOT_WRITTEN |
-| Gates AT0-G0 to AT0-G7 | NOT_RUN |
-| Code in omega | none |
-| Evidence | none |
+| AT0_RESULT_V2 | FROZEN (aien-architecture#180 `c7a7181`, freeze row #181 `fe86e43`); the current result contract |
+| AT0_SPEC.md (Agent 1) | MERGED (aien-architecture#176, `68f47e2`) |
+| AT0_RESULTS.md (Agent 6) | MERGED (aien-architecture#182, `21119a9`) |
+| Gates AT0-G0 to AT0-G7 | G0 to G6 PASS on the third run (omega#370 `bacc4b6`); G7 done by AT0_RESULTS.md; limits stated there |
+| Code in omega | `research/atemporal/at0/{oracle,model,evaluator,integration}` + `mk/at0.mk` (omega#359 `f08faa4`, #360 `84fd7ab`, #362 `216b817`, #363, #364, #365, #366, #367, #368, #369, #370) |
+| Evidence | `evidence/AT0/20261009T234832Z-a4ff532`, `20261010T003353Z-aaa2474`, `20261010T005447Z-712469d` (graded); hidden run `evaluator/results/hidden-run-bff4a428/` |
