@@ -1,1 +1,19 @@
-{"name":"release-readiness","purpose":"Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan and the WHOLE-SYSTEM-E2E acceptance test for finishing AIEN as one usable system. NOT A MASTER PLAN.","schema_version":"1.0.0"}
+{
+  "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-10T13:03:32Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:5db8ed8317fa3b4706b0ffd6931cd122c1afb0a7048519689877135e20f76999",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 1,
+      "generated_at_commit": "c0416ed3f16bbaf29c42e955a27c5d4ac16a8af6",
+      "source_tree": "sha256:fbdb449ca83b65a80455c2e9edccacb9e34a98821f4320b9fae58a7ebbcfa978"
+    }
+  },
+  "name": "release-readiness",
+  "purpose": "Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan and the WHOLE-SYSTEM-E2E acceptance test for finishing AIEN as one usable system. NOT A MASTER PLAN.",
+  "schema_version": "1.0.0"
+}
