@@ -5,7 +5,7 @@ This file lists every frozen AT-0 interface with the SHA-256 of its file bytes. 
 Verify at any time from the aien-architecture root:
 
 ```
-sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1.md docs/plans/atemporal/AT0_RESULT_V2.md
+sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1.md docs/plans/atemporal/AT0_RESULT_V2.md docs/plans/atemporal/AT1_CASE_V1.md docs/plans/atemporal/AT1_RESULT_V1.md
 ```
 
 | Interface | File | SHA-256 of file bytes | Frozen |
@@ -14,6 +14,10 @@ sha256sum docs/plans/atemporal/AT0_CASE_V1.md docs/plans/atemporal/AT0_RESULT_V1
 | AT0_RESULT_V1 | `docs/plans/atemporal/AT0_RESULT_V1.md` | `dc52c5730dc52b155ab3c72afac9a26f8db01370804cf25fe6af23dcd0ed90a0` | aien-architecture PR 174, commit `044c9d1`; SUPERSEDED by AT0_RESULT_V2 on 2026-10-09 (trivial-kernel gap, omega issue 358); no evidence was written under it |
 | AT0_RESULT_V2 | `docs/plans/atemporal/AT0_RESULT_V2.md` | `bd0f9eb8cf3ef7226c3ea18c1c9fbd4db62e0c23a0481afa519830fc1f514b5e` | aien-architecture PR 180, commit `c7a7181`; the current result contract |
 | (no C header) | none | none | the two text contracts are the only shared interfaces (charter section 8); oracle, model and evaluator each carry their own parser |
+| AT1_CASE_V1 | `docs/plans/atemporal/AT1_CASE_V1.md` | `66471389399f5b6d412a5f7704a7026e7956724ebe721d37f7de1747c79f9dd9` | on merge of the pull request adding this file (AT-1, omega issue 371); worked example `case_id 890980a4...`, `acceptance_id d63246c3...`, file `76e282fe...` |
+| AT1_RESULT_V1 | `docs/plans/atemporal/AT1_RESULT_V1.md` | `e78f16cd51542207745ad70097f3cf7903dfa374c8f3dbc05b9aa0bc75465f79` | on merge of the pull request adding this file (AT-1); the AT-1 result contract |
+
+This record serves the whole atemporal line (AT-0, AT-1, ...); its file name is historical.
 
 Known-answer digests published inside AT0_CASE_V1 section 6 (computed with `sha256sum` over the exact byte rule of AT0_CASE_V1 section 5):
 
