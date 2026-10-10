@@ -95,8 +95,8 @@
           "purpose": "Directory docs/plans/physics-zero. Purpose not yet described by a human."
         },
         {
-          "digest": "ead855c26c9d8bde2e8e3bfd9288a3e1cf3c653a3377edf03da9875063c1ebe9",
-          "last_commit": "c211e3f",
+          "digest": "9e5478d76be069bd0313c593c335ebb689821f8ab00bb5740e59f8f6a22e7662",
+          "last_commit": "085d354",
           "name": "release-readiness",
           "purpose": "Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan an"
         },
@@ -107,15 +107,15 @@
           "purpose": "VAC (Verifiable Autonomous Computing) finite workstream plan. NOT A MASTER PLAN."
         }
       ],
-      "children_root": "sha256:981e5bfc0958cbf9f4000f353519d586e5161c28d73c6168849da31cc07a5a89",
-      "compiled_at": "2026-10-10T13:21:29Z",
+      "children_root": "sha256:01928363dc6bffa4237f366990a5932aa886b42e971c1debbbc628f7e87506de",
+      "compiled_at": "2026-10-10T13:40:33Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:9a3fd3020e196fa6138f388482e3260949c58b987808d5c00f13fb6b13ef2029",
+      "digest": "sha256:87e56411c45d7db35e9f488e7c7680a61a15e0f6a7c0752113331dbc787e8cc9",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 50,
-      "generated_at_commit": "c211e3f0af3be1553d403b576f9b7de556cddb42",
-      "source_tree": "sha256:10c7446a7f70e0ef9e1ae93f7dec55da2a111f12501db07290bdc1b35b581738"
+      "generated_at_commit": "085d35471fe3783523fe54a7f163b1956d374143",
+      "source_tree": "sha256:4c71f61af3ef699d91ed8cce50aa89c9df4f523deb07aa10b8de3a082794c5d7"
     },
     "owner_lane": "",
     "provenance": {
