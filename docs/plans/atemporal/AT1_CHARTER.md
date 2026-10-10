@@ -75,6 +75,12 @@ Order: 0, then 1, then 2, 3, 4 in parallel, then 5, then 7, then 6. Agent 7's co
 
 `AT0_CHARTER.md` section 8 applies word for word, with `AT1_CASE_V1` and `AT1_RESULT_V1` as the two shared interfaces. The three AT-0 readings (component outputs are not interfaces; per-input `NOT_EVALUATED`; shape before range) are inherited. A reading that cannot be settled from the frozen text is a new version.
 
+AT-1 readings recorded so far (ruled on omega#371, 2026-10-10, raised by `AT1_SPEC.md` section 13.6; none changes a value or an expected code):
+
+- (c) `AT1_RESULT_V1` section 1, "two reference line families" in the oracle-written-records paragraph is a stale count from AT-0. The runner splices every oracle family, every line whose key begins with `reference_` (`reference_label`, `reference_clock_probability`, `reference_ideal`, `reference_interacting`), in values-block order, and nothing else.
+- (d) In each version-bearing line the first token is the key and the rest is the value. An `AT0_CASE_V1` file given to an AT-1 tool is `CASE_PARSE_ERROR` (unknown key `OMEGA-AT0-CASE` on line 1); `OMEGA-AT1-CASE v2`, `domain omega.at1.case.v2`, `domain omega.at0.case.v1` or `contract AT1_CASE_V2` is `CASE_UNSUPPORTED_VERSION`.
+- (e) The shape pass compares the parsed integer value of an index token (`interaction_pauli`, `clock_label`) with its zero-based position; canonicality is decided after the whole shape pass. `01` at position 1 is `CASE_NONCANONICAL`; a token that does not parse as an integer, or a canonical token with the wrong value, is `CASE_PARSE_ERROR`.
+
 ## 9. Handoff
 
 Each agent reads this charter, the two contracts, `AT1_SPEC.md` once merged, and the AT-0 files named in section 2 before writing anything. Reports go to omega#371 at every milestone. Agent 5's first qualification report is what moves the program from NOT_RUN.
@@ -90,8 +96,8 @@ Each agent reads this charter, the two contracts, `AT1_SPEC.md` once merged, and
 | Item | Status |
 |---|---|
 | Program AT-1 | NOT_RUN |
-| AT1_CASE_V1, AT1_RESULT_V1 | FROZEN on merge of the pull request that adds them |
-| AT1_SPEC.md (Agent 1) | NOT_WRITTEN |
+| AT1_CASE_V1, AT1_RESULT_V1 | FROZEN, PR 184 squash `cbe4c8e` (digests in `AT0_FREEZE.md`) |
+| AT1_SPEC.md (Agent 1) | MERGED, aien-architecture PR 185, squash `81047f5` (Codex gpt-6-astra review applied; Agent 0 spot check) |
 | AT1_RESULTS.md (Agent 6) | NOT_WRITTEN |
 | Agent 7 commitment | NOT_POSTED |
 | Gates AT1-G0 to AT1-G8 | NOT_RUN |
