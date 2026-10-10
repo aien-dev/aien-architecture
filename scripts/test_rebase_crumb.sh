@@ -123,5 +123,38 @@ OUT=$(GIT="$tmp/bin/racegit" "$script" "$W" feat 2>&1); rc=$?
 if [ "$rc" = 4 ]; then ok; else no "lease violation exits 4 (rc=$rc): $OUT"; fi
 check "racer commit not overwritten" test "$(git -C "$O" log -1 --format=%s feat)" = "other"
 
+# 14 branch history already holds a crumb-only commit that conflicts with main's .crumb change
+mk t14
+( cd "$tmp/t14/w" && echo oldcompile > .crumb && git add -A && git commit -q -m "crumb compile" && git push -q origin feat )
+advance_main "$tmp/t14/seed" .crumb maincrumb
+advance_main "$tmp/t14/seed" main-only.txt m
+before=$(ohead)
+expect 0 "prior crumb-only commit rebases" "$W" feat
+check "t14 push reached origin" test "$(ohead)" = "$(git -C "$W" rev-parse HEAD)"
+check "t14 origin head moved" test "$(ohead)" != "$before"
+check "t14 rebased onto main" git -C "$W" merge-base --is-ancestor origin/main HEAD
+check "t14 old crumb-only commit dropped" test "$(git -C "$W" log --format=%s origin/main..HEAD | grep -c '^crumb compile$')" = 0
+check "t14 last commit is fresh crumb compile" test "$(git -C "$W" log -1 --format=%s)" = "crumb compile (after rebase onto main)"
+check "t14 crumb is main's copy plus compile" test "$(cat "$W/.crumb")" = "$(printf 'maincrumb\ncompiled')"
+check "t14 feat source change kept" test -f "$W/feat.txt"
+check "t14 no rebase left in progress" test ! -d "$W/.git/rebase-merge"
+
+# 15 two commits in a row conflict on .crumb (a source commit touching .crumb, then a crumb-only commit),
+#    so `rebase --continue` after the first resolution exits non-zero because it stops at the second conflict
+mk t15
+( cd "$tmp/t15/w" && mkdir -p docs && echo d0 > docs/.crumb && echo f2 > feat2.txt && echo srcside > .crumb && git add -A && git commit -q -m "feat2" \
+  && echo oc1 > .crumb && echo od1 > docs/.crumb && git add -A && git commit -q -m "crumb compile" \
+  && echo oc2 > .crumb && echo od2 > docs/.crumb && git add -A && git commit -q -m "crumb compile" && git push -q origin feat )
+( cd "$tmp/t15/seed" && git checkout -q main && mkdir -p docs && echo mdoc > docs/.crumb && echo maincrumb > .crumb && git add -A && git commit -q -m m1 && git push -q origin main )
+before=$(ohead)
+expect 0 "consecutive crumb conflicts rebase" "$W" feat
+check "t15 push reached origin" test "$(ohead)" = "$(git -C "$W" rev-parse HEAD)"
+check "t15 origin head moved" test "$(ohead)" != "$before"
+check "t15 no old crumb compile commits left" test "$(git -C "$W" log --format=%s origin/main..HEAD | grep -c '^crumb compile$')" = 0
+check "t15 last commit is fresh crumb compile" test "$(git -C "$W" log -1 --format=%s)" = "crumb compile (after rebase onto main)"
+check "t15 crumb is main's copy plus compile" test "$(cat "$W/.crumb")" = "$(printf 'maincrumb\ncompiled')"
+check "t15 feat2 source change kept" test -f "$W/feat2.txt"
+check "t15 no rebase left in progress" test ! -d "$W/.git/rebase-merge"
+
 echo "PASS $pass FAIL $bad"
 [ "$bad" -eq 0 ]
