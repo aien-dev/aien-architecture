@@ -1,0 +1,9 @@
+# Changed paths matching these globs need only the always-run set (.aien/always).
+# Everything else must be covered by a manifest's inputs or the commit is NOT_RUN.
+# Conservative. Doctrine and roadmap text is still checked on every commit because
+# ARCH-DOCTRINE and ARCH-QUALIFICATION-STATUS are in .aien/always. Read from the base ref.
+docs/**
+*.md
+LICENSE
+.gitignore
+REPOSITORY_TREE.txt

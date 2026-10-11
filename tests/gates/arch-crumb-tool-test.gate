@@ -1,0 +1,19 @@
+# tests/gates/arch-crumb-tool-test.gate
+# Mirrors hosted: crumb.yml 'Build and test the crumb tool' (make -C tools/crumb test; hosted job 15 s)
+gate: ARCH-CRUMB-TOOL-TEST
+manifest_version: 2
+owner: aien-architecture
+requires:
+  - host
+inputs:
+  - tools/crumb/
+  - tests/gates/
+run:
+  exec: tests/gates/run.sh
+  args: ["crumb-tool-test"]
+expects:
+  exit: 0
+  verdict: PASS
+timeout: 5m
+exactness: EXACT
+cache_scope: machine

@@ -1,0 +1,20 @@
+# tests/gates/arch-script-tests.gate
+# Mirrors hosted: offline tests of scripts/pr-gate.sh, rebase-crumb.sh, check_candidate.sh, check_candidate_pins.sh (not a hosted job)
+gate: ARCH-SCRIPT-TESTS
+manifest_version: 2
+owner: aien-architecture
+requires:
+  - host
+inputs:
+  - scripts/
+  - tests/gates/
+run:
+  exec: tests/gates/run.sh
+  args: ["script-tests"]
+expects:
+  exit: 0
+  observe: ["script_tests_run == 4"]
+  verdict: PASS
+timeout: 10m
+exactness: EXACT
+cache_scope: machine

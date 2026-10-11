@@ -1,0 +1,22 @@
+# tests/gates/arch-qualification-status.gate
+# Mirrors hosted: qualification-status.yml 'sh scripts/verify-r16-status.sh omega-evidence' (hosted job 10 s; needs an omega checkout as sibling ../omega)
+# cache: never because the omega evidence it reads is outside this repository.
+gate: ARCH-QUALIFICATION-STATUS
+manifest_version: 2
+owner: aien-architecture
+requires:
+  - host
+inputs:
+  - scripts/verify-r16-status.sh
+  - doctrine/ROADMAP.md
+  - tests/gates/
+run:
+  exec: tests/gates/run.sh
+  args: ["qualification-status"]
+expects:
+  exit: 0
+  verdict: PASS
+timeout: 5m
+exactness: EXACT
+cache_scope: machine
+cache: never

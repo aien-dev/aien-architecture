@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# tests/gates/run.sh: the one entry point for the local verification gates of aien-architecture.
+# Every step runs the SAME command as the hosted job it mirrors (.github/workflows/crumb.yml and
+# qualification-status.yml) or the repository's own offline scripts. Manifests under tests/gates/
+# name this script plus one step word, so no manifest needs shell expansion (ADR 0028 P6).
+set -euo pipefail
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$ROOT"
+step="${1:?usage: tests/gates/run.sh <step>}"
+obs() { printf 'AIEN-OBS %s %s\n' "$1" "$2"; }
+
+case "$step" in
+  crumb-verify)
+    # Hosted crumb.yml step "Crumbs must be exactly what the compiler produces now". The
+    # binary tools/crumb/crumb is gitignored (tools/crumb/.gitignore), so building it in
+    # place leaves the tree clean. Needs only a C11 compiler.
+    make -C tools/crumb crumb
+    ./tools/crumb/crumb verify .
+    ;;
+  crumb-tool-test)
+    # Hosted crumb.yml step "Build and test the crumb tool".
+    make -C tools/crumb test
+    ;;
+  qualification-status)
+    # Hosted qualification-status.yml checks out aien-dev/omega (default branch, unpinned)
+    # as omega-evidence and runs the script against it. Locally the sibling ../omega plays
+    # that role; its commit is recorded so the receipt says which evidence was read.
+    if [ ! -d ../omega/evidence ]; then
+      echo "run.sh: ../omega is missing; the hosted job checks out aien-dev/omega as omega-evidence" >&2
+      exit 3
+    fi
+    obs sibling_omega_commit "\"$(git -C ../omega rev-parse HEAD 2>/dev/null || echo unknown)\""
+    sh scripts/verify-r16-status.sh ../omega
+    ;;
+  doctrine)
+    # Repository script (aien-architecture#7): doctrine consistency, pure text, no network.
+    bash scripts/check_doctrine.sh "$ROOT"
+    ;;
+  script-tests)
+    # The offline tests of the repository's own operator scripts. Each builds temporary git
+    # repos and fake gh/crumb tools under mktemp; no network, no auth (see their headers).
+    for t in scripts/test_pr_gate.sh scripts/test_rebase_crumb.sh scripts/test_check_candidate.sh scripts/test_check_candidate_pins.sh; do
+      echo "== $t"
+      bash "$t"
+    done
+    obs script_tests_run 4
+    ;;
+  *)
+    echo "run.sh: unknown step '$step'" >&2
+    exit 2
+    ;;
+esac
