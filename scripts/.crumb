@@ -7,21 +7,21 @@
     "generated": {
       "children": [
         {
-          "digest": "803c3893ebea96968f39a514b54b58a574f5903ebe185b43e8ddfa938b30f7ea",
-          "last_commit": "0f11240",
+          "digest": "43d90e632cf726c80edde33297f9c52a1ae5e58f1d2e797a43e6b1fa7fe7080f",
+          "last_commit": "0e5e0cc",
           "name": "pipeline-proofs",
           "purpose": "Acceptance proofs 13-21 of the sovereign local pipeline (ADR 0033 amendment 2026-10-11): bash sc"
         }
       ],
-      "children_root": "sha256:5b89009b153faa0ea23cc00ff6bf572bca83be6bb6e42022d2b9a78329821c2b",
-      "compiled_at": "2026-10-11T16:21:36Z",
+      "children_root": "sha256:1013d9a0bda894cf988bba1f83569460bb169b4c635a6abec93601721d5fa0cb",
+      "compiled_at": "2026-10-11T16:36:23Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:8f2e6f212505e3a91f4fe12dba0fdf26c1fdb66a6c4ef126ebca921552f3404b",
+      "digest": "sha256:49cbeb77d72e03b36387a66b0c379073bc64cd12a4b7487be91f4810f4e89147",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 24,
-      "generated_at_commit": "0f11240583a8f5fd1ac5eab047fb42bc6e0258d7",
-      "source_tree": "sha256:598aeac1da97e689fbd74dd05e8a52b4d33d731a1027fcf19d7df7265bc149e0"
+      "generated_at_commit": "0e5e0cc616a8752a0e424f6db7c2d65a38b240e5",
+      "source_tree": "sha256:1a59a734ac4e380a284361d129708bcfecb503556f0b58db459bae8ebe78a4a9"
     },
     "owner_lane": "",
     "provenance": {

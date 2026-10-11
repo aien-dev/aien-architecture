@@ -16,7 +16,9 @@
 #      sorted keys). The compiler never writes these keys; `propose` writes only extensions.proposed.purpose.
 #  D6  last_commit per child uses pathspec ':!**/.crumb' so compile commits do not count as changes to the code.
 #  D7  Only directories that already hold a .crumb take part (crumb seed decides membership; this tool never creates
-#      directories' crumbs). Children = immediate subdirectories with a .crumb.
+#      directories' crumbs). Children = the NEAREST crumbed descendants: the walk descends through directories that
+#      hold no .crumb, so every crumb is reachable from the root digest (amended 2026-10-11, orphan crumbs); a deep
+#      child is named by its path relative to the parent crumb directory.
 #  D8  Evidence = tracked files under the directory whose path has a component named evidence or receipts, or that
 #      end in .receipt.json; evidence_root = sha256 of their blob ids in path order.
 #  D9  Output is written with jq -S (sorted keys) via tmp+rename, byte-stable, so `verify` can be an exact comparison.
@@ -59,6 +61,14 @@ enc() { if [ "$1" = "." ]; then echo _root; else printf "%s" "$1" | tr "/" "%"; 
 subtree() { # $1 dir -> lines "blob path" under it
   if [ "$1" = "." ]; then cat "$WORK/blobs"; else awk -v d="$1/" 'index($2, d)==1' "$WORK/blobs"; fi
 }
+kids_of() { # $1 dir (repo-relative, "." = root) $2 name prefix -> lines "name<TAB>dir": the NEAREST crumbed descendants (D7)
+  for k in $(ls -1A "$1" 2>/dev/null | LC_ALL=C sort); do
+    kd=$([ "$1" = "." ] && echo "$k" || echo "$1/$k")
+    [ -d "$kd" ] && [ ! -L "$kd" ] || continue
+    [ "$k" = ".git" ] && continue
+    if [ -f "$kd/.crumb" ]; then printf '%s\t%s\n' "$2$k" "$kd"; else kids_of "$kd" "$2$k/"; fi
+  done
+}
 compute() { # $1 dir -> prints the generated object (without stamps) as JSON
   d="$1"
   st=$(subtree "$d" | sha)
@@ -68,14 +78,13 @@ compute() { # $1 dir -> prints the generated object (without stamps) as JSON
   evr=$(printf '%s' "$ev" | awk '{print $1}' | sha)
   sem=$(jq -cS '{purpose, layer, invariants, exports, related, boundaries} | with_entries(select(.value != null))' "$d/.crumb" 2>/dev/null || echo '{}')
   kids='[]'
-  for k in $(ls -1 "$d" 2>/dev/null | LC_ALL=C sort); do
-    kd=$([ "$d" = "." ] && echo "$k" || echo "$d/$k")
-    [ -f "$kd/.crumb" ] || continue
+  kids_of "$d" "" | LC_ALL=C sort > "$WORK/kids.$$"
+  while IFS="$(printf '\t')" read -r k kd; do
     kdig=$(cat "$WORK/digest/$(enc "$kd")" 2>/dev/null || jq -r '.extensions.generated.digest // "uncompiled"' "$kd/.crumb")
     kpur=$(jq -r '(.purpose // "") | .[0:96]' "$kd/.crumb")
     klc=$(git log -1 --format=%h HEAD -- "$kd" ':!**/.crumb' 2>/dev/null || echo "")
     kids=$(printf '%s' "$kids" | jq -c --arg n "$k" --arg g "$kdig" --arg p "$kpur" --arg c "$klc" '. + [{name:$n,digest:$g,purpose:$p,last_commit:$c}]')
-  done
+  done < "$WORK/kids.$$"
   cr=$(printf '%s' "$kids" | jq -r '.[].digest' | sha)
   dig=$(printf '%s%s%s%s' "$sem" "$st" "$cr" "$evr" | sha)
   printf '%s' "$dig" > "$WORK/digest/$(enc "$d")"

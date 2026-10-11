@@ -1727,6 +1727,27 @@ static size_t utf8_prefix(const char *s, int cps) {   /* byte length of the firs
     return i;
 }
 static int sstrcmp(const void *a, const void *b) { return strcmp(*(char *const *)a, *(char *const *)b); }
+/* Children of a crumb directory = nearest crumbed descendants (D7 amendment). One traversal policy with find_crumbs. */
+typedef struct { char *rel; char *name; } Kid;   /* rel: repo-relative directory; name: path relative to the parent crumb dir */
+static int kidcmp(const void *a, const void *b) { return strcmp(((const Kid *)a)->name, ((const Kid *)b)->name); }
+static void collect_kids(Comp *c, const char *dir, const char *prefix, Kid **out, size_t *n, size_t *cap) {
+    int root = !strcmp(dir, "."); char *dfull = root ? xstrdup(c->top) : pjoin(c->top, dir); DIR *dp = opendir(dfull);
+    char **names = NULL; size_t nn = 0;
+    if (dp) { struct dirent *e; while ((e = readdir(dp))) if (strcmp(e->d_name, ".") && strcmp(e->d_name, "..")) { names = xrealloc(names, (nn + 1) * sizeof *names); names[nn++] = xstrdup(e->d_name); } closedir(dp); }
+    qsort(names, nn, sizeof *names, sstrcmp);
+    for (size_t i = 0; i < nn; i++) {
+        char *kd = root ? xstrdup(names[i]) : pjoin(dir, names[i]), *kf = pjoin(c->top, kd); struct stat st;
+        if (lstat(kf, &st) || !S_ISDIR(st.st_mode) || skip_generated_dir(kd)) { free(kd); free(kf); continue; }   /* D10 + #355 */
+        char *kc = pjoin(kf, ".crumb"); struct stat sb; int has = !stat(kc, &sb) && S_ISREG(sb.st_mode);
+        size_t pl = strlen(prefix), nl = strlen(names[i]); char *name = xmalloc(pl + nl + 2); memcpy(name, prefix, pl); memcpy(name + pl, names[i], nl + 1);
+        if (has) {
+            if (*n == *cap) { *cap = *cap ? *cap * 2 : 16; *out = xrealloc(*out, *cap * sizeof **out); }
+            (*out)[*n].rel = kd; (*out)[(*n)++].name = name;
+        } else { name[pl + nl] = '/'; name[pl + nl + 1] = 0; collect_kids(c, kd, name, out, n, cap); free(name); free(kd); }
+        free(kf); free(kc);
+    }
+    free(names); free(dfull);
+}
 static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generated object, without stamps */
     int root = !strcmp(d, "."); size_t pl = root ? 0 : strlen(d) + 1;
     char pre[PATH_MAX]; if (!root) snprintf(pre, sizeof pre, "%s/", d); else pre[0] = 0;
@@ -1746,16 +1767,15 @@ static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generate
         for (int k = 0; ks[k]; k++) { J *v = jget(cr, ks[k]); if (v && v->t != JNULL) jset(sem, ks[k], v); }
     }
     jsort(sem); char *semc = jcompact_s(sem);
-    /* D7: children = immediate subdirectories (not hidden) that hold a .crumb */
-    char *dfull = root ? xstrdup(c->top) : pjoin(c->top, d); DIR *dp = opendir(dfull);
-    char **names = NULL; size_t nn = 0;
-    if (dp) { struct dirent *e; while ((e = readdir(dp))) if (e->d_name[0] != '.') { names = xrealloc(names, (nn + 1) * sizeof *names); names[nn++] = xstrdup(e->d_name); } closedir(dp); }
-    qsort(names, nn, sizeof *names, sstrcmp);
+    /* D7 (amended 2026-10-11, orphan crumbs): children = the NEAREST crumbed descendants. The walk descends through
+     * directories that hold no .crumb (same traversal policy as find_crumbs: skip_generated_dir, lstat, no symlinks),
+     * so every compiled crumb is reachable from the root digest and deleting any .crumb stales its nearest crumbed
+     * ancestor. A deep child is named by its path relative to this crumb's directory ("archive/plans"). */
+    Kid *kids_v = NULL; size_t nn = 0, kcap = 0; collect_kids(c, d, "", &kids_v, &nn, &kcap);
+    qsort(kids_v, nn, sizeof *kids_v, kidcmp);
     J *kids = jnew(JARR); Sha crs; sha_init(&crs);
     for (size_t i = 0; i < nn; i++) {
-        char *kd = root ? xstrdup(names[i]) : pjoin(d, names[i]), *kc = pjoin(kd, ".crumb"), *kcf = pjoin(c->top, kc); struct stat sb;
-        if (skip_generated_dir(kd)) continue;   /* D10 + #355: same policy as the walker */
-        if (stat(kcf, &sb) || !S_ISREG(sb.st_mode)) continue;
+        char *kd = kids_v[i].rel, *kc = pjoin(kd, ".crumb"), *kcf = pjoin(c->top, kc); const char *kname = kids_v[i].name;
         const char *kdig = dig_of(c, kd); char *kdig_own = NULL;
         if (!kdig) {   /* not compiled in this run: fall back to what the crumb says */
             char *kt = slurp(kcf); J *kj = kt ? jparse(kt) : NULL; J *x = kj ? jget(kj, "extensions") : NULL; x = x ? jget(x, "generated") : NULL;
@@ -1765,7 +1785,7 @@ static J *comp_object(Comp *c, const char *d, char *dig_out) {   /* the generate
         char *kpur = xstrdup(kp); kpur[utf8_prefix(kpur, 96)] = 0; chomp(kpur);
         char gq[PATH_MAX * 2 + 64], *kq = shq(kd); snprintf(gq, sizeof gq, "log -1 --format=%%h HEAD -- %s ':!**/.crumb'", kq);
         char *lc = run_git_full(c->top, gq); chomp(lc);
-        J *o = jnew(JOBJ); jset(o, "name", jstr(names[i])); jset(o, "digest", jstr(kdig)); jset(o, "purpose", jstr(kpur)); jset(o, "last_commit", jstr(lc));
+        J *o = jnew(JOBJ); jset(o, "name", jstr(kname)); jset(o, "digest", jstr(kdig)); jset(o, "purpose", jstr(kpur)); jset(o, "last_commit", jstr(lc));
         jpush(kids, o); sha_add(&crs, kdig, strlen(kdig)); sha_add(&crs, "\n", 1);
         (void)kdig_own;
     }
