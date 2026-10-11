@@ -1,0 +1,20 @@
+{
+  "extensions": {
+    "generated": {
+      "children": [],
+      "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "compiled_at": "2026-10-11T16:36:23Z",
+      "compiler": "crumb-compile/1",
+      "digest": "sha256:43d90e632cf726c80edde33297f9c52a1ae5e58f1d2e797a43e6b1fa7fe7080f",
+      "evidence_files": 0,
+      "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "files": 13,
+      "generated_at_commit": "0e5e0cc616a8752a0e424f6db7c2d65a38b240e5",
+      "source_tree": "sha256:cd8e02afd50bd8a4e8be88daf83c23303ebfa3316092033cf81af05f26135363"
+    }
+  },
+  "layer": "tooling",
+  "name": "pipeline-proofs",
+  "purpose": "Acceptance proofs 13-21 of the sovereign local pipeline (ADR 0033 amendment 2026-10-11): bash scripts that prove crumb determinism, fixed point, staleness, claims, crumb-only builds, admission, rebase and the final-SHA rule on temporary clones, plus the measured results.",
+  "schema_version": "1.0.0"
+}
