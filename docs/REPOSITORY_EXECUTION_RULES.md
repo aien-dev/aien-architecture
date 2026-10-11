@@ -37,6 +37,12 @@ Do not modify source files after that commit without rerunning compilation and v
 
 If a repository does not support these commands, report the discrepancy and follow its explicit repository policy. Never silently skip a required check.
 
+## 2a. Local verification
+
+`scripts/pr-gate.sh` reads GitHub's CLEAN state. It does not prove the commit was verified. The local admission check that complements CLEAN is `aien-test verify COMMIT` (sovereign-core `tools/aien-test`, ADR 0033 amendment 2026-10-11): it prints READY when every gate required at the base ref has a PASS receipt for that exact commit and the crumbs are CURRENT there, and BLOCKED otherwise, with the reason (a missing or NOT_RUN gate, STALE crumbs, an UNMAPPED changed path, or a BLOCKED_OPERATOR head). Run it on the final SHA, the one that includes the crumb commit (`docs/crumbs/LOCAL_PIPELINE.md` section 2); a pre-crumb SHA is never READY.
+
+Trust anchors come from the base ref, never from the head under test (ADR 0033 amendment, A1): the required gate set, `.aien/verify.pub`, `.aien/always` and `.aien/unmapped-ok` are read from `origin/main`. A head that changes the pipeline's own configuration (`.aien/`, `tests/gates/`, `.github/workflows/`, `.forgejo/`, `tools/aien-test/`) is BLOCKED_OPERATOR: the operator runs its verification by hand and says so in the PR. Acceptance proofs for the crumb side of this rule (determinism, fixed point, staleness, claims, rebase, final SHA) are `scripts/pipeline-proofs/13-*.sh` to `21-*.sh`; measured numbers in `scripts/pipeline-proofs/RESULTS-2026-10-11.md`.
+
 ## 3. Rebase and Crumb Conflicts
 
 Every sovereign-core merge to main can invalidate `.crumb` files in other open PRs.
