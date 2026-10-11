@@ -96,7 +96,7 @@
         },
         {
           "digest": "a85392c1c018b0f8272795529f2760e0fa36aa4ab6c1d822c9c74f71fb2a033e",
-          "last_commit": "0d4c608",
+          "last_commit": "b2400fe",
           "name": "release-readiness",
           "purpose": "Release-readiness finite workstream (aien-architecture#190): gap assessment, integration plan an"
         },
@@ -108,14 +108,14 @@
         }
       ],
       "children_root": "sha256:bdb9b3f6691a9b85bcd6df5793b446bd83509bbc39323546da6f377fbdd5780a",
-      "compiled_at": "2026-10-10T14:28:20Z",
+      "compiled_at": "2026-10-11T14:29:29Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:476ca8e3cf8257376bcf010981a621b3c129f0724014ce4a443ed0d27efc8f27",
+      "digest": "sha256:cf265d86247176cd98b516e4fb51891f3c9346396f11cc47aeb9c231daa2f65e",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "files": 51,
-      "generated_at_commit": "0d4c60879e1694595020d13678f804e30cd316d8",
-      "source_tree": "sha256:019723ddf7370d1c4b0ebf3ab2df673f7492b19cee703dc9f5bd94b3298ba9ed"
+      "files": 66,
+      "generated_at_commit": "e10e2b4fc596ece56cc352d2279535e05451279e",
+      "source_tree": "sha256:78e1b09bc661ed8d8b2f4dc9fdc9afa45fbe1302ef6a7f6b1da5b1a3b8bcc185"
     },
     "owner_lane": "",
     "provenance": {
