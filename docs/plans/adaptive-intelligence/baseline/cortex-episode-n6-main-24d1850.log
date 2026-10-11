@@ -1,0 +1,61 @@
+mkdir -p build/argus-src/b375dca
+git -C ../aienos-argus archive b375dcaa2887d53cda407d773c2e4e489a0b1365 native/argus | tar -x -C build/argus-src/b375dca
+touch build/argus-src/b375dca/.extracted
+aienos_lock_source: /home/drakestapleton/workspace/adaptive/omega-n6/build/aienos-authority/b84c0a67590a934f3f3e001b12ec85ebc086a9eb matches b84c0a67590a934f3f3e001b12ec85ebc086a9eb for native/capability
+	build/aienos-cap/b84c0a67590a934f3f3e001b12ec85ebc086a9eb/libaienos_capability.a -lm
+./build/rx_r13_cortex_episode
+R13 operator: state /tmp/r13-state-v2xblN, control /tmp/r13-state-v2xblN/control (operator subject 70, pid 1916991)
+  ok   journal opened (rc 0)
+  ok   recorder attached to the living world (rc 0)
+R13 costs: incumbent 6677 ns, target 3672 ns, selected 2731186 ps, reference on new cores 4578279 ps, AIEN now expects 2921 ns, goal status 2
+R13 positive: generation 1 -> 2, recovered 2; served 1904 (129 after promotion), crumbs 4216, GPU claims 16, durable links 11
+  ok   R13 POSITIVE episode ran to promotion and in force (rc 0)
+  ok   recorder wrote 4216 records, 0 errors
+  ok   observation  -> cortex record 553 kind 0x10001
+  ok   belief       -> cortex record 4212 kind 0x10004
+  ok   prediction   -> cortex record 4213 kind 0x10004
+  ok   hypothesis   -> cortex record 650 kind 0x10004
+  ok   plan         -> cortex record 557 kind 0x10004
+  ok   search       -> cortex record 558 kind 0x10004
+  ok   gpu-input    -> cortex record 1069 kind 0x10004
+  ok   experiment   -> cortex record 1095 kind 0x10004
+  ok   evidence     -> cortex record 1096 kind 0x10004
+  ok   exp-belief   -> cortex record 1097 kind 0x10004
+  ok   candidate    -> cortex record 1364 kind 0x10004
+  ok   promotion    -> cortex record 3925 kind 0x10004
+CHAIN A: evidence 1096 <- experiment 1095 <- plan 557 <- assessment 556 <- goal 554
+  ok   chain A: evidence <- experiment <- plan <- assessment <- goal (outside input) is in the Cortex provenance
+CHAIN B: hypothesis 649 <- prediction 647 <- belief 646 <- observation 644
+  ok   chain B: hypothesis <- prediction <- belief <- observation (outside input) is in the Cortex provenance
+  ok   observation record is an outside input about object slot 0
+candidate 1364 has evidence 1096 in its provenance: 1; experiment belief 1097: 1
+  ok   promotion 3925 descends from candidate 1364
+  ok   cx_verify_chain passes (4216 records)
+  ok   rx_living_object_digest equals the World's digest of the evidence object
+  ok   lesson records appended: evidence-ref 4217 (wrong 4218), candidates 4219 and 4220
+  ok   promotion with a missing evidence record refused (rc -6)
+  ok   promotion with a wrong-digest evidence record refused (rc -1)
+  ok   no promotion record was written by the refusals
+  ok   promotion with the matching evidence record accepted: promotion 4221 links {4219,4217}
+  ok   cx_verify_chain passes after promotion (4221 records)
+protected records: 4024 (authority 1908, commit receipt 2113)
+  ok   authority and receipt evidence exist to compare
+  ok   no World failure noted while stopping
+  ok   journal with one flipped byte is refused at open (rc -4)
+  ok   journal reopened: 4221 records (was 4221)
+  ok   cx_verify_chain passes after restart
+  ok   cx_recall by the evidence subject returns 22 records, ordered and repeatable
+  ok   lesson 4219 is a promoted fact (promotion 4221)
+  ok   lesson 4220 is still only a candidate
+  ok   after restart the evidence gate still accepts the match and refuses the wrong digest
+  ok   tampered evidence record: cx_verify_chain fails and the gate refuses
+  ok   restored record verifies again
+kinds in Cortex: 0x10002 x40 0x10001 x1908 0x10004 x2113 0x10005 x155 0x10012 x2 0x10011 x2 0x10013 x1
+not in Cortex: live World objects and their field versions, reaction state, capabilities and the crumb log itself (only each crumb's result is kept)
+  ok   every record is a canonical kind; there is no kind for an object table or reaction state
+  ok   4024 protected records (authority, receipts, verification evidence, promotion) byte-identical after restart
+R13_CORTEX_EPISODE PASS: pass 41 fail 0
+
+real	0m9.291s
+user	0m7.667s
+sys	0m1.151s

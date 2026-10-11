@@ -47,3 +47,7 @@ G3 (M3) New learner version: 20-step rollout error on SELECT episodes in ranking
 G4 (M4) One typed resource-condition object + a bounded policy reaction that only calls existing budget/priority setters within granted caps.
 G5 (M6/M7) Unify on aien-protocols receipt + TRN1 transcript, signed; have omega/sovereign-core produce TRN1; benchmarks harness buildable from clone; history store.
 G6 (M5) Measured execution feed: candidate source = sovereign-core executor emitting CanaryObservation with signed source identity; until then fail-closed stays (documented blocker).
+
+## Errata (2026-10-11, after N2 omega#397)
+- Row 9 / inventory/physics-learning.md: "hidden-state flag needs a rollout test" (LEARNER.md:106-109) was stale; the seal-1 learner's flag already fires on public L6 seeds 1-5 (5/5) and 24/25 over seeds 1-25. v2 (25/25) is a robustness gain, not a new capability. Still Missing: latent-variable mechanism, change detection/forgetting (C2 shows retained knowledge harms after a regime switch), L6 scorer pass.
+- Row 5 (after N1 omega#398 24d18505): recorder now attached to the R13 living world in test-r13-cortex-episode; still Implemented-but-disconnected in the PRODUCTION R13 program; lesson/evidence-ref records are test-written (N6 owes body-written ones). Chain shape: in R13 the plan is goal-driven (CHAIN A evidence<-experiment<-plan<-assessment<-goal) while the hypothesis chain (CHAIN B hypothesis<-prediction<-belief<-observation) is separate; the hypothesis-driven plan is proven in R11 t_core_class.
