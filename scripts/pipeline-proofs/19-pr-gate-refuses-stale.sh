@@ -42,11 +42,11 @@ check_eq "stale tree: pr-gate exits 1" "$RC" 1
 check "stale tree: stops at GATE crumb: FAIL" grep -q '^GATE crumb: FAIL crumb verify did not print OK' <<<"$OUT"
 note "$(grep '^GATE crumb' <<<"$OUT" | cut -c1-110)"
 
-# (b) missing: a .crumb deleted. RFC-0003 D7 digests only IMMEDIATE children, so a deletion is visible to
-# `crumb verify` only when the deleted crumb's parent directory itself holds a crumb.
-#   (b1) parent holds a crumb (immediate child): must be refused.
-#   (b2) parent holds no crumb (deep leaf under uncrumbed directories): today's tool cannot see it; recorded as a
-#        FAILED assertion with the exact limit, not fixed here (lane CRUMB brief: record, do not fix silently).
+# (b) missing: a .crumb deleted. RFC-0003 D7 (amended 2026-10-11): children[] holds the NEAREST crumbed descendants,
+# so every .crumb is reachable from the root digest and any deletion must be refused.
+#   (b1) parent holds a crumb (immediate child).
+#   (b2) parent holds no crumb (deep leaf under uncrumbed directories): the orphan case that was invisible before the
+#        amendment (recorded as FAILED in the first run of 2026-10-11, fixed in tools/crumb/crumb.c the same day).
 IMM=""; DEEP=""
 for d in $(crumb_dirs "$W" | grep -v '^\.$'); do
   p=${d%/*}; [ "$p" = "$d" ] && p=.
@@ -62,11 +62,8 @@ if [ -n "$DEEP" ]; then
   branch missing-deep; git -C "$W" rm -q "$DEEP/.crumb"; git -C "$W" commit -qm "delete $DEEP/.crumb"
   SHA=$(push missing-deep); fx deep missing-deep "$SHA"
   export CASE=deep; measure gate_missing_deep "$GATE" proof-repo 1 --worktree "$W" --dry-run
-  if [ "$RC" -eq 1 ] && grep -q '^GATE crumb: FAIL' <<<"$OUT"; then echo "  ok   missing deep crumb refused"
-  else
-    echo "  FAIL RECORDED LIMIT: deleting $DEEP/.crumb is invisible to crumb verify (RFC-0003 D7 digests immediate children only; its parent ${DEEP%/*} has no .crumb); pr-gate rc=$RC"
-    FAILS=$((FAILS+1))
-  fi
+  check_eq "missing deep crumb (orphan, parent ${DEEP%/*} has no .crumb): pr-gate exits 1" "$RC" 1
+  check "missing deep crumb: stops at GATE crumb: FAIL" grep -q '^GATE crumb: FAIL' <<<"$OUT"
 else
   note "no deep crumb without a crumbed parent in this repository; (b2) not applicable"
 fi

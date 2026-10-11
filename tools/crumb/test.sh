@@ -172,6 +172,23 @@ echo x >> src/a.c; git add -A; "$C" context src/a.c | grep -q "^Crumbs STALE: 2 
 "$C" context docs | grep -q 'held by lane-x' && bad "C3 context ignores locks elsewhere" || ok "C3 context ignores locks elsewhere"
 "$C" close lane-x src src/a.c >/dev/null
 [ "$("$C" context src | wc -l)" -lt 80 ] && ok "C3 context output is bounded" || bad "C3 context bounded"
+# orphan crumbs (lane CRUMB proof 19 b2, 2026-10-11): a .crumb under a directory that has NO .crumb is a child of the
+# nearest crumbed ancestor (D7 amended), so deleting it is visible to verify and to pr-gate.sh
+"$C" compile . >/dev/null; git add -A; git -c user.name=t -c user.email=t@t commit -qm "pre-orphan"
+mkdir -p src/mid/leaf && echo 'int l;' > src/mid/leaf/l.c && "$C" create src/mid/leaf leaf "leaf under an uncrumbed directory" code >/dev/null
+git add -A; st=$("$C" verify . | grep '^STALE' | awk '{print $2}' | sort | tr '\n' ' ')
+[ "$st" = ". src src/mid/leaf " ] && ok "C3 D7 new crumb under an uncrumbed dir stales itself, its nearest crumbed ancestor and the root" || bad "C3 D7 orphan stale set (got: $st)"
+"$C" compile . >/dev/null; git add -A; git -c user.name=t -c user.email=t@t commit -qm "orphan compiled"
+"$C" verify . >/dev/null && ok "C3 D7 verify OK after compiling the deep crumb" || bad "C3 D7 verify after deep crumb"
+"$C" compile . | grep -q ', 0 rewritten' && ok "C3 D7 fixed point holds with a deep child" || bad "C3 D7 fixed point deep child"
+jq -e '.extensions.generated.children | map(.name) | index("mid/leaf") != null' src/.crumb >/dev/null && ok "C3 D7 deep crumb is listed as child \"mid/leaf\" of src (path relative to the parent crumb)" || bad "C3 D7 deep child not listed"
+jq -e '.extensions.generated.children | map(.name) | index("mid") == null' src/.crumb >/dev/null && ok "C3 D7 the uncrumbed directory itself is not a child" || bad "C3 D7 uncrumbed dir listed"
+git rm -q src/mid/leaf/.crumb; st=$("$C" verify . | grep '^STALE' | awk '{print $2}' | sort | tr '\n' ' ')
+[ "$st" = ". src " ] && ok "C3 D7 deleting the deep crumb stales src and the root (orphan deletion is visible)" || bad "C3 D7 orphan deletion invisible (got: $st)"
+"$C" verify . >/dev/null; [ $? -eq 1 ] && ok "C3 D7 verify exits 1 after the orphan deletion" || bad "C3 D7 verify exit after orphan deletion"
+"$C" compile . >/dev/null; "$C" verify . >/dev/null && ok "C3 D7 recompile after the deletion returns to OK" || bad "C3 D7 recompile after deletion"
+jq -e '.extensions.generated.children | map(.name) | index("mid/leaf") == null' src/.crumb >/dev/null && ok "C3 D7 deleted deep crumb is gone from src children" || bad "C3 D7 deleted deep child still listed"
+git add -A; git -c user.name=t -c user.email=t@t commit -qm "orphan removed"
 # D10: .crumbignore subtrees never participate in compile/verify/status (omega evidence/, physics nvrm, m16)
 "$C" compile . >/dev/null; git add -A; git -c user.name=t -c user.email=t@t commit -qm "pre-ignore"
 ev0=$(cat src/deep/.crumb); printf '# guarded tree\nsrc/deep/\n' > .crumbignore
