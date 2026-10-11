@@ -1,0 +1,27 @@
+aienos_lock_source: /home/drakestapleton/workspace/adaptive/omega/build/aienos-authority/b84c0a67590a934f3f3e001b12ec85ebc086a9eb matches b84c0a67590a934f3f3e001b12ec85ebc086a9eb for native/capability
+cc -std=gnu11 -Wall -Wextra -Werror -MMD -MP -D_GNU_SOURCE -O2 -Isrc -I../physics/m16 -I../physics/nvrm -I../physics/third_party/nvidia-open-580.173.02/src/common/sdk/nvidia/inc -I../physics/third_party/nvidia-open-580.173.02/kernel-open/common/inc -I../physics/third_party/nvidia-open-580.173.02/kernel-open/nvidia-uvm -I../physics/third_party/nvidia-open-580.173.02/src/nvidia/arch/nvalloc/unix/include -pthread -o build/rx_r14_recovery_host src/runtime/rx_caproot.c src/runtime/rx_world.c src/runtime/rx_coherent.c src/runtime/rx_native_bind.c src/runtime/rx_aegis.c src/runtime/rx_aien.c src/runtime/rx_omega.c src/runtime/rx_generation.c src/runtime/rx_living.c src/sha256.c src/omega_evidence.c src/omega_canonical.c src/omega_validate.c src/omega_core.c src/omega_codec.c src/aarch64_encoder.c src/aarch64_decoder.c src/omega_realize.c src/omega_realize_synth.c src/omega_program.c src/omega_machine.c src/omega_exec.c src/omega_verify.c src/omega_matvec.c src/omega_matvec_quad.c src/runtime/aien_machine_id.c src/runtime/rx_jspace.c src/runtime/rx_cortex.c src/runtime/rx_cortex_record.c src/runtime/rx_graph.c src/runtime/rx_capq.c src/runtime/rx_skillroute.c src/runtime/rx_compose.c tests/runtime/rx_r14_recovery.c build/aienos-cap/b84c0a67590a934f3f3e001b12ec85ebc086a9eb/libaienos_capability.a -lm
+./build/rx_r14_recovery_host
+R14 F BEFORE_CANDIDATE_WRITE: first process exit 86; recovered OLD generation 1; restore REFERENCE; 202 served after restart, adapted again
+R14 F DURING_CANDIDATE_WRITE: first process exit 86; recovered OLD generation 1; restore REFERENCE; 202 served after restart, adapted again
+R14 F AFTER_CANDIDATE_WRITE: first process exit 86; recovered OLD generation 1; restore REFERENCE; 202 served after restart, adapted again
+R14 F BEFORE_ROOT_FLIP: first process exit 86; recovered OLD generation 1; restore REFERENCE; 201 served after restart, adapted again
+R14 F DURING_ROOT_FLIP: first process exit 86; recovered OLD generation 1; restore REFERENCE; 200 served after restart, adapted again
+R14 F AFTER_ROOT_FLIP: first process exit 86; recovered NEW generation 2; restore RESTORED; 201 served after restart
+R14 F BEFORE_RECEIPT: first process exit 86; recovered NEW generation 2; restore RESTORED; 200 served after restart
+R14 F AFTER_RECEIPT: first process exit 86; recovered NEW generation 2; restore RESTORED; 202 served after restart
+R14 A tamper: verdict REFUSED reason 2; generation 1 -> 2 holds verified quad4; 755 served during, 102 after
+R14 A semantic: verdict REFUSED reason 4; generation 1 -> 2 holds verified quad4; 927 served during, 101 after
+R14 A crash: verdict REFUSED reason 5; generation 1 -> 2 holds verified quad4; 10827 served during, 102 after
+R14 B: forged/borrowed/revoked/stale/GPU refused, slot stuffing contained, forged decisions minted nothing, promotion forgery refused; renewed grant, lanes 117 published, production 4062 during, 102 after
+R14 C: cycles contained in 7 ms (max 256 activations), 3 containment crumbs, organism untouched; production 4970 during, 102 after
+R14 D: 3200 lane requests, at most 4 claims at once (cap 4), up to 12 waiting; 3200 published once, 0 lost, 0 duplicated; production 1187 during, 100 after
+R14 E: seat killed holding lane claim 232; lost once, seat generation 1 -> 2, retry published once, stale claim refused; production 19 during, 100 after
+R14 A_corrupt_candidate    PASS
+R14 B_forged_capability    PASS
+R14 C_reaction_cycle       PASS
+R14 D_gpu_saturation       PASS
+R14 E_gpu_seat_kill        PASS
+R14 F_checkpoint_crash     PASS
+R14 gate: R14_LIVING_RECOVERY=HOST_PASS_NON_SILICON
+R14 receipt: build/qual-runs/20261011T142649Z-16e729b6d844/R14/rx_recovery_receipt.json
+r14 exit 0
