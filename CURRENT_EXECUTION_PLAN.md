@@ -996,3 +996,47 @@ Current baseline corrections (code and receipts, read 2026-10-10): ALLEN demo v3
 ## Addendum 2026-10-11: WHOLE-SYSTEM-E2E status correction (issue #203)
 
 The "Status 2026-10-10: NOT_RUN" line of the 2026-10-10 addendum above is superseded by receipts read on 2026-10-11 (aien-sovereign-core `docs/campaigns/whole-system-e2e/`): RUN-1 on the CPU backend had E2, E3, E3m, E4 and E6 PASS with E1, E5 and CTRL-E1 NOT_RUN (`RESULT-RUN-1.md`); the second-machine verdict for E5 is recorded in `RESULT-RUN-1-R7.md`; the declared GB10 run RUN-2-GB10 (aien-sovereign-core#413) has verdict FAIL on one text-matching row, with the later memory rows not run. No installed signed release has been through the test (R8 NOT_RUN), no public signing key exists, and the release gate fails on aien-sovereign-core main (`omega.lock` differs from CAND-4). Details and the ordered blocker list: `docs/audits/INTEGRATION-AUDIT-2026-10-11.md`. The program as a whole is not PASS and AIEN is not claimed complete.
+
+## Addendum 2026-10-12: AIEN native v1, frozen scope, candidate pins and the N1 to N7 ledger (P01)
+
+Drake's goal set of 2026-10-12: **finish line: AIEN/ALLEN operates on the physical DGX Spark under AIENOS, with no Linux kernel, userspace service, NVIDIA Linux RM/UVM driver, or Linux recovery environment required for the delivered workflow.** Development hosts and reference measurements are separate from this runtime requirement. This addendum records the grounded delivery plan he handed over (twelve work packages P01 to P12, seven gates N1 to N7), freezes the candidate pins, and resolves four document conflicts. It does not raise any milestone status. The native order of the 2026-10-08 (late) addendum is unchanged; the gates below are that order, named.
+
+### Candidate pins (read from GitHub main on 2026-10-12 ~03:40Z; every N gate receipt names these or a later pinned successor)
+
+| repo | main head |
+|---|---|
+| aien-dev/aienos | `51c05daff49b0836692eb1c777ec2758cf0746ae` |
+| aien-dev/omega | `781e98d8224b5bf229991f54722d2dc7c415d79f` |
+| aien-dev/physics | `57aafa0d69d5d768e46164ff0963ffd87355ab0d` |
+| aien-dev/aien-sovereign-core | `c7d4051b99a918c2b2ffbc29b7366ae3de661659` |
+| aien-dev/aien-architecture | `33069a0a4bb7604b5312d969be526a2b6ef2ab3b` |
+| aien-dev/atlas | `28b151cf3f1feac2e3487f4f45fdc9e52248bc42` |
+
+### The v1 workflow (section 2 of the handed-over plan)
+
+One operator at the Spark's own console, with no Linux anywhere in the loop: use a remembered owner preference to draft a short development note or task plan, show the proposed saved artifact, obtain approval, commit it locally, and retrieve it after power loss. Configuration, model and limits are frozen before acceptance. Everything else (networking, phone agent, multi-machine Fabric, research programs) is outside v1.
+
+### Gates N1 to N7 (physical Spark only; QEMU is never physical; NOT_RUN is never PASS)
+
+| gate | closes when | packages | status 2026-10-12 |
+|---|---|---|---|
+| N1 | Real Spark boot is observable and recoverable; operator input and abort work; bounded B7b result and rollback evidence are recorded at exact pins. B7b's one-page SMMU probe is not GPU compute. | P02, P03, P04 | NOT_RUN. P03 resident lifecycle (`CK_SERVICE` image) in review as aienos#308, QEMU LIFECYCLE gate rows 160 to 167 PASS. B7b staging package not yet prepared (P02). Service image stays LOCKED until P04. |
+| N2 | Real owner/ALLEN state and committed Store objects survive physical cold starts and the declared fault cases. Corrupt or stale state is refused or recovered explicitly. | P05 (aienos#31, #35, #285) | NOT_RUN. Store engine and continuity exist in QEMU with TEST keys only. |
+| N3 | On the physical Spark the operator supplies a new prompt, sees bounded generated output, approves a useful local artifact, cancels another request, and cold-boots to recover the approved artifact and a memory-only fact. The fact must not be restated in the new prompt. | P06 (aienos#34) | NOT_RUN. Native CPU inference is QEMU-only via fw_cfg, which the Spark does not have. |
+| N4 | From a documented cold power state without prior Linux GPU initialization, AIENOS initializes GB10, runs verified computation and cleans up safely. A SMMU probe alone cannot close this gate. | P07, P08 (aienos#286) | NOT_RUN. B7a merged (aienos#299); first native compute not done. |
+| N5 | The P06 workflow runs through native GB10 within its frozen correctness, time and memory limits, with repeatable completion and backend evidence. | P09 | NOT_RUN. |
+| N6 | All required cases pass on the physical candidate; an independent verifier agrees; unresolved outcomes remain explicitly unresolved. | P10 | NOT_RUN. |
+| N7 | Install, update and recovery work with no Linux installation or recovery USB required for the supported procedure. A BootNext return to Linux is insufficient. | P11, P12 | NOT_RUN. Today's rollback path is the one-time BootNext return to Linux (aienos#273), which is explicitly insufficient for N7. |
+
+Work packages, in dependency order: P01 scope and pins (this addendum); P02 recoverable native boot preparation and operator access; P03 resident lifecycle separated from the diagnostic boot; P04 real volume-key unlock and trust binding; P05 physical storage and production continuity; P06 CPU inference and memory as the first useful workflow; P07 freestanding GPU boundary and device ownership; P08 GB10 firmware lifecycle and first compute; P09 frozen model on native GB10; P10 whole-lifecycle qualification; P11 install, update and recovery without Linux; P12 freeze, demonstrate, stop adding scope. P01 to P12 are work packages, not PR numbers. P07 interface work and P06 emulator work may proceed while physical prerequisites are prepared; physical gate closure keeps the recorded order.
+
+Standing rules carried into every package: never compile the secret volume key into an image and never substitute TEST keys for it; never enable `CK_TEST_CONTINUITY` or any `CK_TEST_*` flag in a hardware image; "do not make the product by deleting `ck_reset()`" (the diagnostic builds stay intact beside the service image); every physical boot, device-mutating operation, firmware change or rollback experiment is a separate Drake-authorized attended window with a prepared package; no attended window was run by the planning request that produced this addendum.
+
+### Four document conflicts, resolved for v1
+
+1. **Loader A/B versus one-time BootNext.** The 2026-10-06 limitation list says the C loader A/B and rollback are parked; aienos#273 made the C kernel the one-time BootNext rollback candidate. Resolution: v1 boot selection is the one-time BootNext candidate plus a known-good AIENOS image, because N7 forbids a Linux return as the recovery path. The A/B loader stays parked unless P11 finds it is the cheapest way to hold two native images; it is not a v1 gate on its own.
+2. **Secure Boot OFF versus the owner-signed trust chain.** Secure Boot is off on the Spark (2026-10-01) and the TRUST-1 real-owner rows are BLOCKED_OPERATOR, while D1 requires an offline owner signing key for any release. Resolution: v1 trust is AIENOS's own owner-signature verification (native C Ed25519, aienos#188/#189) of the image, the install package and the migration record, performed by AIENOS itself after firmware hands over. Firmware-level Secure Boot stays OFF and is recorded as a v1 limit, not a gate. The owner-key ceremony is part of P04 and needs an attended window.
+3. **aienos#35 names `aienos-cortex`; ADR 0022 names omega `rx_cortex` the canonical Cortex owner.** Resolution: the native continuity record of N2/N3 is the sealed C Store, written and read through the Omega CxStore adapter for AIENOS (P06), so that its shape is the ADR 0022 canonical one. `aienos-cortex` (Rust) is not on the v1 path and is not promoted; aienos#35 is scoped to that reading by comment on the issue.
+4. **NOT_RUN rows versus receipts.** Several status lines in this file say PASS for QEMU or host work under headings that read like hardware milestones. Resolution: the ledger above is the only native v1 status; a gate moves off NOT_RUN only with a receipt that names the physical machine, the pinned commits and the verifier identity, and a QEMU or host PASS is recorded as such in the status column, never as the gate's verdict.
+
+Tracked on aien-dev/aien-architecture#190 (release-readiness program, lane L9 native) and on the aienos owner issues #31, #32, #34, #35, #285, #286.
