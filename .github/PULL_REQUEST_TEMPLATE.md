@@ -1,3 +1,15 @@
+## Issue-first tracking
+
+**Tracking issue:** Refs owner/repo#NUMBER (use `Closes #NUMBER` only for final acceptance).
+**Gates advanced and status:** PASS / FAIL / INCONCLUSIVE / NOT_RUN / BLOCKED
+**Source, test and qualification evidence:** Link exact code/commits, commands and receipts.
+
+- [ ] Implementation issue exists and its scope/ownership is current.
+- [ ] This PR documents remaining unrun/failed gates.
+- [ ] Issue ledger will be reconciled when this PR merges.
+
+See [`docs/process/ISSUE_FIRST_DELIVERY.md`](docs/process/ISSUE_FIRST_DELIVERY.md).
+
 ## Architecture change
 
 ### Responsibility changed
