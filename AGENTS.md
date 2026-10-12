@@ -17,3 +17,7 @@ Rules:
 - Current subsystem name: FORGE. Historical `PHYSICS_*` milestone IDs/receipts remain unchanged.
 - Implementation/evidence truth beats planning claims. If code and plan differ, record the discrepancy; do not pretend the target is implemented.
 - A milestone status changes only in `doctrine/ROADMAP.md`.
+
+## Issue-first work tracking
+
+For new substantive work, follow [`docs/process/ISSUE_FIRST_DELIVERY.md`](docs/process/ISSUE_FIRST_DELIVERY.md). Open or reuse a tracking issue before implementation, freeze acceptance gates and non-overlapping workstream ownership, link reviewable PRs and evidence, and record qualified results before closure. This protocol organizes work; it does not override `PLAN_AUTHORITY.md`, the active execution plan or the roadmap.
