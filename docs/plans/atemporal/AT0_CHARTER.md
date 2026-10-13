@@ -2,7 +2,7 @@
 
 **NOT A MASTER PLAN.** `CURRENT_EXECUTION_PLAN.md` owns sequencing and `doctrine/ROADMAP.md` owns milestone identifiers and status (`PLAN_AUTHORITY.md`). AT-0 is a research program label, like DIRAC-0. It is not a registered roadmap milestone (section 10).
 
-**Program status: NOT_RUN.** No AT-0 code exists, no case has been executed, and no result exists. Every gate in section 6 is NOT_RUN.
+**Program status: REVIEWED (2026-10-10).** Software conformance PASS on the tested classes; blinded qualification INCONCLUSIVE (UNISOLATED); physical claims NOT TESTED. `AT0_RESULTS.md` (aien-architecture#182) grades every claim; section 11 holds the status table. Historical: when this charter was written on 2026-10-09 the status was NOT_RUN, with no AT-0 code, no executed case and no result.
 **Contract status:** `AT0_CASE_V1` and `AT0_RESULT_V1` FROZEN at aien-architecture#174 (`044c9d1`); `AT0_RESULT_V2` supersedes `AT0_RESULT_V1` and is FROZEN on merge of the pull request that adds it (section 8, `AT0_FREEZE.md`).
 **Written:** 2026-10-09 by Agent 0 (technical coordinator).
 **Snapshots inspected (GitHub default branches, 2026-10-09):** omega `19f73c7`, aien-architecture `27f3b71`, aien-sovereign-core `5b7861f`, physics `9f96f25`, physics0 `fe587d2`, aienos.com `cc389e3` (Atemporal AIEN Postulate v1.1 source).
@@ -114,7 +114,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V2.md` sections 0 t
 - *Evaluation order:* the engine evaluated with clock labels in reverse order (a test-only entry point) gives a bit-identical values block.
 - *Axis swap:* a mutant engine that swaps the X and Y results must fail `schrodinger_agreement` on the P1 cases (this proves the oracle is independent of the engine).
 
-**Gates (all NOT_RUN):**
+**Gates** (all NOT_RUN when written on 2026-10-09; G0 to G6 are graded claim by claim in `AT0_RESULTS.md` section 2, and that file is the G7 review):
 
 | Gate | Pass condition | Owner |
 |---|---|---|
