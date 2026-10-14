@@ -1070,3 +1070,40 @@ Every native v1 claim of this file (this addendum, and the native rows of the 20
 | R13 | standing rule "never enable `CK_TEST_CONTINUITY` or any `CK_TEST_*` flag in a hardware image" | `native/kernel/Makefile` refuses every `CK_TEST_*`, `CK_SERVICE_TEST_KEYS`, `CK_INFER_LIB` and `CK_RUST_LIBS` with `CK_HARDWARE_STAGING` (e.g. lines 131, 148, 176, 202, 223, 249, 265); `GATES.md` row 167a | matches | none |
 | R14 | "Tracked on aien-spark/aien-architecture#190 ... and on the aienos owner issues #31, #32, #34, #35, #285, #286" | all seven open on GitHub 2026-10-12; ledger comment on #190 at 2026-10-12T04:10:45Z | matches | none |
 | R15 | CI coverage of the merged native v1 cuts (no claim in this file; recorded for the evidence column) | the aienos `ck-kernel.yml` workflow was refused by GitHub from aienos#313 (2026-10-12 ~07:42Z) until aienos#318 quoted the offending step name, so aienos#313 to #317 merged without CI kernel tests; `C kernel (CK) gates` has passed on every aienos main commit since `fcb3113` (`gh run list`, 2026-10-12) | recorded | none |
+
+## Addendum 2026-10-14: one release coordinator and one candidate evidence ledger
+
+Drake's direction of 2026-10-14: use [aien-architecture#190](https://github.com/aien-spark/aien-architecture/issues/190) as the release coordinator; every active workstream delivers evidence toward the same frozen whole-system candidate. Most engineering effort goes to trusted native execution, physical GB10 qualification, inference correctness and recovery. Synapse, Atlas evaluation and RSI continue as bounded parallel workstreams.
+
+### Coordination and capacity
+
+1. Issue #190 owns the delivery ledger: component owner, issue/PR, target gate, candidate identity, prerequisites, next evidence packet and unresolved objections. Component issues retain code ownership. This file retains execution authority; `doctrine/ROADMAP.md` retains milestone status.
+2. More than half of active implementation capacity is reserved for the release critical path: required verification gates, signed execution/approval, native operator/storage/CPU workflow, physical GB10, real-model inference and recovery. Critical-path work has first claim on hardware windows and shared build/qualification resources.
+3. Synapse, Atlas evaluation and RSI each have at most one active bounded deliverable. They share the remaining capacity, preserve existing authority boundaries, and do not introduce a release dependency on wholesale source-control migration, a new agent framework or recursive improvement. Their packets are reviewed on #190 before any scope expands.
+4. A workstream starts by recording its owner, paths, acceptance/control cases, resource needs and candidate target on its owning issue and #190. Existing claimed work is reused. An unclaimed task remains unassigned; coordination wording alone does not establish an active executor.
+
+### Candidate discipline
+
+The native RC-1 pins recorded above remain the authorized frozen native candidate. This addendum does not replace them with current heads or the heads of open PRs. RC-1 is a development candidate with outstanding gates, not a qualified release.
+
+The next candidate is frozen only after #190 records:
+
+- the required implementation and CI fixes, their merged revisions, and genuinely executed required gates with negative-control evidence;
+- the complete consumed dependency closure from lock files, including vendored sources and protocol/tool pins, reconciled with the declared repository revisions;
+- exact image, executable, model/weight, tokenizer/template, configuration, firmware, acceptance-contract and public-authority identities, with hashes and recorded build inputs;
+- two clean builds with matching artifact hashes, an independently reviewed manifest and its immutable digest, and a prepared recovery procedure;
+- the selected native workflow/model and its frozen resource/correctness limits. The hosted 30B reference and the native model each retain their own identities and evidence class inside the one candidate record.
+
+The successor gets a new immutable candidate record in `qualification/candidates/` and a pin entry in this file, linked from #190. Existing frozen records and the frozen `ACCEPTANCE_E2E.md` are preserved. The native adaptation of E1-E6 must be frozen as a separate contract before its acceptance campaign; host-specific SIGKILL/daemon rows are not silently reinterpreted as native tests.
+
+Until that freeze, reports from newer component revisions are readiness evidence. After freeze, a required code, artifact, model, policy or dependency change requires a successor candidate and reruns of affected and integrated gates. Candidate-mismatched or incomplete evidence cannot promote a release.
+
+### Delivery and physical order
+
+The native N1-N7 prerequisite order remains in force. Trusted execution, CPU workflow and recovery preparation can progress together where their paths and resources are independent. Physical boot, device changes, firmware operations and rollback tests retain the separate attended authorization requirements. The storage preparation in aienos#336 requires verified backup and a reviewed recovery procedure before any disk change.
+
+Real 30B/KV qualification follows sovereign-core#507 correctness, #508 performance, then #509 operations, using the actual device/model and declared server/engine builds. A Linux-hosted PASS supports reference qualification and never closes native N4/N5. Persistent KV remains opt-in until all three gates pass.
+
+Each delivery includes candidate/manifest identity, actual consumed revisions and artifact hashes, gate and evidence class, exact reproduction inputs/actions, outcomes for every case/control, immutable raw-evidence links, verifier identity/independence and unresolved limits. Existing signed receipt formats remain intact; this coordination metadata can be an adjacent delivery record. Details and the owner table are in `docs/plans/release-readiness/INTEGRATION_PLAN.md`, section 9.
+
+Release acceptance requires E1-E6 and physical N1-N7 against the same frozen candidate, with the matching controls and independent verdicts. Component, Pi, QEMU and hosted results retain their own labels. No milestone status changes in this addendum, and no physical acceptance PASS is claimed.

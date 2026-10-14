@@ -9,9 +9,9 @@ Written 2026-10-10 by the coordinating session (Claude Code 85679b2b). Status wo
 1. **Pre-registered acceptance before code.** Each lane's acceptance rows are frozen in a document (with its commit) before the implementation PR opens, as NEXT-PHASE-2 did (`ACCEPTANCE-v2.md` frozen at `a564c61` before code). A row is PASS only if every repetition passes and its negative control fails as predicted; NOT_RUN is never PASS.
 2. **Receipts chain to the objective.** Every receipt written during a run names the objective identity (lane L0 fixes the shape), so one run yields one chain, not six folders.
 3. **No new store, no new daemon, no new language.** Shell plus `jq` for harnesses, Rust and C for code, no Python, no systemd, no network during a run, no CUDA (the native Omega engine is the GB10 path).
-4. **Host first, native second.** The first PASS of the whole test is on the Linux host (CPU, then GB10). The native AIENOS target follows the NEXT-PHASE-3 order already decided (`CURRENT_EXECUTION_PLAN.md` addendum 2026-10-08 late) and is version 2 of the test, not a blocker for version 1.
+4. **Host rehearsal, native release.** The frozen WHOLE-SYSTEM-E2E v1 contract is a hosted rehearsal/reference. The release finish is the native AIENOS workflow and physical N1-N7, following the governing native order and its separately frozen E1-E6 adaptation. Updated by Drake's 2026-10-14 direction, recorded in the execution plan; a hosted PASS does not finish the native release.
 5. **Issue-first.** Each lane has a component issue; milestones are comments on #190; merged PRs and receipts are the only status.
-6. **Drake's calls never block.** Lanes that need a decision carry a default assumption until Drake rules; section 6 records his rulings of 2026-10-10, which the lanes now follow.
+6. **Owner decisions have explicit boundaries.** Independent preparation continues while an owner decision is pending. The affected physical boot, disk/firmware change, signing ceremony or recovery experiment waits for its required decision and attended authorization. Section 6 records the earlier rulings; later accepted decisions and the execution plan govern.
 
 ## 2. The lanes
 
@@ -96,3 +96,64 @@ Governing instruction (Drake): execute WHOLE-SYSTEM-E2E through a qualified publ
 > The stage "INTEGRATED AIEN + CORTEX + RSI" of section 3 gains a gate on the host path: WHOLE-SYSTEM-E2E (E1 install, E2 objective, E3 execute, E4 memory, E5 verify, E6 recover; receipts and negative controls per step; `docs/plans/release-readiness/ACCEPTANCE_E2E.md` once frozen). Status 2026-10-10: NOT_RUN. The native AIENOS order of the 2026-10-08 (late) addendum is unchanged; the native target takes version 2 of the test after its step 5.
 >
 > Current baseline corrections (code and receipts, read 2026-10-10): ALLEN demo v3 PASS 10/10 (CPU) and v4-gb10 PASS 10/10 (GB10, native Omega engine, no CUDA) at aien-sovereign-core `docs/campaigns/allen-e2e/`; NEXT-PHASE-2 ACCEPTANCE-v4 PASS (`docs/campaigns/next-phase-2/VERDICT-v4.md`); approval desk required by default (sc#342); golden path PASS on the GB10 at `fefce80` (sc#94). No signed release of any current main exists; CAND-4 is the only candidate manifest. The ten discrepancies of `GAP_ASSESSMENT.md` section 4 stand until closed by lane L7.
+
+## 9. Delivery control on #190 (Drake, 2026-10-14)
+
+This section implements the owner direction recorded in the 2026-10-14 addendum of `CURRENT_EXECUTION_PLAN.md`. It is a delivery aid within the existing release program, not another master plan. Native v1 and physical N1-N7 are the release finish. The original hosted E1-E6 contract remains frozen and supplies the reference/rehearsal; the native adaptation must be frozen separately before native acceptance.
+
+### One candidate and one ledger
+
+The current authorized native pins are RC-1 from the execution plan's 2026-10-12 pin entry. New work targets its controlled successor. The successor is not frozen by this section: open PR heads and live default branches do not replace RC-1. Source, consumed dependencies, builds, models, policy, firmware and acceptance artifacts must first be reconciled into the immutable candidate manifest described by the execution plan.
+
+#190 records each workstream's owner/claim, target gate, actual inputs, next packet and disposition. Component issues own implementation and store their evidence. A delivery from newer component code can be accepted as readiness evidence, but receives no whole-system gate credit until the integrated path runs on the designated frozen candidate. Candidate mismatch, skipped cases, failed controls or unproved independence keep the gate unresolved.
+
+More than half of active implementation capacity goes to the critical-path rows below, which receive first claim on shared hardware and qualification windows. Synapse, Atlas evaluation and RSI each carry one active bounded deliverable within the remaining capacity. Each owner records a resource request before starting a shared build/model/device run, so parallel work cannot silently contaminate a qualification window.
+
+### Owning workstreams and required packets
+
+| Workstream | Owning issue(s) and proposed work | Next packet to #190 | Release relationship |
+| --- | --- | --- | --- |
+| Required verification | sovereign-core #518 / PR #520; aienos #382 / PR #385; omega #424 / merged PR #427; Synapse #66 / PRs #71 and #73 | Candidate-specific required-check matrix, real execution logs, pinned sibling identities, negative controls and actual branch-protection readback. Record missing/disabled tests and unresolved local-gate defects explicitly. | P0 freeze prerequisite. A green report without executed controls cannot promote. |
+| Trusted execution and approval | aienos #383 / PR #384; Omega independent checker; accepted ADR 0037 | Production image and public authority identities; authorized launch; named refusal for forgery, corruption, stale/revoked/missing evidence, wrong code/target and approval bypass; independent verification. Slot image signing follows ADR 0037 Option A; receipt/checker authority is documented separately. | Critical path, E1/E3 and native trust prerequisites. A realization receipt grants no capability. Source-to-executable semantic equivalence is a separate milestone. |
+| Native operator, storage and CPU workflow | aienos #31, #34, #35 and #336 | One production image with operator input, bounded real-model response, exact artifact approval, cancellation, durable memory/artifact recall after cold boot; build/staging packet and backup/recovery prerequisites. | Critical path, N1-N3 and E2-E4. Storage preparation precedes its attended change. |
+| Real-model 30B and persistent KV | omega PR #439; sovereign-core PRs #510/#514 and issues #507-#509 | #507 token-identical uninterrupted/restored continuations and fail-closed corruption/stale/identity controls; then #508 disabled/warm/genuine cold-NVMe at 1/2/4/8 conversations with raw latency/TTFT/throughput/memory/I/O/encryption evidence; then #509 safe opt-in, monitoring, recovery, disabling and rollback. | Critical inference qualification/reference. All three gates precede default enablement. Linux-hosted evidence never closes N4/N5. |
+| Native GB10 and FORGE | aienos #286, then #327; existing Omega platform and FORGE dependencies | Cold-state provenance; bounded device ownership and confinement; known integer-vector output verified in full; failure and clean resource release. After N3/N4, one frozen native model with declared backend and no silent fallback. | Critical path, N4 then N5; existing physical prerequisites and attended windows apply. |
+| Native recovery and installation | aienos #333; sovereign-core #118 for hosted release tooling | Signed update/install identities; interrupted update/execution cases; invalid-signature refusal; known-good native recovery with preserved approved state and no duplicated effects; offline recovery procedure and double-build hashes. | Critical path, E1/E6 and N7. Linux return is a development safety net, not N7 recovery. |
+| Atlas independent evaluation | architecture #222; reuse sovereign-core #403 for CTRL-E5 and `crates/aien-campaign-verifier/` | Frozen held-out ambiguity/clarification/refusal/escalation cases; per-case outcomes; evaluator/executor separation; real-chain and corrupted-output verdicts, including the required second-machine comparison. | Bounded parallel preparation for E5/N6; evaluation grants no authority. This role does not redefine the `atlas` bootstrap-seed repository. |
+| Synapse coordination and migration | Synapse #66, #60 and #8; security PRs #69/#70/#72; CI PRs #71/#73 | Publication/trust/delegation refusals, service-API coordination and group-commit recovery, interrupted writes, bounded reads, preserved conflicts, backup/restore and independent verification; Git interop and rollback evidence before cutover. | One bounded parallel delivery at a time. No whole-agent migration until #8 gates pass; no diversion of critical hardware windows. |
+| RSI controlled improvement | spark-rsi #54; existing `src/promotion_gate.rs`, `src/ratify.rs` and v2 receipt tests | One independent v2 CLI evaluation binding exact subject/hold-outs/policy/judge; refusal of stale/altered/self-judged evidence; review branch and patch only, with unchanged protected/default branches. | Bounded parallel work, outside the native v1 runtime. No unattended self-modification or automatic promotion; no prerequisite on recursive improvement. |
+
+References in this table are ownership/delivery links, not PASS claims. Execution owners and claims are recorded on those issues; newly scoped Atlas and RSI tasks start unassigned rather than implying a worker is running.
+
+### Evidence delivery record
+
+Each owner posts this record on #190 with links to immutable component evidence. These fields wrap or accompany existing receipts; they do not change a frozen signed format.
+
+```text
+Owner / owning issue / PR:
+Target gate and frozen acceptance contract (revision + sha256):
+Candidate id / manifest revision / manifest sha256:
+Actual source revisions and consumed lock/vendor/protocol/tool pins:
+Image / executable / model / tokenizer / config / firmware / public-authority hashes:
+Machine and evidence class (host CPU, Linux-hosted GB10, QEMU, Pi, physical native Spark):
+Exact build/run commands or attended actions, declared inputs and resource window:
+Per-case results, repetition counts and every negative-control outcome:
+Objective/run identity and receipt-chain or delivery-manifest digest:
+Immutable raw-evidence location, artifact checksums and independent verdict:
+Verifier build/authority and evidence of separation from executor:
+Unresolved defects, limitations, dependency/owner blockers and next action:
+```
+
+Before successor freeze, the candidate field explicitly says `successor NOT_FROZEN` and identifies the development inputs; readiness records cannot masquerade as candidate acceptance. Private keys, unlock secrets and tokens never enter this record.
+
+The coordinator checks the manifest and consumed inputs, verifies evidence checksums and controls, and obtains the independent verdict before crediting a gate. Missing cases remain NOT_RUN; failed controls remain FAIL; unavailable independence is recorded INCONCLUSIVE/UNISOLATED. A signed receipt alone does not turn a component demonstration into an integrated PASS.
+
+### Integration and freeze sequence
+
+1. Repair and enforce the required verification gates, including the evidence-immutability and missing mutation/portable CI controls. Preserve same-commit/pinned-input receipt identity and existing requirements.
+2. Reconcile the proposed engine/server/KV and signed-execution changes with the merged production native workflow and recovery path. Deliver component readiness evidence in the dependency order above.
+3. Resolve consumed pins and exact build/model/policy/authority identities; freeze the native E1-E6 adaptation, resource limits and controls. Assemble the reviewed successor manifest and clean double-build/recovery packet. Record the new pins in the execution plan and the immutable manifest on #190.
+4. Run the acceptance campaign on that candidate, preserving the native prerequisite order and separate attended approvals. Qualify 30B/KV correctness before performance and operations; qualify first native integer computation before native-model execution.
+5. Independently judge the complete E1-E6/N1-N7 evidence against the same candidate. A candidate change starts a successor and reruns affected and integrated gates. Release approval waits for the complete reproducible and recoverable native result and the existing public-release gates.
+
+No physical boot, disk change, owner ceremony, firmware action, default KV enablement, agent migration or release publication is authorized by this delivery document. Those actions retain their governing prerequisites and owner decisions. Independent preparation continues while they are pending.
