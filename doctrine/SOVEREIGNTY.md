@@ -47,7 +47,7 @@ Substrate rule: **a QEMU pass never implies, substitutes for, or partially satis
 | :--- | :--- | :--- |
 | M0 `DOCTRINE_V1` | COMPLETE | Ratified doctrine corpus. |
 | M1 `ATLAS_BOOT` | COMPLETE / QEMU QUALIFIED | `aien-dev/atlas`; QEMU gates only. `ATLAS_BOOT_NATIVE_PASS` pending. |
-| M2 `PHYSICS_BOOT` | QEMU QUALIFIED (requalified 2026-09-26) | aien-architecture#6, `aien-dev/physics#1`, `aien-dev/physics#3`. QEMU only. `PHYSICS_BOOT_NATIVE_PASS` pending. |
+| M2 `PHYSICS_BOOT` | QEMU QUALIFIED (requalified 2026-09-26) | aien-architecture#6, `aien-spark/physics#1`, `aien-spark/physics#3`. QEMU only. `PHYSICS_BOOT_NATIVE_PASS` pending. |
 | Physical DGX Spark / native Blackwell execution of this stack | NOT DEMONSTRATED | No native receipt exists. |
 | Sovereign training (any AIEN lineage) | NOT DEMONSTRATED | No training has occurred in the sovereign stack. |
 | `SOVEREIGN_MACHINE_CLOSURE` | TARGET | No closure evidence exists. |
@@ -193,7 +193,7 @@ The architecture requires the following **Closure Proofs**. Each is a target unt
 ### 4.2 Proof 2: `PHYSICS_BOOT`
 * **ROADMAP POSITION:** M2 `PHYSICS_BOOT` (prerequisite for M3 `PHYSICS_EFFECTS`).
 * **TARGET / THEOREM:** `physics.bin` accepts the Atlas handoff, validates and copies the ingress descriptor, installs contract-driven exception vectors, establishes physical frame authority and a kernel-private capability root, and reaches a quiescent ready state as the sole authority over physical effects.
-* **CURRENT STATUS:** QEMU QUALIFIED after requalification (aien-architecture#6, `aien-dev/physics#1`, `aien-dev/physics#3`). **Native: NOT DEMONSTRATED.**
+* **CURRENT STATUS:** QEMU QUALIFIED after requalification (aien-architecture#6, `aien-spark/physics#1`, `aien-spark/physics#3`). **Native: NOT DEMONSTRATED.**
 * **REQUIRED EVIDENCE:** QEMU receipts for every M2 gate on the current revision (see `docs/milestone-2-spec.md`); then a physical cold boot through Atlas into Physics on the target substrate.
 * **QUALIFICATION ARTIFACT:** `PHYSICS_BOOT_QEMU_PASS` and the M2 static/runtime gates; `PHYSICS_BOOT_NATIVE_PASS` (pending).
 * **PASS/FAIL:** All M2 gates PASS on the current revision for the claimed substrate. A QEMU PASS does not satisfy the native gate.

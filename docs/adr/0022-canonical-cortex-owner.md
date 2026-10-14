@@ -16,7 +16,7 @@ Citation note: in this repository "ADR 0022" and ARCH-0022 name the same decisio
 - omega `src/runtime/rx_cortex.{c,h}`: the host reference in the runtime tree.
 - aienos `crates/aienos-cortex`: a Rust epistemic store.
 
-§2.8 moves a concept to an owner only through an accepted ADR or an R16 gate result. `aien-dev/omega#114` (merge `43dcb04`) gave omega `rx_cortex` an append-only journal with verified replay, a single writer, typed recall and World execution recording, and declared it canonical in code. This ADR records that ownership in the architecture.
+§2.8 moves a concept to an owner only through an accepted ADR or an R16 gate result. `aien-spark/omega#114` (merge `43dcb04`) gave omega `rx_cortex` an append-only journal with verified replay, a single writer, typed recall and World execution recording, and declared it canonical in code. This ADR records that ownership in the architecture.
 
 ## Decision
 
@@ -43,7 +43,7 @@ Citation note: in this repository "ADR 0022" and ARCH-0022 name the same decisio
 
 Checked on omega `origin/main` on 2026-09-30.
 
-- `aien-dev/omega#114` "M20 A7: canonical Cortex, World execution recording", merge `43dcb04`, an ancestor of omega `main`. ("M20" in that title means COMPOSITION-1; see `CURRENT_EXECUTION_PLAN.md`.)
+- `aien-spark/omega#114` "M20 A7: canonical Cortex, World execution recording", merge `43dcb04`, an ancestor of omega `main`. ("M20" in that title means COMPOSITION-1; see `CURRENT_EXECUTION_PLAN.md`.)
 - `src/runtime/rx_cortex.h`: the AUTHORITY block names this file the canonical contract, describes the single writer and the journal lock, names `cortex-rs` and `aienos-cortex` as non-authoritative, and states the three-step retire path. It defines `CX_K_CANDIDATE`, `CX_K_PROMOTION`, `CX_K_IMPORTED`, `CX_SRC_CORTEX_RS`, `CX_SRC_AIENOS_CORTEX` and `cx_promote`, and states that the L1/L2/L3 tiers are not implemented.
 - `src/runtime/rx_cortex_record.h`: the World recorder; attaching it claims the store as the single writer. `rx_world.c` calls it through one optional recorder hook (`rx_world_set_recorder`).
 - `src/runtime/rx_jspace.h`: "J-Space holds runtime state-space material only. Memory, evidence and provenance belong to Cortex; J-Space never records them."

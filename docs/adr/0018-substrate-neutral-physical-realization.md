@@ -144,7 +144,7 @@ Any reference that crosses a process, Machine or Fabric boundary is a content di
 
 ## 6. Authority and the resident reaction system
 
-- **Authority:** substrate access is an AIENOS capability like any other. Capability references use 64-bit generations (Omega `EffectPayload` v2, merged in `aien-dev/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused. Read-only computation (a pure numeric result) and irreversible effects (a physical actuation, a write outside the World) remain distinct classes; an analog device that only computes is a read-only provider, and one that actuates is an effect provider under ARCH-0005.
+- **Authority:** substrate access is an AIENOS capability like any other. Capability references use 64-bit generations (Omega `EffectPayload` v2, merged in `aien-spark/omega#71`, `8e7a445`); 32-bit v1 effect payloads are refused. Read-only computation (a pure numeric result) and irreversible effects (a physical actuation, a write outside the World) remain distinct classes; an analog device that only computes is a read-only provider, and one that actuates is an effect provider under ARCH-0005.
 - **AIEN** may propose objectives and select among admissible realizations through the existing routing/cost-model paths. It never obtains a capability to a substrate by doing so.
 - **Resident reaction fit (after R16):** a substrate provider participates as a reaction over the shared World: its results publish through the existing admission → authority → reaction → atomic publication path. This ADR adds **no new central loop, scheduler, service, callback path, or second World**. Device-internal timing (settling, sampling, pulsing) lives inside the FORGE provider below semantic readiness, per ARCH-0016's "physical resources are arbitrated below semantic readiness".
 - **Faults:** a faulted, uncalibrated or out-of-envelope device produces a refused result and evidence. It can never corrupt the World: nothing is published unless the contract check passes.
@@ -171,7 +171,7 @@ Physics Zero (M27–M35, `CURRENT_EXECUTION_PLAN.md` §13) is scientific discove
 
 ## 11. Audit basis at ADR drafting time (2026-09-29)
 
-These facts record the frozen audit basis at the time this ADR was drafted (2026-09-29). While Omega #60, Physics #13, and Physics #16 were open or companion drafts when this audit was captured, all three have since merged to `main` (Omega #60 as `c0edef0`, Physics #13 as `5969159`, and Physics #16 as `1f7c321`). Omega file:line references are at `aien-dev/omega` `8e7a445` (audit basis). Physics references are at `aien-dev/physics#13` head `5781222` unless marked `main`.
+These facts record the frozen audit basis at the time this ADR was drafted (2026-09-29). While Omega #60, Physics #13, and Physics #16 were open or companion drafts when this audit was captured, all three have since merged to `main` (Omega #60 as `c0edef0`, Physics #13 as `5969159`, and Physics #16 as `1f7c321`). Omega file:line references are at `aien-spark/omega` `8e7a445` (audit basis). Physics references are at `aien-spark/physics#13` head `5781222` unless marked `main`.
 
 **Omega: already substrate-neutral:**
 - `src/runtime/rx_capq.h:84-102` `CqNeed` names an operation, types, effect class, authority ceiling, locality, latency/energy/reliability budgets and evidence requirement. No substrate field.
@@ -182,15 +182,15 @@ These facts record the frozen audit basis at the time this ADR was drafted (2026
 - `src/runtime/rx_route.h:61` `enum { RX_COG_HW_CPU_P = 1u, RX_COG_HW_CPU_E = 2u, RX_COG_HW_GPU = 4u };` is **the one hardware-naming type on main**. It filters eligibility (`rx_route.c:323`) and is hashed into the registry digest (`rx_route.c:124`), so adding bits changes registry identity.
 - `src/runtime/rx_contract.{h,c}`: contracts are **exact-only**; field types are integer words; zero hits for tolerance/epsilon/float. `RC_EFFECT_CLASSES` includes a `physical` bit (`rx_contract.h:175`) with no `CQ_FX_*` counterpart.
 - The only tolerance-style parity path is the M18 matmul comparator (`src/omega_blackwell_submit.c` ~658-662, fixed `1e-4` absolute) against `omega_matmul_cpu_oracle_{i32,f16,bf16}` (`src/omega_blackwell_matmul.h:50-55`). The exact integer oracle is `omega_matvec_reference` (`src/omega_matvec.h:74`).
-- `aien-dev/omega#60` (empirical cost model, merged as `c0edef0`; open/conflicting during drafting audit): arms are anonymous indices (`RX_CM_ARMS` 8); the only hardware axis is CPU core class (`RX_CM_CORE_X925/A725/OTHER`); `RX_CM_OPS 1` (matvec only); observations carry `failed` but no error/accuracy field. **No substrate axis.**
+- `aien-spark/omega#60` (empirical cost model, merged as `c0edef0`; open/conflicting during drafting audit): arms are anonymous indices (`RX_CM_ARMS` 8); the only hardware axis is CPU core class (`RX_CM_CORE_X925/A725/OTHER`); `RX_CM_OPS 1` (matvec only); observations carry `failed` but no error/accuracy field. **No substrate axis.**
 - `EffectPayload` v2 (`src/omega_types.h:166-177`): 64-bit `capability_generation`, 178-byte wire form; v1 refused at `src/omega_canonical.c:48-49` and `src/omega_core.c:295`.
 
-**FORGE v1 (`aien-dev/physics#13`, merged as `5969159`; open at drafting audit):**
+**FORGE v1 (`aien-spark/physics#13`, merged as `5969159`; open at drafting audit):**
 - Type names are neutral (`ForgeMachineDescriptor`, `ForgeRealizationRequest`, `ForgeExecutionEvidence`), but the API is **NVIDIA-bound at submit**: `forge_realize.h:29` takes `Nvrm *`; error codes `FORGE_SEAM_ERR_NVRM`; feature/observation flags named after RM classes; `forge_descriptor.c:343` rejects any `pci_vendor_id != 0x10de`.
 - The v1 descriptor is a fixed 208-byte stream hashed with SHA-256. **The only frozen, reproducible v1 identity is the KAT digest** `10d63d05f888eaba4fe473c5f17febe22f462f543ae0c2b005a9a8e5417e09fd` (`forge_descriptor.c:486`), independently reproduced. The live GB10 descriptor digest is boot-volatile (it includes total memory, driver/firmware versions and PCI BDF).
 - `ir_payload`'s pointer value is never hashed (§5.3).
 - SHA-256 comes from `physics` `main:sha256_clean.c`, which is pinned into firmware builds: reuse, never modify or duplicate its exported symbols.
-- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion PR "FORGE substrate V2" is `aien-dev/physics#16` (merged as `1f7c321`, branch `feat/forge-substrate-v2`, host-only KAT: 47 checks and 6 gates PASS; frozen V2 machine digest `89cb5ba6…06c0`).
+- Consequence: V2 wraps the v1 descriptor as an opaque substrate record identified by its digest. It does not reserialize v1, and it does not reuse v1 types as its neutral model. The companion PR "FORGE substrate V2" is `aien-spark/physics#16` (merged as `1f7c321`, branch `feat/forge-substrate-v2`, host-only KAT: 47 checks and 6 gates PASS; frozen V2 machine digest `89cb5ba6…06c0`).
 
 ## 12. Workstream gates AR0–AR7
 

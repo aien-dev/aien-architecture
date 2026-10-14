@@ -9,7 +9,7 @@ Status:          see doctrine/ROADMAP.md (M6 row and the §3 M6 correction note)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4/M5/M6) -> AIEN
 ```
 
-> **Correction note (2026-09-30).** This specification describes the intended target. The implementation that passed the M6 gates (`aien-dev/omega` `src/omega_self_host.c`) does not compile $G_C$: the emitted code writes three constant words for $G_S$ and copies its own bytes for $G_C$, so the `C1 == C2 == C3` fixed point holds by self-copy. M6 is not evidence of a self-hosting or general Omega compiler. The historical gate names and receipt are unchanged. Details and sources: `doctrine/ROADMAP.md` §3, M6 correction note.
+> **Correction note (2026-09-30).** This specification describes the intended target. The implementation that passed the M6 gates (`aien-spark/omega` `src/omega_self_host.c`) does not compile $G_C$: the emitted code writes three constant words for $G_S$ and copies its own bytes for $G_C$, so the `C1 == C2 == C3` fixed point holds by self-copy. M6 is not evidence of a self-hosting or general Omega compiler. The historical gate names and receipt are unchanged. Details and sources: `doctrine/ROADMAP.md` §3, M6 correction note.
 
 ---
 

@@ -21,39 +21,39 @@
     "generated": {
       "children": [
         {
-          "digest": "f007feeb65410f490853822dbf22b17b890d41295cd007254366e66d93722b60",
-          "last_commit": "09f5770",
+          "digest": "3c19bd8422cd2d33958708b699f9135fa40c8b400b31fb5e94da0016c7c5e532",
+          "last_commit": "27ac46f",
           "name": "docs",
           "purpose": "Directory docs. Purpose not yet described by a human."
         },
         {
-          "digest": "f7e4204c5cac8c5dff1cd9d24c4ab1ca7adb83d5863092f1a04348fe08656bf7",
-          "last_commit": "7bfbb63",
+          "digest": "852d4f97923032b04f0c24b23c061fce59fda220b5d423465ffec878ca0708b2",
+          "last_commit": "27ac46f",
           "name": "doctrine",
           "purpose": "Directory doctrine. Purpose not yet described by a human."
         },
         {
-          "digest": "49cbeb77d72e03b36387a66b0c379073bc64cd12a4b7487be91f4810f4e89147",
-          "last_commit": "94fffbc",
+          "digest": "2647c924cb031cb4555dc6bb3eee53b0e9864c724ebf182aa50a9fdb11ee5877",
+          "last_commit": "27ac46f",
           "name": "scripts",
           "purpose": "Directory scripts. Purpose not yet described by a human."
         },
         {
-          "digest": "c23d700ed9187da8eb0363e6a06ddda1449809cbf02b0a7857c83d0a92e349e8",
-          "last_commit": "94fffbc",
+          "digest": "7a3775d548d91499f3e2f001f0e5d63952dc2eb2c081653692d9381b42c500ee",
+          "last_commit": "27ac46f",
           "name": "tools",
           "purpose": "Directory tools. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:1d04f73ac1723f4d2fc744ca87070da194f8ba7bfbe752b1266c10289fc00580",
-      "compiled_at": "2026-10-12T18:14:49Z",
+      "children_root": "sha256:425ddbf5d4b263928099ea447e49b224b0ca5dfc0cfeaef598e956c013e72ae8",
+      "compiled_at": "2026-10-14T01:29:11Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:adcce81e45dc0aacfcebff2aa28f4aced75d69f2626e398ff70e6316698dd530",
+      "digest": "sha256:a4e805bc1394464cafd896eb9e6704649a63484aab99aa18dad4da05187e2f76",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 308,
-      "generated_at_commit": "09f577002480a0c969fdb803388e88108b1886a1",
-      "source_tree": "sha256:aa9a62fbf4dc3f0cb8a33d6e31e55b696e90ef262106fa98240fe20348e6c9bb"
+      "generated_at_commit": "5126e0670e949fa252b59de3bbf16557c8198334",
+      "source_tree": "sha256:f61d8aa21ef80a45b669352a6b3e07f6ca67f647b63124b4c507a5f78f33bf38"
     },
     "owner_lane": "",
     "provenance": {
@@ -156,7 +156,7 @@
         },
         {
           "lane": "lane36",
-          "note": "PR: aien-dev/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
+          "note": "PR: aien-spark/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
           "pr": 84,
           "ref": "2026-10-01-push-lane36-report.md",
           "sha": "e983393",
@@ -348,7 +348,7 @@
         },
         {
           "lane": "lane23",
-          "note": "PR aien-dev/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
+          "note": "PR aien-spark/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
           "pr": 81,
           "ref": "2026-10-01-push-lane23-report.md",
           "sha": "921797b",
@@ -420,7 +420,7 @@
         },
         {
           "lane": "lane14",
-          "note": "PR aien-dev/aien-architecture #79 MERGED, merge commit 9cde162 (9cde162702d2ba9b07f06b3602a5e30464fe1d93). Only CURRENT_EXECUTION_PLAN.md changed.",
+          "note": "PR aien-spark/aien-architecture #79 MERGED, merge commit 9cde162 (9cde162702d2ba9b07f06b3602a5e30464fe1d93). Only CURRENT_EXECUTION_PLAN.md changed.",
           "pr": 79,
           "ref": "2026-10-01-push-lane14-report.md",
           "sha": "9cde162",
@@ -583,7 +583,7 @@
       "git": {
         "branch": "docs/crumb-seed",
         "head": "0af71ba",
-        "remote": "git@github.com:aien-dev/aien-architecture.git"
+        "remote": "git@github.com:aien-spark/aien-architecture.git"
       },
       "purpose_auto": "Repository root cs-aien-architecture. Purpose not yet described by a human."
     }

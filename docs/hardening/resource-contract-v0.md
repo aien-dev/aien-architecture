@@ -4,7 +4,7 @@
 **Status:** DRAFT v0, 2026-10-01, hardening item HD-09 part 1. Docs only. Nothing in this file has run on any tier: every statement about code is a reading of source, labelled by file and line. Where a claim could not be checked from source it is labelled **UNVERIFIED**.
 **Derived from:** [ADR 0025](../adr/0025-execution-transcript-causal-id-resource-contract.md) (ARCH-0025, PROPOSED) section 5 (resource words and refusal rules) and section 1 item 4 (resource charge, refund, refusal and cancel are transcript events). Where this file and ARCH-0025 disagree, ARCH-0025 wins until amended.
 **Also cites:** ARCH-0016 section 8 ("Resource arbitration still exists", the `WorkRequirement` list), section 20 to 22 (causal crumbs, no free-text logs, observability) and section 28 ("Reactions state requirements"); ARCH-0010 (measurements are not causal history); ARCH-0021 Decision 3 (failing receipts are kept).
-**Byte layout home:** a later `aien-dev/aien-protocols` `specs/resource-contract/` (plan item P2 in ARCH-0025 section 6, order 4). This file fixes fields, units, presence rules, measurement points and verdicts. It does not fix bytes.
+**Byte layout home:** a later `aien-spark/aien-protocols` `specs/resource-contract/` (plan item P2 in ARCH-0025 section 6, order 4). This file fixes fields, units, presence rules, measurement points and verdicts. It does not fix bytes.
 **Evidence base:** read-only fresh clones on 2026-10-01: omega `38919c8` (main), aien-protocols `fdd288a` (main, TRN1 merged in aien-protocols#10), aien-architecture `8d24c6d` (main). Omega paths are relative to the omega repository; line numbers are for `38919c8`.
 
 ---

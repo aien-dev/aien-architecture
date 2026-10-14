@@ -28,7 +28,7 @@ Status vocabulary:
 | `REOPENED / IN PROGRESS` | Previously reported complete; reopened for requalification. Not complete. |
 | `PLANNED` | Not started. |
 
-Note (2026-10-01, Lane 33): rows M20, M22 and M23 stay `PLANNED` because no exit gate is met, but precursor work has merged for each (M20 draft `aien-dev/omega#136` open; M22 substrate `#140`; M23 corpus `#122`). For these rows `PLANNED` means "no gate met, precursor work merged", not "nothing started"; see their notes in §3.
+Note (2026-10-01, Lane 33): rows M20, M22 and M23 stay `PLANNED` because no exit gate is met, but precursor work has merged for each (M20 draft `aien-spark/omega#136` open; M22 substrate `#140`; M23 corpus `#122`). For these rows `PLANNED` means "no gate met, precursor work merged", not "nothing started"; see their notes in §3.
 
 ---
 
@@ -38,24 +38,24 @@ Note (2026-10-01, Lane 33): rows M20, M22 and M23 stay `PLANNED` because no exit
 | :--- | :--- | :--- | :--- | :--- |
 | **M0** | Foundational | `DOCTRINE_V1` | Foundational Specification. Ratification of complete architectural corpus. | COMPLETE |
 | **M1** | Foundational | `ATLAS_BOOT` | Irreducible bootstrap seed (`atlas.bin`). Dual-seam verified. | COMPLETE / QEMU QUALIFIED |
-| **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. Requalified 2026-09-26 (`aien-dev/physics#3`, receipt `qualification_receipt.json`). QEMU only; `PHYSICS_BOOT_NATIVE_PASS` pending. | COMPLETE / QEMU QUALIFIED |
-| **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). Qualified 2026-09-26 under `aien-dev/physics#9` (commit `766f8fd6...`, receipt commit `a7dc4ef7...`). QEMU only; native hardware qualification remains separately gated. | COMPLETE / QEMU QUALIFIED |
-| **M4** | Omega Core Substrate | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent content-addressed identity. Qualified 2026-09-26 under `aien-dev/omega` (commit `30bb116...`, receipt commit `a975573...`). | COMPLETE |
-| **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). Qualified 2026-09-26 under `aien-dev/omega` (commit `2dd4102...`, receipt commit `34dbe93...`). | COMPLETE |
-| **M6** | Omega Core Substrate | `OMEGA_SELF_HOST` | Closed-loop reproduction check of a fixed realization emitter (`OMEGA_SELF_HOST`). Qualified 2026-09-26 under `aien-dev/omega` (commit `8033c38...`, receipt `evidence/omega_self_host_qualification_receipt.json`). Correction 2026-09-30: the gates proved a fixed-output self-copy fixed point, not compilation; M6 is not evidence of a general Omega compiler (see §3 M6 note). | COMPLETE |
-| **M7** | Omega Core Substrate | `OMEGA_VERIFY` | Mandatory V0-V2 verification engine; V3-V5 proof-carrying code framework. Qualified 2026-09-26 under `aien-dev/omega` (commit `202fa3c...`, receipt `evidence/omega_verify_qualification_receipt.json`). | COMPLETE |
-| **M8** | Program Synthesis & Library Learning | `OMEGA_PROGRAM_CORE` | Explicit program representation, synthesis task schema (`SYNTHESIS_TASK`), program cost modeling. Qualified 2026-09-26 under `aien-dev/omega` (commit `d25349e...`, receipt `evidence/omega_program_core_qualification_receipt.json`). | COMPLETE |
-| **M9** | Program Synthesis & Library Learning | `OMEGA_SYNTHESIS_V0` | Deterministic typed program synthesis over base primitives. Qualified 2026-09-26 under `aien-dev/omega` (commit `39905a3...`, receipt `evidence/omega_synthesis_v0_qualification_receipt.json`). | COMPLETE |
-| **M10** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_V1` | Versioned procedural program library, provenance tracking, and verified component catalog. Qualified 2026-09-26 under `aien-dev/omega` (commit `1808ed8...`, receipt commit `d3ac970...`). | COMPLETE |
-| **M11** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_DISCOVERY` | Autonomous abstraction discovery from program corpus with verified reuse. Qualified 2026-09-26 under `aien-dev/omega` (commit `1ee43fb...`, receipt commit `8e0a50a...`). | COMPLETE |
-| **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
-| **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-dev/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
-| **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
-| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-dev/physics` and `aien-dev/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
-| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-dev/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
-| **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
-| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-dev/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
-| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. Implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, authority substrate `aien-dev/physics` (`b64753d95bacb1114ba48decde48239f0c542e12`). Reopened per errata E-M19-1..10; requalified and closed 2026-09-30 via M19R Gate 14 Combined Foundation Admission (`evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, `aien-dev/omega#111`) on clean Omega `8024e9a` + Physics `e95e3ed`. | COMPLETE / CORRECTIVELY REQUALIFIED |
+| **M2** | Foundational | `PHYSICS_BOOT` | Physical machine authority nucleus (`physics.bin`). Current-EL VBAR, frame authority, CAP_ROOT. Requalified 2026-09-26 (`aien-spark/physics#3`, receipt `qualification_receipt.json`). QEMU only; `PHYSICS_BOOT_NATIVE_PASS` pending. | COMPLETE / QEMU QUALIFIED |
+| **M3** | Foundational | `PHYSICS_EFFECTS` | Capability ledger, monotonic attenuation, effect broker, signed execution receipts (`EFFECT_INTENT` admission, `EFFECT_RECEIPT` accounting). Qualified 2026-09-26 under `aien-spark/physics#9` (commit `766f8fd6...`, receipt commit `a7dc4ef7...`). QEMU only; native hardware qualification remains separately gated. | COMPLETE / QEMU QUALIFIED |
+| **M4** | Omega Core Substrate | `OMEGA_SEMANTICS` | Semantic graph ($G_S$), typed AST, invariant envelopes, substrate-independent content-addressed identity. Qualified 2026-09-26 under `aien-spark/omega` (commit `30bb116...`, receipt commit `a975573...`). | COMPLETE |
+| **M5** | Omega Core Substrate | `OMEGA_AARCH64` | Native direct AArch64 machine byte realization generator (no LLVM). Qualified 2026-09-26 under `aien-spark/omega` (commit `2dd4102...`, receipt commit `34dbe93...`). | COMPLETE |
+| **M6** | Omega Core Substrate | `OMEGA_SELF_HOST` | Closed-loop reproduction check of a fixed realization emitter (`OMEGA_SELF_HOST`). Qualified 2026-09-26 under `aien-spark/omega` (commit `8033c38...`, receipt `evidence/omega_self_host_qualification_receipt.json`). Correction 2026-09-30: the gates proved a fixed-output self-copy fixed point, not compilation; M6 is not evidence of a general Omega compiler (see §3 M6 note). | COMPLETE |
+| **M7** | Omega Core Substrate | `OMEGA_VERIFY` | Mandatory V0-V2 verification engine; V3-V5 proof-carrying code framework. Qualified 2026-09-26 under `aien-spark/omega` (commit `202fa3c...`, receipt `evidence/omega_verify_qualification_receipt.json`). | COMPLETE |
+| **M8** | Program Synthesis & Library Learning | `OMEGA_PROGRAM_CORE` | Explicit program representation, synthesis task schema (`SYNTHESIS_TASK`), program cost modeling. Qualified 2026-09-26 under `aien-spark/omega` (commit `d25349e...`, receipt `evidence/omega_program_core_qualification_receipt.json`). | COMPLETE |
+| **M9** | Program Synthesis & Library Learning | `OMEGA_SYNTHESIS_V0` | Deterministic typed program synthesis over base primitives. Qualified 2026-09-26 under `aien-spark/omega` (commit `39905a3...`, receipt `evidence/omega_synthesis_v0_qualification_receipt.json`). | COMPLETE |
+| **M10** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_V1` | Versioned procedural program library, provenance tracking, and verified component catalog. Qualified 2026-09-26 under `aien-spark/omega` (commit `1808ed8...`, receipt commit `d3ac970...`). | COMPLETE |
+| **M11** | Program Synthesis & Library Learning | `OMEGA_LIBRARY_DISCOVERY` | Autonomous abstraction discovery from program corpus with verified reuse. Qualified 2026-09-26 under `aien-spark/omega` (commit `1ee43fb...`, receipt commit `8e0a50a...`). | COMPLETE |
+| **M12** | Program Synthesis & Library Learning | `OMEGA_LIVING_MATVEC` | Adaptive realization selection across varying input regimes and cache dynamics. Qualified 2026-09-26 under `aien-spark/omega` (commit `44f645f...`, receipt commit `5a22e60...`). | COMPLETE |
+| **M13** | Program Synthesis & Library Learning | `OMEGA_MACHINE_GRAPH` | Formal machine hardware graph ($G_M$) describing execution pipelines and memory hierarchies, as reported by Physics. Qualified 2026-09-26 under `aien-spark/omega` (commit `9413558...`, receipt commit `db066d9...`). | COMPLETE |
+| **M14** | Program Synthesis & Library Learning | `OMEGA_REALIZATION_SYNTHESIS` | Automated $G_S \times G_M \to G_R$ synthesis targeting declared hardware capabilities. Qualified 2026-09-26 under `aien-spark/omega` (commit `c0c8102...`, receipt commit `03fbcb9...`). | COMPLETE |
+| **M15** | Accelerator Cognition Substrate | `PHYSICS_ACCELERATOR_LINK` | Bounded accelerator authority model grounded in observed DGX Spark device, coherent-memory, SMMUv3, IOMMU, and BAR topology. Native Blackwell submission protocol intentionally deferred to M16. Qualified 2026-09-26 under `aien-spark/physics` and `aien-spark/omega`. | COMPLETE / HARDWARE BOUNDARY QUALIFIED |
+| **M16** | Accelerator Cognition Substrate | `BLACKWELL_NATIVE_PATH_KNOWN` | Empirical execution characterization of native Blackwell GB10 submission architecture (MMIO, GPFIFO queues, doorbells, completions). Correctively requalified 2026-09-26 under `aien-spark/physics` without libcuda (implementation `a2c0d7f...`, receipt `evidence/m16-blackwell-native-path-requalification-receipt.json`, canonical `b64753d...`). | COMPLETE / CORRECTIVELY REQUALIFIED |
+| **M17** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_VECTOR` | Verified native Blackwell sm_121 vector compute realization bound to the $G_S$ semantic contract, using a canonical verified machine-code artifact and dynamically synthesized QMD, parameter bindings, and native submission. Qualified on physical DGX Spark GB10 silicon under `aien-spark/omega` (implementation `27971cd`, receipt `43f725e`). | COMPLETE / SILICON QUALIFIED |
+| **M18** | Accelerator Cognition Substrate | `OMEGA_BLACKWELL_MATMUL` | Verified native Blackwell tensor matrix multiplication with dynamic sm_121 code generation and tensor core acceleration. Qualified on physical DGX Spark GB10 silicon under `aien-spark/omega` (implementation `9421737`, receipt `87349c0`). | COMPLETE / SILICON QUALIFIED |
+| **M19** | Accelerator Cognition Substrate | `OMEGA_ACCELERATOR_RESIDENT` | Persistent Omega execution substrate residing in accelerator-accessible coherent memory. Implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, authority substrate `aien-spark/physics` (`b64753d95bacb1114ba48decde48239f0c542e12`). Reopened per errata E-M19-1..10; requalified and closed 2026-09-30 via M19R Gate 14 Combined Foundation Admission (`evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, `aien-spark/omega#111`) on clean Omega `8024e9a` + Physics `e95e3ed`. | COMPLETE / CORRECTIVELY REQUALIFIED |
 | **M20** | Sovereign Training Runtime | `OMEGA_TENSOR` | Tensor semantics, multi-dimensional array types, strides, and memory layouts. | PLANNED |
 | **M21** | Sovereign Training Runtime | `OMEGA_AUTODIFF` | Sovereign automatic differentiation generating gradient semantic graphs. | PLANNED |
 | **M22** | Sovereign Training Runtime | `OMEGA_OPTIMIZER` | Verified sovereign optimizer realizations (SGD, Adam, AdamW). | PLANNED |
@@ -95,13 +95,13 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 - Specification: [`docs/milestone-1-spec.md`](../docs/milestone-1-spec.md).
 
 ### M2 — `PHYSICS_BOOT`
-- Requalified 2026-09-26 under aien-dev/aien-architecture#6, aien-dev/physics#1, and aien-dev/physics#3 (descriptor ingress anti-expansion, frame authority bounds, and exception confinement hardening). Ratified via qualification receipt (`qualification_receipt.json`).
+- Requalified 2026-09-26 under aien-spark/aien-architecture#6, aien-spark/physics#1, and aien-spark/physics#3 (descriptor ingress anti-expansion, frame authority bounds, and exception confinement hardening). Ratified via qualification receipt (`qualification_receipt.json`).
 - Exception level is contract-driven: Physics checks `CurrentEL` against the machine contract and installs `VBAR_EL1` or `VBAR_EL2` accordingly, with no implicit EL2 -> EL1 transition. The current QEMU contract, `CONTRACT-QEMU-VIRT-AARCH64-M2`, specifies EL1 entry.
 - `PHYSICS_BOOT_QEMU_PASS` does not imply `PHYSICS_BOOT_NATIVE_PASS`.
 - Specification: [`docs/milestone-2-spec.md`](../docs/milestone-2-spec.md).
 
 ### M3 — `PHYSICS_EFFECTS`
-- Qualified 2026-09-26 under `aien-dev/physics#9` (merged as commit `766f8fd6b898f4df793ffa809f031040ba0912fa`), ratified via qualification receipt `m3/m3_qualification_receipt.json` in commit `a7dc4ef7e0ea9fa733d06114eb31a26d70cb3e53`.
+- Qualified 2026-09-26 under `aien-spark/physics#9` (merged as commit `766f8fd6b898f4df793ffa809f031040ba0912fa`), ratified via qualification receipt `m3/m3_qualification_receipt.json` in commit `a7dc4ef7e0ea9fa733d06114eb31a26d70cb3e53`.
 - Bounded 32-record capability ledger with monotonic attenuation, ancestor-chain validation on use (instantaneous descendant revocation), single canonical effect broker with 10-stage fail-closed admission decoupled from physical handlers, append-only receipt ledger with rolling cryptographic SHA-256 seal chain, and 32-entry replay cache.
 - In-guest bare-metal test suite in QEMU virt AArch64 passed 21/21 tests (`0x001FFFFF`). Python-free qualification runner evaluated all 19 canonical gates with 100% pass and zero regressions on M1 or M2.
 - Anti-bloat budget: `physics.elf` text size 10,624 bytes (32.4% of 32 KiB budget); `physics.bin` total image 18,432 bytes (28.1% of 64 KiB budget).
@@ -110,7 +110,7 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 
 ### M5 — `OMEGA_AARCH64`
 - Name note (2026-10-08): this is Omega M5. `CURRENT_EXECUTION_PLAN.md` also says "M5" for the AIENOS encryption and identity milestone (TRUST-1); that is a different milestone.
-- Qualified 2026-09-26 under `aien-dev/omega` (commit `2dd41024345d207d57f59d4c7940176b6697b099`, receipt commit `34dbe93e9fa22aee50b8eb426e6d1e43444490f2`).
+- Qualified 2026-09-26 under `aien-spark/omega` (commit `2dd41024345d207d57f59d4c7940176b6697b099`, receipt commit `34dbe93e9fa22aee50b8eb426e6d1e43444490f2`).
 - Direct AArch64 machine byte realization generator without LLVM, Clang, GCC, or GNU `as`.
 - Verified pure integer register lowering ($G_S \to$ AArch64) for $F(a, b, c) = (a + b) - c$.
 - Content-addressed `REALIZATION_ID` cryptographic binding to M4 `SEMANTIC_ID`.
@@ -124,7 +124,7 @@ Era ranges: Foundational M0-M3; Omega Core Substrate M4-M7; Program Synthesis & 
 ### M6: `OMEGA_SELF_HOST` (correction note, 2026-09-30)
 - The historical identifier, commit `8033c38`, receipt `evidence/omega_self_host_qualification_receipt.json` and the COMPLETE row above are kept unchanged. The 10 M6 gates as specified did pass.
 - What the gates actually proved: the emitted "compiler" (`src/omega_self_host.c`, `emit_compiler_code`) checks the `OMGG` header, then dispatches on the object-count byte. For the 8-object graph $G_S$ it writes three constant words (ADD, SUB, RET). For the 5-object graph $G_C$ it copies its own instruction bytes. So `C1 == C2 == C3` holds by self-copy (quine style), not by compiling $G_C$.
-- M6 is therefore **not** evidence of a general Omega compiler or of compiler self-hosting, and it does not satisfy `SOVEREIGNTY.md` §6.3 invariant 1. A general Omega compiler does not exist on omega main. What exists is narrower: `omega_program_realize` (`src/omega_program.c`) lowers one program body shape (a sequence of arithmetic and bitwise operations with immediate constants across 8/16/32/64-bit integer types) to AArch64, and omega itself names this realization, not a compiler; the surface-language front end (`src/language/`) is partial; the compiler slice is OSC-1 work. Update 2026-10-01 (Lane 33): the OSC-1 slice (`aien-dev/omega#144` `b81f850`) and OSC-2 (`#148` to `#151`, last `7e713e3`: checked contracts, structs, arenas) are merged, IMPLEMENTED / NOT QUALIFIED with host receipts only. It is a compiler slice, not self-hosting, and not a general Omega compiler; M6 is unchanged.
+- M6 is therefore **not** evidence of a general Omega compiler or of compiler self-hosting, and it does not satisfy `SOVEREIGNTY.md` §6.3 invariant 1. A general Omega compiler does not exist on omega main. What exists is narrower: `omega_program_realize` (`src/omega_program.c`) lowers one program body shape (a sequence of arithmetic and bitwise operations with immediate constants across 8/16/32/64-bit integer types) to AArch64, and omega itself names this realization, not a compiler; the surface-language front end (`src/language/`) is partial; the compiler slice is OSC-1 work. Update 2026-10-01 (Lane 33): the OSC-1 slice (`aien-spark/omega#144` `b81f850`) and OSC-2 (`#148` to `#151`, last `7e713e3`: checked contracts, structs, arenas) are merged, IMPLEMENTED / NOT QUALIFIED with host receipts only. It is a compiler slice, not self-hosting, and not a general Omega compiler; M6 is unchanged.
 - Source of this correction (omega main `6d1ff1d`): `spec/self-host.md` note of 2026-09-29; `docs/adr/OMEGA-SYSTEMS-CORE-0000.md` item C8 (decided by Drake Stapleton, 2026-09-29: the M6 result "was a fixed-output self-copy check, not compilation, and is never evidence of a compiler"); `docs/osc/audit/language-compiler.md`.
 - Reopening M6 or redefining its gate is an explicit decision that has not been taken. Until then the row stays COMPLETE with this note.
 
@@ -140,7 +140,7 @@ One nontrivial abstraction not present in the initial library that:
 4. Reduces search cost.
 
 ### M12 — `OMEGA_LIVING_MATVEC`
-- Qualified 2026-09-26 under `aien-dev/omega` (commit `44f645f176f634fdb4b5aac950d31423b2946664`, receipt commit `5a22e60458c0545f6facbd6063b1209a4fc85b52`).
+- Qualified 2026-09-26 under `aien-spark/omega` (commit `44f645f176f634fdb4b5aac950d31423b2946664`, receipt commit `5a22e60458c0545f6facbd6063b1209a4fc85b52`).
 - Pure mathematical Matrix-Vector multiplication specification ($y = Ax$, contract `CONTRACT-OMEGA-LIVING-MATVEC-M12`) without hardware commitment.
 - Machine-aware synthesis generating 3 distinct candidate AArch64 realizations targeting MachineGraph ($G_M$):
   - $R_0$: `matvec_scalar` (18 insns, 72 bytes)
@@ -154,7 +154,7 @@ One nontrivial abstraction not present in the initial library that:
 - Specification: [`docs/milestone-12-spec.md`](../docs/milestone-12-spec.md).
 
 ### M14 — `OMEGA_REALIZATION_SYNTHESIS`
-- Qualified 2026-09-26 under `aien-dev/omega` (commit `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d`, receipt commit `03fbcb9`).
+- Qualified 2026-09-26 under `aien-spark/omega` (commit `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d`, receipt commit `03fbcb9`).
 - Automated machine-aware lowering synthesis ($G_S \times G_M \to G_R$) producing verified native AArch64 machine code without LLVM, GCC, GNU `as`, or JIT.
 - Cryptographic triple identity binding: `REALIZATION_ID = SHA-256(OMG0 | KIND_REALIZATION | profile | entry_offset | code_len | SEMANTIC_ID | MACHINE_ID | code_bytes)`.
 - Machine-aware instruction scheduling specialized for DGX Spark Grace Neoverse V2 (4-wide issue, multi-register pre-load) vs QEMU virt (2-wide baseline sequential).
@@ -163,7 +163,7 @@ One nontrivial abstraction not present in the initial library that:
 
 ### M15 — `PHYSICS_ACCELERATOR_LINK`
 - Status: **COMPLETE / HARDWARE BOUNDARY QUALIFIED**.
-- Qualified 2026-09-26 under `aien-dev/physics#10` and `aien-dev/omega#21`.
+- Qualified 2026-09-26 under `aien-spark/physics#10` and `aien-spark/omega#21`.
 - Grounded in observed DGX Spark physical topology (`spark-b87b`): NVIDIA GB10 (`10de:2e12` @ `000f:01:00.0`, IOMMU group 20), ARM SMMUv3 (`arm-smmu-v3.1.auto` @ `0x13000000`, Stream ID `0x0100`), BAR0 aperture `0x24000000-0x27ffffff` (64 MiB), within 128 GiB unified coherent LPDDR5x DRAM `[0x80000000, 0x2080000000)`.
 - Canonical Boundary Principle:
   - M15 establishes who may touch the accelerator (authority model & topology grounding).
@@ -179,7 +179,7 @@ One nontrivial abstraction not present in the initial library that:
 
 ### M16 - `BLACKWELL_NATIVE_PATH_KNOWN`
 - Status: **COMPLETE / CORRECTIVELY REQUALIFIED**.
-- Requalified 2026-09-26 under `aien-dev/physics`:
+- Requalified 2026-09-26 under `aien-spark/physics`:
   - Implementation Commit: `physics@a2c0d7fbc03f7ce91fcb6389312a0ee8630322cd`
   - Requalification Receipt Commit: `physics@92038f7`
   - Canonical Main Commit: `physics@b64753d95bacb1114ba48decde48239f0c542e12` (PR #11)
@@ -206,9 +206,9 @@ One nontrivial abstraction not present in the initial library that:
 ### M17: `OMEGA_BLACKWELL_VECTOR`
 - Status: **COMPLETE / SILICON QUALIFIED**.
 - Formally ratified 2026-09-26.
-- Implementation: `aien-dev/omega@27971cd` (PR #22).
-- Final Evidence Receipt: `aien-dev/omega@43f725e` (PR #23, `evidence/omega_blackwell_vector_qualification_receipt.json`).
-- M16 Authority Substrate: `aien-dev/physics@b64753d` (PR #11).
+- Implementation: `aien-spark/omega@27971cd` (PR #22).
+- Final Evidence Receipt: `aien-spark/omega@43f725e` (PR #23, `evidence/omega_blackwell_vector_qualification_receipt.json`).
+- M16 Authority Substrate: `aien-spark/physics@b64753d` (PR #11).
 - Specification: [`docs/milestone-17-spec.md`](../docs/milestone-17-spec.md).
 - Silicon Target: NVIDIA DGX Spark (`spark-b87b`), Grace Blackwell GB10 (sm_121, 128 GiB unified LPDDR5x RAM).
 - Semantic Contract: Unsigned 32-bit vector addition ($C[i] = (A[i] + B[i]) \pmod{2^{32}}$) with exact bit-for-bit mathematical parity against OMEGA semantic oracle across boundary lengths $N \in \{1, 15, 63, 64, 65, 127, 128, 256, 1024\}$.
@@ -222,8 +222,8 @@ One nontrivial abstraction not present in the initial library that:
 ### M18: `OMEGA_BLACKWELL_MATMUL`
 - Status: **COMPLETE / SILICON QUALIFIED**.
 - Ratified 2026-09-26.
-- Implementation: `aien-dev/omega` (commit `9421737`, receipt commit `87349c0`).
-- Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`).
+- Implementation: `aien-spark/omega` (commit `9421737`, receipt commit `87349c0`).
+- Authority Substrate: `aien-spark/physics` M16 native submission (commit `b64753d`).
 - Hardware Target: NVIDIA DGX Spark (`spark-b87b`), Grace Blackwell GB10 (`sm_121`, 128 GiB unified LPDDR5x RAM).
 - Code Truth Doctrine: Zero static precompiled instruction tables in codegen core; dynamic sm_121 instruction selection, bounded linear-scan register allocation, 128-bit machine word encoding, and QMD launch descriptor synthesis.
 - Tensor Core Acceleration: Native physical GB10 execution of `HMMA.16816.F32` (FP16 inputs) and `HMMA.16816.F32.BF16` (BF16 inputs) with FP32 accumulation.
@@ -234,10 +234,10 @@ One nontrivial abstraction not present in the initial library that:
 - Cortex Receipt: Space `atlas-memory`, receipt ID `03c34210-4ecc-4c79-9bf9-c3ac37e157f8`.
 
 ### M19: `OMEGA_ACCELERATOR_RESIDENT`
-- Status: **COMPLETE / CORRECTIVELY REQUALIFIED** (closed 2026-09-30 via M19R Gate 14, `aien-dev/omega#111` `5517d22`, receipt `50dd611b...`; previously recorded here as **REOPENED / IN PROGRESS** while the M19R recovery program ran).
+- Status: **COMPLETE / CORRECTIVELY REQUALIFIED** (closed 2026-09-30 via M19R Gate 14, `aien-spark/omega#111` `5517d22`, receipt `50dd611b...`; previously recorded here as **REOPENED / IN PROGRESS** while the M19R recovery program ran).
 - Specification: `docs/milestone-19-spec.md`.
 - Target Substrate: Persistent Omega Execution Substrate in Coherent Memory on NVIDIA DGX Spark (`spark-b87b`, Grace Blackwell GB10, `sm_121`, 128 GiB unified LPDDR5x RAM).
-- Authority Substrate: `aien-dev/physics` M16 native submission (commit `b64753d`), `aien-dev/omega` M18 (commit `7273c37`).
+- Authority Substrate: `aien-spark/physics` M16 native submission (commit `b64753d`), `aien-spark/omega` M18 (commit `7273c37`).
 - Architecture: `OmegaAcceleratorWorld` holding persistent RM client, GPU device object, VAS aperture, GPFIFO compute channel, USERD doorbell mapping, completion semaphore ring, code registry, buffer registry, and coherent scratch arena.
 - Core Invariant: `resident != immortal`. Every resident object requires explicit monotonic generation counters, capability-bounded access scopes, fail-closed stale handle refusal, deterministic capability revocation, and clean zero-leak teardown.
 - Heterogeneous Workload: Sustained alternating execution across Vector Addition, INT32 MatMul, FP16 Tensor MMA, and BF16 Tensor MMA on the shared persistent channel.
@@ -247,9 +247,9 @@ One nontrivial abstraction not present in the initial library that:
 - Zero Foreign Userspace Runtime: Zero dynamic linkage to `libcuda.so` or `libcudart.so` (`ldd`), zero undefined dynamic CUDA symbols (`nm -u`), zero runtime mappings in `/proc/self/maps`.
 - Ratification binding: implementation `beaa1185154051f147a5588e9fa78410a879b9a1`, evidence `5a850796c6e0e843178ade5374034066539d4697`, merge `ae2476d2c16beedff6507cbfc36701bb740203de`, physics authority `b64753d95bacb1114ba48decde48239f0c542e12`.
 - Independent rerun (2026-09-27, DGX Spark): all 175 gates (M4-M19) re-executed and passed at `omega ae2476d`, with binary SHA-256, manifest digest, and rolling state digest reproduced byte-for-byte against the committed receipt. The M19 receipt's `157`/`175` counts were asserted literals at qualification time; this independent rerun corroborates that the underlying gates did pass on silicon.
-- Naming: the machine realization subsystem is renamed FORGE per ADR 0014 ("FORGE REALIZES; AEGIS VERIFIES"). This is not a history rewrite: M19's own artifacts (`aien-dev/physics` M16 commit `b64753d`), the `is_physics_authorized` field serialized in historical fingerprints, and identifiers such as `PHYSICS_ACCELERATOR_LINK` keep their historical names.
+- Naming: the machine realization subsystem is renamed FORGE per ADR 0014 ("FORGE REALIZES; AEGIS VERIFIES"). This is not a history rewrite: M19's own artifacts (`aien-spark/physics` M16 commit `b64753d`), the `is_physics_authorized` field serialized in historical fingerprints, and identifiers such as `PHYSICS_ACCELERATOR_LINK` keep their historical names.
 - Substrate-neutral realization (analog, neuromorphic, FPGA/CGRA, photonic, future substrates) is ADR 0018 (ARCH-0018, ACCEPTED, merged 641bd3c); its workstream gates AR0-AR7 are sequenced in `CURRENT_EXECUTION_PLAN.md` §6 C3 and carry no M-number.
-- Reopened: errata E-M19-1 through E-M19-10 are recorded in `docs/errata/m19-errata.md`, mapping each gap the receipt did not derive or enforce to the M19R recovery gate that closes it. M19 re-closed on 2026-09-30 via the M19R Combined Foundation Admission Gate (`docs/m19r-recovery-program.md`, `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, `aien-dev/omega#111`).
+- Reopened: errata E-M19-1 through E-M19-10 are recorded in `docs/errata/m19-errata.md`, mapping each gap the receipt did not derive or enforce to the M19R recovery gate that closes it. M19 re-closed on 2026-09-30 via the M19R Combined Foundation Admission Gate (`docs/m19r-recovery-program.md`, `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, `aien-spark/omega#111`).
 
 ### M19R: `FOUNDATION_REPAIR`
 - Status: **PASS / CLOSED** (reclosed foundation 2026-09-30 via Gate 14 receipt `50dd611b...`).
@@ -260,18 +260,18 @@ One nontrivial abstraction not present in the initial library that:
 
 | Gate | Scope | State | Evidence |
 | :--- | :--- | :--- | :--- |
-| Gate 1 (M19R) | Truthful, immutable evidence; receipts derived from observed gate output | Merged | `aien-dev/omega#30` (`04d80f5`), `aien-dev/omega#33` (merge `49480cd`, 2026-09-27); receipt `evidence/M19R/c4d87451bbde1d8f09442191f735e893fd47916e72a6330c96df84e9e6028404.json`, recorded from clean omega `e5159fa` + physics `29bf6ea` |
-| Gate 2 (M19R-RUNTIME) | GPU memory lifecycle, exactly-once completion, long-run soak | Merged | `aien-dev/omega#31` (`1feb832`), `aien-dev/omega#33` (same receipt as Gate 1: PASS=229, 100,000-cycle soak passed, RM balance/allocations/mappings/registries back to zero) |
-| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | PASS | aien-dev/physics#13 merged 5969159; Gates 3 and 4 pass (11/11, 10/10) |
+| Gate 1 (M19R) | Truthful, immutable evidence; receipts derived from observed gate output | Merged | `aien-spark/omega#30` (`04d80f5`), `aien-spark/omega#33` (merge `49480cd`, 2026-09-27); receipt `evidence/M19R/c4d87451bbde1d8f09442191f735e893fd47916e72a6330c96df84e9e6028404.json`, recorded from clean omega `e5159fa` + physics `29bf6ea` |
+| Gate 2 (M19R-RUNTIME) | GPU memory lifecycle, exactly-once completion, long-run soak | Merged | `aien-spark/omega#31` (`1feb832`), `aien-spark/omega#33` (same receipt as Gate 1: PASS=229, 100,000-cycle soak passed, RM balance/allocations/mappings/registries back to zero) |
+| Gates 3-4 (FORGE-0, FORGE-HWID) | FORGE realize / AEGIS verify seam; observed hardware identity | PASS | aien-spark/physics#13 merged 5969159; Gates 3 and 4 pass (11/11, 10/10) |
 
-| Gate 5 (OMEGA-NUMERIC-0) | FP32 Blackwell machine vocabulary | Merged | `aien-dev/omega#110` / `8024e9a`; receipt `evidence/OMEGA-NUMERIC-0/dc4e6012e52b2108781e77d2427a1c49b6b71f307ba918f4a62174c5d35aa746.json` (PASS=36) |
-| Gate 14 (Combined Foundation) | Combined Foundation Admission (evidence, runtime, Forge, FP32) | Merged / PASS | `aien-dev/omega#111` (`5517d22`); receipt `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, binding clean Omega `8024e9a` + Physics `e95e3ed` (8/8 criteria satisfied). M19 resident foundation requalification is CLOSED. |
+| Gate 5 (OMEGA-NUMERIC-0) | FP32 Blackwell machine vocabulary | Merged | `aien-spark/omega#110` / `8024e9a`; receipt `evidence/OMEGA-NUMERIC-0/dc4e6012e52b2108781e77d2427a1c49b6b71f307ba918f4a62174c5d35aa746.json` (PASS=36) |
+| Gate 14 (Combined Foundation) | Combined Foundation Admission (evidence, runtime, Forge, FP32) | Merged / PASS | `aien-spark/omega#111` (`5517d22`); receipt `evidence/GATE14-FOUNDATION/50dd611bfd28e8320443810b35f7425df5eb112777662e5840c227154271f872.json`, binding clean Omega `8024e9a` + Physics `e95e3ed` (8/8 criteria satisfied). M19 resident foundation requalification is CLOSED. |
 
 ### ADR 0016 (ARCH-0016) resident reaction stages R0-R16
 
-These are the implementation stages of ADR 0016, not roadmap milestones; they carry no M-number and do not change the table in §2. Each row cites the `aien-dev/omega` receipt on `main` (`evidence/<stage>/<digest>.json`) and the verdict it records.
+These are the implementation stages of ADR 0016, not roadmap milestones; they carry no M-number and do not change the table in §2. Each row cites the `aien-spark/omega` receipt on `main` (`evidence/<stage>/<digest>.json`) and the verdict it records.
 
-| Stage | Verdict recorded in receipt | Where it ran | Merged via (`aien-dev/omega`) |
+| Stage | Verdict recorded in receipt | Where it ran | Merged via (`aien-spark/omega`) |
 | :--- | :--- | :--- | :--- |
 | R0 | Satisfied by ADR 0016 itself (`aien-architecture#42`, `4790423`) | — | — |
 | R1 `R1_CANONICAL_WORLD` | PASS | host CPU, not silicon | #39, #40 (`evidence/R1/`) |
@@ -289,7 +289,7 @@ These are the implementation stages of ADR 0016, not roadmap milestones; they ca
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon | #49 (`fcb5793`, `evidence/R13/48d5a36c...json`) |
 | R14 living recovery | PASS | GB10 silicon | #50 (`f70ae10`, `evidence/R14/0c091687...json`) |
 | R15 quantitative performance | HISTORICAL PASS (16/16 at omega `3e9e53b`); requal FAIL 14/16 (G1, G15) at `3108fc2`; NOT requalified on CAND-0 or CAND-1 (CAND-1: R15 parity host and silicon PASS; the performance receipt needs a quiet machine, NOT_RUN) | DGX Spark (per receipt) | #67 (`bba3bd3`, `evidence/R15/065c6884...json`, outcome PASS, 16/16 gates); requal `evidence/REQUAL-3108fc2/` |
-| R16 orchestrator retirement | HISTORICAL PASS at `850fc54`; requal FAIL at `3108fc2`; NOT requalified on CAND-0 or CAND-1 (CAND-1 harness: G1-G5 PASS, G6 not implemented, G7 waits on the R15 performance receipt, G8 outside the script; `qualification/candidates/CAND-1.gates.md`) | DGX Spark | `aien-dev/omega#112` merged (`3dd5eaa`). Receipt `22d7a79a` is INVALID as a current claim (its script was later found defective); requal `evidence/REQUAL-3108fc2/` recorded R16 FAIL; the CAND-0 loop inventory reconciled to 502 sites, 0 unclassified, 0 stale (omega PR #279, inventory only). Recorded originally: all gates G1-G8 PASS on clean candidate `850fc545770554c8db45e97acf20224663878685`. Canonical receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`). 281/281 sites classified (0 unclassified). Full R1-R15 candidate ladder passed on GB10 silicon. Runtime freeze on `omega/src/runtime/` lifted. Exception recorded 2026-10-01: `#112` merged with its `evidence-immutable` check FAILED (run `36799862685`); `evidence/R16/inventory.json` was edited in place by `1edb56b` and `6831117`, which the PR did not record. |
+| R16 orchestrator retirement | HISTORICAL PASS at `850fc54`; requal FAIL at `3108fc2`; NOT requalified on CAND-0 or CAND-1 (CAND-1 harness: G1-G5 PASS, G6 not implemented, G7 waits on the R15 performance receipt, G8 outside the script; `qualification/candidates/CAND-1.gates.md`) | DGX Spark | `aien-spark/omega#112` merged (`3dd5eaa`). Receipt `22d7a79a` is INVALID as a current claim (its script was later found defective); requal `evidence/REQUAL-3108fc2/` recorded R16 FAIL; the CAND-0 loop inventory reconciled to 502 sites, 0 unclassified, 0 stale (omega PR #279, inventory only). Recorded originally: all gates G1-G8 PASS on clean candidate `850fc545770554c8db45e97acf20224663878685`. Canonical receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json` (`AIEN_RX_R16_ORCHESTRATOR_RETIRED_V1`). 281/281 sites classified (0 unclassified). Full R1-R15 candidate ladder passed on GB10 silicon. Runtime freeze on `omega/src/runtime/` lifted. Exception recorded 2026-10-01: `#112` merged with its `evidence-immutable` check FAILED (run `36799862685`); `evidence/R16/inventory.json` was edited in place by `1edb56b` and `6831117`, which the PR did not record. |
 
 Status updated 2026-09-30 upon candidate-bound silicon qualification receipt and PR #112 merge. Correction 2026-10-05 (source `reports/L2-EVID.md`): the R15 and R16 rows above are historical PASS at their own candidates; requalification at omega `3108fc2` recorded R15 FAIL 14/16 (G1, G15) and R16 FAIL (omega `evidence/REQUAL-3108fc2/`); the R16 receipt `22d7a79a` at `850fc54` is INVALID as a current claim; none of R1 to R16 is requalified on CAND-0 (omega `e5593ae`) and the ladder rerun is in progress. ADR 0016 migration is therefore NOT claimed COMPLETE on the current candidate.
 
@@ -299,13 +299,13 @@ Scope note (2026-10-01, Lane 33): every candidate-bound R13 to R16 receipt above
 
 These are the implementation stages of ADR 0020, not roadmap milestones; they carry no M-number and do not change the table in §2. EST-4 and later wait for R16 closure.
 
-Status 2026-10-01 (R16 wording corrected 2026-10-05: R16 is a historical PASS, not requalified on CAND-0, see the R16 row): R16 was closed (`aien-dev/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-dev/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). All three attempts VOID, no verdict.
+Status 2026-10-01 (R16 wording corrected 2026-10-05: R16 is a historical PASS, not requalified on CAND-0, see the R16 row): R16 was closed (`aien-spark/omega#112` `3dd5eaa`), so EST-4 and later no longer wait on R16; they wait on a passing EST-3 calibration. Three frozen calibration attempts are recorded as FAIL and kept: v1 `aien-spark/omega#105` `6d1ff1d`, v2 `#118` `8a56ace`, v3 `#129` `d78fd11` (Phase A FAIL, sealed run NOT_RUN, omega `docs/estimation/receipts/est3c-v3/RESULT.md`). v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). All three attempts VOID, no verdict.
 
 | Stage | Exit token | Status |
 | :--- | :--- | :--- |
-| EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
-| EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module; code merged `aien-dev/omega#105` `6d1ff1d`) |
-| EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | IN PROGRESS (signal tools merged `aien-dev/omega#105` `6d1ff1d`; exit not claimed) |
+| EST-0 semantic contract | `ESTIMATION_SEMANTIC_CONTRACT` | IN PROGRESS (standalone module; code merged `aien-spark/omega#105` `6d1ff1d`) |
+| EST-1 linear Kalman reference | `LINEAR_KALMAN_REFERENCE` | IN PROGRESS (standalone module; code merged `aien-spark/omega#105` `6d1ff1d`) |
+| EST-2 real signal | `ESTIMATION_REAL_SIGNAL` | IN PROGRESS (signal tools merged `aien-spark/omega#105` `6d1ff1d`; exit not claimed) |
 | EST-3 calibration | `ESTIMATION_CALIBRATION` | FAIL recorded (v1 `omega#105`, v2 `omega#118`, v3 `omega#129`); v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open) |
 | EST-4 World belief state | `WORLD_BELIEF_STATE` | PLANNED (blocked on a passing EST-3) |
 | EST-5 Omega cost model | `OMEGA_ESTIMATION_INTEGRATION` | PLANNED (blocked on a passing EST-3) |
@@ -316,16 +316,16 @@ Status 2026-10-01 (R16 wording corrected 2026-10-05: R16 is a historical PASS, n
 | EST-10 active information gain | `ACTIVE_INFORMATION_GAIN` | PLANNED |
 
 ### M20: `OMEGA_TENSOR`
-- Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-dev/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-dev/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` (`7a5a13c`, CPU only) and standalone GB10 DIV/SQRT `#141` (`6b14354`) are merged (corrected 2026-10-01, Lane 33; they were already merged or merging when this note was written), as are GB10 main-path WP-C `#147` (`2d8cd68`) and DIV/SQRT `#152` (`07004a8`). E1 is still PARTIAL, 2 of 6 exit requirements met; `#136` remains an open draft (see `CURRENT_EXECUTION_PLAN.md` §2 Lane 33 addendum).
-- Status 2026-10-02: the E1 prerequisite is CLOSED on the GB10 chip campaign at omega `fb36109` (merged `40d1ea37`, `aien-dev/omega#225`, Physics `e95e3ed`): consolidated receipt omega `evidence/E1-CLOSURE/e7851c69d34ac777a9436af16d0bdd5d69264c8528c62d562b600f5d89153061.json`, six of six E1 bullets met, exclusions recorded in omega `docs/numeric/E1_GAP_TABLE.md` (natural-base EXP/LOG not on GB10). M20 `OMEGA_TENSOR` itself is unchanged: table status PLANNED, `#136` an open draft, no exit gate met.
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met. A semantic layer + CPU realization is OPEN as `aien-spark/omega#136` (not qualified). Its prerequisite E1 numerical closure is not closed: scalar contract CPU tier `aien-spark/omega#124` `d3194f6` and reductions `#134` `c54d492` merged; transcendental sequences `#127` (`7a5a13c`, CPU only) and standalone GB10 DIV/SQRT `#141` (`6b14354`) are merged (corrected 2026-10-01, Lane 33; they were already merged or merging when this note was written), as are GB10 main-path WP-C `#147` (`2d8cd68`) and DIV/SQRT `#152` (`07004a8`). E1 is still PARTIAL, 2 of 6 exit requirements met; `#136` remains an open draft (see `CURRENT_EXECUTION_PLAN.md` §2 Lane 33 addendum).
+- Status 2026-10-02: the E1 prerequisite is CLOSED on the GB10 chip campaign at omega `fb36109` (merged `40d1ea37`, `aien-spark/omega#225`, Physics `e95e3ed`): consolidated receipt omega `evidence/E1-CLOSURE/e7851c69d34ac777a9436af16d0bdd5d69264c8528c62d562b600f5d89153061.json`, six of six E1 bullets met, exclusions recorded in omega `docs/numeric/E1_GAP_TABLE.md` (natural-base EXP/LOG not on GB10). M20 `OMEGA_TENSOR` itself is unchanged: table status PLANNED, `#136` an open draft, no exit gate met.
 
 ### M22 — `OMEGA_OPTIMIZER`
 Omega-native semantics for SGD, Adam, and AdamW, with verified CPU reference realizations and optional accelerator-fused realizations.
-- Status 2026-10-01: table status stays PLANNED; no exit gate is met. Discrepancy recorded: substrate work has started although the vocabulary row reads "Not started". `aien-dev/omega#140` (`54826a3`) merged a shadow-state optimizer substrate with one atomic generation switch, E5 two-tier provenance and a float32 SGD path; receipt omega `evidence/M22/receipts/eaa0cdeae9f348b19b80377baaeb5e5dea6a6577e9385e7a2a3c15caab24c5c8.json` records substrate tests PASS and "M22 NOT QUALIFIED: optimizer substrate + SGD path only; no tensor/autodiff integration (waits M20/M21)". Adam/AdamW are not implemented.
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met. Discrepancy recorded: substrate work has started although the vocabulary row reads "Not started". `aien-spark/omega#140` (`54826a3`) merged a shadow-state optimizer substrate with one atomic generation switch, E5 two-tier provenance and a float32 SGD path; receipt omega `evidence/M22/receipts/eaa0cdeae9f348b19b80377baaeb5e5dea6a6577e9385e7a2a3c15caab24c5c8.json` records substrate tests PASS and "M22 NOT QUALIFIED: optimizer substrate + SGD path only; no tensor/autodiff integration (waits M20/M21)". Adam/AdamW are not implemented.
 - Scope note 2026-10-03: M22 means training optimizers that update model parameters (SGD, Adam, AdamW). Adaptive pricing of soft machine resource budgets (DUAL, ADR 0031, `CURRENT_EXECUTION_PLAN.md` Lane 8) is a separate workstream with its own gates; it is not part of M22, and no M22 status changes because of it.
 
 ### M23: `OMEGA_SEARCH_GUIDE_TRAINING`
-- Status 2026-10-01: table status stays PLANNED; no exit gate is met (training NOT_RUN, waits on M22). Discrepancy recorded: the corpus prerequisite exists. G1 search-trace corpus capture PASS (`aien-dev/omega#122` `ce7821d`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`); G3 sealed-holdout commitment format PASS, format only, nothing sealed (`#122`), commitment owner signature with TEST keys (`#130` `7fb59d3`). Sealing and real owner signing are BLOCKED_OPERATOR.
+- Status 2026-10-01: table status stays PLANNED; no exit gate is met (training NOT_RUN, waits on M22). Discrepancy recorded: the corpus prerequisite exists. G1 search-trace corpus capture PASS (`aien-spark/omega#122` `ce7821d`; receipt omega `evidence/M23/receipts/m23-corpus-ee4982119af7244086187c9b643cb9c1823c6b0a2b796f861d2d4077edb5256d.json`); G3 sealed-holdout commitment format PASS, format only, nothing sealed (`#122`), commitment owner signature with TEST keys (`#130` `7fb59d3`). Sealing and real owner signing are BLOCKED_OPERATOR.
 
 ### DIRAC-0 (ARCH-0023, PROPOSED; downstream consumer, not a milestone)
 - Status 2026-10-01: no table row. DIRAC-0 (`docs/plans/dirac/DIRAC-0-SPEC.md`) consumes OSC-2, E1, M20 `OMEGA_TENSOR`, ESTIMATION and TURING and creates no new tensor, measurement, GPU-runtime or evidence system. `DIRAC_PREP_FROZEN` is proposed, not passed; no roadmap milestone changes.

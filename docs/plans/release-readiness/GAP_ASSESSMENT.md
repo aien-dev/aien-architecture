@@ -1,6 +1,6 @@
 # Release readiness, R1: gap assessment against the whole-system acceptance test
 
-**NOT A MASTER PLAN.** Tracking issue: aien-dev/aien-architecture#190 (R1 deliverable). Authority stays with `PLAN_AUTHORITY.md`: this file assesses, it does not sequence or redefine anything. Written 2026-10-10 by the coordinating session (Claude Code 85679b2b) after Drake's redirect of 2026-10-10 (AT-1 closed as REVIEWED, principal effort on finishing AIEN as one usable system).
+**NOT A MASTER PLAN.** Tracking issue: aien-spark/aien-architecture#190 (R1 deliverable). Authority stays with `PLAN_AUTHORITY.md`: this file assesses, it does not sequence or redefine anything. Written 2026-10-10 by the coordinating session (Claude Code 85679b2b) after Drake's redirect of 2026-10-10 (AT-1 closed as REVIEWED, principal effort on finishing AIEN as one usable system).
 
 **Method.** Every "what runs" claim below names the live default-branch commit and the file, pull request or receipt that proves it, read on 2026-10-10. Plan wording was not used as evidence. Where a reading came from a read-only scout and was not re-opened by the author it is marked UNVERIFIED. Nothing is marked done because a document says so.
 

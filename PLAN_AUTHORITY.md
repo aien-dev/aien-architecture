@@ -24,7 +24,7 @@ Component repositories may keep local roadmaps and acceptance specifications for
 
 Examples:
 
-- `aien-dev/aienos/ROADMAP.md` is the AIENOS component roadmap.
+- `aien-spark/aienos/ROADMAP.md` is the AIENOS component roadmap.
 - Omega milestone specifications define acceptance contracts for individual Omega milestones.
 - Historical Physics/Forge milestone specifications and receipts remain evidence records.
 - A finite workstream plan under `docs/plans/` is allowed only when its scope is explicit and it is marked **NOT A MASTER PLAN**.
@@ -58,7 +58,7 @@ Current architecture uses:
 
 This sentence is responsibilities and causal dependencies, not a turn order and not the way a reaction result is accepted. FORGE is a realization and memory policy; the accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex (ADR 0016 Amendment 1, 2026-10-02).
 
-The repository `aien-dev/physics` remains a historical/current implementation location until its GitHub repository rename is performed. A repository-name transition does not rewrite old evidence.
+The repository `aien-spark/physics` remains a historical/current implementation location until its GitHub repository rename is performed. A repository-name transition does not rewrite old evidence.
 
 ## Change discipline
 

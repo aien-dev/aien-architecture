@@ -2,7 +2,7 @@
 
 **Status:** Recorded 2026-09-30 from the orchestrator brief of that date, which carries the operator's wording for all four decisions. This record states the decisions in full and adds the evidence checked when it was written.
 **Supersedes:** nothing. **Amends:** nothing.
-**Related:** ARCH-0015 (Resident Semantic Store), ARCH-0016 (resident reaction architecture, R16), OS-0015 (System Store v1 format, in `aien-dev/aienos`), M19 corrective qualification (`CURRENT_EXECUTION_PLAN.md` Phase B).
+**Related:** ARCH-0015 (Resident Semantic Store), ARCH-0016 (resident reaction architecture, R16), OS-0015 (System Store v1 format, in `aien-spark/aienos`), M19 corrective qualification (`CURRENT_EXECUTION_PLAN.md` Phase B).
 
 Citation note: in this repository "ADR 0021" and ARCH-0021 name the same decision. In other repositories cite it as ARCH-0021.
 
@@ -24,9 +24,9 @@ The numeric gates are built and host-tested against Physics commit `fecbedb`. Ph
 
 ### Evidence checked on 2026-09-30
 
-- The pin lives in `aien-dev/omega` `physics.lock`, which contains `fecbedb1b9cea9e4de0fa3c88fe795934fb361f9`. The Omega `Makefile` target `check-physics-lock` refuses to build when the Physics checkout is at any other commit.
-- `fecbedb` is the merge of `aien-dev/physics#15` (`feat/nvrm-alloc-uncached`).
-- The range `fecbedb..f63a6ef` contains three merged changes, not one: `aien-dev/physics#13` (FORGE-0 seam, FORGE-HWID probe and a capability-check rename), `aien-dev/physics#16` (FORGE SUBSTRATE V2) and `aien-dev/physics#17` (Gate 3 and Gate 4 receipts renamed to digest-named files). The brief's phrase "only adds FORGE V2" is therefore narrower than the history. The conclusion still holds: the range changes 20 files, all of them additions (4401 lines inserted, none deleted), the only pre-existing file touched is `.gitignore` (two lines added), and no file used by the numeric gates is modified.
+- The pin lives in `aien-spark/omega` `physics.lock`, which contains `fecbedb1b9cea9e4de0fa3c88fe795934fb361f9`. The Omega `Makefile` target `check-physics-lock` refuses to build when the Physics checkout is at any other commit.
+- `fecbedb` is the merge of `aien-spark/physics#15` (`feat/nvrm-alloc-uncached`).
+- The range `fecbedb..f63a6ef` contains three merged changes, not one: `aien-spark/physics#13` (FORGE-0 seam, FORGE-HWID probe and a capability-check rename), `aien-spark/physics#16` (FORGE SUBSTRATE V2) and `aien-spark/physics#17` (Gate 3 and Gate 4 receipts renamed to digest-named files). The brief's phrase "only adds FORGE V2" is therefore narrower than the history. The conclusion still holds: the range changes 20 files, all of them additions (4401 lines inserted, none deleted), the only pre-existing file touched is `.gitignore` (two lines added), and no file used by the numeric gates is modified.
 
 ---
 
@@ -45,9 +45,9 @@ The block layer reads the logical block size that the device reports and uses it
 ### Evidence checked on 2026-09-30
 
 - The Spark's internal SSD (`nvme0n1`) reports a 512-byte logical block size, a 512-byte physical block size and a 512-byte maximum atomic write unit.
-- `aien-dev/aienos` `crates/aienos-kernel/src/store/device.rs` already accepts both 512-byte and 4096-byte logical blocks and maps a 4096-byte Store unit to 8 or 1 blocks.
-- The current non-test Store qualification path in `aien-dev/aienos` (`crates/aienos-boot/src/nvme_read.rs`) refuses any geometry that is not 4096-byte LBA and requires a power-fail atomic 4096-byte root write. Only the test-only 512-byte qualification mode (`aien-dev/aienos#136`) runs the Store at 512-byte LBA. The production path therefore does not yet match this decision; it must adopt a torn-write recovery protocol before it can accept the Spark's SSD.
-- A C reference for that protocol, with fault-injection tests at 512-byte and 4096-byte logical block sizes, is proposed in `aien-dev/aienos` on branch `feat/store-torn-write-recovery`.
+- `aien-spark/aienos` `crates/aienos-kernel/src/store/device.rs` already accepts both 512-byte and 4096-byte logical blocks and maps a 4096-byte Store unit to 8 or 1 blocks.
+- The current non-test Store qualification path in `aien-spark/aienos` (`crates/aienos-boot/src/nvme_read.rs`) refuses any geometry that is not 4096-byte LBA and requires a power-fail atomic 4096-byte root write. Only the test-only 512-byte qualification mode (`aien-spark/aienos#136`) runs the Store at 512-byte LBA. The production path therefore does not yet match this decision; it must adopt a torn-write recovery protocol before it can accept the Spark's SSD.
+- A C reference for that protocol, with fault-injection tests at 512-byte and 4096-byte logical block sizes, is proposed in `aien-spark/aienos` on branch `feat/store-torn-write-recovery`.
 
 ---
 
@@ -66,9 +66,9 @@ Receipts are append-only. Each receipt file is named by its own digest, records 
 
 ### Evidence checked on 2026-09-30
 
-- `aien-dev/physics#17` already renamed the Gate 3 and Gate 4 receipts to digest-named files.
-- Several existing receipts, for example those under `aien-dev/aienos` `evidence/`, live inside source repositories. They are historical records and are not rewritten. The decision applies to receipts produced from now on.
-- No combined M19 admission-gate harness exists yet. The M19R numeric receipt in `aien-dev/omega#32` is not yet digest-named or bound to a clean commit; that work is open.
+- `aien-spark/physics#17` already renamed the Gate 3 and Gate 4 receipts to digest-named files.
+- Several existing receipts, for example those under `aien-spark/aienos` `evidence/`, live inside source repositories. They are historical records and are not rewritten. The decision applies to receipts produced from now on.
+- No combined M19 admission-gate harness exists yet. The M19R numeric receipt in `aien-spark/omega#32` is not yet digest-named or bound to a clean commit; that work is open.
 
 ---
 
@@ -85,5 +85,5 @@ The G4 caller-identity fix is in progress. It changes the runtime so that the ru
 
 ### Evidence checked on 2026-09-30
 
-- `aien-dev/omega#106` (draft, branch `feat/r16-g3-g5-host`) reports G3 passing on the host only (not on silicon), G5 passing, and G4 printing FAIL. Two probes found real bypasses: a legacy context holding the promoter's grant that names the promoter subject gets a promotion accepted, and a reaction naming that subject writes the in-force record. The cause is that identities are whatever the caller states. That branch records the flaw as spec clarification C5 and says the fix is not made there. The fix (runtime-issued caller credentials) is in progress as clarification C6, which was not yet on that branch when checked (head `44d8c06`).
+- `aien-spark/omega#106` (draft, branch `feat/r16-g3-g5-host`) reports G3 passing on the host only (not on silicon), G5 passing, and G4 printing FAIL. Two probes found real bypasses: a legacy context holding the promoter's grant that names the promoter subject gets a promotion accepted, and a reaction naming that subject writes the in-force record. The cause is that identities are whatever the caller states. That branch records the flaw as spec clarification C5 and says the fix is not made there. The fix (runtime-issued caller credentials) is in progress as clarification C6, which was not yet on that branch when checked (head `44d8c06`).
 - `CURRENT_EXECUTION_PLAN.md` already records R16 as IN PROGRESS with G3 to G8 and the final receipt absent from `main`.

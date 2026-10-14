@@ -1,7 +1,7 @@
 # Crumb Protocol RFC-0002: Common Coordination Plane and Continuation Crumbs
 
 **Status:** Proposed, 2026-10-04. Decided by the operator, Drake Stapleton, through his approved design of 2026-10-04 (pasted; the paste is the decision, no separate ratification). Source of record: `~/handoffs/rfc-0002/master-spec-drake-2026-10-04.md` on the Spark.
-**Extends:** RFC-0001 v1.0.0 (`aien-dev/crumb-spec` `SPEC.md`, `ROLES.md`, frozen at `10b8251`). RFC-0001 is not changed; this document adds a storage scope, a mutation discipline, two commands and one new object. Protocol version becomes **1.1.0**.
+**Extends:** RFC-0001 v1.0.0 (`aien-spark/crumb-spec` `SPEC.md`, `ROLES.md`, frozen at `10b8251`). RFC-0001 is not changed; this document adds a storage scope, a mutation discipline, two commands and one new object. Protocol version becomes **1.1.0**.
 **Related:** `docs/CRUMB_PROTOCOL.md` (how RFC-0001 is used here), ARCH-0029 (Verified Crumbs: untouched), ARCH-0028 (receipts).
 **Implementation:** `tools/crumb/crumb.c` (C11/POSIX, no dependencies), tests in `tools/crumb/test.sh`. Code is the truth; where this text and the code differ, the difference is a bug in one of them and is named, not papered over.
 

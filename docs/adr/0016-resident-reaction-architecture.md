@@ -51,7 +51,7 @@ Part II was written with some pre-ADR-0014 vocabulary. Read it through this tabl
 | Part II term | Current meaning |
 |---|---|
 | "Physics" as machine realization (§29 cost model, `physics/cpu`, `physics/accelerator`, `physics/memory`) | **FORGE** (ADR 0014). FORGE realizes; it is not a security gatekeeper. |
-| "Trusted physical root", "capability mint and validator", `physics/capability` | The **capability root**. Natively this is the AIENOS kernel capability authority, which ADR 0014 assigns to AIENOS. On bare metal the historical M3 ledger (`aien-dev/physics` `m3/capability.s`) is the reference. For Linux-hosted development it is an out-of-process host root whose table the semantic runtime can read but never write (see the migration map). It is never an ordinary mutable semantic object. |
+| "Trusted physical root", "capability mint and validator", `physics/capability` | The **capability root**. Natively this is the AIENOS kernel capability authority, which ADR 0014 assigns to AIENOS. On bare metal the historical M3 ledger (`aien-spark/physics` `m3/capability.s`) is the reference. For Linux-hosted development it is an out-of-process host root whose table the semantic runtime can read but never write (see the migration map). It is never an ordinary mutable semantic object. |
 | "AEGIS and Physics must remain capable of stopping execution" (§31) | AEGIS (policy/verification) plus the capability root and AIENOS (revocation, worker cancellation, GPU reset) must be able to stop execution while cognition is unhealthy. |
 | AEGIS "capability policy / authority relations" | AEGIS verifies authority and checks compliance against system invariants; it decides no policy and authors no law (acting as quality control verification). It issues PolicyDecision / CapabilityRequest / RevocationIntent strictly as evaluations against canonical criteria. Only the capability root turns a decision into an enforceable capability. AEGIS verifies, the root mints. |
 | "Physics Zero" | Unrelated. It is the scientific-discovery program (M27–M35). |
@@ -70,7 +70,7 @@ The §2.6 "Bidirectional Lowering Protocol" still describes the dependency struc
 #### Amendment 1 (ACCEPTED 2026-10-02 by operator Drake Stapleton, Option B)
 
 - FORGE is a realization policy: hardware lowering and, inside J-Space, a memory-pressure policy (`js_forge_choose`, `js_forge_enforce`). It is not a stage of accepting a reaction result.
-- The recorded accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex, as documented in `aien-dev/omega` `docs/runtime/COMMIT_A_REACTION_DESIGN.md` (merged 35af57d). No FORGE step sits on it.
+- The recorded accept chain is World -> J-Space -> `compose.verify` -> commit -> Cortex, as documented in `aien-spark/omega` `docs/runtime/COMMIT_A_REACTION_DESIGN.md` (merged 35af57d). No FORGE step sits on it.
 - Wherever this ADR, `doctrine/ARCHITECTURE.md` §2.6 or any other document lists FORGE before verify, act or commit, read it as a dependency for hardware realization only, not as a commit step.
 - If hardware realization later needs a hook on the accept path, that is a new decision and a new amendment.
 - This does not change ADR 0024: Physics and FORGE remain hardware-substrate class B.

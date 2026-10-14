@@ -26,7 +26,7 @@ case "$step" in
     make -C tools/crumb test
     ;;
   qualification-status)
-    # Hosted qualification-status.yml checks out aien-dev/omega (default branch, unpinned)
+    # Hosted qualification-status.yml checks out aien-spark/omega (default branch, unpinned)
     # as omega-evidence and runs the script against it. Locally the sibling ../omega plays
     # that role; its commit is recorded so the receipt says which evidence was read.
     if [ ! -d ../omega/evidence ]; then

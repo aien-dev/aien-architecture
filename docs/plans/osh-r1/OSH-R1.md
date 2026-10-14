@@ -1,12 +1,12 @@
 # osh (Omega-native shell): first-release acceptance and status record
 
-**NOT A MASTER PLAN.** Finite workstream record for [aien-dev/aien-architecture#158](https://github.com/aien-dev/aien-architecture/issues/158). It is subordinate to `PLAN_AUTHORITY.md`, `CURRENT_EXECUTION_PLAN.md`, `doctrine/ARCHITECTURE.md` and `doctrine/ROADMAP.md`. It does not reorder any campaign, change subsystem ownership, replace NEXT-PHASE-3, or raise any milestone status. It freezes the acceptance of one workstream and records, honestly, what exists. Where this file and those authorities disagree, they win. Implementation and evidence win over every claim below.
+**NOT A MASTER PLAN.** Finite workstream record for [aien-spark/aien-architecture#158](https://github.com/aien-spark/aien-architecture/issues/158). It is subordinate to `PLAN_AUTHORITY.md`, `CURRENT_EXECUTION_PLAN.md`, `doctrine/ARCHITECTURE.md` and `doctrine/ROADMAP.md`. It does not reorder any campaign, change subsystem ownership, replace NEXT-PHASE-3, or raise any milestone status. It freezes the acceptance of one workstream and records, honestly, what exists. Where this file and those authorities disagree, they win. Implementation and evidence win over every claim below.
 
 **Written:** 2026-10-08. **Pins read:** omega `b980783a4674275e720592e4c3887679dd24ec8b`, aienos `c63d6db8e9ac82592899ab0c2cbd9e2a76e6c7b2`, aien-protocols `3a4cdbe` (GitHub default branches). Re-read before acting on this file. Follows ADR 0024: Omega is the destination, Rust and C host code is replaceable scaffolding.
 
 ## 1. Frozen first-release language (R1)
 
-R1 is what the Linux adapter must run. This section freezes the language so the ABI vectors and the differential suite have one target. Details of codes and offsets live in the platform ABI draft ([aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16), `specs/osh-platform/OSH_PLATFORM_ABI.md`).
+R1 is what the Linux adapter must run. This section freezes the language so the ABI vectors and the differential suite have one target. Details of codes and offsets live in the platform ABI draft ([aien-protocols#16](https://github.com/aien-spark/aien-protocols/pull/16), `specs/osh-platform/OSH_PLATFORM_ABI.md`).
 
 **In R1** (issue list): words, single and double quotes, backslash escapes, empty arguments; variable assignment and expansion with the documented field-splitting rule; `;`, `&&`, `||`, pipelines; `<`, `>`, `>>`, and the stderr forms `2>` and `2>>` (generally `N<`, `N>`, `N>>` with N in 0..2); exit statuses; builtins `cd`, `pwd`, `printf`, `export`, `unset`, `exit`; interactive input, `osh -c`, and script files.
 
@@ -99,16 +99,16 @@ Original record pinned above. **Status update 2026-10-08** (GitHub, omega `main`
 | Item | Status |
 |---|---|
 | Audit of compiler, Visor, AIENOS, scripts, parser design | DONE as read-only notes (not committed evidence) |
-| OSC-EXT-BYTES design | DONE, merged [omega#169](https://github.com/aien-dev/omega/pull/169) (design only) |
-| OSC-EXT-BYTES implementation | DONE, merged [omega#335](https://github.com/aien-dev/omega/pull/335) `5227b88` (bytes and cells parameters) |
+| OSC-EXT-BYTES design | DONE, merged [omega#169](https://github.com/aien-spark/omega/pull/169) (design only) |
+| OSC-EXT-BYTES implementation | DONE, merged [omega#335](https://github.com/aien-spark/omega/pull/335) `5227b88` (bytes and cells parameters) |
 | First-release acceptance frozen | This file; frozen when merged |
-| Platform ABI v1 and vectors | IN PROGRESS: DRAFT [aien-protocols#16](https://github.com/aien-dev/aien-protocols/pull/16), not frozen; implementation deltas folded in; 20 vectors, all run by the omega lexer, parser and expander tests |
-| Shell core `.osc` | Lexer merged [omega#336](https://github.com/aien-dev/omega/pull/336) `da40e53`; parser merged [omega#339](https://github.com/aien-dev/omega/pull/339) `baedadc`; expander merged [omega#340](https://github.com/aien-dev/omega/pull/340) `fe73157`. Each unit is checked against an independent C reference |
-| Linux adapter | Execution service merged [omega#337](https://github.com/aien-dev/omega/pull/337) `06b0f07`; driver loop and `osh` program (`-c`, script, interactive) merged in omega#340; capability enforcement, fail closed without a policy, merged [omega#341](https://github.com/aien-dev/omega/pull/341) `cb8b549` |
-| Differential and hostile suite, pinned bash | IN PROGRESS: GNU bash 5.2.21 (locale not yet pinned); lexer expectations proved against real bash (`bash_verify.sh`); hostile bash differential review of omega#340 (about 1500 cases), fixed in #340 (merged; local evidence: expand 478,635 checks, parse 2,879,236, lex 2,928,338, host 1439, e2e 104 cases and 317 checks, all 0 failures), remaining differences listed in [omega#344](https://github.com/aien-dev/omega/issues/344) |
+| Platform ABI v1 and vectors | IN PROGRESS: DRAFT [aien-protocols#16](https://github.com/aien-spark/aien-protocols/pull/16), not frozen; implementation deltas folded in; 20 vectors, all run by the omega lexer, parser and expander tests |
+| Shell core `.osc` | Lexer merged [omega#336](https://github.com/aien-spark/omega/pull/336) `da40e53`; parser merged [omega#339](https://github.com/aien-spark/omega/pull/339) `baedadc`; expander merged [omega#340](https://github.com/aien-spark/omega/pull/340) `fe73157`. Each unit is checked against an independent C reference |
+| Linux adapter | Execution service merged [omega#337](https://github.com/aien-spark/omega/pull/337) `06b0f07`; driver loop and `osh` program (`-c`, script, interactive) merged in omega#340; capability enforcement, fail closed without a policy, merged [omega#341](https://github.com/aien-spark/omega/pull/341) `cb8b549` |
+| Differential and hostile suite, pinned bash | IN PROGRESS: GNU bash 5.2.21 (locale not yet pinned); lexer expectations proved against real bash (`bash_verify.sh`); hostile bash differential review of omega#340 (about 1500 cases), fixed in #340 (merged; local evidence: expand 478,635 checks, parse 2,879,236, lex 2,928,338, host 1439, e2e 104 cases and 317 checks, all 0 failures), remaining differences listed in [omega#344](https://github.com/aien-spark/omega/issues/344) |
 | Interpreter versus native ARM64 run | IN PROGRESS: lexer, parser and expander tests compare interpreter, native ARM64 and C reference on the same inputs (merged); e2e runs every case native and interpreted |
 | Real script run (`run_builds.sh`) | NOT STARTED |
-| Core-only step trace for AIENOS | Linux side merged [omega#343](https://github.com/aien-dev/omega/pull/343) `ed7cbf3` (20 fixtures, native == interpreter == committed trace); AIENOS side not merged |
+| Core-only step trace for AIENOS | Linux side merged [omega#343](https://github.com/aien-spark/omega/pull/343) `ed7cbf3` (20 fixtures, native == interpreter == committed trace); AIENOS side not merged |
 | AIENOS native services (section 6) | NOT STARTED as merged code |
 | Native QEMU acceptance | NOT STARTED |
 | Attended hardware validation | NOT STARTED; needs separate authorization |

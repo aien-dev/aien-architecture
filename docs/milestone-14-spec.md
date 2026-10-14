@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M14
 Milestone:       Milestone 14 (OMEGA_REALIZATION_SYNTHESIS)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Automated $G_S \times G_M \to G_R$ Synthesis Targeting Declared Hardware Capabilities
-Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#25, aien-dev/omega#19)
+Status:          COMPLETE / RATIFIED (aien-spark/aien-architecture#25, aien-spark/omega#19)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4-M14) -> AIEN
 ```
 
@@ -228,8 +228,8 @@ Milestone 14 qualification requires 100% pass across 10 canonical gates:
 
 Milestone 14 is qualified and ratified. All 10 canonical qualification gates passed with 100% compliance and zero regression across cumulative milestones M4 through M14 (101/101 cumulative gates).
 
-- **Implementation Commit**: `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d` (`aien-dev/omega#19`)
-- **Qualification Receipt Commit**: `03fbcb9` (`aien-dev/omega`)
+- **Implementation Commit**: `c0c8102ecc7f36cb86ab8686e5f1ee08eb59762d` (`aien-spark/omega#19`)
+- **Qualification Receipt Commit**: `03fbcb9` (`aien-spark/omega`)
 - **Qualification Receipt File**: [`evidence/omega_realization_synthesis_qualification_receipt.json`](file:///home/drakestapleton/workspace/omega/evidence/omega_realization_synthesis_qualification_receipt.json)
 
 ```json

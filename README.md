@@ -1,12 +1,12 @@
 # AIEN Architecture
 
-The authority for how the AIEN project fits together: whole-system architecture, milestone status and what to do next. It holds documents, not product code.
+The authority for how the AIEN project fits together: whole-system architecture, milestone status and what to do next. It holds documents and a few small checking tools, not product code.
 
 AIEN is a sovereign computing stack being built in the open on an NVIDIA DGX Spark (Grace Blackwell GB10): its own operating system (AIENOS), its own reaction runtime and compiler (Omega), and its own machine realization layer (FORGE). Founding principle: closest to the metal, fastest wins. Mojo is a default, not dogma. Beat it if you can. Build what is missing.
 
 ## Current state
 
-Research-grade and pre-alpha. The AIENOS C kernel passes only some emulator gates and is not qualified; it has never been booted on the real machine (only an earlier first-boot test of the previous Rust kernel has run natively). The Omega runtime's R1 to R16 ladder was qualified on builds that predate the composition modules now in the living build, so that build is not qualified until re-run. R15 and R16 are historical passes only: requalification at omega `3108fc2` recorded R15 FAIL (14 of 16 gates) and R16 FAIL, and none of R1 to R16 is requalified on the current candidate (omega `evidence/REQUAL-3108fc2/`). Several programs (ARGUS, Physics Zero, DIRAC-0, the Evolution Arena) are specifications or plans with no qualified code. Nothing is described here as qualified unless a receipt says so. The live numbers are not repeated in this file because they change daily; read [CURRENT_EXECUTION_PLAN.md](CURRENT_EXECUTION_PLAN.md) and [doctrine/ROADMAP.md](doctrine/ROADMAP.md).
+Research-grade and pre-alpha. The AIENOS C kernel passes its emulator (QEMU) gates but is not physically qualified; it has never been booted on the real machine (only an earlier first-boot test of the previous Rust kernel has run natively). The Omega runtime's R1 to R16 ladder was first qualified on builds that predate the composition modules now in the living build. Requalification at omega `3108fc2` recorded R15 FAIL (14 of 16 gates) and R16 FAIL (omega `evidence/REQUAL-3108fc2/`). The ladder was rerun on candidate CAND-3 (omega `f816473`): R16 gates G1 to G8 PASS, and R15 passed 16 of 16 gates as a conditional pass, because Secure Boot was off for that run ([CAND-3 results](qualification/candidates/CAND-3.gates.md), [exception 0002](qualification/exceptions/0002-r15-secure-boot-off.md)). CAND-3 as a whole is not claimed qualified, and CAND-4 and later candidates have no R15 or R16 rerun. The R15 and R16 rows in [doctrine/ROADMAP.md](doctrine/ROADMAP.md) still carry the earlier wording. ARGUS-0 (the defensive plane's event substrate) is complete under documented limits and ARGUS-1 containment is in progress ([ADR 0017](docs/adr/0017-argus-defensive-plane.md)). Several other programs (Physics Zero, DIRAC-0, the Evolution Arena) are specifications or plans with no qualified code. Nothing is described here as qualified unless a receipt says so. The live numbers are not repeated in this file because they change daily; read [CURRENT_EXECUTION_PLAN.md](CURRENT_EXECUTION_PLAN.md) and [doctrine/ROADMAP.md](doctrine/ROADMAP.md).
 
 ## Start here
 
@@ -31,11 +31,11 @@ AEGIS VERIFIES.  HARDWARE ACTS.  EVIDENCE TEACHES.
 
 | Repository | Role |
 | :--- | :--- |
-| [aienos](https://github.com/aien-dev/aienos) | The trusted operating system: its own kernel replacing Linux on the DGX Spark |
-| [omega](https://github.com/aien-dev/omega) | The C reaction runtime and compiler that defines computation |
-| [physics](https://github.com/aien-dev/physics) | FORGE machine realization, plus historical Atlas/PHYSICS boot evidence |
-| [aien-protocols](https://github.com/aien-dev/aien-protocols) | Versioned wire and state specifications |
-| [aien-sovereign-core](https://github.com/aien-dev/aien-sovereign-core) | Earlier Linux-hosted Rust runtime, legacy and being migrated |
+| [aienos](https://github.com/aien-spark/aienos) | The trusted operating system: its own kernel replacing Linux on the DGX Spark |
+| [omega](https://github.com/aien-spark/omega) | The C reaction runtime and compiler that defines computation |
+| [physics](https://github.com/aien-spark/physics) | FORGE machine realization, plus historical Atlas/PHYSICS boot evidence |
+| [aien-protocols](https://github.com/aien-spark/aien-protocols) | Versioned wire and state specifications |
+| [aien-sovereign-core](https://github.com/aien-spark/aien-sovereign-core) | Earlier Linux-hosted Rust runtime, legacy and being migrated |
 
 Historical `PHYSICS_*` milestone names stay unchanged in old milestones and evidence.
 
@@ -47,11 +47,11 @@ Historical `PHYSICS_*` milestone names stay unchanged in old milestones and evid
 
 ## Specifications and plans (not qualified code)
 
-[ARGUS-0/1](docs/adr/0017-argus-defensive-plane.md), [Physics Zero Atlas](docs/plans/physics-zero/PHYSICS_ZERO_LAW_ATLAS_V1.md), [DIRAC-0](docs/adr/0023-dirac-0-program.md) and the [Evolution Arena spec V1](docs/specs/EVOLUTION_ARENA_SPEC_V1.md) are documents. Finite workstream plans under `docs/plans/` are marked NOT A MASTER PLAN.
+The [Physics Zero Atlas](docs/plans/physics-zero/PHYSICS_ZERO_LAW_ATLAS_V1.md), [DIRAC-0](docs/adr/0023-dirac-0-program.md) and the [Evolution Arena spec V1](docs/specs/EVOLUTION_ARENA_SPEC_V1.md) are documents. Finite workstream plans under `docs/plans/` must be marked NOT A MASTER PLAN ([PLAN_AUTHORITY.md](PLAN_AUTHORITY.md)); most are, but the `physics-zero` and `adaptive-intelligence` folders do not carry the marker yet.
 
 ## Building
 
-There is nothing to build here. On `main` (protected as of 2026-10-01) a CI check named `r16` verifies the R16 status wording against omega evidence and is required on `main`.
+There is no product to build here. The one program is the crumb tool in `tools/crumb` (a C11 program that compiles and verifies the `.crumb` files); `make -C tools/crumb test` builds and tests it, and the shell scripts in `scripts/` have `test_*.sh` companions. On `main` (protected as of 2026-10-01) a CI check named `r16` verifies the R16 status wording against omega evidence and is the only check required on `main`; the `Crumb compiler` and `AIEN Verification` checks also run on pull requests.
 
 ## Contributing
 

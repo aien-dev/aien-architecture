@@ -13,7 +13,7 @@
 
 **Document status:** Architecture RFC / implementation roadmap  
 **Snapshot date:** September 22, 2026  
-**Primary composition root reviewed:** `aien-dev/aien-sovereign-core`  
+**Primary composition root reviewed:** `aien-spark/aien-sovereign-core`  
 **Current public `main` snapshot reviewed:** `cacf2264b52cac20ba0ac6aee55fcde9110d97b6`  
 **Naming convention:** Physical hosts are always referred to as **Machine 1**, **Machine 2**, **Machine 3**, and so on. Hardware type is metadata, not identity.
 
@@ -3187,18 +3187,18 @@ The following current sources informed the gap analysis and implementation choic
 
 ## AIEN repositories
 
-- Sovereign Manifesto: https://github.com/aien-dev/open-humanity/blob/main/docs/SOVEREIGN_MANIFESTO.md
+- Sovereign Manifesto: https://github.com/aien-spark/open-humanity/blob/main/docs/SOVEREIGN_MANIFESTO.md
 
-- https://github.com/aien-dev/aien-sovereign-core
-- https://github.com/aien-dev/aien-protocols
-- https://github.com/aien-dev/aegis-runtime
+- https://github.com/aien-spark/aien-sovereign-core
+- https://github.com/aien-spark/aien-protocols
+- https://github.com/aien-spark/aegis-runtime
 - https://github.com/aien-dev/cortex-rs
-- https://github.com/aien-dev/spark-rsi
+- https://github.com/aien-spark/spark-rsi
 - https://github.com/aien-dev/spark-debugger
 - https://github.com/aien-dev/aien-harness
 - https://github.com/aien-dev/spark-inquisitor
 - https://github.com/aien-dev/spark-hive
-- https://github.com/aien-dev/benchmarks
+- https://github.com/aien-spark/benchmarks
 - https://github.com/aien-dev/aien-local-stack
 
 ## Distributed compute and inference

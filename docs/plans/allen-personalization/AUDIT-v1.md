@@ -1,6 +1,6 @@
 # ALLEN personalization: audit v1
 
-Part of the finite workstream in `README.md` (not a master plan). Issue: aien-dev/aien-architecture#159. Written 2026-10-08.
+Part of the finite workstream in `README.md` (not a master plan). Issue: aien-spark/aien-architecture#159. Written 2026-10-08.
 
 Commits read (GitHub `main` on 2026-10-08, local fresh clones): aien-architecture `6b25403`, aien-sovereign-core `d6990e5`, aienos `c63d6db`, omega `b980783`, interplane `a14a1c3`. Open pull requests are proposed work, not current behaviour. Anything below without a cited source is labelled UNVERIFIED.
 
@@ -16,7 +16,7 @@ Commits read (GitHub `main` on 2026-10-08, local fresh clones): aien-architectur
 | Native provisioning | aienos `native/kernel/svc/continuity_subject_provision.{h,c}` (`cs_provision`), `continuity_boot.c` | `continuity_boot.c` is TEST-ONLY: empty unless `CK_TEST_CONTINUITY=1`. Only the TEST continuity image provisions a subject; the default image provisions none. | `continuity_boot.c` lines 1-20, 521-522 |
 | Omega bindings | omega `spec/allen.md`, `src/allen/allen_bind.{c,h}` | Three bindings: identity, memory lineage, intent. Header says "ARCH-0035 PROPOSED" (stale, see PR 2). | `spec/allen.md` lines 1-25 |
 | Memory | Cortex journal (ARCH-0022; omega `rx_cortex`, sovereign-core `cortex-rs`) | Owner of memory. Typed, append-only (`omega/spec/state-projection.md` line 32). The subject only holds a lineage reference. | grep |
-| INTERPLANE | aien-dev/interplane | No ALLEN code at `a14a1c3` (recursive case-insensitive grep for "allen" found nothing). | grep |
+| INTERPLANE | aien-spark/interplane | No ALLEN code at `a14a1c3` (recursive case-insensitive grep for "allen" found nothing). | grep |
 | Shell (OSH) | issue aien-architecture#158 | Not built. | issue title only; no code searched beyond the five clones |
 | Deployment record callers | `aien-allen::deployment::append` | No caller in `aien-runtime` or `aien-cli` at `d6990e5` (grep for "deploy" returned nothing). The model-swap record exists as a library only. | grep |
 | Authorization | sovereign-core S4 `authorize` (approver key / approval desk) | Real permission gate for writes. Not influenced by any profile today because no profile exists. | `compose.rs` header lines 8-37 |

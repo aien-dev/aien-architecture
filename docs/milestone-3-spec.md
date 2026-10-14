@@ -5,7 +5,7 @@ Document ID:     SPEC-PHYSICS-M3
 Milestone:       Milestone 3 (PHYSICS_EFFECTS)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Physical Compute Fabric (AArch64 CPU Host, PL011 UART, Physical DRAM Frames)
-Status:          SPECIFIED / IN PROGRESS (aien-dev/aien-architecture#11)
+Status:          SPECIFIED / IN PROGRESS (aien-spark/aien-architecture#11)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4+) -> AIEN
 ```
 

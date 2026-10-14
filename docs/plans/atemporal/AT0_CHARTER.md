@@ -2,7 +2,7 @@
 
 **NOT A MASTER PLAN.** `CURRENT_EXECUTION_PLAN.md` owns sequencing and `doctrine/ROADMAP.md` owns milestone identifiers and status (`PLAN_AUTHORITY.md`). AT-0 is a research program label, like DIRAC-0. It is not a registered roadmap milestone (section 10).
 
-**Program status: NOT_RUN.** No AT-0 code exists, no case has been executed, and no result exists. Every gate in section 6 is NOT_RUN.
+**Program status: REVIEWED (2026-10-10).** Software conformance PASS on the tested classes; blinded qualification INCONCLUSIVE (UNISOLATED); physical claims NOT TESTED. `AT0_RESULTS.md` (aien-architecture#182) grades every claim; section 11 holds the status table. Historical: when this charter was written on 2026-10-09 the status was NOT_RUN, with no AT-0 code, no executed case and no result.
 **Contract status:** `AT0_CASE_V1` and `AT0_RESULT_V1` FROZEN at aien-architecture#174 (`044c9d1`); `AT0_RESULT_V2` supersedes `AT0_RESULT_V1` and is FROZEN on merge of the pull request that adds it (section 8, `AT0_FREEZE.md`).
 **Written:** 2026-10-09 by Agent 0 (technical coordinator).
 **Snapshots inspected (GitHub default branches, 2026-10-09):** omega `19f73c7`, aien-architecture `27f3b71`, aien-sovereign-core `5b7861f`, physics `9f96f25`, physics0 `fe587d2`, aienos.com `cc389e3` (Atemporal AIEN Postulate v1.1 source).
@@ -37,13 +37,13 @@ Every decision below rests on code or files read at the snapshots above. "Line" 
 | E12 | omega `research/dirac-oracle/README-NOT-BUILT.md` line 2; aien-architecture `docs/plans/dirac/DIRAC_0_CURRENT_STATE.md` lines 1 to 5; `CURRENT_EXECUTION_PLAN.md` line 392 | A quantum research program is recorded as "not a milestone", with explicit NOT_RUN / PROPOSED status and pinned snapshots. | Same status discipline here. |
 | E13 | aien-architecture `doctrine/ROADMAP.md` lines 66 to 81 | Milestone identifiers M27 to M35 belong to Physics Zero; AT-0 is not listed. | AT-0 is not called a milestone (section 10). |
 | E14 | aienos.com `public/research/atemporal-aien-postulate/paper.tex` lines 52, 164, 191 to 199, 203 to 211 | No primitive wall-clock coordinate in semantic identity; exact semantic equality; typed identities (program, result, claim); hash equality is evidence, not identity; clock readings allowed as declared data; negative controls must be rejected for their specific reason. | Section 4 policy and the contracts' identity sections. |
-| E15 | aien-dev/physics0 at `fe587d2` holds only `LICENSE`; aien-dev/physics is the machine-physics and GPU driver repo. | Neither is a home for AT-0 code. | AT-0 code lives in omega. |
+| E15 | aien-dev/physics0 at `fe587d2` holds only `LICENSE`; aien-spark/physics is the machine-physics and GPU driver repo. | Neither is a home for AT-0 code. | AT-0 code lives in omega. |
 | E16 | aien-sovereign-core `crates/crumbs/SPEC.md` | Crumb receipts are a Rust crate in the sovereign core. | Not linked by AT-0 V1; admitting AT-0 results as crumbs is future work. |
 | E17 | No `CODEOWNERS` file in omega, aien-architecture or aien-sovereign-core. | Directory ownership is not enforced by GitHub. | Ownership is set by this charter and claimed through Crumb (section 7). |
 
 ## 3. Integration decisions
 
-1. **Home.** AT-0 code lives in `aien-dev/omega` in new `at0` folders (section 7). Contracts, charter and status live here in `aien-architecture/docs/plans/atemporal/`.
+1. **Home.** AT-0 code lives in `aien-spark/omega` in new `at0` folders (section 7). Contracts, charter and status live here in `aien-architecture/docs/plans/atemporal/`.
 2. **Build.** One fragment `mk/at0.mk`, guarded by `ifndef AT0_MK`, defining only targets and variables prefixed `at0` or `AT0_`. It adds nothing to `SRCS`, `all`, `test`, `clean` or any existing target. Flags: `-std=c11 -Wall -Wextra -Werror -pedantic -O2 -D_POSIX_C_SOURCE=200809L`, link `-lm` only; a sanitizer build with `-O1 -g -fsanitize=address,undefined -fno-sanitize-recover=all`. Interval code may add `-frounding-math`.
 3. **Isolation.** AT-0 objects link nothing from `physics/`, no GPU code, no `omegatool`, no estimation, DUAL or ANS objects. The only shared source is `src/sha256.c` (C components only; the Rust oracle implements SHA-256 itself or avoids needing it). Compute objects (engine, oracle) contain no clock, random, file, process, socket or thread symbol beyond what reading the case file and writing the result file require, and that I/O lives in a thin outer layer, not in the compute code.
 4. **Execution.** Single-threaded CPU only, deterministic, no network, no external service, no Python, no GPU (`threads 1` in every result).
@@ -114,7 +114,7 @@ Full rules: `AT0_CASE_V1.md` sections 1 to 5 and `AT0_RESULT_V2.md` sections 0 t
 - *Evaluation order:* the engine evaluated with clock labels in reverse order (a test-only entry point) gives a bit-identical values block.
 - *Axis swap:* a mutant engine that swaps the X and Y results must fail `schrodinger_agreement` on the P1 cases (this proves the oracle is independent of the engine).
 
-**Gates (all NOT_RUN):**
+**Gates** (all NOT_RUN when written on 2026-10-09; G0 to G6 are graded claim by claim in `AT0_RESULTS.md` section 2, and that file is the G7 review):
 
 | Gate | Pass condition | Owner |
 |---|---|---|
@@ -131,7 +131,7 @@ AT-0 V1 is complete when G0 to G7 all pass on one omega commit. A divergence bet
 
 ## 7. Ownership matrix
 
-Agent numbering, roles, paths and execution order follow the tracking issue aien-dev/omega#358, which is authoritative. One owner per path. An agent edits only its own paths; reading anything is allowed. Owners claim their paths through Crumb before editing (`crumb` sniff, claim, whisper, close). Omega paths are relative to the omega repository root; `at0/` below means `research/atemporal/at0/`.
+Agent numbering, roles, paths and execution order follow the tracking issue aien-spark/omega#358, which is authoritative. One owner per path. An agent edits only its own paths; reading anything is allowed. Owners claim their paths through Crumb before editing (`crumb` sniff, claim, whisper, close). Omega paths are relative to the omega repository root; `at0/` below means `research/atemporal/at0/`.
 
 | Agent | Role | Order | Owns (may create and edit) | Must not touch |
 |---|---|---|---|---|

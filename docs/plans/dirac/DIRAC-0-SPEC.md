@@ -5,7 +5,7 @@
 **Decision record:** `docs/adr/0023-dirac-0-program.md` (PROPOSED). Current state: `docs/plans/dirac/DIRAC_0_CURRENT_STATE.md`.
 **Not a master plan and not a milestone.** `CURRENT_EXECUTION_PLAN.md` owns sequencing and `doctrine/ROADMAP.md` owns milestone status. DIRAC-0 is a downstream consumer of existing workstreams and creates no new tensor system, measurement system, GPU runtime or evidence system.
 
-Snapshots used for every fact below: omega `origin/main` `07004a8` (includes `aien-dev/omega#152`, merged), aien-architecture `origin/main` `921797b`, physics `origin/main` `006e426`. Names are cited only where seen at those commits.
+Snapshots used for every fact below: omega `origin/main` `07004a8` (includes `aien-spark/omega#152`, merged), aien-architecture `origin/main` `921797b`, physics `origin/main` `006e426`. Names are cited only where seen at those commits.
 
 ---
 
@@ -260,7 +260,7 @@ D-03 to D-06 each state, in their PR, the generic Omega capability they add and 
 | Gap | Fact |
 |---|---|
 | No complex type | M20 `OmegaDType` is F32, F16, BF16 only (omega#136, draft). Grep for `_Complex`, `complex64`, `OMEGA_DT_C` over omega `src/` and `docs/` finds nothing. **D0.1 is new generic work, not a wrapper.** |
-| M20 not qualified | `docs/tensor/M20_OMEGA_TENSOR.md` (on the #136 branch) says "M20 NOT QUALIFIED". `aien-dev/omega#136` is a draft and not on main. |
+| M20 not qualified | `docs/tensor/M20_OMEGA_TENSOR.md` (on the #136 branch) says "M20 NOT QUALIFIED". `aien-spark/omega#136` is a draft and not on main. |
 | No GB10 tensor realization | GB10 parity NOT_RUN; GB10 general matmul MISSING_IMPLEMENTATION. D1B cannot start. |
 | EXP and LOG not correctly rounded | CPU only, frozen and bounded (EXP 40 ulp, LOG 4 ulp). Transcendentals on GB10 missing. |
 | No FP32 in program IR | The Omega program IR has no FP32 value type (E1 gap table row 12). |

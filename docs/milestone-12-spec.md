@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M12
 Milestone:       Milestone 12 (OMEGA_LIVING_MATVEC)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Dynamic Adaptive Realization Dispatch Across Input Regimes & Cache Hierarchies
-Status:          COMPLETE / RATIFIED (aien-dev/aien-architecture#26, aien-dev/omega#20)
+Status:          COMPLETE / RATIFIED (aien-spark/aien-architecture#26, aien-spark/omega#20)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4-M14) -> AIEN
 ```
 
@@ -292,7 +292,7 @@ Milestone 12 qualification requires 100% pass across 10 canonical gates:
 
 Milestone 12 qualification was executed on NVIDIA DGX Spark (Linux aarch64) with zero foreign toolchain (0 LLVM, 0 GNU as, 0 GCC inline asm, 0 JIT, 0 Python). All 10 qualification gates passed (111/111 cumulative across M4–M14 with zero regressions).
 
-- **Repository**: `https://github.com/aien-dev/omega`
+- **Repository**: `https://github.com/aien-spark/omega`
 - **Implementation Commit**: `44f645f176f634fdb4b5aac950d31423b2946664`
 - **Receipt Commit**: `5a22e60458c0545f6facbd6063b1209a4fc85b52`
 - **Source Parent Commit**: `03fbcb98537584070ae2b4515bb2930398525e6b`

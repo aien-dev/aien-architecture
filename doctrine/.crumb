@@ -7,14 +7,14 @@
     "generated": {
       "children": [],
       "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "compiled_at": "2026-10-08T02:25:27Z",
+      "compiled_at": "2026-10-14T01:16:44Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:f7e4204c5cac8c5dff1cd9d24c4ab1ca7adb83d5863092f1a04348fe08656bf7",
+      "digest": "sha256:852d4f97923032b04f0c24b23c061fce59fda220b5d423465ffec878ca0708b2",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 11,
-      "generated_at_commit": "57a6c9b2984e45b3b8543f5ad8ccf276eddc17aa",
-      "source_tree": "sha256:28906253148f5d279f3577169733e690ccf17319219a2fcfeab628d4f67eb1fd"
+      "generated_at_commit": "27ac46f5a8c8950002d48535f838c0982c9e5d35",
+      "source_tree": "sha256:293a6d676b7e7205fb2b919f32c2ab67c66306d9262ff64a73821ea8d31aa43e"
     },
     "owner_lane": "",
     "provenance": {
@@ -109,7 +109,7 @@
         },
         {
           "lane": "lane23",
-          "note": "PR aien-dev/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
+          "note": "PR aien-spark/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
           "pr": 81,
           "ref": "2026-10-01-push-lane23-report.md",
           "sha": "921797b",

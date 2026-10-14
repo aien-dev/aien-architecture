@@ -6,20 +6,20 @@ Snapshot-oriented map of the AIEN GitHub ecosystem, checked against `gh repo lis
 
 | Repository | Visibility | Role |
 |---|---|---|
-| `aien-dev/aienos` | public | AIENOS, the sovereign operating system (pre-alpha). |
-| `aien-dev/omega` | public | Omega, the C reaction runtime and compiler. |
-| `aien-dev/physics` | public | FORGE machine realization plus historical Atlas/PHYSICS boot evidence. The subsystem was renamed FORGE by [ADR 0014](adr/0014-rename-machine-physics-to-forge.md), which keeps the existing `aien-dev/physics` repository name and history. The GitHub description is empty. |
+| `aien-spark/aienos` | public | AIENOS, the sovereign operating system (pre-alpha). |
+| `aien-spark/omega` | public | Omega, the C reaction runtime and compiler. |
+| `aien-spark/physics` | public | FORGE machine realization plus historical Atlas/PHYSICS boot evidence. The subsystem was renamed FORGE by [ADR 0014](adr/0014-rename-machine-physics-to-forge.md), which keeps the existing `aien-spark/physics` repository name and history. The GitHub description is empty. |
 | `aien-dev/atlas` | public | Atlas, the bare-metal boot layer. The GitHub description is empty. |
-| `aien-dev/aien-protocols` | public | Protocol authority (see below). |
-| `aien-dev/aien-architecture` | public | This repository. |
+| `aien-spark/aien-protocols` | public | Protocol authority (see below). |
+| `aien-spark/aien-architecture` | public | This repository. |
 | `aien-dev/aien-sealed` | private | Name only. Holds evaluator-only material; never given to a candidate under test. |
 
-Other live public repositories: `aien-dev/aien-edge`, `aien-dev/aienos.com`, `aien-dev/drakestapleton.com`, `aien-dev/aien-dev` (profile), `aien-dev/.github`, `aien-dev/aegis-runtime`, `aien-dev/spark-rsi`, `aien-dev/benchmarks`, `aien-dev/open-humanity`.
+Other live public repositories: `aien-dev/aien-edge`, `aien-dev/aienos.com`, `aien-spark/drakestapleton.com`, `aien-spark/aien-dev` (profile), `aien-dev/.github`, `aien-spark/aegis-runtime`, `aien-spark/spark-rsi`, `aien-spark/benchmarks`, `aien-spark/open-humanity`.
 
 ## Canonical composition root
 
-### `aien-dev/aien-sovereign-core`
-https://github.com/aien-dev/aien-sovereign-core
+### `aien-spark/aien-sovereign-core`
+https://github.com/aien-spark/aien-sovereign-core
 
 Primary composition repository. Current workspace includes runtime, inference ABI/runtime, KV cache, scheduler, platform, Cortex mirror, AEGIS mirror, adapters, cockpit, supervisor, debugger, harness, dream, inquisitor, harvester, mail, and related crates.
 
@@ -43,8 +43,8 @@ crates/spark-mail-rs
 
 ## Protocol authority
 
-### `aien-dev/aien-protocols`
-https://github.com/aien-dev/aien-protocols
+### `aien-spark/aien-protocols`
+https://github.com/aien-spark/aien-protocols
 
 Canonical cross-process/cross-repo types:
 
@@ -60,8 +60,8 @@ Target architectural rule: typed boundaries should converge here or into narrowl
 
 ## Policy / safety
 
-### `aien-dev/aegis-runtime`
-https://github.com/aien-dev/aegis-runtime
+### `aien-spark/aegis-runtime`
+https://github.com/aien-spark/aegis-runtime
 
 Current home of:
 
@@ -96,19 +96,19 @@ Current schema includes:
 
 ## Recursive self-improvement
 
-### `aien-dev/spark-rsi`
-https://github.com/aien-dev/spark-rsi
+### `aien-spark/spark-rsi`
+https://github.com/aien-spark/spark-rsi
 
 Candidate proposal, evaluation, judge, canary, rollback, and promotion.
 
 ## Benchmarks
 
-### `aien-dev/benchmarks`
-https://github.com/aien-dev/benchmarks
+### `aien-spark/benchmarks`
+https://github.com/aien-spark/benchmarks
 
 Canonical performance/provenance benchmark work should be linked from this repo rather than copied into architecture docs.
 
-Prime Drag Race suite: lives in `aien-dev/benchmarks` under `prime-drag-race/` (contract, runner, receipts). The native GB10 implementation is in `aien-dev/omega` under `bench/prime_race/` (PR #303). The outside CUDA yardstick is in `aien-dev/aien-yardsticks` under `yardsticks/prime-drag-race-cuda/` (PR #5). Environment measured so far: Linux-hosted GB10, not AIENOS.
+Prime Drag Race suite: lives in `aien-spark/benchmarks` under `prime-drag-race/` (contract, runner, receipts). The native GB10 implementation is in `aien-spark/omega` under `bench/prime_race/` (PR #303). The outside CUDA yardstick is in `aien-dev/aien-yardsticks` under `yardsticks/prime-drag-race-cuda/` (PR #5). Environment measured so far: Linux-hosted GB10, not AIENOS.
 
 ## Local composition
 
@@ -140,16 +140,16 @@ Target: migrate protocol ownership into `aien-sovereign-core/crates/aien-mcp`; r
 - `aien-dev/spark-inquisitor` (archived, read-only)
 - `aien-dev/spark-adapters` (archived, read-only)
 - `aien-dev/harvester` (archived, read-only)
-- `aien-dev/open-humanity`
-- `aien-dev/crumb-spec` (archived, read-only)
-- `aien-dev/spark-crumbs` (archived, read-only)
+- `aien-spark/open-humanity`
+- `aien-spark/crumb-spec` (archived, read-only)
+- `aien-spark/spark-crumbs` (archived, read-only)
 
 These should link to this repo for system-wide architecture while retaining component-specific documentation locally.
 
 ## Open Humanity
 
-### `aien-dev/open-humanity`
-https://github.com/aien-dev/open-humanity
+### `aien-spark/open-humanity`
+https://github.com/aien-spark/open-humanity
 
 Its Sovereign Manifesto establishes local-first, compiled-core, privacy, vault, durable-memory, and peer-cooperation principles that influence AIEN architecture.
 
