@@ -1,6 +1,6 @@
 # ADR 0037: Who signs native slot images: Owner Root directly, or a Release Signer it delegates to
 
-**Status:** PROPOSED (2026-10-12). Not decided. Written by the P11 recovery worker (w-recovery, Claude) for Drake Stapleton, as the handoff "DRAKE DECISIONS" of 2026-10-12 asked: if the Owner Root versus Release Signer contract is undefined, propose it here as a reviewed change rather than decide it in code. Until Drake decides, the code keeps doing what it does today (Option A below).
+**Status:** ACCEPTED (2026-10-12), Option A for native v1, Option B as the follow-on target. Decided by Drake Stapleton on 2026-10-12. Proposed by the P11 recovery worker (w-recovery, Claude) as the handoff "DRAKE DECISIONS" of 2026-10-12 asked.
 **Addendum to:** ADR 0024 Q3 (boot), as amended by the native v1 addendum of `CURRENT_EXECUTION_PLAN.md` (R8, N7: the slot loader approved on 2026-10-12 for "signed A/B image selection, boot-success tracking, and rollback" only).
 **Related:** aien-architecture#190 (native v1 plan), aienos#333 (P11 cuts 2b, 3, 4), aienos#35. Cite aienos ADRs as OS-00nn.
 **Evidence base:** aienos `main` at aa76c36 (paths relative to aienos).
@@ -39,3 +39,11 @@ One question: should native v1 ship with the Owner Root signing every slot image
 ## Not in scope
 
 Key rotation mechanics beyond what B needs, the Boot Signer and firmware db (TRUST-1 Q6, unchanged), TPM, networking. Hardware NOT_RUN; nothing here was run on a physical machine.
+
+## Decision
+
+Drake Stapleton, 2026-10-12: **Option A for native v1.** The Owner Root signs every native v1 slot manifest, used offline on the MacBook with Drake present, once per release. This is a recorded, deliberate deviation from TRUST-1 Q6 ("Root never routine").
+
+**Option B is the follow-on target**, built as its own cut after N7's install, update and recovery paths are proven under Option A. Native v1 does not wait for it. Option C stays rejected.
+
+Consequences: no code change now; slot format v1 and its QEMU gate rows stand. The deviation from Q6 must be listed in the native v1 release notes until Option B ships.
