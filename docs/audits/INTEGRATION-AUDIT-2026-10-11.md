@@ -1,6 +1,6 @@
 # Integration and release audit, 2026-10-11 (Lane G)
 
-Issue: aien-dev/aien-architecture#203. Programme: #190. Read 2026-10-11 ~03:30 to 04:30 UTC from fresh clones: aien-sovereign-core (sc) main `1fac70c`, aien-architecture main `f932e02`, omega main (GitHub API). Labels: EVIDENCED (read in code or a receipt, source given), GAP (the system lacks it), STALE-DOC (a document says something the code or a receipt contradicts). Nothing here is a PASS claim for any programme step. Pins were not bumped.
+Issue: aien-spark/aien-architecture#203. Programme: #190. Read 2026-10-11 ~03:30 to 04:30 UTC from fresh clones: aien-sovereign-core (sc) main `1fac70c`, aien-architecture main `f932e02`, omega main (GitHub API). Labels: EVIDENCED (read in code or a receipt, source given), GAP (the system lacks it), STALE-DOC (a document says something the code or a receipt contradicts). Nothing here is a PASS claim for any programme step. Pins were not bumped.
 
 ## 1. Cross-repository pins
 

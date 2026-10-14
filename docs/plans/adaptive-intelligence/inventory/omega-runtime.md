@@ -1,5 +1,5 @@
 # Inventory: omega runtime cognitive loop (Milestone 0/1, read by the orchestrator)
-Repo: aien-dev/omega main @ 16e729b6d844 (fresh clone 2026-10-11). Build pins: aienos.lock b84c0a67590a9 (native authority), argus.lock b375dcaa2887d (ARGUS observer). Sibling deps: ../physics (headers), ../aienos-argus, AIENOS_LOCK_REPO.
+Repo: aien-spark/omega main @ 16e729b6d844 (fresh clone 2026-10-11). Build pins: aienos.lock b84c0a67590a9 (native authority), argus.lock b375dcaa2887d (ARGUS observer). Sibling deps: ../physics (headers), ../aienos-argus, AIENOS_LOCK_REPO.
 
 | Capability | Status | Source |
 |---|---|---|

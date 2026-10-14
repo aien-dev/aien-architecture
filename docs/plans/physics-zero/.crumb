@@ -7,14 +7,14 @@
     "generated": {
       "children": [],
       "children_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "compiled_at": "2026-10-04T13:24:43Z",
+      "compiled_at": "2026-10-14T01:16:44Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:46a34ede9b6d7db75132c88223b963f4ac24dcb2f4620b0b4b3cc420121fe1f6",
+      "digest": "sha256:e40bd1c24076a221bc96cd150c12fb1bd6c39b061a497a99d10b81aac2d80802",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 3,
-      "generated_at_commit": "89fda22daf3ddb149c82a36efdc89bc087ad2f0b",
-      "source_tree": "sha256:5c1c7584ef324fa44d8aac01fc690181698054a11b75302b9e9b9eb471e8be68"
+      "generated_at_commit": "27ac46f5a8c8950002d48535f838c0982c9e5d35",
+      "source_tree": "sha256:bec6447c0e0580a8f689aaf6a908c1fd5b5fd9654b95c04e5739096a8f0be1c5"
     },
     "owner_lane": "",
     "provenance": {
@@ -29,7 +29,7 @@
         },
         {
           "lane": "lane36",
-          "note": "PR: aien-dev/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
+          "note": "PR: aien-spark/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
           "pr": 84,
           "ref": "2026-10-01-push-lane36-report.md",
           "sha": "e983393",

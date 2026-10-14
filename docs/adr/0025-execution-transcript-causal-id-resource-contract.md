@@ -4,7 +4,7 @@
 **Supersedes:** nothing. **Amends:** nothing.
 **Extends:** ARCH-0016 §20 to §22 (causal crumbs are first-class, do not log everything as text, observability requirements) by fixing one shared record format, one id chain and one honesty vocabulary across repositories.
 **Related:** ARCH-0005 (effect broker), ARCH-0006 (vault-only secrets), ARCH-0007 (J-Space effect boundary), ARCH-0011 (inference context is model state), ARCH-0017 (ARGUS), ARCH-0021 Decision 3 (append-only receipts bound to clean commits), ARCH-0022 (omega `rx_cortex` is the Cortex), ARCH-0024 (Rust scaffolding, Omega destination, language-neutral contracts).
-**Contract home:** `aien-dev/aien-protocols` `specs/execution-transcript/` (TRN1). That spec owns the byte layout, record codes and corpus. This ADR owns scope, ids, vocabulary and order. If the two disagree on bytes, the spec wins; on scope, this ADR wins until amended.
+**Contract home:** `aien-spark/aien-protocols` `specs/execution-transcript/` (TRN1). That spec owns the byte layout, record codes and corpus. This ADR owns scope, ids, vocabulary and order. If the two disagree on bytes, the spec wins; on scope, this ADR wins until amended.
 **Evidence base:** read-only fresh clones on 2026-10-01: omega `9ca297c`, aienos `33927b1`, aien-sovereign-core `f2bb539`, aien-protocols `b50c00d`, aien-architecture `11c2e9b`. Paths below are relative to the named repository on those commits. Code beats plans.
 **Citation:** from other repositories, cite this decision as ARCH-0025.
 

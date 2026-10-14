@@ -68,7 +68,7 @@ The following remain unchanged when they are historical identifiers:
 - old receipt fields and seals;
 - old artifact names such as `physics.bin`;
 - commit messages, tags, evidence bundles, and qualification records;
-- the existing `aien-dev/physics` repository history.
+- the existing `aien-spark/physics` repository history.
 
 New code, APIs, documentation, milestones, and receipts use FORGE unless they explicitly refer to historical compatibility.
 

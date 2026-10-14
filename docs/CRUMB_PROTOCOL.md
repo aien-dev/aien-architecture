@@ -12,9 +12,9 @@ Crumbline is the training curriculum in `aien-sovereign-core/crates/crumbs`. The
 
 | Item | Location |
 |---|---|
-| Authoritative text | `aien-dev/crumb-spec`, `SPEC.md` (RFC-0001, v1.0.0, Stable) and `ROLES.md` (agent behavior), pinned at commit `10b8251`. Repo is archived read-only; the text is frozen and still the standard. |
+| Authoritative text | `aien-spark/crumb-spec`, `SPEC.md` (RFC-0001, v1.0.0, Stable) and `ROLES.md` (agent behavior), pinned at commit `10b8251`. Repo is archived read-only; the text is frozen and still the standard. |
 | Schemas | same repo, `schema/crumb.schema.json`, `schema/crumb-local.schema.json` |
-| Older Rust implementation | `aien-dev/aien-sovereign-core`, `crates/spark-crumbs` (named by the archive notice as the canonical home). It writes an earlier on-disk shape (`version`, `dir_path`, `history`, `whispers` in `.crumb`). That shape is "legacy" here. |
+| Older Rust implementation | `aien-spark/aien-sovereign-core`, `crates/spark-crumbs` (named by the archive notice as the canonical home). It writes an earlier on-disk shape (`version`, `dir_path`, `history`, `whispers` in `.crumb`). That shape is "legacy" here. |
 | Tool in this repo | `tools/crumb/` (C11, single file, no dependencies) |
 
 If the Rust crate and RFC-0001 disagree, RFC-0001 wins. The tool leaves legacy files untouched and reports them.

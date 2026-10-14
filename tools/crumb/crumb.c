@@ -1,6 +1,6 @@
 /*
  * crumb: RFC-0001 Crumb Protocol (v1.0.0) + RFC-0002 common coordination plane (v1.1.0) tool. Single file, C11, no dependencies.
- * Spec: aien-dev/crumb-spec SPEC.md + ROLES.md (archived, pinned at 10b8251).
+ * Spec: aien-spark/crumb-spec SPEC.md + ROLES.md (archived, pinned at 10b8251).
  *
  *   crumb seed <root> [-n] [-v]     write/refresh .crumb in every qualifying directory
  *   crumb create <dir> <name> <purpose> [layer]

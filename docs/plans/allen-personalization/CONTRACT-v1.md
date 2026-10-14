@@ -1,6 +1,6 @@
 # ALLEN persona profile contract v1 (`aien.allen.profile/1`)
 
-Part of the finite workstream in `README.md` (not a master plan). Issue: aien-dev/aien-architecture#159. This is a proposed contract for review. It is not an accepted ADR, freezes no native format, and the SubjectState (aienos ADR 0018, kind 24) is not changed by it. The implementation is the **sovereign-core persona profile PR (pending)**; where this text and that code differ, the code is the evidence and the difference is a bug in one of them.
+Part of the finite workstream in `README.md` (not a master plan). Issue: aien-spark/aien-architecture#159. This is a proposed contract for review. It is not an accepted ADR, freezes no native format, and the SubjectState (aienos ADR 0018, kind 24) is not changed by it. The implementation is the **sovereign-core persona profile PR (pending)**; where this text and that code differ, the code is the evidence and the difference is a bug in one of them.
 
 ## 1. Ownership
 

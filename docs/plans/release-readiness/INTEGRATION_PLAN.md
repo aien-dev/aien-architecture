@@ -1,6 +1,6 @@
 # Release readiness, R2: prioritized integration plan
 
-**NOT A MASTER PLAN.** Tracking issue: aien-dev/aien-architecture#190 (R2 deliverable). `CURRENT_EXECUTION_PLAN.md` owns cross-project sequencing; section 8 of this file is the text proposed for it, filed as its own pull request. This plan orders the lanes that close the gaps of `GAP_ASSESSMENT.md` (R1) so that WHOLE-SYSTEM-E2E can run once, end to end, on the Linux host, and then again from an installed signed artifact. Every lane names the acceptance step it unblocks; a lane that unblocks none is not in this plan.
+**NOT A MASTER PLAN.** Tracking issue: aien-spark/aien-architecture#190 (R2 deliverable). `CURRENT_EXECUTION_PLAN.md` owns cross-project sequencing; section 8 of this file is the text proposed for it, filed as its own pull request. This plan orders the lanes that close the gaps of `GAP_ASSESSMENT.md` (R1) so that WHOLE-SYSTEM-E2E can run once, end to end, on the Linux host, and then again from an installed signed artifact. Every lane names the acceptance step it unblocks; a lane that unblocks none is not in this plan.
 
 Written 2026-10-10 by the coordinating session (Claude Code 85679b2b). Status words are NOT_RUN until a receipt exists; nothing below is a claim that a step passes.
 
@@ -91,7 +91,7 @@ Governing instruction (Drake): execute WHOLE-SYSTEM-E2E through a qualified publ
 
 > ## Addendum 2026-10-10: release-readiness program and the whole-system acceptance test
 >
-> Drake's decision of 2026-10-10: AT-1 is closed as REVIEWED, no AT-2 is chartered, and the principal effort is finishing AIEN as one usable system. The program runs issue-first on aien-dev/aien-architecture#190 with a finite plan under `docs/plans/release-readiness/` (NOT A MASTER PLAN).
+> Drake's decision of 2026-10-10: AT-1 is closed as REVIEWED, no AT-2 is chartered, and the principal effort is finishing AIEN as one usable system. The program runs issue-first on aien-spark/aien-architecture#190 with a finite plan under `docs/plans/release-readiness/` (NOT A MASTER PLAN).
 >
 > The stage "INTEGRATED AIEN + CORTEX + RSI" of section 3 gains a gate on the host path: WHOLE-SYSTEM-E2E (E1 install, E2 objective, E3 execute, E4 memory, E5 verify, E6 recover; receipts and negative controls per step; `docs/plans/release-readiness/ACCEPTANCE_E2E.md` once frozen). Status 2026-10-10: NOT_RUN. The native AIENOS order of the 2026-10-08 (late) addendum is unchanged; the native target takes version 2 of the test after its step 5.
 >

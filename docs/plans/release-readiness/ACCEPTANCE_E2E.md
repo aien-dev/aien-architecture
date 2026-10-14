@@ -1,6 +1,6 @@
 # ACCEPTANCE_E2E: the whole-system acceptance test (WHOLE-SYSTEM-E2E v1)
 
-**Status: FROZEN 2026-10-10 (Drake directive: freeze the acceptance contract; lane L1 rows reference this file, aien-sovereign-core#387).** From this commit on this file is never edited; changes go to a v2 file. Tracking: aien-dev/aien-architecture#190, deliverable R3 (lane L0 of `INTEGRATION_PLAN.md`). **NOT A MASTER PLAN.** This file becomes FROZEN when its commit and sha256 are posted on #190 as milestone R3; after that it is never edited, and changes go to a v2 file. Every status word in it is NOT_RUN until a declared run reports it.
+**Status: FROZEN 2026-10-10 (Drake directive: freeze the acceptance contract; lane L1 rows reference this file, aien-sovereign-core#387).** From this commit on this file is never edited; changes go to a v2 file. Tracking: aien-spark/aien-architecture#190, deliverable R3 (lane L0 of `INTEGRATION_PLAN.md`). **NOT A MASTER PLAN.** This file becomes FROZEN when its commit and sha256 are posted on #190 as milestone R3; after that it is never edited, and changes go to a v2 file. Every status word in it is NOT_RUN until a declared run reports it.
 
 Written 2026-10-10 by the coordinating session (Claude Code 85679b2b). Shapes below reuse what exists in code on 2026-10-10 (`GAP_ASSESSMENT.md` section 2); nothing new is invented where an identity rule already exists.
 

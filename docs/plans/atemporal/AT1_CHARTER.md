@@ -1,6 +1,6 @@
 # AT-1 charter: interacting clock-system dynamics and independent replication
 
-Status: ACCEPTED (executed). Program status: REVIEWED (G8, `AT1_RESULTS.md`, aien-architecture#188). Tracking issue: aien-dev/omega#371. Predecessor: AT-0 (omega#358, REVIEWED; `AT0_CHARTER.md`, `AT0_RESULTS.md`). Owner of this file: Agent 0. This is a living document; the contracts it names are frozen files (section 8).
+Status: ACCEPTED (executed). Program status: REVIEWED (G8, `AT1_RESULTS.md`, aien-architecture#188). Tracking issue: aien-spark/omega#371. Predecessor: AT-0 (omega#358, REVIEWED; `AT0_CHARTER.md`, `AT0_RESULTS.md`). Owner of this file: Agent 0. This is a living document; the contracts it names are frozen files (section 8).
 
 ## 1. Purpose and scope
 

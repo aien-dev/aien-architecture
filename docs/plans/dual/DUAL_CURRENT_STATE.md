@@ -8,10 +8,10 @@
 
 | Repository | Commit (GitHub `main`) |
 |---|---|
-| aien-dev/aien-architecture | `b31d6f7` |
-| aien-dev/omega | `6d85a16` |
-| aien-dev/aien-sovereign-core | `5fdab70` |
-| aien-dev/spark-rsi | `f5f1ca2` |
+| aien-spark/aien-architecture | `b31d6f7` |
+| aien-spark/omega | `6d85a16` |
+| aien-spark/aien-sovereign-core | `5fdab70` |
+| aien-spark/spark-rsi | `f5f1ca2` |
 
 Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 
@@ -20,7 +20,7 @@ Status words: IMPLEMENTED, PARTIAL, PLANNED, MISSING.
 - No shadow price, dual variable or scarcity estimate exists in any of the four repositories (case-insensitive grep for `shadow price`, `lagrang`, `scarcity`, `budget pressure`: zero hits). In omega, `lambda` appears only as the cost model's ridge prior precision (`RxCostModel.lambda`).
 - Every place that encodes scarcity today encodes it as a constant: J-Space residency pressure, scheduler limits, RSI bottleneck weights.
 - The hard-before-soft and Pareto-before-ranking discipline DUAL needs already exists in omega's capability query and in the Arena spec. DUAL must reuse it, not shadow it.
-- ESTIMATION is not ready to feed production prices: EST-3 is FAILED on `main` (v1 `aien-dev/omega#105`, v2 `#118`, v3 `#129`); v4 INCONCLUSIVE (`#153`); v5 `#170` was CLOSED unmerged on 2026-10-04T00:38:42Z (interim only, no calibration verdict; branch kept as a record; estimation program parked; checked with `gh pr view 170 -R aien-dev/omega`). EST-4 onward is blocked.
+- ESTIMATION is not ready to feed production prices: EST-3 is FAILED on `main` (v1 `aien-spark/omega#105`, v2 `#118`, v3 `#129`); v4 INCONCLUSIVE (`#153`); v5 `#170` was CLOSED unmerged on 2026-10-04T00:38:42Z (interim only, no calibration verdict; branch kept as a record; estimation program parked; checked with `gh pr view 170 -R aien-spark/omega`). EST-4 onward is blocked.
 
 ## 2. Concept inventory
 
@@ -85,9 +85,9 @@ Written by the orchestrator after read-only audits of the merged commits below. 
 
 | Repository | Commit (GitHub `main`, after the merges) |
 |---|---|
-| aien-dev/omega | `55d05d6` |
-| aien-dev/aien-sovereign-core | `7580039` |
-| aien-dev/spark-rsi | `e5aab9a` |
+| aien-spark/omega | `55d05d6` |
+| aien-spark/aien-sovereign-core | `7580039` |
+| aien-spark/spark-rsi | `e5aab9a` |
 
 Baseline before this work: omega `cb7cc21`, aien-sovereign-core `91fba8f`, spark-rsi `f5f1ca2`, aien-architecture `35dd324`. Grep for `rx_dual`, `RxDual`, `src/dual` at those commits: zero hits (DUAL was MISSING everywhere, consistent with section 1).
 

@@ -31,11 +31,11 @@ AEGIS VERIFIES.  HARDWARE ACTS.  EVIDENCE TEACHES.
 
 | Repository | Role |
 | :--- | :--- |
-| [aienos](https://github.com/aien-dev/aienos) | The trusted operating system: its own kernel replacing Linux on the DGX Spark |
-| [omega](https://github.com/aien-dev/omega) | The C reaction runtime and compiler that defines computation |
-| [physics](https://github.com/aien-dev/physics) | FORGE machine realization, plus historical Atlas/PHYSICS boot evidence |
-| [aien-protocols](https://github.com/aien-dev/aien-protocols) | Versioned wire and state specifications |
-| [aien-sovereign-core](https://github.com/aien-dev/aien-sovereign-core) | Earlier Linux-hosted Rust runtime, legacy and being migrated |
+| [aienos](https://github.com/aien-spark/aienos) | The trusted operating system: its own kernel replacing Linux on the DGX Spark |
+| [omega](https://github.com/aien-spark/omega) | The C reaction runtime and compiler that defines computation |
+| [physics](https://github.com/aien-spark/physics) | FORGE machine realization, plus historical Atlas/PHYSICS boot evidence |
+| [aien-protocols](https://github.com/aien-spark/aien-protocols) | Versioned wire and state specifications |
+| [aien-sovereign-core](https://github.com/aien-spark/aien-sovereign-core) | Earlier Linux-hosted Rust runtime, legacy and being migrated |
 
 Historical `PHYSICS_*` milestone names stay unchanged in old milestones and evidence.
 

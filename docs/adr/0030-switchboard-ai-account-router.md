@@ -4,14 +4,14 @@
 **Number:** 0030 was the next free number on 2026-10-03; no open PR claimed it.
 **Related:** ADR 0024 (Rust is scaffolding, Omega is destination; Decision 1 and 4 cover a new Rust crate), ADR 0028 (AIEN-TEST), ADR 0006 (production secrets are vault-only), ADR 0022 (cognitive-routing idea reused as a pattern only, no dependency).
 **Evidence:** `~/mindmap/notes/2026-10-03-switchboard-research.md`, `~/handoffs/switchboard/program-facts.md`.
-**Implementation:** `aien-dev/aien-sovereign-core`, `crates/aien-switchboard` (cut 3, pure types and router with a fake runner).
+**Implementation:** `aien-spark/aien-sovereign-core`, `crates/aien-switchboard` (cut 3, pure types and router with a fake runner).
 
 ## Context
 The operator holds subscription accounts with several AI companies: 2 Anthropic, 2 Google, 1 xAI (Grok), 1 OpenAI, plus an OpenRouter key. Today he and the hive switch between them by hand and run into usage limits. He wants one local program that decides which account handles which job, and fails over when an account is out of room.
 
 ## Decision
 1. **Purpose.** A Rust crate `aien-switchboard` that owns: account list, job description, usage gauge per account, a routing rule table the operator edits, and one deterministic decision function. Commands: `switchboard run "<prompt>" [--kind code|review|research]` and `switchboard status`.
-2. **Home.** New crate `crates/aien-switchboard` in `aien-dev/aien-sovereign-core`. Reason: that repo is the Linux user-space Rust scaffolding home (ADR 0024 classification A, item 19), already holds the hive, adapters, `aien-test` runner and `aien-proof`, and ADR 0024 says new non-hardware systems work defaults to Rust. Not omega (C, resident runtime, chip work), not aienos (kernel). Contract at the boundary stays language-neutral per ADR 0024 Decision 5 so Omega can replace it later.
+2. **Home.** New crate `crates/aien-switchboard` in `aien-spark/aien-sovereign-core`. Reason: that repo is the Linux user-space Rust scaffolding home (ADR 0024 classification A, item 19), already holds the hive, adapters, `aien-test` runner and `aien-proof`, and ADR 0024 says new non-hardware systems work defaults to Rust. Not omega (C, resident runtime, chip work), not aienos (kernel). Contract at the boundary stays language-neutral per ADR 0024 Decision 5 so Omega can replace it later.
 3. **Hard design rules.**
    1. Never read, copy, store or proxy subscription login tokens (Anthropic and Google forbid it in writing; Google names account termination).
    2. Each subscription account is the company's own unmodified program (`claude`, `codex`, `agy`, `grok`), signed in by the operator through that company's own login, one settings folder per account.

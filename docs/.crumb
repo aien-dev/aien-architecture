@@ -37,20 +37,20 @@
     "generated": {
       "children": [
         {
-          "digest": "4fb903f58eef35b8168fd714fe53d335f8886d6483b82405183e899a59e2f705",
-          "last_commit": "dbc0703",
+          "digest": "322c24cbf238dc06051edc6f0c51e9e70d8a195f77f91a08a0ac5f0ae299b00b",
+          "last_commit": "27ac46f",
           "name": "adr",
           "purpose": "Directory docs/adr. Purpose not yet described by a human."
         },
         {
-          "digest": "b762355cfafd4b2071ede1f4d9034b02578f53d3437fc57aeba82008dca5604d",
-          "last_commit": "38c7cc2",
+          "digest": "1b7d47cac8dcbeed3c2ce178d2c07c188e32fdd743e3b69e00c1980aa93d44ea",
+          "last_commit": "27ac46f",
           "name": "archive/plans",
           "purpose": "Directory docs/archive/plans. Purpose not yet described by a human."
         },
         {
-          "digest": "3a652cbe470a451d15b8891b99f92c1637e218296e409c37d7bbb7bec210c13d",
-          "last_commit": "f05541b",
+          "digest": "ace122c86c42992a65ab53566fd1f514734e9762ef6d19363fc4a21cfc018bb7",
+          "last_commit": "27ac46f",
           "name": "crumbs",
           "purpose": "Directory docs/crumbs. Purpose not yet described by a human."
         },
@@ -61,8 +61,8 @@
           "purpose": "Directory docs/errata. Purpose not yet described by a human."
         },
         {
-          "digest": "accdf7e11632deb14ec4979de8b649a3a24d3a762f4c44748ea5f48358d59ff3",
-          "last_commit": "7fe8e26",
+          "digest": "e87ba4de06f0ad52c6e1d440ba2237585a9aef7aa171edb54b754423b830f67e",
+          "last_commit": "27ac46f",
           "name": "plans",
           "purpose": "Directory docs/plans. Purpose not yet described by a human."
         },
@@ -79,15 +79,15 @@
           "purpose": "Directory docs/specs. Purpose not yet described by a human."
         }
       ],
-      "children_root": "sha256:a2b93a35052ff31a731742d2e7793ce9631a83f2f136282ac03a34422171ece6",
-      "compiled_at": "2026-10-13T02:48:36Z",
+      "children_root": "sha256:fd8175f9567c2c73b604f656027346744569b2c89b37f0f3f1c0392728282f01",
+      "compiled_at": "2026-10-14T01:29:11Z",
       "compiler": "crumb-compile/1",
-      "digest": "sha256:c64df3b5dac4515585107c3f349fafd1e32a96ff4f0c267f5e6b5521c8d00921",
+      "digest": "sha256:3c19bd8422cd2d33958708b699f9135fa40c8b400b31fb5e94da0016c7c5e532",
       "evidence_files": 0,
       "evidence_root": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "files": 172,
-      "generated_at_commit": "dbc07036878ec519142dbfa70d118a8806d34138",
-      "source_tree": "sha256:f2fc83d331d110e4be2cdf0391e6d51b4505afd9d7831000034c9be068cb03f5"
+      "generated_at_commit": "5126e0670e949fa252b59de3bbf16557c8198334",
+      "source_tree": "sha256:acf6b8662f89cdf4a302aa08d6bc65e8a7819cd06e8721b4e5c9fee840f729b0"
     },
     "owner_lane": "",
     "provenance": {
@@ -166,7 +166,7 @@
         },
         {
           "lane": "lane36",
-          "note": "PR: aien-dev/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
+          "note": "PR: aien-spark/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
           "pr": 84,
           "ref": "2026-10-01-push-lane36-report.md",
           "sha": "e983393",

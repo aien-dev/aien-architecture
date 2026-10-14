@@ -4,7 +4,7 @@
 **Supersedes:** nothing. **Amends:** ARCH-0028 Decision 4 (EvidenceReceiptV1), in the way Decision 6 below states; ARCH-0028 is not otherwise changed.
 **Extends:** ARCH-0024 (Rust is scaffolding, Omega is destination) by applying it to dependencies: the resolver that matters lives in Omega, and the Rust and C stack of today is bridged to it by a checker. Applies `doctrine/SOVEREIGNTY.md` section 3 (the Oracle Principle) to library admission.
 **Related:** ARCH-0028 (aien-test and its receipt, which Decision 6 amends), ARCH-0021 decision 3 (append-only receipts bound to clean commits), ARCH-0027 (Lean as a temporary oracle, same pattern of "Omega owns the invariant"), ARCH-0016 (resident reaction architecture, causal crumbs in section 20).
-**Specification (in flight):** `aien-dev/aien-protocols`, `specs/verified-crumb/`, being written by the VC1-FMT stage in parallel with this ADR. This ADR fixes the decisions; that path will hold the byte-level encoding and the golden vectors. Until it merges, the byte layout is not defined anywhere and nothing may depend on it.
+**Specification (in flight):** `aien-spark/aien-protocols`, `specs/verified-crumb/`, being written by the VC1-FMT stage in parallel with this ADR. This ADR fixes the decisions; that path will hold the byte-level encoding and the golden vectors. Until it merges, the byte layout is not defined anywhere and nothing may depend on it.
 **Citation:** from other repositories, cite this decision as ARCH-0029.
 
 ---
@@ -23,7 +23,7 @@ Developers still need to experiment with unchecked code. That happens in a secon
 
 The word "crumb" already names two things in AIEN. This decision adds a third, so the three are separated first.
 
-1. **`.crumb` and the Crumb Protocol (RFC-0001).** Agent coordination metadata: files in directories that tell agents who is working where. Spec: `aien-dev/crumb-spec`, `SPEC.md` (RFC-0001 v1.0.0), pinned at commit `10b8251`, repository archived read-only; the in-repo pointer is `docs/CRUMB_PROTOCOL.md` (lines 1 to 20) and the tool is `tools/crumb/` (`docs/CRUMB_PROTOCOL.md`, "Where the spec lives" table). It is unchanged by this decision.
+1. **`.crumb` and the Crumb Protocol (RFC-0001).** Agent coordination metadata: files in directories that tell agents who is working where. Spec: `aien-spark/crumb-spec`, `SPEC.md` (RFC-0001 v1.0.0), pinned at commit `10b8251`, repository archived read-only; the in-repo pointer is `docs/CRUMB_PROTOCOL.md` (lines 1 to 20) and the tool is `tools/crumb/` (`docs/CRUMB_PROTOCOL.md`, "Where the spec lives" table). It is unchanged by this decision.
 2. **Crumbline.** The learning and verification curriculum. Its Rust side is `aien-sovereign-core/crates/crumbs` (`docs/CRUMB_PROTOCOL.md`, section "Not the same thing as Crumbline"); its Omega side is `src/crumbline/` in omega (`cl_program.c`, `cl_search.c`, per `docs/plans/arena-x/ARENA_X_DISCOVERY_AUDIT.md:44`). It is unchanged by this decision, except that it becomes the first migrated subsystem (Decision 11).
 3. **Verified Crumb (VC).** New. A content-addressed, receipt-bound library object that other programs may depend on. Defined by this ADR.
 

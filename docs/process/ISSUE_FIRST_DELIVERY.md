@@ -2,7 +2,7 @@
 
 **Status:** OPERATING PROCESS (effective on merge). **Scope:** substantive new AIEN capabilities, experiments, significant fixes, cross-repository changes and agent implementation work. **NOT A MASTER PLAN.**
 
-**Tracking issue:** [aien-architecture #175](https://github.com/aien-dev/aien-architecture/issues/175). **Reference implementation issue:** [omega #358 (AT-0)](https://github.com/aien-dev/omega/issues/358).
+**Tracking issue:** [aien-architecture #175](https://github.com/aien-spark/aien-architecture/issues/175). **Reference implementation issue:** [omega #358 (AT-0)](https://github.com/aien-spark/omega/issues/358).
 
 ## Authority and evidence
 
