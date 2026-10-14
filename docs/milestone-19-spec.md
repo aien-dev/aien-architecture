@@ -7,7 +7,7 @@ Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Persistent Omega Execution Substrate in Coherent Memory on NVIDIA DGX Spark (GB10, sm_121)
 Status:          REOPENED / IN PROGRESS (see docs/errata/m19-errata.md; closes via docs/m19r-recovery-program.md)
 Opened:          2026-09-26
-Authority:       aien-dev/physics M16 (commit b64753d), aien-dev/omega M18 (commit 7273c37)
+Authority:       aien-spark/physics M16 (commit b64753d), aien-spark/omega M18 (commit 7273c37)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15/M16) -> OMEGA (M4-M14) -> M16 (Native Submission) -> M17 (Blackwell Vector) -> M18 (Blackwell MatMul) -> M19 (Accelerator Resident)
 ```
 
@@ -174,8 +174,8 @@ Milestone 19 qualification requires passing 18 Milestone 19 gates in addition to
 
 ## 7. Deliverables & Acceptance Criteria
 
-1. **Architecture & Specification**: Canonical specification `docs/milestone-19-spec.md` ratified in `aien-dev/aien-architecture`.
-2. **Substrate Implementation**: Complete `OmegaAcceleratorWorld` implementation in `aien-dev/omega`.
+1. **Architecture & Specification**: Canonical specification `docs/milestone-19-spec.md` ratified in `aien-spark/aien-architecture`.
+2. **Substrate Implementation**: Complete `OmegaAcceleratorWorld` implementation in `aien-spark/omega`.
 3. **Silicon Proof**: Physical execution receipts recorded on NVIDIA DGX Spark (Grace Blackwell GB10, `sm_121`).
 4. **Zero-Libcuda Audit**: Verification receipts confirming zero proprietary userspace CUDA runtime linkage or symbols.
 5. **Cortex Memory Commit**: Milestone qualification receipt committed to Spark Cortex space `atlas-memory`.

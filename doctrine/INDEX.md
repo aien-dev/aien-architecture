@@ -173,7 +173,7 @@ The `DOCTRINE_V1` corpus comprises seven canonical specifications located in [`/
 - **Core Principles:**
   - **The Sovereignty Law:** The final deployed Sovereign Machine must not depend upon Rust, Cargo, LLVM, GCC, Python, Linux, POSIX, CUDA, PyTorch, or foreign weights.
   - **The Severance Invariant:** If all external repositories, cloud providers, and foreign toolchains vanish, the machine continues self-executing and evolving indefinitely.
-  - **The Founding Exception & The Scaffold:** Temporary reliance on modern toolchains during initial bootstrapping, subject to strict deprecation horizons terminating at sovereign closure (closure gate placement on the M0-M40 roadmap pending the SOVEREIGNTY.md rewrite, aien-dev/aien-architecture#8).
+  - **The Founding Exception & The Scaffold:** Temporary reliance on modern toolchains during initial bootstrapping, subject to strict deprecation horizons terminating at sovereign closure (closure gate placement on the M0-M40 roadmap pending the SOVEREIGNTY.md rewrite, aien-spark/aien-architecture#8).
   - **The Oracle Principle:** Epistemic grounding using external instruments as temporary measurement comparators, never as operational dependencies.
 - **Key Invariants:**
   - Absolute self-hosting: every compiler, kernel, scheduler, and weight is built from self-contained lineage.

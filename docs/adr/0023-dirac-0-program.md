@@ -38,10 +38,10 @@ The ten rules, the three gates (D0 generic algebra, D1 realization on CPU then B
 
 ## 4. Evidence checked on 2026-10-01
 
-- No complex type: grep for `_Complex`, `complex64`, `OMEGA_DT_C` over omega `src/` and `docs/` finds nothing; M20 `OmegaDType` is F32, F16, BF16 (`aien-dev/omega#136`, draft).
+- No complex type: grep for `_Complex`, `complex64`, `OMEGA_DT_C` over omega `src/` and `docs/` finds nothing; M20 `OmegaDType` is F32, F16, BF16 (`aien-spark/omega#136`, draft).
 - No Physics Zero loop document exists in omega or aien-architecture.
 - ESTIMATION v4: INCONCLUSIVE (omega#153 merged 2026-10-01); v5 in progress (omega#170, open). It is not cited as PASS anywhere in DIRAC-0.
-- `aien-dev/omega#152` (GB10 DIV/SQRT) is merged at `07004a8`.
+- `aien-spark/omega#152` (GB10 DIV/SQRT) is merged at `07004a8`.
 
 ## 5. Status of alternatives not taken
 

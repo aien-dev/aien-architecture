@@ -24,10 +24,10 @@ Every figure below was counted on 2026-09-28 from `origin/main` of each reposito
 
 | Repository | Commit counted |
 |---|---|
-| aien-dev/aienos | `c8ab65e` |
-| aien-dev/aien-sovereign-core | `63fe7a7` |
-| aien-dev/aegis-runtime | `2bbce76` |
-| aien-dev/omega (for the existing C crumb reader) | `ceb68d6` |
+| aien-spark/aienos | `c8ab65e` |
+| aien-spark/aien-sovereign-core | `63fe7a7` |
+| aien-spark/aegis-runtime | `2bbce76` |
+| aien-spark/omega (for the existing C crumb reader) | `ceb68d6` |
 
 Method, so anyone can rerun it: list every tracked `.rs` file with `git ls-tree -r --name-only origin/main`, drop anything under `vendor/`, and count lines of each file with `git show origin/main:<file> | wc -l`. Line counts include comments, blank lines, and tests.
 
@@ -108,7 +108,7 @@ Things worth knowing inside those numbers:
 
 The 298 files include two folders that are not crates: `e2e_tests/` (6 files, 2,536 lines) and `benchmarks/crates` (7 files, 1,172 lines).
 
-`spark-crumbs` is a different, older crate from `crumbs`. Several crates (cortex-rs, spark-hive, spark-inquisitor, spark-adapters) pull it from the separate `aien-dev/spark-crumbs` repository. No crate in sovereign-core depends on `crumbs` (Crumb v1). `crumbs` stands alone and is used as its own programs (`crumbs`, `crumbs-probe-learner`).
+`spark-crumbs` is a different, older crate from `crumbs`. Several crates (cortex-rs, spark-hive, spark-inquisitor, spark-adapters) pull it from the separate `aien-spark/spark-crumbs` repository. No crate in sovereign-core depends on `crumbs` (Crumb v1). `crumbs` stands alone and is used as its own programs (`crumbs`, `crumbs-probe-learner`).
 
 ### 2.3 aegis-runtime: 53 files, 9,207 lines
 
@@ -118,7 +118,7 @@ The 298 files include two folders that are not crates: `e2e_tests/` (6 files, 2,
 | tests | 6 | 1,901 |
 | build.rs | 1 | 32 |
 
-This is the standalone `aien-dev/aegis-runtime` repository. It is **not** the same thing as aienos's `crates/aienos-aegis` (1,757 lines), which is counted under aienos above.
+This is the standalone `aien-spark/aegis-runtime` repository. It is **not** the same thing as aienos's `crates/aienos-aegis` (1,757 lines), which is counted under aienos above.
 
 ### 2.4 Not counted
 
@@ -217,7 +217,7 @@ Each part gets a C twin that passes the same tests as the Rust version before th
 
 These are open. Each needs Drake's call or more measurement before work starts.
 
-Status 2026-10-01 (Lane 33 reconciliation, recorded from merged code, not a new decision): item 1 was taken in practice as bottom-up (crypto `aien-dev/aienos#183`, Store `#190`/`#191`, then the C kernel `#194` to `#204`; C boot loader not started), under Drake's standing "go with the recommendation" rule. Item 2 was executed by `aien-dev/aienos#188` (`913b962`, own Ed25519 + SHA-512 in C, RFC 8032 vectors). Items 3 to 8 are unchanged. See `CURRENT_EXECUTION_PLAN.md` §2, Lane 33 addendum.
+Status 2026-10-01 (Lane 33 reconciliation, recorded from merged code, not a new decision): item 1 was taken in practice as bottom-up (crypto `aien-spark/aienos#183`, Store `#190`/`#191`, then the C kernel `#194` to `#204`; C boot loader not started), under Drake's standing "go with the recommendation" rule. Item 2 was executed by `aien-spark/aienos#188` (`913b962`, own Ed25519 + SHA-512 in C, RFC 8032 vectors). Items 3 to 8 are unchanged. See `CURRENT_EXECUTION_PLAN.md` §2, Lane 33 addendum.
 
 1. **Order inside aienos.** boot → kernel → store → crypto (as briefed, needs temporary C-calls-Rust bridges), or crypto → store → kernel → boot (bottom-up, no bridges, boot last).
 2. **Ed25519 signatures.** Today they come from vendored outside code (`ed25519-dalek`). Writing our own Ed25519 in C is security-critical work that needs its own test plan: RFC 8032 vectors, plus a differential check against the current code.

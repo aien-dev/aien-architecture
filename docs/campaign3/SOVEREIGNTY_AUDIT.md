@@ -1,6 +1,6 @@
 # CAND-4 sovereignty audit (Campaign 3, item C3-8)
 
-Date: 2026-10-08. Subject: the internal candidate CAND-4 ([release/candidate.toml](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/release/candidate.toml), [manifest](../../qualification/candidates/CAND-4.toml)). CAND-4 is internal only. No release of CAND-4 is published, physical Spark rollback has not been run, and this audit proposes no key creation and no publication.
+Date: 2026-10-08. Subject: the internal candidate CAND-4 ([release/candidate.toml](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/release/candidate.toml), [manifest](../../qualification/candidates/CAND-4.toml)). CAND-4 is internal only. No release of CAND-4 is published, physical Spark rollback has not been run, and this audit proposes no key creation and no publication.
 
 Snapshot read on GitHub main: aien-sovereign-core `f5ba66b` (updated 2026-10-08 for the Campaign 2 merges up to `6bbe2ec`), aienos `8641977`, aien-architecture `78770cc`. Every claim below links to a merged file or commit on main, or is marked UNVERIFIED or NOT_RUN. Evidence from main after CAND-4 is labelled as such; it is not evidence about the CAND-4 package.
 
@@ -35,8 +35,8 @@ Overall: CAND-4 is not shown to be sovereign. Parts of it work offline on Linux,
 ## 1. Build and verify offline from supported inputs
 
 Evidence:
-- [Offline build receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-07-final-switch-kill-and-offline-build.md) (sovereign-core #308, merged): `cargo fetch --locked` then `--offline --locked`, 7 crates, 170 s, PASS. Environment: host Linux on the Spark.
-- [CAND-4 release demo receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md): fresh clones and fresh CARGO_HOME, `release-build.sh --offline`, all 7 binaries equal the CAND-4 digests, the package built twice gave identical bytes, signature and digest checks ran from `file://` URLs. Environment: Spark, Linux.  This is a host result (CPU build on Linux), so the GB10 column is N/A.
+- [Offline build receipt](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-07-final-switch-kill-and-offline-build.md) (sovereign-core #308, merged): `cargo fetch --locked` then `--offline --locked`, 7 crates, 170 s, PASS. Environment: host Linux on the Spark.
+- [CAND-4 release demo receipt](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md): fresh clones and fresh CARGO_HOME, `release-build.sh --offline`, all 7 binaries equal the CAND-4 digests, the package built twice gave identical bytes, signature and digest checks ran from `file://` URLs. Environment: Spark, Linux.  This is a host result (CPU build on Linux), so the GB10 column is N/A.
 - [CAND-4 manifest](../../qualification/candidates/CAND-4.toml) note: clean-worktree double build, 25 of 25 digests identical (CAND4-BUILD-REAL3, VERDICT PASS).
 - Fail-closed tamper checks in the demo: a changed `release.toml` and a missing signature were both refused (steps S9, S10).
 
@@ -51,10 +51,10 @@ Limits:
 ## 2. Boot without a cloud dependency
 
 Evidence:
-- QEMU: the newest committed C kernel gate receipt, [ck_gates_cb14...json](https://github.com/aien-dev/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json), records the boot, Store, network, SMP, crash, continuity, recovery, ALLEN, keyboard, FPU, infer and screen children as PASS, with M0_ROLLBACK NOT_RUN, overall NOT_ALL_GATES_PASS. The runs use local QEMU and local AAVMF firmware, with no cloud service named.
+- QEMU: the newest committed C kernel gate receipt, [ck_gates_cb14...json](https://github.com/aien-spark/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json), records the boot, Store, network, SMP, crash, continuity, recovery, ALLEN, keyboard, FPU, infer and screen children as PASS, with M0_ROLLBACK NOT_RUN, overall NOT_ALL_GATES_PASS. The runs use local QEMU and local AAVMF firmware, with no cloud service named.
 - QEMU console and input: aienos #280 (console session, C3-1a) merged, TEST-ONLY console image, QEMU only.
-- Physical: [M2 first native boot, 2026-09-24](https://github.com/aien-dev/aienos/blob/8641977/evidence/m2_first_boot_2026-09-24.md): native AIENOS code at EL2 with no Linux underneath, a report read back by Linux, return to Linux undamaged. [Attended recovery USB boot](https://github.com/aien-dev/aienos/blob/8641977/evidence/recovery_boot_machine1.md): read-only inspection, return to Linux.
-- Statement of record: [ROADMAP status](https://github.com/aien-dev/aienos/blob/8641977/ROADMAP.md) "Nothing in AIENOS is physically qualified" and "No physical boot of the C kernel has happened"; [CURRENT_EXECUTION_PLAN.md](../../CURRENT_EXECUTION_PLAN.md) §2 correction of 2026-10-08 (arch #163).
+- Physical: [M2 first native boot, 2026-09-24](https://github.com/aien-spark/aienos/blob/8641977/evidence/m2_first_boot_2026-09-24.md): native AIENOS code at EL2 with no Linux underneath, a report read back by Linux, return to Linux undamaged. [Attended recovery USB boot](https://github.com/aien-spark/aienos/blob/8641977/evidence/recovery_boot_machine1.md): read-only inspection, return to Linux.
+- Statement of record: [ROADMAP status](https://github.com/aien-spark/aienos/blob/8641977/ROADMAP.md) "Nothing in AIENOS is physically qualified" and "No physical boot of the C kernel has happened"; [CURRENT_EXECUTION_PLAN.md](../../CURRENT_EXECUTION_PLAN.md) §2 correction of 2026-10-08 (arch #163).
 
 Limits:
 - The C kernel in CAND-4 (`aienos-ck-core-image`) has never booted on the physical Spark. The 2026-09-24 boot ran an earlier image.
@@ -65,9 +65,9 @@ Limits:
 ## 3. Retain and recover user identity and data
 
 Evidence:
-- Design record: [ADR 0035](../adr/0035-persistent-cognitive-entity-boundary-allen.md) (ALLEN, accepted). Persona profile bound to the existing identity: sovereign-core #302 (merged, `37039ec`). Identity crates on main after CAND-4 (not in the CAND-4 package): `crates/aien-allen`, `aien-allen-profile`, `aien-allen-memory` ([identity_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-allen/tests/identity_test.rs)). Environment: host.
-- QEMU: gates M4_STORE_CRASH, M4_CONTINUITY, M4_RECOVERY and M4_ALLEN are PASS in the [receipt above](https://github.com/aien-dev/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json). aienos #260 (merged): ALLEN native genesis at provisioning and QEMU cold restore.
-- Main after CAND-4: sovereign-core #322 (`6bbe2ec`), [RESULT-v3.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md), ALLEN end-to-end demo v3 PASS 10/10: S1 one identity, S2 profile and memory, S5 kill -9 restart kept the identity, profile, notes, goal and the DONE result without re-executing it, S6 forget removed a note from every state file. Environment: real CPU, Linux host. Earlier runs v1 and v2 FAILED and stay recorded.
+- Design record: [ADR 0035](../adr/0035-persistent-cognitive-entity-boundary-allen.md) (ALLEN, accepted). Persona profile bound to the existing identity: sovereign-core #302 (merged, `37039ec`). Identity crates on main after CAND-4 (not in the CAND-4 package): `crates/aien-allen`, `aien-allen-profile`, `aien-allen-memory` ([identity_test.rs](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-allen/tests/identity_test.rs)). Environment: host.
+- QEMU: gates M4_STORE_CRASH, M4_CONTINUITY, M4_RECOVERY and M4_ALLEN are PASS in the [receipt above](https://github.com/aien-spark/aienos/blob/8641977/evidence/ck_gates_cb1404163d23657165e31bc566fb4c4829a9e1ee7a5d5dc4685454b0c2685948.json). aienos #260 (merged): ALLEN native genesis at provisioning and QEMU cold restore.
+- Main after CAND-4: sovereign-core #322 (`6bbe2ec`), [RESULT-v3.md](https://github.com/aien-spark/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md), ALLEN end-to-end demo v3 PASS 10/10: S1 one identity, S2 profile and memory, S5 kill -9 restart kept the identity, profile, notes, goal and the DONE result without re-executing it, S6 forget removed a note from every state file. Environment: real CPU, Linux host. Earlier runs v1 and v2 FAILED and stay recorded.
 
 Limits:
 - No physical result. TRUST-1 and M5 are NOT_QUALIFIED; the owner key ceremony and TPM sealing are BLOCKED_OPERATOR ([plan](../../CURRENT_EXECUTION_PLAN.md) §2 lines on TRUST-1; aienos issue #32 open).
@@ -78,9 +78,9 @@ Limits:
 ## 4. Execute authorized local computations
 
 Evidence:
-- Linux-hosted GB10: in the [CAND-4 release demo](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md) the installed CAND-4 `aien` ran one GB10 StreamTurn (rc 0, 16 tokens) and the NP1 workflow steps S1 to S8 all returned `ok:true`. The same receipt reports text-level agreement with a Hugging Face oracle (token ids and logits not exposed, so only decoded text was compared).
-- Host, main after CAND-4 (not the CAND-4 source d5b78ff): the golden path and effect ledger tests in sovereign-core ([effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs)).
-- QEMU: gate INFER is PASS. Per [GATES.md rows 129 to 134](https://github.com/aien-dev/aienos/blob/8641977/native/kernel/GATES.md) it checks that the kernel ingests the model file, hashes it, and probes tensor count and vocabulary. It is not token generation.
+- Linux-hosted GB10: in the [CAND-4 release demo](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md) the installed CAND-4 `aien` ran one GB10 StreamTurn (rc 0, 16 tokens) and the NP1 workflow steps S1 to S8 all returned `ok:true`. The same receipt reports text-level agreement with a Hugging Face oracle (token ids and logits not exposed, so only decoded text was compared).
+- Host, main after CAND-4 (not the CAND-4 source d5b78ff): the golden path and effect ledger tests in sovereign-core ([effects.rs](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs)).
+- QEMU: gate INFER is PASS. Per [GATES.md rows 129 to 134](https://github.com/aien-spark/aienos/blob/8641977/native/kernel/GATES.md) it checks that the kernel ingests the model file, hashes it, and probes tensor count and vocabulary. It is not token generation.
 
 Limits:
 - Real inference runs on Linux (CPU, or GB10 through the Linux NVIDIA driver). Native AIENOS CPU or GPU inference is not done. aienos issue #34 (runtime and native CPU inference) is OPEN; #31, #32, #33, #35 are also OPEN.
@@ -90,7 +90,7 @@ Limits:
 ## 5. Replace the model without replacing identity
 
 Evidence:
-- Main after CAND-4: [RESULT-v3.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md) (sovereign-core #322, `6bbe2ec`), S7 PASS: after kill -9 and a restart on a second model, the `Model:` line and model digest changed (f55217be to 75311d91) while ID0, profile, work note and goal stayed unchanged; S8 PASS: the second model then wrote a checked document whose provenance names the new model digest and the same ALLEN id. Environment: real CPU, Linux host.
+- Main after CAND-4: [RESULT-v3.md](https://github.com/aien-spark/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v3.md) (sovereign-core #322, `6bbe2ec`), S7 PASS: after kill -9 and a restart on a second model, the `Model:` line and model digest changed (f55217be to 75311d91) while ID0, profile, work note and goal stayed unchanged; S8 PASS: the second model then wrote a checked document whose provenance names the new model digest and the same ALLEN id. Environment: real CPU, Linux host.
 - Main: the persona profile is bound to the existing identity (sc #302). ADR 0035 records that ALLEN is the agent the AgentRoot already names ("There is no `AllenId`") and that the model is identified only by a digest in the boot handoff ("there is no ModelId type", as of the 2026-10-04 audit). I did not check the Rust crates for a model field: UNVERIFIED.
 
 Limits:
@@ -102,22 +102,22 @@ Limits:
 ## 6. Recover from interrupted updates
 
 Evidence:
-- Host install path: `scripts/test-install-release.sh` case 12b ([receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-07-final-switch-kill-and-offline-build.md), sovereign-core #308): kill -9 at pre-rename, after-links (install) and pre-rename, after-swap (rollback), each ends wholly old or wholly new and a rerun repairs it. PASS in a scratch prefix.
-- [Receipt v2](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-install-upgrade-rollback-v2.md): kill -9 at mid-copy, after-copy, before-swap left the live release unchanged. [CAND-4 demo](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md) S5 to S8: kill mid-copy, rerun, upgrade, then `--rollback` twice between CAND-3 and CAND-4 digests, all rc 0.
+- Host install path: `scripts/test-install-release.sh` case 12b ([receipt](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-07-final-switch-kill-and-offline-build.md), sovereign-core #308): kill -9 at pre-rename, after-links (install) and pre-rename, after-swap (rollback), each ends wholly old or wholly new and a rerun repairs it. PASS in a scratch prefix.
+- [Receipt v2](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-install-upgrade-rollback-v2.md): kill -9 at mid-copy, after-copy, before-swap left the live release unchanged. [CAND-4 demo](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md) S5 to S8: kill mid-copy, rerun, upgrade, then `--rollback` twice between CAND-3 and CAND-4 digests, all rc 0.
 - QEMU boot rollback: aienos #273 (merged `61bd76a`): the C kernel image as the one-time BootNext candidate, 37 checks PASS across normal, panic, CPU fault, hang, rejected and absent image lanes, BootNext consumed once, BootOrder unchanged. Environment: QEMU only. Older Rust-mock evidence: gate M0_NATIVE_ROLLBACK_QEMU.
 
 Limits:
 - Real power loss and filesystem-level crashes are NOT_RUN. kill -9 does not test unflushed data.
 - Physical Spark rollback has NOT been run. The hardware rollback gate was recorded BLOCKED in the ROADMAP history (M0_NATIVE_ROLLBACK_MACHINE1).
-- The hang lane uses a host-forced reset; there is no in-guest watchdog ([GATES.md row 44](https://github.com/aien-dev/aienos/blob/8641977/native/kernel/GATES.md)).
+- The hang lane uses a host-forced reset; there is no in-guest watchdog ([GATES.md row 44](https://github.com/aien-spark/aienos/blob/8641977/native/kernel/GATES.md)).
 - The package demos used a "local" signing key; the throwaway-key v2 demo did not use the pinned key (receipt v2). The C loader A/B path is parked, and the `M0_ROLLBACK` row in the cb14 receipt is NOT_RUN because that receipt predates #273.
 - The kill during the single rename was tested only at the pause points added in #308, not at the system call itself.
 
 ## 7. Refuse unauthorized effects
 
 Evidence:
-- Host, main after CAND-4 (not the CAND-4 source d5b78ff, which predates the minted-grant path and `minted_grant_test.rs`): the approved-effect path in [crates/aien-runtime/src/effects.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs). The ledger honours only grants the daemon wrote itself (approved or minted); a corrupt ledger record refuses the whole ledger; refusals are named (`EFFECT_REFUSED <name>`); stop is durable; one grant per desk-MAC nonce. Test: [minted_grant_test.rs](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/tests/minted_grant_test.rs).
-- Main after CAND-4: the demo's v2 run ([RESULT-v2.md](https://github.com/aien-dev/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v2.md)) shows the runtime refusing a task whose requirement it cannot check, with no file written and no grant spent. That is a refusal of a task, not of an effect.
+- Host, main after CAND-4 (not the CAND-4 source d5b78ff, which predates the minted-grant path and `minted_grant_test.rs`): the approved-effect path in [crates/aien-runtime/src/effects.rs](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/src/effects.rs). The ledger honours only grants the daemon wrote itself (approved or minted); a corrupt ledger record refuses the whole ledger; refusals are named (`EFFECT_REFUSED <name>`); stop is durable; one grant per desk-MAC nonce. Test: [minted_grant_test.rs](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/crates/aien-runtime/tests/minted_grant_test.rs).
+- Main after CAND-4: the demo's v2 run ([RESULT-v2.md](https://github.com/aien-spark/aien-sovereign-core/blob/6bbe2ec269768c7c9b94b9484c757ca45f55f564/docs/campaigns/allen-e2e/RESULT-v2.md)) shows the runtime refusing a task whose requirement it cannot check, with no file written and no grant spent. That is a refusal of a task, not of an effect.
 - QEMU: gate ARGUS1_REVOKE is PASS (revocation at the Store level) in the cb14 receipt.
 
 Limits:
@@ -128,7 +128,7 @@ Limits:
 ## 8. Operate without a mandatory external control service
 
 Evidence:
-- The CAND-4 demo, GB10 turn and NP1 workflow ran from the Spark with `file://` release URLs and a local daemon ([receipt](https://github.com/aien-dev/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md)). No Headscale, hub or cloud service is named in the steps.
+- The CAND-4 demo, GB10 turn and NP1 workflow ran from the Spark with `file://` release URLs and a local daemon ([receipt](https://github.com/aien-spark/aien-sovereign-core/blob/f5ba66bf3a1bd064e6cd5cf7e323508a459d2e7a/docs/release/receipts/2026-10-06-cand4-release-demo.md)). No Headscale, hub or cloud service is named in the steps.
 - Source scan on main: no `headscale` string in any sovereign-core Rust file. `crates/aien-cli/src/cortex.rs` uses `http://127.0.0.1:18080` (loopback) and reads `CORTEX_TOKEN` from a local vault. `crates/aien-cli/src/client.rs` has a loopback default endpoint and a test named `native_chat_uses_the_runtime_socket_not_http`.
 
 Limits:

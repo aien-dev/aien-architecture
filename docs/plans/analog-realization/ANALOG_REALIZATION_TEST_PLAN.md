@@ -86,12 +86,12 @@ Side constraint: any ARGUS telemetry work ◄── ARGUS perf gate decided (aie
 
 ## Blockers
 
-1. **AR0:** PASS (ADR 0018 accepted, merged 641bd3c; `aien-dev/aien-architecture`, `docs/adr/0018-substrate-neutral-physical-realization.md`).
-2. **AR1:** PASS. `aien-dev/physics#13` merged on main (`5969159`, Gates 3 and 4 pass 11/11, 10/10); companion `aien-dev/physics#16` merged on main (`1f7c321`, 47/47 KAT + 6/6 PASS).
-3. **AR2/AR3:** must not touch `aien-dev/omega` `src/runtime/` while `aien-dev/omega#68` (R16, draft `d73315e`) is open; new C code in physics/aienos/omega must stay clean of R16 inventory patterns.
-4. **AR4:** R16 close (`aien-dev/omega#68` → `evidence/R16/<sha256>.json` on `main`); no physical analog device exists or has been chosen.
-5. **AR5:** `aien-dev/omega#60` merged on main (`c0edef0`, merged at 2026-09-29T12:56:58Z); substrate axis and error field in `RxCmObservation` to follow post-R16.
+1. **AR0:** PASS (ADR 0018 accepted, merged 641bd3c; `aien-spark/aien-architecture`, `docs/adr/0018-substrate-neutral-physical-realization.md`).
+2. **AR1:** PASS. `aien-spark/physics#13` merged on main (`5969159`, Gates 3 and 4 pass 11/11, 10/10); companion `aien-spark/physics#16` merged on main (`1f7c321`, 47/47 KAT + 6/6 PASS).
+3. **AR2/AR3:** must not touch `aien-spark/omega` `src/runtime/` while `aien-spark/omega#68` (R16, draft `d73315e`) is open; new C code in physics/aienos/omega must stay clean of R16 inventory patterns.
+4. **AR4:** R16 close (`aien-spark/omega#68` → `evidence/R16/<sha256>.json` on `main`); no physical analog device exists or has been chosen.
+5. **AR5:** `aien-spark/omega#60` merged on main (`c0edef0`, merged at 2026-09-29T12:56:58Z); substrate axis and error field in `RxCmObservation` to follow post-R16.
 6. **AR6:** Fabric (`CURRENT_EXECUTION_PLAN.md` Phase F5) not started.
 7. **AR7:** RSI optimization loop (`CURRENT_EXECUTION_PLAN.md` Phase H3) not started.
-8. **ARGUS telemetry:** performance gate disputed (`aien-dev/aienos#160` +6.2% vs `aien-dev/omega#70` +3.87%; 5% vs 2% bar undecided); `aien-dev/omega#70` `src/runtime/rx_argus.c` loops collide with R16 G2.
+8. **ARGUS telemetry:** performance gate disputed (`aien-spark/aienos#160` +6.2% vs `aien-spark/omega#70` +3.87%; 5% vs 2% bar undecided); `aien-spark/omega#70` `src/runtime/rx_argus.c` loops collide with R16 G2.
 9. **Omega seams (post-R16):** `src/runtime/rx_route.h:61` `RX_COG_HW_*` bitmask must become substrate-neutral; `src/runtime/rx_contract.{h,c}` needs non-exact contract kinds.

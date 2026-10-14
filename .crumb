@@ -156,7 +156,7 @@
         },
         {
           "lane": "lane36",
-          "note": "PR: aien-dev/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
+          "note": "PR: aien-spark/aien-architecture #84, branch lane36-pz-atlas. Docs only. Files in docs/plans/physics-zero/:",
           "pr": 84,
           "ref": "2026-10-01-push-lane36-report.md",
           "sha": "e983393",
@@ -348,7 +348,7 @@
         },
         {
           "lane": "lane23",
-          "note": "PR aien-dev/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
+          "note": "PR aien-spark/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
           "pr": 81,
           "ref": "2026-10-01-push-lane23-report.md",
           "sha": "921797b",
@@ -420,7 +420,7 @@
         },
         {
           "lane": "lane14",
-          "note": "PR aien-dev/aien-architecture #79 MERGED, merge commit 9cde162 (9cde162702d2ba9b07f06b3602a5e30464fe1d93). Only CURRENT_EXECUTION_PLAN.md changed.",
+          "note": "PR aien-spark/aien-architecture #79 MERGED, merge commit 9cde162 (9cde162702d2ba9b07f06b3602a5e30464fe1d93). Only CURRENT_EXECUTION_PLAN.md changed.",
           "pr": 79,
           "ref": "2026-10-01-push-lane14-report.md",
           "sha": "9cde162",
@@ -583,7 +583,7 @@
       "git": {
         "branch": "docs/crumb-seed",
         "head": "0af71ba",
-        "remote": "git@github.com:aien-dev/aien-architecture.git"
+        "remote": "git@github.com:aien-spark/aien-architecture.git"
       },
       "purpose_auto": "Repository root cs-aien-architecture. Purpose not yet described by a human."
     }

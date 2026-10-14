@@ -7,8 +7,8 @@ Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Physical Blackwell Tensor Matrix Multiplication on NVIDIA DGX Spark (GB10, sm_121)
 Status:          COMPLETE / SILICON QUALIFIED
 Ratified:        2026-09-26
-Implementation:  aien-dev/omega (commit 9421737)
-Receipt:         aien-dev/omega (commit 87349c0)
+Implementation:  aien-spark/omega (commit 9421737)
+Receipt:         aien-spark/omega (commit 87349c0)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3/M15/M16) -> OMEGA (M4-M14) -> M16 (Native Submission) -> M17 (Blackwell Vector) -> M18 (Blackwell MatMul)
 ```
 

@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M4
 Milestone:       Milestone 4 (OMEGA_SEMANTICS)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Sovereign Semantic Graph (Substrate-Independent Content-Addressed Identity)
-Status:          SPECIFIED / IN PROGRESS (aien-dev/aien-architecture#16)
+Status:          SPECIFIED / IN PROGRESS (aien-spark/aien-architecture#16)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4+) -> AIEN
 ```
 

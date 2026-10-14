@@ -109,7 +109,7 @@
         },
         {
           "lane": "lane23",
-          "note": "PR aien-dev/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
+          "note": "PR aien-spark/aien-architecture #81 MERGED (squash), merge commit 921797bd6feccb1099fac14b653faaba365fff8c. Files: CURRENT_EXECUTION_PLAN.md, doctrine/ROADMAP.md (+48/-7 before review fixes).",
           "pr": 81,
           "ref": "2026-10-01-push-lane23-report.md",
           "sha": "921797b",

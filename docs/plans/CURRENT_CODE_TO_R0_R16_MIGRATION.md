@@ -8,7 +8,7 @@
 |---|---|
 | omega | `1feb832` |
 | physics | `a477aee` |
-| aienos | `aien-dev/aienos` main, last commit 2026-09-25 |
+| aienos | `aien-spark/aienos` main, last commit 2026-09-25 |
 | aien-sovereign-core | main, 2026-09-27 |
 | aegis-runtime | `2bbce76` |
 | aien-protocols | main, 2026-09-23 |
@@ -68,7 +68,7 @@ The pieces worth keeping are primitives, not runtimes:
 | R13 faculties as one causal system | PASS (causal verification PASS, AIEN goal MET) | GB10 silicon (#49, `fcb5793`) |
 | R14 living recovery | PASS | GB10 silicon (#50, `f70ae10`) |
 | R15 quantitative performance | HISTORICAL PASS (16/16 at `3e9e53b`); requal FAIL 14/16 at `3108fc2` (omega `evidence/REQUAL-3108fc2/`); NOT requalified on CAND-0 | DGX Spark (#67, `bba3bd3`, 16/16 gates) |
-| R16 orchestrator retirement | HISTORICAL PASS at `850fc54`; receipt INVALID as a current claim; requal FAIL at `3108fc2`; NOT requalified on CAND-0 | DGX Spark (`aien-dev/omega#112` merged, `3dd5eaa`, receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json`) |
+| R16 orchestrator retirement | HISTORICAL PASS at `850fc54`; receipt INVALID as a current claim; requal FAIL at `3108fc2`; NOT requalified on CAND-0 | DGX Spark (`aien-spark/omega#112` merged, `3dd5eaa`, receipt `evidence/R16/22d7a79a985514ac38139d39c71c9638d9b6b0a6e05425b6810bdb4833d1ea64.json`) |
 
 The R3/R4 claims are scoped to the host reference runtime. They say nothing about GPU execution (R12) or about the native AIENOS capability root (R7).
 
@@ -85,7 +85,7 @@ Legend:
 
 Parallelization groups (§4) are marked **G0–G6**.
 
-### 3.1 Omega (`aien-dev/omega`, C11)
+### 3.1 Omega (`aien-spark/omega`, C11)
 
 | Current module | Current responsibility | Target responsibility | Decision | Depends on | Risk | Tests | Milestone | Group |
 |---|---|---|---|---|---|---|---|---|
@@ -103,7 +103,7 @@ Parallelization groups (§4) are marked **G0–G6**.
 | `omega_blackwell_*` (M17/M18 codegen, encoder, QMD, submit) | Native sm_121 code generation and submission | FORGE realization for GPU-placed reactions | **Keep** | physics `m16` | M19R Lane D is adding FP32 SIMT | M17/M18 gates (GPU) | R12 | G2 |
 | branch `m20-shared-world`: `omega_shared_world_worker.*`, STRONG.SYS/MEMBAR opcodes | Persistent GPU worker scaffold (returns `WORKER_INCOMPLETE`); ordering opcodes fixture-checked | Resident GPU reaction worker: observe eligible GPU reactions → claim → execute → publish descriptors (§15) | **Adapt** | R2, idle GB10 | Never silicon-observed; the name collides with ROADMAP M20 = `OMEGA_TENSOR` | codegen fixtures | R12 | G2 |
 
-### 3.2 FORGE / historical PHYSICS (`aien-dev/physics`)
+### 3.2 FORGE / historical PHYSICS (`aien-spark/physics`)
 
 | Current module | Current responsibility | Target responsibility | Decision | Depends on | Risk | Tests | Milestone | Group |
 |---|---|---|---|---|---|---|---|---|
@@ -113,7 +113,7 @@ Parallelization groups (§4) are marked **G0–G6**.
 | `m3/capability.s`, `m3/effect_broker.s`, `m3/receipt_ledger.s` | Bare-metal 32-slot capability ledger (slot + generation, attenuation, revoke), 10-stage effect broker, SHA-256 receipt chain | Assembly-level reference oracle for capability and effect semantics | **Keep** (historical, QEMU-qualified) | — | Python gate tooling at repo root violates the no-Python rule | `m3/tests/test_m3_authority.s` 21/21 | R7 oracle, R8 effects | — |
 | `m16/` native path | libcuda-free channel/GPFIFO | Unchanged | **Keep** | — | — | M16 requalification | R12 | — |
 
-### 3.3 AIENOS (`aien-dev/aienos`, Rust; kernel files are under `crates/aienos-kernel/src/`)
+### 3.3 AIENOS (`aien-spark/aienos`, Rust; kernel files are under `crates/aienos-kernel/src/`)
 
 | Current module | Current responsibility | Target responsibility | Decision | Depends on | Risk | Tests | Milestone | Group |
 |---|---|---|---|---|---|---|---|---|
@@ -126,7 +126,7 @@ Parallelization groups (§4) are marked **G0–G6**.
 | `aienos-cortex` (host) | Epistemic records (observation / fact / hypothesis) | Cortex hot state as world objects; new observation wakes AIEN reactions | **Adapt** | R11 | — | crate tests | R11 | G5 |
 | `aienos-boot/src/handoff.rs:1621` | Fixed boot demo sequence → halt | Awakening sequence (§30); deterministic maintenance controls stay | **Keep** as maintenance/recovery path | R9 | Must never be removed (§49) | QEMU suites | R14, R16 (kept) | — |
 
-### 3.4 AIEN runtime (`aien-dev/aien-sovereign-core`, Rust)
+### 3.4 AIEN runtime (`aien-spark/aien-sovereign-core`, Rust)
 
 | Current module | Current responsibility | Target responsibility | Decision | Depends on | Risk | Tests | Milestone | Group |
 |---|---|---|---|---|---|---|---|---|
@@ -139,7 +139,7 @@ Parallelization groups (§4) are marked **G0–G6**.
 | `aien-cli/src/commands.rs:1536` (spawns `spark-aegis`) | AEGIS reached by shelling out | Removed from the reaction path; AEGIS state participates in readiness | **Replace** | R8 | — | — | R8 | G5 |
 | `crates/spark-aegis` symlink → `~/workspace/spark-aegis` (not a git repo) | Workspace member via absolute symlink | Must become a real repository or be removed | **Fix** (build hygiene) | — | Repo does not build anywhere but this machine | — | — | — |
 
-### 3.5 aegis-runtime (`aien-dev/aegis-runtime`, Rust; last change 2026-09-23)
+### 3.5 aegis-runtime (`aien-spark/aegis-runtime`, Rust; last change 2026-09-23)
 
 | Current module | Current responsibility | Target responsibility | Decision | Depends on | Risk | Tests | Milestone | Group |
 |---|---|---|---|---|---|---|---|---|

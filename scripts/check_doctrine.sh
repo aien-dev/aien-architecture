@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# check_doctrine.sh — doctrine consistency check (aien-dev/aien-architecture#7).
+# check_doctrine.sh — doctrine consistency check (aien-spark/aien-architecture#7).
 #
 # Fails on stale normative doctrine: Alpha naming, fixed EL1 handoff claims,
 # obsolete roadmap generations (28/31-milestone, M27 closure), milestone status

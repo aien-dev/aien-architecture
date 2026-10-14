@@ -3,7 +3,7 @@
 **Status:** PROPOSED, 2026-10-01. Companion spec to ARCH-0026 (`docs/adr/0026-sealed-discovery-examinations.md`, merged `5910dff`). Nothing in this document is implemented. No exam data exists. No status is raised.
 **Scope:** how the observations of each ARCH-0026 exam (A Dirac, B Zeta-style spectral, C symmetry, D future SUSY-style) are laid out: train and sealed held-out split, manifest fields, file naming, and what the examinee may and may not see.
 **Out of scope:** salt generation, sealing, signing, sealed storage and reveal steps. Those belong to the **sealing procedure (draft, EXAMS-SEAL)**, written in parallel. This spec only names the places where a sealing output is referenced.
-**Evidence base:** read on 2026-10-01 against aien-architecture `5910dff` and omega `0171bd4`. Paths starting `spec/`, `src/`, `docs/turing/`, `docs/brownian/` or `research/` are in `aien-dev/omega`; other paths are in this repository.
+**Evidence base:** read on 2026-10-01 against aien-architecture `5910dff` and omega `0171bd4`. Paths starting `spec/`, `src/`, `docs/turing/`, `docs/brownian/` or `research/` are in `aien-spark/omega`; other paths are in this repository.
 
 ---
 

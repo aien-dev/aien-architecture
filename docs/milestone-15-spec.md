@@ -488,9 +488,9 @@ Milestone 15 qualification mandates 100% compliance across 10 canonical qualific
 
 Milestone 15 is governed by canonical contract `CONTRACT-PHYSICS-ACCELERATOR-LINK-M15`.
 
-- **Specification Tracking**: `aien-dev/aien-architecture#27`
-- **Physics Authority Implementation**: `aien-dev/physics#10`
-- **Omega Client Link Implementation**: `aien-dev/omega#21`
+- **Specification Tracking**: `aien-spark/aien-architecture#27`
+- **Physics Authority Implementation**: `aien-spark/physics#10`
+- **Omega Client Link Implementation**: `aien-spark/omega#21`
 - **Qualification Receipt Target**: `evidence/physics_accelerator_link_qualification_receipt.json`
 
 ### Epistemic Qualification Criteria & Ratification

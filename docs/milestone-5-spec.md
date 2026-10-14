@@ -5,7 +5,7 @@ Document ID:     SPEC-OMEGA-M5
 Milestone:       Milestone 5 (OMEGA_AARCH64)
 Classification:  Sovereign Machine Canonical Specification
 Target Substrate: Native AArch64 Bare-Metal Machine Bytes (No LLVM, No Foreign Assembler)
-Status:          QUALIFIED / RATIFIED (aien-dev/aien-architecture#17, aien-dev/omega@2dd4102)
+Status:          QUALIFIED / RATIFIED (aien-spark/aien-architecture#17, aien-spark/omega@2dd4102)
 Lineage:         SILICON -> ATLAS (M1) -> PHYSICS (M2/M3) -> OMEGA (M4/M5) -> AIEN
 ```
 

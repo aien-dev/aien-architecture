@@ -5,7 +5,7 @@
 **Supersedes:** nothing. **Amends:** nothing.
 **Extends:** ARCH-0023 (DIRAC-0) by placing Dirac as the first rung of a ladder of examinations that share one rule, one secrecy boundary and one pass criterion.
 **Related:** ARCH-0019 (mixed algebra realization), ARCH-0020 (belief and estimation), ARCH-0021 decision 3 (append-only receipts bound to clean commits), ARCH-0023 (DIRAC-0 program), ARCH-0025 (execution transcript).
-**Evidence base:** read-only scout of 2026-10-01 against omega `38919c8` and aien-architecture `8d24c6d` (orchestrator handoff `2026-10-01-EXAMS-SCOUT-scout.md`). Every current-state claim below carries a pointer from that scout. Paths starting `src/`, `tools/`, `spec/`, `docs/turing/` or `research/` are in `aien-dev/omega`; other paths are in this repository. Code beats plans. Nothing here raises any status.
+**Evidence base:** read-only scout of 2026-10-01 against omega `38919c8` and aien-architecture `8d24c6d` (orchestrator handoff `2026-10-01-EXAMS-SCOUT-scout.md`). Every current-state claim below carries a pointer from that scout. Paths starting `src/`, `tools/`, `spec/`, `docs/turing/` or `research/` are in `aien-spark/omega`; other paths are in this repository. Code beats plans. Nothing here raises any status.
 **Citation:** from other repositories, cite this decision as ARCH-0026.
 
 ---
