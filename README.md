@@ -2,7 +2,7 @@
 
 The authority for how the AIEN project fits together: whole-system architecture, milestone status and what to do next. It holds documents and a few small checking tools, not product code.
 
-AIEN is a sovereign computing stack being built in the open on an NVIDIA DGX Spark (Grace Blackwell GB10): its own operating system (AIENOS), its own reaction runtime and compiler (Omega), and its own machine realization layer (FORGE). Founding principle: closest to the metal, fastest wins. Mojo is a default, not dogma. Beat it if you can. Build what is missing.
+AIEN is a sovereign computing stack being built in the open on an NVIDIA DGX Spark (Grace Blackwell GB10): its own operating system (AIENOS), its own reaction runtime and compiler (Omega), and its own machine realization layer (FORGE). Founding principle: closest to the metal, fastest wins. Build what is missing.
 
 ## Current state
 
