@@ -73,7 +73,7 @@ Core runtime APIs must not be CUDA-shaped.
 Target:
 
 1. optimized CPU baseline,
-2. Mojo accelerator backend,
+2. Omega GPU backend (AIEN-owned kernels; Modular MAX and Mojo were removed on 2026-10-15),
 3. optional broader fallback later if needed.
 
 The scheduler should ask about capabilities (`bf16`, `fp4`, memory, unified memory, etc.), not vendor model names.

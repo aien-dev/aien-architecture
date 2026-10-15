@@ -97,7 +97,7 @@ Start in Rust:
 - arenas/slabs,
 - Rayon for independent queries.
 
-Only move scoring kernels to Mojo if profiling shows a real bottleneck.
+Only move scoring kernels to Omega GPU kernels if profiling shows a real bottleneck.
 
 ## First experiment
 
