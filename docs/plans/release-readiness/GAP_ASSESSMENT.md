@@ -108,6 +108,8 @@ WHOLE-SYSTEM-E2E, as posted on aien-architecture#190: one installation, one run,
 | D9 | `DEMO-v1.md` requires a restart step | the restart receipts exist only from v3 onward (S5), and are graceful stops | aien-sovereign-core `docs/campaigns/allen-e2e/` |
 | D10 | interplane README: "no model, no GPU, no network" offline example | the example is `python3 examples/offline/run_offline.py`; the org rule is no Python | interplane `README.md` |
 
+Correction (2026-10-16, #198): the D9 row overstates the gap. In aien-sovereign-core `docs/campaigns/allen-e2e/`, S5 in v1 and v3 is a `kill -9` restart (exit 137, `receipts-v1.jsonl`, `receipts-v3.jsonl`, both PASS; v2 S5 is NOT_RUN). Only the v4-gb10 S5 is a graceful stop, by the chip safety rule, and `DEMO-v4-gb10.md` already says so and points to the CPU legs for `kill -9` evidence. No demo document needs a change for D9.
+
 ## 5. The gap list, ranked by what blocks the acceptance test
 
 1. **No single run chains the six steps.** The pieces exist on the Linux host for E2 to E6 in separate campaigns (ALLEN demo, NEXT-PHASE-2, golden path). The first integration lane is a harness that runs them as one objective with one receipt chain, and the acceptance contract (R3) that fixes receipt and verdict shapes.
