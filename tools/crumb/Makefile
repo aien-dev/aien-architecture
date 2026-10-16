@@ -8,6 +8,7 @@ crumb: crumb.c
 test: crumb
 	sh test.sh ./crumb
 	sh test-continuation.sh ./crumb
+	sh test-hostile.sh ./crumb
 
 clean:
 	rm -f crumb

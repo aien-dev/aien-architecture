@@ -248,4 +248,36 @@ if command -v jq >/dev/null 2>&1 && [ -f "$REF" ]; then
     cmp -s "$T/ta" "$T/tb" && ok "C3 whole .crumb file byte-identical apart from compiled_at (same commit stamp)" || bad "C3 file bytes"
   else echo "NOT_RUN differential on this repo (not in a git checkout)"; fi
 else echo "NOT_RUN C3 differential (jq or crumb-compile.sh missing)"; fi
+# ---- #234 store identity: outputs and record bytes unchanged, before vs after, unregistered and registered ----
+# Same scripted session in the same path with the pre-#234 tool (built from BASE) and this tool, unregistered and
+# registered: stdout of claim/update/whisper/close/sniff/list and every dirs/ and agents/ record must match byte for
+# byte once ISO timestamps and heartbeat ages are masked. Only STORE_ID (and the stderr dry-run line) is new.
+BASE=e6e48a0
+export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null; unset CRUMB_COORD_ROOT CRUMB_EXPECT_STORE_ID CRUMB_STRICT_STORE_ID
+if git -C "$HERE" cat-file -e "$BASE:tools/crumb/crumb.c" 2>/dev/null; then
+  git -C "$HERE" show "$BASE:tools/crumb/crumb.c" > "$T/base.c" && cc -std=c11 -O2 -o "$T/crumb-base" "$T/base.c"
+  session() {   # session <crumb> <out-dir> [registered]: fresh repo at one fixed path, fixed commit dates
+    rm -rf "$T/same"; mkdir -p "$T/same/src" && cd "$T/same" || exit 1
+    git init -q -b main . && echo a > src/a.c && git add -A && GIT_AUTHOR_DATE=2026-01-01T00:00:00Z GIT_COMMITTER_DATE=2026-01-01T00:00:00Z git -c user.name=t -c user.email=t@t commit -qm init
+    git worktree add -q -b wb "$T/same-wb" 2>/dev/null || { rm -rf "$T/same-wb"; git worktree prune; git worktree add -q -b wb "$T/same-wb"; }
+    if [ -n "${3:-}" ]; then git config crumb.storeId "$("$1" store-id . 2>/dev/null)"; fi
+    mkdir -p "$2"
+    { "$1" claim agent-a src a.c "rewrite a" 600; (cd "$T/same-wb" && "$1" claim agent-b src a.c "also a"); echo "rc=$?"
+      "$1" update agent-a src "still on a"; "$1" whisper agent-a src agent-b "half done" high src/a.c
+      (cd "$T/same-wb" && "$1" sniff agent-b src); "$1" close agent-b src a.c; echo "rc=$?"
+      "$1" close agent-a src a.c modify "done"; (cd "$T/same-wb" && "$1" claim agent-b src a.c "my turn"); "$1" list .
+      (cd "$T/same-wb" && "$1" sniff agent-b src); } 2>"$2/stderr" | sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z/TS/g; s/heartbeat [0-9-]+s/heartbeat Ns/g' > "$2/stdout"
+    S=$(git rev-parse --absolute-git-dir)/crumb/v1
+    (cd "$S" && find dirs agents -type f | sort | while read -r f; do echo "== $f"; sed -E 's/[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9:]{8}Z/TS/g' "$f"; done) > "$2/records"
+    [ -f "$S/STORE_ID" ] && cp "$S/STORE_ID" "$2/STORE_ID"
+    cd "$T" || exit 1; rm -rf "$T/same" "$T/same-wb"
+  }
+  session "$T/crumb-base" "$T/s-base"; session "$C" "$T/s-new"; session "$C" "$T/s-reg" registered
+  cmp -s "$T/s-base/stdout" "$T/s-new/stdout" && ok "#234 unregistered: claim/update/whisper/close/sniff/list stdout identical to $BASE" || { diff "$T/s-base/stdout" "$T/s-new/stdout" | head; bad "#234 unregistered stdout differs"; }
+  cmp -s "$T/s-base/records" "$T/s-new/records" && ok "#234 unregistered: every dirs/ and agents/ record byte-identical to $BASE (timestamps masked)" || { diff "$T/s-base/records" "$T/s-new/records" | head; bad "#234 unregistered records differ"; }
+  cmp -s "$T/s-base/stdout" "$T/s-reg/stdout" && cmp -s "$T/s-base/records" "$T/s-reg/records" && ok "#234 registered: stdout and records identical to $BASE" || { diff "$T/s-base/stdout" "$T/s-reg/stdout" | head; bad "#234 registered output differs"; }
+  [ ! -f "$T/s-base/STORE_ID" ] && grep -Eqx 'crumb-coord-store-id/1 [0-9a-f]{32}' "$T/s-new/STORE_ID" && ok "#234 only addition on disk: STORE_ID marker (synapse-coord format)" || bad "#234 STORE_ID addition"
+  grep -q 'STORE_UNREGISTERED (dry run)' "$T/s-new/stderr" && ! grep -q STORE_UNREGISTERED "$T/s-reg/stderr" && [ ! -s "$T/s-base/stderr" ] && ok "#234 dry-run warning only on stderr, only when unregistered" || bad "#234 stderr warning"
+  grep -q 'STORE_ID' "$T/s-new/records" && bad "#234 STORE_ID leaked into records" || ok "#234 STORE_ID never appears in records"
+else echo "NOT_RUN #234 before/after differential (no $BASE in this checkout's history)"; fi
 exit $fail
