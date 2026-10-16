@@ -566,6 +566,24 @@ static char *read_bounded(const char *path, size_t cap, size_t *len) {
     if (len) *len = b.n;
     return b.p;
 }
+/* Refuse a store path whose directory components below the store root are not all real directories: a write
+ * through a symlinked directory would land outside the store, and a read would load a record the listing never
+ * shows (collect_json does not follow symlinked directories). Missing components are fine (created later). */
+static void check_real_parents(const char *store, const char *path) {
+    size_t sl = strlen(store);
+    if (strncmp(path, store, sl) || path[sl] != '/') refuse(path, "is outside the coordination store");
+    char *c = dir_of(path);
+    if (strlen(c) > sl) for (char *s = c + sl + 1;;) {
+        char *slash = strchr(s, '/'); if (slash) *slash = 0;
+        struct stat st;
+        if (lstat(c, &st) != 0) { if (errno == ENOENT) break; die("cannot stat %s: %s", c, strerror(errno)); }
+        if (S_ISLNK(st.st_mode)) refuse(c, "is a symbolic link");
+        if (!S_ISDIR(st.st_mode)) refuse(c, "is not a directory");
+        if (!slash) break;
+        *slash = '/'; s = slash + 1;
+    }
+    free(c);
+}
 /* A fresh temp file: whatever has that name is unlinked first, never opened; O_EXCL|O_NOFOLLOW so the write can
  * neither block on a planted FIFO nor follow a planted link. */
 static int create_temp(const char *tmp) {
@@ -730,14 +748,17 @@ static char *target_key(const Plane *p, const char *target, const char *rel) {
     return NULL;
 }
 static void fsync_dir(const char *dir) { int fd = open(dir, O_RDONLY); if (fd >= 0) { (void)fsync(fd); close(fd); } }
-static void durable_write(const char *path, const char *data) {   /* tmp, fsync, rename, fsync dir */
+static void durable_write(const char *store, const char *path, const char *data) {   /* tmp, fsync, rename, fsync dir */
+    size_t len = strlen(data);
+    if (len > MAX_RECORD_BYTES) die_x(EXIT_REFUSED, "REFUSED_RECORD: %s would be larger than %zu bytes; refusing to write it", path, MAX_RECORD_BYTES);
+    check_real_parents(store, path);
+    struct stat st;   /* never rename over a planted FIFO, socket, device, symlink or directory */
+    if (lstat(path, &st) == 0 && !S_ISREG(st.st_mode)) die_x(EXIT_REFUSED, "REFUSED_RECORD: %s %s; refusing to replace it (fix or move it aside)", path, kind_of(st.st_mode));
     char *dd = dir_of(path); mkdir_p(dd);
     size_t tn = strlen(path) + 32; char *tmp = xmalloc(tn);
     snprintf(tmp, tn, "%s.tmp%ld", path, (long)getpid());
-    int fd = open(tmp, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-    if (fd < 0) die("cannot write %s: %s", tmp, strerror(errno));
-    size_t len = strlen(data), off = 0;
-    while (off < len) { ssize_t w = write(fd, data + off, len - off); if (w < 0) { if (errno == EINTR) continue; die("write failed: %s", tmp); } off += (size_t)w; }
+    int fd = create_temp(tmp);
+    write_all(fd, data, len, tmp);
     if (fsync(fd) != 0) die("fsync failed: %s", tmp);
     if (close(fd) != 0) die("close failed: %s", tmp);
     if (rename(tmp, path) != 0) die("rename failed: %s", path);
@@ -749,8 +770,16 @@ static Txn *txn_begin(Plane *p, int mutate) {
     static const char *sub[] = { "dirs", "agents", "continuations", "ledger", NULL };
     for (int i = 0; sub[i]; i++) { char *d = pjoin(p->store, sub[i]); mkdir_p(d); free(d); }
     char *lp = pjoin(p->store, ".lock");
-    t->fd = open(lp, O_RDWR | O_CREAT, 0644);
-    if (t->fd < 0) die("cannot open %s: %s", lp, strerror(errno));
+    struct stat st;   /* the lock file is a store file too: a planted FIFO, device, symlink or directory is refused */
+    if (lstat(lp, &st) == 0 && !S_ISREG(st.st_mode)) refuse(lp, kind_of(st.st_mode));
+    t->fd = open(lp, O_RDWR | O_CREAT | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC, 0644);
+    if (t->fd < 0) {
+        if (errno == ELOOP) refuse(lp, "is a symbolic link");
+        if (errno == EISDIR) refuse(lp, "is a directory, not a regular file");
+        die("cannot open %s: %s", lp, strerror(errno));
+    }
+    if (fstat(t->fd, &st) != 0) die("cannot stat %s: %s", lp, strerror(errno));
+    if (!S_ISREG(st.st_mode)) refuse(lp, kind_of(st.st_mode));
     struct flock fl; memset(&fl, 0, sizeof fl); fl.l_type = F_WRLCK; fl.l_whence = SEEK_SET;
     while (fcntl(t->fd, F_SETLKW, &fl) != 0) if (errno != EINTR) die("cannot lock %s: %s", lp, strerror(errno));
     ident_gate(&p->id, p->store, 1);   /* under the lock: re-check the registered id, or create the marker once */
@@ -762,7 +791,8 @@ static Rec *rec_load(Txn *t, const char *path, int agent, const char *label) {
     if (t->n == t->cap) { t->cap = t->cap ? t->cap * 2 : 16; t->r = xrealloc(t->r, t->cap * sizeof *t->r); }
     t->r[t->n++] = r;
     r->path = xstrdup(path); r->agent = agent;
-    char *txt = slurp(path); J *j = txt ? jparse(txt) : NULL;
+    check_real_parents(t->p->store, path);   /* never read through a symlinked directory (listing does not follow one) */
+    size_t len = 0; char *txt = read_bounded(path, MAX_RECORD_BYTES, &len); J *j = txt && strlen(txt) == len ? jparse(txt) : NULL;
     if (txt && (!j || j->t != JOBJ)) die("%s is not valid JSON; fix or move it aside", path);
     r->existed = txt != NULL;
     if (!j) j = jnew(JOBJ);
@@ -790,13 +820,16 @@ static char *agent_path(const Plane *p, const char *agent) {
     sprintf(c, "%s.json", b); return c;
 }
 static Rec *agent_rec(Txn *t, const char *agent) { return rec_load(t, agent_path(t->p, agent), 1, NULL); }
+/* Record names under dir, recursively, without opening any entry: lstat, so real subdirectories are walked and
+ * symlinked directories are not (no escape from the store, no symlink loop). Every other name ending in .json is
+ * returned whatever its type; read_bounded then refuses a non-regular one without opening it. */
 static void collect_json(const char *dir, char ***out, size_t *n) {
     DIR *d = opendir(dir); if (!d) return;
     struct dirent *e;
     while ((e = readdir(d))) {
         if (!strcmp(e->d_name, ".") || !strcmp(e->d_name, "..")) continue;
         char *full = pjoin(dir, e->d_name); struct stat st;
-        if (stat(full, &st) == 0 && S_ISDIR(st.st_mode)) collect_json(full, out, n);
+        if (lstat(full, &st) == 0 && S_ISDIR(st.st_mode)) collect_json(full, out, n);
         else { size_t l = strlen(e->d_name); if (l > 5 && !strcmp(e->d_name + l - 5, ".json")) { *out = xrealloc(*out, (*n + 1) * sizeof **out); (*out)[(*n)++] = full; continue; } }
         free(full);
     }
@@ -820,7 +853,7 @@ static void txn_end(Txn *t, int commit) {
         Rec *r = t->r[i];
         if (r->dead) { if (unlink(r->path) == 0) { char *d = dir_of(r->path); fsync_dir(d); free(d); } continue; }
         char *now = jdump(r->root);
-        if (strcmp(now, r->before)) durable_write(r->path, now);
+        if (strcmp(now, r->before)) durable_write(t->p->store, r->path, now);
     }
     if (t->fd >= 0) close(t->fd);   /* releases the OS lock */
 }
@@ -1686,7 +1719,7 @@ static int cmd_explain(const char *target) {
         char **f = NULL; size_t n = 0; char *cd = pjoin(store, "continuations");
         collect_json(cd, &f, &n);
         for (size_t i = 0; i < n; i++) {
-            char *txt = slurp(f[i]); J *c = txt ? jparse(txt) : NULL;
+            char *txt = read_bounded(f[i], MAX_RECORD_BYTES, NULL); J *c = txt ? jparse(txt) : NULL;
             if (!c || c->t != JOBJ || !jget(c, "identity") || !cont_matches(c, rel)) continue;
             nmatch++;
             J *ev = jget(c, "evidence");
@@ -2166,7 +2199,7 @@ static int cmd_context(const char *target) {
     J *best = NULL; char *bestf = NULL; int nmatch = 0;
     { char **f = NULL; size_t n = 0; char *cd = pjoin(p->store, "continuations"); collect_json(cd, &f, &n);
       for (size_t i = 0; i < n; i++) {
-        char *txt = slurp(f[i]); J *c = txt ? jparse(txt) : NULL;
+        char *txt = read_bounded(f[i], MAX_RECORD_BYTES, NULL); J *c = txt ? jparse(txt) : NULL;
         if (!c || c->t != JOBJ || !jget(c, "identity") || !cont_matches(c, rel)) continue;
         nmatch++; if (!best || strcmp(cont_when(c), cont_when(best)) > 0) { best = c; bestf = f[i]; }
       } }
