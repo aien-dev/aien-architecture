@@ -11,6 +11,9 @@
  *   crumb sniff <agent> <dir>
  *   crumb list [path]
  *   crumb validate [path]
+ *   crumb store-id [dir]            print the coordination store id (STORE_ID marker, shared with synapse-coord)
+ *   crumb --strict <command> ...    refuse an unregistered coordination store (also CRUMB_STRICT_STORE_ID=1)
+ * Registered store identity: CRUMB_EXPECT_STORE_ID, else `git config crumb.storeId` (aien-architecture#234).
  */
 #define _DEFAULT_SOURCE
 #define _POSIX_C_SOURCE 200809L
@@ -464,7 +467,8 @@ static int legacy_sniff(const char *agent, const char *dir) {   /* SPEC 5.1 */
  * RFC-0001 .crumb.local behaviour above is used unchanged (legacy fallback). */
 static void mkdir_p(const char *path);
 
-typedef struct { char *store, *top, *abs, *rel, *branch, *head, *base; } Plane;
+typedef struct { char expect[33]; const char *source; int has_expect, warned; } Ident;   /* registered store identity, see below */
+typedef struct { char *store, *top, *abs, *rel, *branch, *head, *base; Ident id; } Plane;
 typedef struct { char *path; J *root; char *before; int agent, dead, existed; } Rec;
 typedef struct { Plane *p; Rec **r; size_t n, cap; int fd; } Txn;
 
@@ -496,6 +500,176 @@ static char *norm_path(const char *s) {   /* collapse . .. // ; NULL if it escap
 static char *dir_of(const char *p) { char *c = xstrdup(p), *s = strrchr(c, '/'); if (s) *s = 0; else strcpy(c, "."); return c; }
 static char *key_dir(const char *key) { return strchr(key, '/') ? dir_of(key) : xstrdup("."); }
 static int exists_at(const char *top, const char *rel) { char *f = pjoin(top, rel); struct stat st; int r = lstat(f, &st) == 0; free(f); return r; }
+/* ---------- bounded store reads (aien-architecture#234; byte-compatible with synapse-coord record.rs, synapse#58) ----------
+ * Anyone who can write into the shared coordination store can plant a FIFO, a device, a symlink to /dev/zero or a huge
+ * file under a record name. Every read of a store file (dirs/ and agents/ records, continuations, STORE_ID, .lock) goes
+ * through read_bounded: lstat first (a non-regular name is never opened), then open O_NOFOLLOW|O_NONBLOCK|O_CLOEXEC and
+ * fstat the descriptor (catches a swap between the two), then read at most cap + 1 bytes. A refusal is fatal, named
+ * REFUSED_RECORD, exit EXIT_REFUSED, and leaves the file as found. Caps match synapse-coord. */
+#define MAX_RECORD_BYTES ((size_t)1 << 20)   /* records: dirs/ and agents/ JSON, continuations */
+#define MAX_MARKER_BYTES ((size_t)4096)      /* STORE_ID */
+#define EXIT_STORE_ID 3                      /* store identity refusal: STORE_ID_MISSING/MISMATCH/UNREADABLE/CONFIG_INVALID, STORE_UNREGISTERED */
+#define EXIT_REFUSED 4                       /* hostile store file: REFUSED_RECORD */
+static void die_x(int code, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    fprintf(stderr, "crumb: ");
+    vfprintf(stderr, fmt, ap);
+    fprintf(stderr, "\n");
+    va_end(ap);
+    exit(code);
+}
+static const char *kind_of(mode_t m) {
+    if (S_ISLNK(m)) return "is a symbolic link";
+    if (S_ISFIFO(m)) return "is a fifo, not a regular file";
+    if (S_ISSOCK(m)) return "is a socket, not a regular file";
+    if (S_ISCHR(m)) return "is a char device, not a regular file";
+    if (S_ISBLK(m)) return "is a block device, not a regular file";
+    if (S_ISDIR(m)) return "is a directory, not a regular file";
+    return "is a special file, not a regular file";
+}
+static void refuse(const char *path, const char *why) {
+    die_x(EXIT_REFUSED, "REFUSED_RECORD: %s %s; refusing to read it (fix or move it aside)", path, why);
+}
+static void refuse_big(const char *path, size_t cap) {
+    char w[64]; snprintf(w, sizeof w, "is larger than %zu bytes", cap); refuse(path, w);
+}
+/* NULL when the name does not exist; *len gets the byte count (the buffer is also NUL-terminated). */
+static char *read_bounded(const char *path, size_t cap, size_t *len) {
+    struct stat st;
+    if (lstat(path, &st) != 0) {
+        if (errno == ENOENT) return NULL;
+        if (errno == ENOTDIR) refuse(path, "has a parent that is not a directory");
+        die("cannot stat %s: %s", path, strerror(errno));
+    }
+    if (!S_ISREG(st.st_mode)) refuse(path, kind_of(st.st_mode));
+    int fd = open(path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC);
+    if (fd < 0) {
+        if (errno == ENOENT) return NULL;
+        if (errno == ELOOP) refuse(path, "is a symbolic link");
+        die("cannot open %s: %s", path, strerror(errno));
+    }
+    if (fstat(fd, &st) != 0) die("cannot stat %s: %s", path, strerror(errno));
+    if (!S_ISREG(st.st_mode)) refuse(path, kind_of(st.st_mode));
+    if ((uintmax_t)st.st_size > (uintmax_t)cap) refuse_big(path, cap);
+    Buf b = {0}; bstr(&b, "");
+    char t[4096];
+    while (b.n <= cap) {
+        size_t want = cap + 1 - b.n; if (want > sizeof t) want = sizeof t;
+        ssize_t r = read(fd, t, want);
+        if (r < 0) { if (errno == EINTR) continue; die("read failed: %s: %s", path, strerror(errno)); }
+        if (r == 0) break;
+        bput(&b, t, (size_t)r);
+    }
+    close(fd);
+    if (b.n > cap) refuse_big(path, cap);
+    if (len) *len = b.n;
+    return b.p;
+}
+/* A fresh temp file: whatever has that name is unlinked first, never opened; O_EXCL|O_NOFOLLOW so the write can
+ * neither block on a planted FIFO nor follow a planted link. */
+static int create_temp(const char *tmp) {
+    if (unlink(tmp) != 0 && errno != ENOENT) die("cannot remove stale %s: %s", tmp, strerror(errno));
+    int fd = open(tmp, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, 0644);
+    if (fd < 0) die("cannot write %s: %s", tmp, strerror(errno));
+    return fd;
+}
+static void write_all(int fd, const char *data, size_t len, const char *path) {
+    size_t off = 0;
+    while (off < len) { ssize_t w = write(fd, data + off, len - off); if (w < 0) { if (errno == EINTR) continue; die("write failed: %s", path); } off += (size_t)w; }
+}
+/* ---------- registered store identity (aien-architecture#234; byte-compatible with synapse-coord identity.rs, synapse#15) ----------
+ * <store>/STORE_ID holds one line, "crumb-coord-store-id/1 <32 lowercase hex>\n" (128 bits from /dev/urandom).
+ * Expected id: CRUMB_EXPECT_STORE_ID (non-empty) else `git config crumb.storeId`. Three modes:
+ *   registered    an expected id is configured: before any operation, and again under the lock of a mutation, the
+ *                 marker must exist and match (STORE_ID_MISSING / STORE_ID_MISMATCH, exit 3). Never creates a marker.
+ *   compatibility nothing configured (default, dry run): works as before; the first mutation creates the marker
+ *                 exactly as synapse-coord ensure_store_id does (under the lock, tmp + fsync + link(2), never
+ *                 replacing one), and a one-line STORE_UNREGISTERED warning on stderr names the id to register.
+ *   strict        --strict or CRUMB_STRICT_STORE_ID=1: an unregistered root is refused (STORE_UNREGISTERED, exit 3).
+ * Outside a git repository (RFC-0001 .crumb.local fallback) there is no coordination store and nothing changes. */
+#define STORE_ID_FILE "STORE_ID"
+#define STORE_ID_FORMAT "crumb-coord-store-id/1"
+static int g_strict;   /* --strict or CRUMB_STRICT_STORE_ID=1 */
+static int hex_id_ok(const char *s, size_t n) {
+    if (n != 32) return 0;
+    for (size_t i = 0; i < n; i++) if (!((s[i] >= '0' && s[i] <= '9') || (s[i] >= 'a' && s[i] <= 'f'))) return 0;
+    return 1;
+}
+/* 1 and hex filled when <store>/STORE_ID is a valid v1 marker, 0 when absent; any other content is refused. */
+static int read_marker(const char *store, char hex[33]) {
+    char *mp = pjoin(store, STORE_ID_FILE); size_t n = 0;
+    char *b = read_bounded(mp, MAX_MARKER_BYTES, &n);
+    if (!b) { free(mp); return 0; }
+    const char *why = NULL;
+    const char *sp = n ? memchr(b, ' ', n - 1) : NULL;
+    size_t fl = strlen(STORE_ID_FORMAT);
+    if (!n || b[n - 1] != '\n') why = "no trailing newline (torn or foreign file)";
+    else if (!sp) why = "expected `<format> <id>`";
+    else if ((size_t)(sp - b) != fl || memcmp(b, STORE_ID_FORMAT, fl)) why = "unsupported format";
+    else if (!hex_id_ok(sp + 1, n - 1 - fl - 1)) why = "bad id";
+    if (why) die_x(EXIT_STORE_ID, "STORE_ID_UNREADABLE: %s is not a store identity marker: %s; refusing (never rewritten)", mp, why);
+    memcpy(hex, sp + 1, 32); hex[32] = 0;
+    free(b); free(mp);
+    return 1;
+}
+static void fsync_dir(const char *dir);
+/* Create the marker if absent; call only while holding the store's fcntl lock. link(2) never replaces an existing
+ * file, so even a writer outside the lock cannot overwrite a marker. A crash before the link leaves only a tmp file. */
+static void ensure_marker_locked(const char *store, char hex[33]) {
+    if (read_marker(store, hex)) return;
+    unsigned char rb[16]; size_t got = 0;
+    int rf = open("/dev/urandom", O_RDONLY | O_CLOEXEC);
+    if (rf < 0) die("cannot open /dev/urandom: %s", strerror(errno));
+    while (got < sizeof rb) { ssize_t r = read(rf, rb + got, sizeof rb - got); if (r < 0 && errno == EINTR) continue; if (r <= 0) die("cannot read /dev/urandom"); got += (size_t)r; }
+    close(rf);
+    char line[64]; int ll = snprintf(line, sizeof line, "%s ", STORE_ID_FORMAT);
+    for (size_t i = 0; i < sizeof rb; i++) ll += snprintf(line + ll, sizeof line - (size_t)ll, "%02x", rb[i]);
+    line[ll++] = '\n'; line[ll] = 0;
+    char *mp = pjoin(store, STORE_ID_FILE), *tmp = xmalloc(strlen(mp) + 32);
+    sprintf(tmp, "%s.tmp%ld", mp, (long)getpid());
+    int fd = create_temp(tmp);
+    write_all(fd, line, (size_t)ll, tmp);
+    if (fsync(fd) != 0) die("fsync failed: %s", tmp);
+    if (close(fd) != 0) die("close failed: %s", tmp);
+    int lr = link(tmp, mp), le = errno;
+    unlink(tmp);
+    if (lr != 0 && le != EEXIST) die("cannot publish %s: %s", mp, strerror(le));
+    fsync_dir(store);
+    if (!read_marker(store, hex)) die_x(EXIT_STORE_ID, "STORE_ID_MISSING: coordination store %s has no %s marker after creating it", store, STORE_ID_FILE);
+    free(tmp); free(mp);
+}
+/* Ident (expected store id, its source, warned-once flag) is declared with Plane above. */
+static Ident ident_resolve(const char *gitdir) {   /* gitdir NULL: no repository, environment only */
+    Ident id; memset(&id, 0, sizeof id);
+    const char *e = getenv("CRUMB_EXPECT_STORE_ID"); char *v = NULL;
+    if (e && *e) { v = xstrdup(e); id.source = "CRUMB_EXPECT_STORE_ID"; }
+    else if (gitdir) { char *c = run_git(gitdir, "config --get crumb.storeId"); if (*c) { v = c; id.source = "git config crumb.storeId"; } }
+    if (!v) return id;
+    if (!hex_id_ok(v, strlen(v))) die_x(EXIT_STORE_ID, "STORE_ID_CONFIG_INVALID: %s is \"%s\"; expected 32 lowercase hex characters (the id `crumb store-id` prints)", id.source, v);
+    memcpy(id.expect, v, 33); id.has_expect = 1;
+    return id;
+}
+static void ident_warn(Ident *id, const char *store, const char *hex) {
+    if (id->warned) return;
+    id->warned = 1;
+    fprintf(stderr, "crumb: warning: STORE_UNREGISTERED (dry run): coordination store %s is store %s but no store id is registered; register it: git config crumb.storeId %s (strict mode, --strict or CRUMB_STRICT_STORE_ID=1, refuses unregistered stores)\n", store, hex, hex);
+}
+/* locked = 0: before any operation (read-only); locked = 1: inside a mutation, holding the store lock. */
+static void ident_gate(Ident *id, const char *store, int locked) {
+    char hex[33];
+    if (id->has_expect) {
+        if (!read_marker(store, hex))
+            die_x(EXIT_STORE_ID, "STORE_ID_MISSING: coordination store %s has no %s marker; refusing (registered store %s via %s: check CRUMB_COORD_ROOT / crumb.coordinationRoot)", store, STORE_ID_FILE, id->expect, id->source);
+        if (strcmp(hex, id->expect))
+            die_x(EXIT_STORE_ID, "STORE_ID_MISMATCH: coordination store %s is store %s, expected %s (%s); refusing (split coordination roots)", store, hex, id->expect, id->source);
+        return;
+    }
+    if (g_strict && !locked)
+        die_x(EXIT_STORE_ID, "STORE_UNREGISTERED: coordination store %s has no registered store id (strict mode); register it: git config crumb.storeId <id> (from `crumb store-id`) or set CRUMB_EXPECT_STORE_ID", store);
+    if (locked) { ensure_marker_locked(store, hex); ident_warn(id, store, hex); }
+    else if (read_marker(store, hex)) ident_warn(id, store, hex);
+}
 /* stable session id, never a PID alone: CRUMB_SESSION if set, else agent@host */
 static char *session_id(const char *agent) {
     const char *e = getenv("CRUMB_SESSION");
@@ -505,7 +679,7 @@ static char *session_id(const char *agent) {
     size_t n = strlen(agent) + strlen(h) + 2; char *s = xmalloc(n); snprintf(s, n, "%s@%s", agent, h); return s;
 }
 
-static Plane *plane_resolve(const char *dir) {
+static Plane *plane_find(const char *dir) {   /* resolve the coordination root; no identity check yet */
     char *abs = absdir(dir), *top = run_git(abs, "rev-parse --show-toplevel"), r[PATH_MAX];
     if (!*top || !realpath(top, r)) return NULL;
     top = xstrdup(r);
@@ -526,6 +700,13 @@ static Plane *plane_resolve(const char *dir) {
     p->branch = run_git(abs, "symbolic-ref --short -q HEAD"); if (!*p->branch) p->branch = xstrdup("(detached)");
     p->head = run_git(abs, "rev-parse --short=12 HEAD");
     p->base = run_git(abs, "merge-base HEAD origin/main"); if (strlen(p->base) > 12) p->base[12] = 0;
+    p->id = ident_resolve(abs);
+    return p;
+}
+/* every coordination command: resolve the root, then check its identity before touching anything in it */
+static Plane *plane_resolve(const char *dir) {
+    Plane *p = plane_find(dir);
+    if (p) ident_gate(&p->id, p->store, 0);
     return p;
 }
 /* repository-relative key for a target: <dir>/<target> if that exists, else <target> from the
@@ -572,6 +753,7 @@ static Txn *txn_begin(Plane *p, int mutate) {
     if (t->fd < 0) die("cannot open %s: %s", lp, strerror(errno));
     struct flock fl; memset(&fl, 0, sizeof fl); fl.l_type = F_WRLCK; fl.l_whence = SEEK_SET;
     while (fcntl(t->fd, F_SETLKW, &fl) != 0) if (errno != EINTR) die("cannot lock %s: %s", lp, strerror(errno));
+    ident_gate(&p->id, p->store, 1);   /* under the lock: re-check the registered id, or create the marker once */
     return t;
 }
 static Rec *rec_load(Txn *t, const char *path, int agent, const char *label) {
@@ -1409,6 +1591,7 @@ static int cmd_explain(const char *target) {
         rel = abs[tl] ? xstrdup(abs + tl + 1) : xstrdup(".");
     } else rel = xstrdup(base_of(abs));
     char *store = p ? p->store : (env && *env ? xstrdup(env) : NULL);
+    if (!p && store) { Ident id = ident_resolve(NULL); ident_gate(&id, store, 0); }   /* no repository: env-only identity */
     printf("EXPLAIN %s\n  repository path: %s\n", abs, rel);
 
     /* 1. nearest .crumb */
@@ -1541,6 +1724,7 @@ static void cc_env(Plane *p) {   /* records must land in <coordination root>/con
     const char *env = getenv("CRUMB_COORD_ROOT");
     if (p) setenv("CRUMB_COORD_ROOT", p->store, 1);
     else if (!(env && *env)) die("no repository context: run inside a git checkout or set CRUMB_COORD_ROOT");
+    else { Ident id = ident_resolve(NULL); ident_gate(&id, env, 0); }
     char self[PATH_MAX]; ssize_t n = readlink("/proc/self/exe", self, sizeof self - 1);
     if (n > 0 && !getenv("CRUMB_BIN")) { self[n] = 0; setenv("CRUMB_BIN", self, 1); }
 }
@@ -1996,8 +2180,23 @@ static int cmd_context(const char *target) {
     return 0;
 }
 
+/* store-id [dir]: print the coordination store's id (the onboarding step: register it with git config crumb.storeId).
+ * Registered: verified, never created. Unregistered (also under --strict, since this is how a store is registered):
+ * the marker is created under the store lock if absent, exactly as synapse-coord `id` / ensure_store_id does. */
+static int cmd_store_id(const char *dir) {
+    Plane *p = plane_find(dir);
+    if (!p) die("store-id needs a git repository: %s", dir);
+    if (p->id.has_expect) ident_gate(&p->id, p->store, 0);
+    else { p->id.warned = 1; Txn *t = txn_begin(p, 1); txn_end(t, 0); }
+    char hex[33];
+    if (!read_marker(p->store, hex)) die_x(EXIT_STORE_ID, "STORE_ID_MISSING: coordination store %s has no %s marker", p->store, STORE_ID_FILE);
+    printf("%s\n", hex);
+    if (!p->id.has_expect) fprintf(stderr, "crumb: coordination store %s is unregistered; register it: git config crumb.storeId %s\n", p->store, hex);
+    return 0;
+}
+
 static void usage(void) {
-    fputs("usage: crumb <command> ...\n"
+    fputs("usage: crumb [--strict] <command> ...\n"
           "  seed <root> [-n] [-v]                       write/refresh .crumb files (idempotent; -n dry run)\n"
           "  backfill <root> [--since <date>] [-n]       reconstruct history from git + lane reports (run after seed)\n"
           "  create <dir> <name> <purpose> [layer]       new .crumb for one directory\n"
@@ -2015,10 +2214,15 @@ static void usage(void) {
           "  checkpoint <agent> [--reason R]             new Continuation Crumb (wraps cc.sh); then checkpoint --seal <id> [agent]\n"
           "  resume <id>                                 print record, revalidate against live repos (wraps cc.sh)\n"
           "  list [path]                                 live scents, locks, whispers under path\n"
-          "  validate [path]                             check .crumb files against RFC-0001 required fields\n", stderr);
+          "  validate [path]                             check .crumb files against RFC-0001 required fields\n"
+          "  store-id [dir]                              print the coordination store id (creates it if unregistered and absent)\n"
+          "store identity: expected id from CRUMB_EXPECT_STORE_ID, else git config crumb.storeId; --strict or\n"
+          "  CRUMB_STRICT_STORE_ID=1 refuses unregistered stores. Exit 3 = store identity refusal, 4 = refused store file.\n", stderr);
     exit(1);
 }
 int main(int argc, char **argv) {
+    { const char *s = getenv("CRUMB_STRICT_STORE_ID"); if (s && !strcmp(s, "1")) g_strict = 1; }
+    while (argc > 1 && !strcmp(argv[1], "--strict")) { g_strict = 1; argv++; argc--; }
     if (argc < 2) usage();
     const char *c = argv[1]; int a = argc - 2; char **v = argv + 2;
     if (!strcmp(c, "seed") && a >= 1) {
@@ -2046,6 +2250,7 @@ int main(int argc, char **argv) {
     if (!strcmp(c, "context") && a <= 1) return cmd_context(a ? v[0] : ".");
     if (!strcmp(c, "checkpoint")) return cmd_checkpoint(a, v);
     if (!strcmp(c, "resume") && a == 1) return cmd_resume(v[0]);
+    if (!strcmp(c, "store-id") && a <= 1) return cmd_store_id(a ? v[0] : ".");
     if (!strcmp(c, "list") || !strcmp(c, "validate")) {
         int val = !strcmp(c, "validate"); Tot t = {0, 0, 0};
         char *r = absdir(a ? v[0] : ".");
