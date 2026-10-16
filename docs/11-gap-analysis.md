@@ -1,5 +1,7 @@
 # Gap Analysis
 
+**Status (2026-10-16, aien-spark/aien-architecture#198 D5).** This list was written on 2026-09-22 and last reconciled on 2026-09-30. It is the long-range architecture gap list, not current release status. The current, evidence-tied assessment against the whole-system acceptance test is `docs/plans/release-readiness/GAP_ASSESSMENT.md` (2026-10-10); current per-area status is in `docs/02-implementation-status.md`.
+
 ## Strong today
 
 - native Rust runtime composition,
